@@ -151,6 +151,12 @@ Bscript::ObjArray* GetCommandsInPackage( Plib::Package* m_pkg, int cmdlvl_num )
 
 void load_cmdlevels()
 {
+  if ( Plib::systemstate.pol_script_test )
+  {
+    Clib::ConfigElem elem;
+    gamestate.cmdlevels.push_back( CmdLevel( elem, 0 ) );
+    return;
+  }
   Clib::ConfigFile cf( "config/cmds.cfg", "CmdLevel" );
   Clib::ConfigElem elem;
 
