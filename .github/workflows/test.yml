@@ -88,7 +88,10 @@ jobs:
         run: |
           cd bin
           mkdir config
+          mkdir data
           mkdir scripts
+          touch data/accounts.txt
+          touch data/pol.txt
           cp ../pol-core/support/pol.cfg.example pol.cfg
           cp ../pol-core/support/boats.cfg config/
           cp ../pol-core/support/extobj.cfg config/
