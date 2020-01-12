@@ -1107,7 +1107,7 @@ int xmain_inner( bool testing, const std::string testscript )
   Core::checkpoint( "reading menus" );
   Core::Menu::read_menus();
 
-  if ( !testscript.empty() )
+  if ( testscript.empty() )
   {
     Core::checkpoint( "loading intrinsic weapons" );
     Items::load_intrinsic_weapons();
