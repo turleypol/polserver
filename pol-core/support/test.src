@@ -1,1 +1,8 @@
+use uo;
 print("hello world");
+print("create account");
+var a:= createaccount("test","test",1);
+print(a);
+print("create character");
+var c:= a.addcharacter(0);
+print(c);
