@@ -1,5 +1,6 @@
 #ifndef POL_H
 #define POL_H
+#include <string>
 
 namespace Pol
 {
