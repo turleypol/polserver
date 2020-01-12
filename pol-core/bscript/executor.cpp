@@ -3014,6 +3014,7 @@ void Executor::execInstr()
     POLLOG_ERROR << tmp.str();
 
     show_context( onPC );
+    Clib::force_backtrace();
   }
 #ifdef __unix__
   catch ( ... )
