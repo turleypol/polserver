@@ -93,6 +93,7 @@ jobs:
           cp ../pol-core/support/extobj.cfg config/
           cp ../pol-core/support/animxlate.cfg config/
           cp ../pol-core/support/test.src test.src
+          cp ../pol-core/support/scripts/*.em .
           ./ecompile test.src
           ./pol -script=test
 
