@@ -1092,7 +1092,8 @@ int xmain_inner( bool testing, const std::string testscript )
   }
 
   Core::checkpoint( "loading configuration" );
-  Core::load_data();
+  if ( testscript.empty() )
+    Core::load_data();
 
   Core::checkpoint( "loading system hooks" );
   Core::load_system_hooks();
@@ -1109,11 +1110,14 @@ int xmain_inner( bool testing, const std::string testscript )
   Core::checkpoint( "loading intrinsic weapons" );
   Items::load_intrinsic_weapons();
   Core::checkpoint( "validating intrinsic shield template" );
-  Items::validate_intrinsic_shield_template();
+  if ( !testscript.empty() )
+    Items::validate_intrinsic_shield_template();
   Core::checkpoint( "reading gameservers" );
-  Core::read_gameservers();
+  if ( !testscript.empty() )
+    Core::read_gameservers();
   Core::checkpoint( "reading starting locations" );
-  Core::read_starting_locations();
+  if ( !testscript.empty() )
+    Core::read_starting_locations();
 
   if ( testing )
   {
