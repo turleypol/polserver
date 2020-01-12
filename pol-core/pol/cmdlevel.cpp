@@ -155,6 +155,7 @@ void load_cmdlevels()
   {
     Clib::ConfigElem elem;
     gamestate.cmdlevels.push_back( CmdLevel( elem, 0 ) );
+    gamestate.cmdlevels.begin()->name="player";
     return;
   }
   Clib::ConfigFile cf( "config/cmds.cfg", "CmdLevel" );
