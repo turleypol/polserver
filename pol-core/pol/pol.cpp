@@ -1130,7 +1130,6 @@ int xmain_inner( bool testing, const std::string testscript )
   }
 
   // PrintAllocationData();
-  if ( testscript.empty() )
   {
     POLLOG_INFO << "Reading data files:\n";
     Tools::Timer<> timer;
@@ -1138,7 +1137,8 @@ int xmain_inner( bool testing, const std::string testscript )
     Accounts::read_account_data();
 
     Core::checkpoint( "reading data" );
-    Core::read_data();
+    if ( testscript.empty() )
+      Core::read_data();
     POLLOG_INFO << "Done! " << timer.ellapsed() << " milliseconds.\n";
   }
 
