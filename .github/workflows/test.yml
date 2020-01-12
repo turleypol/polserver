@@ -94,7 +94,7 @@ jobs:
           cp ../pol-core/support/animxlate.cfg config/
           cp ../pol-core/support/test.src test.src
           ./ecompile test.src
-          ./pol -script=blubb.ecl
+          ./pol -script=test
 
           #cd testsuite/escript
           #../../bin/ecompile unicode06.src
