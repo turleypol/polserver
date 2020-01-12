@@ -156,7 +156,8 @@ void load_data()
 
   checkpoint( "load_cmdlevels" );
   load_cmdlevels();
-
+  if ( Plib::systemstate.pol_script_test )
+    return;
   checkpoint( "read_combat_config" );
   CombatConfig::read_combat_config();
 

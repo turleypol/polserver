@@ -1092,8 +1092,7 @@ int xmain_inner( bool testing, const std::string testscript )
   }
 
   Core::checkpoint( "loading configuration" );
-  if ( testscript.empty() )
-    Core::load_data();
+  Core::load_data();
 
   Core::checkpoint( "loading system hooks" );
   Core::load_system_hooks();
