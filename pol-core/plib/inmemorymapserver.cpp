@@ -17,6 +17,8 @@ namespace Plib
 {
 InMemoryMapServer::InMemoryMapServer( const RealmDescriptor& descriptor ) : MapServer( descriptor )
 {
+  if ( systemstate.pol_script_test )
+    return;
   unsigned n_blocks =
       ( _descriptor.width >> MAPBLOCK_SHIFT ) * ( _descriptor.height >> MAPBLOCK_SHIFT );
 
