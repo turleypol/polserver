@@ -92,7 +92,7 @@ jobs:
           cp ../pol-core/support/boats.cfg config/
           cp ../pol-core/support/extobj.cfg config/
           cp ../pol-core/support/animxlate.cfg config/
-          #./pol -script=blubb.ecl
+          ./pol -script=blubb.ecl
 
           #cd testsuite/escript
           #../../bin/ecompile unicode06.src
