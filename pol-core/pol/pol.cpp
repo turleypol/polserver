@@ -1150,7 +1150,7 @@ int xmain_inner( bool testing, const std::string testscript )
   if ( !testscript.empty() )
   {
     POLLOG_INFO << "Running POL testscript\n";
-    run_script_to_completion( testscript );
+    Core::run_script_to_completion( testscript );
 
     Core::cancel_all_trades();
     Core::stop_gameclock();
