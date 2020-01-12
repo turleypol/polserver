@@ -963,7 +963,7 @@ void Check_libc_version()
 
 }  // namespace Core
 
-int xmain_inner( bool testing )
+int xmain_inner( bool testing, const std::string testscript )
 {
 #ifdef _WIN32
   Clib::MiniDumper::Initialize();
@@ -1004,6 +1004,11 @@ int xmain_inner( bool testing )
               << POL_COPYRIGHT << "\n\n";
   if ( testing )
     POLLOG_INFO << "TESTING MODE\n\n";
+  if ( !testscript.empty() )
+  {
+    Plib::systemstate.pol_script_test = true;
+    POLLOG_INFO << "TESTSCRIPT: " << testscript << "\n\n";
+  }
 
 #ifndef NDEBUG
   POLLOG_INFO << "Sizes: \n"
@@ -1026,61 +1031,6 @@ int xmain_inner( bool testing )
 
   Core::checkpoint( "installing signal handlers" );
   Core::install_signal_handlers();
-  {
-    Network::PktHelper::PacketOut<Network::PktOut_D6> msg;
-    msg->offset += 2;
-    msg->WriteFlipped<u16>( 1u );  // u16 unk1
-    msg->Write<u32>( 123345678u );
-    msg->offset += 2;  // u8 unk2,unk3
-    msg->WriteFlipped<u32>( 2u );
-    msg->WriteFlipped<u32>( 1042971u );  // 1 text argument only
-    std::string desc = "hallo";
-    u16 textlen = static_cast<u16>( desc.size() );
-    if ( ( textlen * 2 ) > ( 0xFFFF - 22 ) )
-    {
-      textlen = 0xFFFF / 2 - 22;
-    }
-    msg->WriteFlipped<u16>( textlen * 2u );
-    const char* string = desc.c_str();
-
-    while ( *string && textlen-- )  // unicode
-      msg->Write<u16>( static_cast<u16>( *string++ ) );
-    msg->offset += 4;  // indicates end of property list
-    u16 len = msg->offset;
-    msg->offset = 1;
-    msg->WriteFlipped<u16>( len );
-
-    fmt::Writer tmp;
-    Clib::fdump( tmp, &msg->buffer, len + 1 );
-    INFO_PRINT << tmp.c_str() << "\n";
-  }
-  {
-    Network::PktHelper::PacketOut<Network::PktOut_D6> msg;
-    msg->offset += 2;
-    msg->WriteFlipped<u16>( 1u );  // u16 unk1
-    msg->Write<u32>( 123345678u );
-    msg->offset += 2;  // u8 unk2,unk3
-    msg->WriteFlipped<u32>( 2u );
-    msg->WriteFlipped<u32>( 1042971u );  // 1 text argument only
-    std::string desc = "hallo";
-    std::vector<u16> u = Bscript::String::toUTF16( desc );
-    u16 textlen = static_cast<u16>( u.size() );
-    if ( ( textlen * 2 ) > ( 0xFFFF - 22 ) )
-    {
-      textlen = 0xFFFF / 2 - 22;
-      u.resize( textlen );
-    }
-    msg->WriteFlipped<u16>( textlen * 2u );
-    msg->Write( u, false );
-    msg->offset += 4;  // indicates end of property list
-    u16 len = msg->offset;
-    msg->offset = 1;
-    msg->WriteFlipped<u16>( len );
-
-    fmt::Writer tmp;
-    Clib::fdump( tmp, &msg->buffer, len + 1 );
-    INFO_PRINT << tmp.c_str() << "\n";
-  }
   Core::checkpoint( "starting POL clocks" );
   Core::start_pol_clocks();
   Core::pause_pol_clocks();
@@ -1192,7 +1142,16 @@ int xmain_inner( bool testing )
   Core::stateManager.gflag_in_system_startup = false;
 
   // PrintAllocationData();
+  if ( !testscript.empty() )
+  {
+    POLLOG_INFO << "Running POL testscript\n";
+    //...
 
+    Core::cancel_all_trades();
+    Core::stop_gameclock();
+    Core::gamestate.deinitialize();
+    return 0;
+  }
   Core::checkpoint( "running start scripts" );
   Core::run_start_scripts();
 
@@ -1288,11 +1247,11 @@ int xmain_inner( bool testing )
   return 0;
 }
 
-int xmain_outer( bool testing )
+int xmain_outer( bool testing, std::string testscript )
 {
   try
   {
-    return xmain_inner( testing );
+    return xmain_inner( testing, testscript );
   }
   catch ( std::exception& )
   {

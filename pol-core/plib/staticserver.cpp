@@ -15,6 +15,7 @@
 #include "../clib/strutil.h"
 #include "../clib/timer.h"
 #include "staticblock.h"
+#include "systemstate.h"
 
 namespace Pol
 {
@@ -23,6 +24,8 @@ namespace Plib
 StaticServer::StaticServer( const RealmDescriptor& descriptor )
     : _descriptor( descriptor ), _index(), _statics()
 {
+  if ( systemstate.pol_script_test )
+    return;
   Clib::BinaryFile index_file( _descriptor.path( "statidx.dat" ), std::ios::in );
   index_file.ReadVector( _index );
   if ( _index.empty() )
@@ -81,6 +84,8 @@ void StaticServer::ValidateBlock( unsigned short x, unsigned short y ) const
 
 bool StaticServer::findstatic( unsigned short x, unsigned short y, unsigned short objtype ) const
 {
+  if ( systemstate.pol_script_test )
+    return false;
   passert( x < _descriptor.width && y < _descriptor.height );
 
   unsigned short x_block = x >> STATICBLOCK_SHIFT;
@@ -108,6 +113,8 @@ bool StaticServer::findstatic( unsigned short x, unsigned short y, unsigned shor
 
 void StaticServer::getstatics( StaticEntryList& statics, unsigned short x, unsigned short y ) const
 {
+  if ( systemstate.pol_script_test )
+    return;
   passert( x < _descriptor.width && y < _descriptor.height );
 
   unsigned short x_block = x >> STATICBLOCK_SHIFT;
@@ -139,5 +146,5 @@ size_t StaticServer::sizeEstimate() const
   size += 3 * sizeof( STATIC_ENTRY* ) + _statics.capacity() * sizeof( STATIC_ENTRY );
   return size;
 }
-}
-}
+}  // namespace Plib
+}  // namespace Pol

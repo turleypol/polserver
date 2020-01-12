@@ -94,7 +94,7 @@ jobs:
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DNO_PCH=${{ matrix.config.nopch }}
+          cmake .. -G Ninja -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
       - name: Build
         run: |
           cd bin-build
@@ -158,9 +158,6 @@ jobs:
           zip -j Nightly-Windows.zip Nightly-Windows-cl/*
           zip -j Nightly-Linux-gcc.zip Nightly-Linux-g++/*
           zip -j Nightly-Linux-clang.zip Nightly-Linux-clang++/*
-#          cmake -E tar "cfv" "Nightly-Windows.zip" --format=zip Nightly-Windows-cl
-#          cmake -E tar "cfv" "Nightly-Linux-gcc.zip" --format=zip Nightly-Linux-g++
-#          cmake -E tar "cfv" "Nightly-Linux-clang.zip" --format=zip Nightly-Linux-clang++
 
       - name: Create Release
         # fork until official release can overwrite tag/release
@@ -201,4 +198,43 @@ jobs:
           asset_path: Nightly-Linux-clang.zip
           asset_name: Nightly-Linux-clang.zip
           asset_content_type: application/
-
+ 
+  notify_on_failure:
+    needs: build
+    runs-on: "ubuntu-latest"
+    if: failure()
+    steps:
+      - name: Discord notification failure
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: turleypol/actions-status-discord@master
+        with:
+          status: failure
+          job: Building
+          nofail: false
+  notify_on_success:
+    needs: build
+    runs-on: "ubuntu-latest"
+    if: success()
+    steps:
+      - name: Discord notification success
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: turleypol/actions-status-discord@master
+        with:
+          status: success
+          job: Building
+          nofail: false
+  notify_on_cancel:
+    needs: build
+    runs-on: "ubuntu-latest"
+    if: cancelled()
+    steps:
+      - name: Discord notification cancelled
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: turleypol/actions-status-discord@master
+        with:
+          status: cancelled
+          job: Building
+          nofail: false

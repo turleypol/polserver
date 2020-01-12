@@ -5,6 +5,7 @@
 
 
 #include "realmdescriptor.h"
+#include "systemstate.h"
 
 #include "../clib/cfgelem.h"
 #include "../clib/cfgfile.h"
@@ -18,6 +19,8 @@ namespace Plib
 RealmDescriptor RealmDescriptor::Load( const std::string& realm_name,
                                        const std::string& realm_path )
 {
+  if ( Plib::systemstate.pol_script_test )
+    return RealmDescriptor();
   std::string realm_cfg_filename;
   if ( realm_path == "" )
     realm_cfg_filename = "realm/" + realm_name + "/realm.cfg";
@@ -43,6 +46,22 @@ unsigned short calc_grid_size( const unsigned size )
   return static_cast<unsigned short>( grid_size );
 }
 }  // namespace
+
+RealmDescriptor::RealmDescriptor()
+    : name( "britannia" ),
+      file_path( "testingmode" ),
+      width( 7168 ),
+      height( 4096 ),
+      uomapid( 0 ),
+      uodif( false ),
+      num_map_patches( 0 ),
+      num_static_patches( 0 ),
+      season( 1 ),
+      mapserver_type( "memory" ),
+      grid_width( calc_grid_size( width ) ),
+      grid_height( calc_grid_size( height ) )
+{
+}
 
 RealmDescriptor::RealmDescriptor( const std::string& realm_name, const std::string& realm_path,
                                   Clib::ConfigElem& elem )

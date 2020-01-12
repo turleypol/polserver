@@ -1,6 +1,5 @@
 name: Doxygen
-#senseless trigger to deactive it
-on: [repository_dispatch]
+on: [push]
 
 jobs:
   build:

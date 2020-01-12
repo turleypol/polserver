@@ -73,21 +73,29 @@ jobs:
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DONLY_RUNECL=1 -DONLY_ECOMPILE=1
+          cmake .. -G Ninja
       - name: Build
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
       - name: testing
         run: |
-          cd testsuite/escript
-          ../../bin/ecompile unicode06.src
-          ../../bin/runecl unicode06.ecl
-          ../../bin/runecl -q unicode06.ecl > unicode06.out
-          mkdir dmp
-          mv unicode06.out dmp/
-          ls
-          ls dmp
+          cd bin
+          mkdir config
+          cp ../pol-core/support/pol.cfg.example pol.cfg
+          cp ../pol-core/support/boats.cfg config/
+          cp ../pol-core/support/extobj.cfg config/
+          cp ../pol-core/support/animxlate.cfg config/
+          ./pol -script=blubb.ecl
+
+          #cd testsuite/escript
+          #../../bin/ecompile unicode06.src
+          #../../bin/runecl unicode06.ecl
+          #../../bin/runecl -q unicode06.ecl > unicode06.out
+          #mkdir dmp
+          #mv unicode06.out dmp/
+          #ls
+          #ls dmp
           #cd ../../bin
           #./pol
 
@@ -97,38 +105,3 @@ jobs:
           name: dmp
           path: testsuite/escript/dmp
 
-      - name: Test
-        run: |
-          cd bin-build
-          ctest -j2 --output-on-failure -C ${{ matrix.config.build-type }}
-  release:
-    needs: build
-    runs-on: "ubuntu-latest" 
-    if: github.ref == 'refs/heads/master'
-    steps:
-      - name: Download artefacts
-        uses: actions/download-artifact@v1
-        with:
-          name: dmp
-
-      - name: Create Release
-        # fork until official release can overwrite tag/release
-        uses: turleypol/create-release@delete-old-release-asset
-        id: create_release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: NightlyRelease
-          release_name: NightlyRelease
-          replace_old_tag: true
-          prerelease: true
-          draft: false
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dmp/unicode06.out
-          asset_name: dmp
-          asset_content_type: application/

@@ -29,30 +29,39 @@ bool load_realms()
 {
   Realms::Realm* temprealm;
   int realm_counter = 0;
-  for ( Clib::DirList dl( Plib::systemstate.config.realm_data_path.c_str() ); !dl.at_end();
-        dl.next() )
+  if ( !Plib::systemstate.pol_script_test )
   {
-    std::string realm_name = dl.name();
-    if ( realm_name[0] == '.' )
-      continue;
+    for ( Clib::DirList dl( Plib::systemstate.config.realm_data_path.c_str() ); !dl.at_end();
+          dl.next() )
+    {
+      std::string realm_name = dl.name();
+      if ( realm_name[0] == '.' )
+        continue;
 
-    passert_r( gamestate.Realms.size() < MAX_NUMER_REALMS,
-               "You can't use more than " + Clib::tostring( MAX_NUMER_REALMS ) + " realms" );
+      passert_r( gamestate.Realms.size() < MAX_NUMER_REALMS,
+                 "You can't use more than " + Clib::tostring( MAX_NUMER_REALMS ) + " realms" );
 
-    POLLOG_INFO << "Loading Realm " << realm_name << ".\n";
-    Tools::Timer<> timer;
-    temprealm =
-        new Realms::Realm( realm_name, Plib::systemstate.config.realm_data_path + realm_name );
-    POLLOG_INFO << "Completed in " << timer.ellapsed() << " ms.\n";
-    gamestate.Realms.push_back( temprealm );
-    ++realm_counter;
+      POLLOG_INFO << "Loading Realm " << realm_name << ".\n";
+      Tools::Timer<> timer;
+      temprealm =
+          new Realms::Realm( realm_name, Plib::systemstate.config.realm_data_path + realm_name );
+      POLLOG_INFO << "Completed in " << timer.ellapsed() << " ms.\n";
+      gamestate.Realms.push_back( temprealm );
+      ++realm_counter;
 
-    // To-Fix - Nasty kludge assuming 'britannia' is the default realm
-    // May want to make this configurable in later core releases.
-    if ( realm_name == "britannia" )
-      gamestate.main_realm = temprealm;
+      // To-Fix - Nasty kludge assuming 'britannia' is the default realm
+      // May want to make this configurable in later core releases.
+      if ( realm_name == "britannia" )
+        gamestate.main_realm = temprealm;
+    }
   }
-  //  main_realm = new DummyRealm();
+  else
+  {
+    gamestate.main_realm =
+        new Realms::Realm( "britannia", Plib::systemstate.config.realm_data_path + "britannia" );
+    gamestate.Realms.push_back( gamestate.main_realm );
+    ++realm_counter;
+  }
   gamestate.baserealm_count = realm_counter;
   gamestate.shadowrealm_count = 0;
   if ( realm_counter > 0 )
@@ -104,5 +113,5 @@ void remove_realm( const std::string& name )
     }
   }
 }
-}
-}
+}  // namespace Core
+}  // namespace Pol

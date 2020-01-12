@@ -43,6 +43,7 @@ public:
   Tile* tile;
   bool tiles_loaded;
 
+  bool pol_script_test;
   size_t estimatedSize() const;
 
 private:

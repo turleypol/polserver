@@ -18,6 +18,7 @@
 #include "mapcell.h"
 #include "mapshape.h"
 #include "mapsolid.h"
+#include "systemstate.h"
 
 namespace Pol
 {
@@ -25,6 +26,8 @@ namespace Plib
 {
 MapServer::MapServer( const RealmDescriptor& descriptor ) : _descriptor( descriptor )
 {
+  if ( systemstate.pol_script_test )
+    return;
   LoadSolids();
 
   // the first-level index points into the second-level index, so load the second-level index first.
@@ -171,5 +174,5 @@ size_t MapServer::sizeEstimate() const
   size += 3 * sizeof( SOLIDS_ELEM* ) + _shapedata.capacity() * sizeof( SOLIDS_ELEM );
   return size;
 }
-}
-}
+}  // namespace Plib
+}  // namespace Pol

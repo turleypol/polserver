@@ -49,7 +49,8 @@ public:
 private:
   RealmDescriptor( const std::string& realm_name, const std::string& realm_path,
                    Clib::ConfigElem& elem );
+  RealmDescriptor();
 };
-}
-}
+}  // namespace Plib
+}  // namespace Pol
 #endif

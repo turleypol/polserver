@@ -715,7 +715,7 @@ bool Executor::getUnicodeStringParam( unsigned param, const String*& pstr )
   else if ( obj->isa( BObjectImp::OTArray ) )
   {
     String* str = String::fromUCArray( static_cast<ObjArray*>( obj->impptr() ) );
-    fparams[param].set( new BObject( str )); // store raw pointer
+    fparams[param].set( new BObject( str ) );  // store raw pointer
     pstr = str;
     return true;
   }

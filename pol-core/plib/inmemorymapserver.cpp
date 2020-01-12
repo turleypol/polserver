@@ -8,6 +8,8 @@
 #include "../clib/binaryfile.h"
 #include "../clib/passert.h"
 #include "mapblock.h"
+#include "mapcell.h"
+#include "systemstate.h"
 
 namespace Pol
 {
@@ -28,7 +30,13 @@ InMemoryMapServer::InMemoryMapServer( const RealmDescriptor& descriptor ) : MapS
 MAPCELL InMemoryMapServer::GetMapCell( unsigned short x, unsigned short y ) const
 {
   passert( x < _descriptor.width && y < _descriptor.height );
-
+  if ( systemstate.pol_script_test )
+  {
+    MAPCELL cell;
+    cell.z = 0;
+    cell.flags = FLAG::MOVELAND;
+    return cell;
+  }
   unsigned short xblock = x >> MAPBLOCK_SHIFT;
   unsigned short xcell = x & MAPBLOCK_CELLMASK;
   unsigned short yblock = y >> MAPBLOCK_SHIFT;
@@ -45,5 +53,5 @@ size_t InMemoryMapServer::sizeEstimate() const
   size += 3 * sizeof( MAPBLOCK* ) + _mapblocks.capacity() * sizeof( MAPBLOCK );
   return size;
 }
-}
-}
+}  // namespace Plib
+}  // namespace Pol
