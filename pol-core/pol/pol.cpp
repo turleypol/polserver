@@ -1107,17 +1107,17 @@ int xmain_inner( bool testing, const std::string testscript )
   Core::checkpoint( "reading menus" );
   Core::Menu::read_menus();
 
-  Core::checkpoint( "loading intrinsic weapons" );
-  Items::load_intrinsic_weapons();
-  Core::checkpoint( "validating intrinsic shield template" );
   if ( !testscript.empty() )
+  {
+    Core::checkpoint( "loading intrinsic weapons" );
+    Items::load_intrinsic_weapons();
+    Core::checkpoint( "validating intrinsic shield template" );
     Items::validate_intrinsic_shield_template();
-  Core::checkpoint( "reading gameservers" );
-  if ( !testscript.empty() )
+    Core::checkpoint( "reading gameservers" );
     Core::read_gameservers();
-  Core::checkpoint( "reading starting locations" );
-  if ( !testscript.empty() )
+    Core::checkpoint( "reading starting locations" );
     Core::read_starting_locations();
+  }
 
   if ( testing )
   {
