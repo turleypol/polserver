@@ -1130,8 +1130,9 @@ int xmain_inner( bool testing, const std::string testscript )
   }
 
   // PrintAllocationData();
-  POLLOG_INFO << "Reading data files:\n";
+  if ( testscript.empty() )
   {
+    POLLOG_INFO << "Reading data files:\n";
     Tools::Timer<> timer;
     Core::checkpoint( "reading account data" );
     Accounts::read_account_data();
@@ -1149,7 +1150,7 @@ int xmain_inner( bool testing, const std::string testscript )
   if ( !testscript.empty() )
   {
     POLLOG_INFO << "Running POL testscript\n";
-    //...
+    run_script_to_completion( testscript );
 
     Core::cancel_all_trades();
     Core::stop_gameclock();

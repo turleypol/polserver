@@ -92,6 +92,8 @@ jobs:
           cp ../pol-core/support/boats.cfg config/
           cp ../pol-core/support/extobj.cfg config/
           cp ../pol-core/support/animxlate.cfg config/
+          cp ../pol-core/support/test.src test.src
+          ./ecompile test.src
           ./pol -script=blubb.ecl
 
           #cd testsuite/escript
