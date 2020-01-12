@@ -12,13 +12,11 @@ namespace Pol
 namespace Plib
 {
 MapTileServer::MapTileServer( const RealmDescriptor& descriptor )
-    : _descriptor( descriptor ),
-      _file( _descriptor.path( "maptile.dat" ), std::ios::in ),
-      _cur_block_index( -1L )
+    : _descriptor( descriptor ), _file(), _cur_block_index( -1L )
 {
   if ( systemstate.pol_script_test )
     return;
-  _file.Read( _cur_block );
+  _file.Open( _descriptor.path( "maptile.dat" ), std::ios::in ), _file.Read( _cur_block );
   _cur_block_index = 0;
 }
 
