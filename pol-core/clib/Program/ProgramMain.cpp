@@ -164,8 +164,10 @@ std::string ProgramMain::programArgsFindEquals( const std::string& filter,
                                                 std::string defaultVal ) const
 {
   const std::vector<std::string>& binArgs = programArgs();
+
   for ( size_t i = 1; i < binArgs.size(); i++ )
   {
+  INFO_PRINT<<binArgs[i]<<"\n";
     const std::string& param = binArgs[i];
     if ( param.substr( 0, filter.size() ) == filter )
       return param.substr( filter.size(), param.size() - ( filter.size() ) );

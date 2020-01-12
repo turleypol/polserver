@@ -22,7 +22,7 @@ void PolMain::showHelp()
 int PolMain::main()
 {
   // TODO: merge the following with all the other xmain* functions
-  return Pol::xmain_outer( programArgsFind( "test" ), programArgsFindEquals( "script=", "" ) );
+  return Pol::xmain_outer( programArgsFind( "test" ), programArgsFindEquals( "-script=", "" ) );
 }
 }  // namespace Clib
 }  // namespace Pol
