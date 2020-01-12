@@ -286,13 +286,13 @@ void ConfigElem::throw_error( const std::string& errmsg ) const
 {
   if ( _source != nullptr )
     _source->display_error( errmsg, false, this );
-  throw std::runtime_error( "Configuration file error" );
+  throw std::runtime_error( "Configuration file error "+errmsg );
 }
 void VectorConfigElem::throw_error( const std::string& errmsg ) const
 {
   if ( _source != nullptr )
     _source->display_error( errmsg, false, this );
-  throw std::runtime_error( "Configuration file error" );
+  throw std::runtime_error( "Configuration file error "+errmsg );
 }
 
 void ConfigElem::warn( const std::string& errmsg ) const
