@@ -92,7 +92,7 @@ jobs:
           cp ../pol-core/support/boats.cfg config/
           cp ../pol-core/support/extobj.cfg config/
           cp ../pol-core/support/animxlate.cfg config/
-          ./pol -script=blubb.ecl
+          #./pol -script=blubb.ecl
 
           #cd testsuite/escript
           #../../bin/ecompile unicode06.src
@@ -104,10 +104,4 @@ jobs:
           #ls dmp
           #cd ../../bin
           #./pol
-
-      - name: Upload Artefact
-        uses: actions/upload-artifact@v1
-        with:
-          name: dmp
-          path: testsuite/escript/dmp
 
