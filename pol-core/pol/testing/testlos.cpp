@@ -311,12 +311,17 @@ bool toLowerFix( std::string& value_ )
 #endif
 return true;
 }
+bool lowerascii(std::string& t)
+{
+Clib::mklowerASCII( t );
+return true;
+}
 static void asciilower( benchmark::State& state )
 {
   std::string t = "Dictionary";
   while ( state.KeepRunning() )
   {
-    benchmark::DoNotOptimize( Clib::mklowerASCII( t ) );
+    benchmark::DoNotOptimize( t );
   }
 }
 static void unilower( benchmark::State& state )
