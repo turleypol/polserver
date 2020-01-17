@@ -14,6 +14,12 @@ jobs:
             compiler-version: 8
             build-type: RelWithDebInfo
             nopch: 0
+          - os: "windows-latest"
+            cxx-compiler: cl
+            c-compiler: cl
+            compiler-version: default
+            build-type: Release
+            nopch: 0
           
 
     runs-on: ${{ matrix.config.os }}
@@ -28,11 +34,6 @@ jobs:
           path: lib/curl-7.57.0
           key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-curl-7.57.0
       - name: Cache ccache
-        if: matrix.config.os == 'ubuntu-latest'
-        uses: actions/cache@v1
-        with:
-          path: ~/.ccache
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-ccachenocph
       - name: Install Compiler and Dependencies
         if: matrix.config.os == 'ubuntu-latest'
         shell: pwsh
@@ -79,7 +80,7 @@ jobs:
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DUSE_CCACHE=1 -DNO_PCH=1
+          cmake .. -G Ninja -DENABLE_BENCHMARK=1
       - name: Build
         run: |
           cd bin-build
@@ -98,8 +99,9 @@ jobs:
           cp ../pol-core/support/animxlate.cfg config/
           cp ../pol-core/support/test.src scripts/
           cp ../pol-core/support/scripts/*.em .
-          ./ecompile scripts/test.src
-          ./pol -script=test
+          #./ecompile scripts/test.src
+          ./pol -test
+          #-script=test
 
           #cd testsuite/escript
           #../../bin/ecompile unicode06.src

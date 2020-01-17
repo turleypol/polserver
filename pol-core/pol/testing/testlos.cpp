@@ -179,7 +179,7 @@ static void BM_method( benchmark::State& state )
     // ref->get_member("x");
   }
 }
-BENCHMARK( BM_method );
+// BENCHMARK( BM_method );
 static void BM_member_id( benchmark::State& state )
 {
   Items::Item* item = Items::Item::create( 0xffa1 );
@@ -193,7 +193,129 @@ static void BM_member_id( benchmark::State& state )
     // ref->get_member("x");
   }
 }
-BENCHMARK( BM_member_id );
+// BENCHMARK( BM_member_id );
+
+#include <cstdlib>
+#include <ctype.h>
+#include <cwctype>
+#include <string>
+#include <utf8/utf8.h>
+#ifdef _MSC_VER
+#pragma warning( disable : 4244 )
+#include "../../clib/Header_Windows.h"
+#include <codecvt>
+#endif
+
+
+
+toLower( std::string& value_ )
+{
+#ifndef WINDOWS
+  std::vector<wchar_t> codes = convertutf8<wchar_t>( value_ );
+  value_.clear();
+  for ( const auto& c : codes )
+  {
+    utf8::unchecked::append( std::towlower( c ), std::back_inserter( value_ ) );
+  }
+#else
+  std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+  std::wstring str = converter.from_bytes( value_ );
+
+  int len = LCMapStringW( LOCALE_USER_DEFAULT, LCMAP_LOWERCASE | LCMAP_LINGUISTIC_CASING, &str[0],
+                          static_cast<int>( str.size() ), 0, 0 );
+  if ( !len )
+    return;
+  else if ( len == str.size() )
+  {
+    LCMapStringW( LOCALE_USER_DEFAULT, LCMAP_LOWERCASE | LCMAP_LINGUISTIC_CASING, &str[0],
+                  static_cast<int>( str.size() ), &str[0], static_cast<int>( str.size() ) );
+    value_ = converter.to_bytes( str );
+  }
+  else
+  {
+    std::wstring buf;
+    buf.reserve( len );
+    LCMapStringW( LOCALE_USER_DEFAULT, LCMAP_LOWERCASE | LCMAP_LINGUISTIC_CASING, &str[0],
+                  static_cast<int>( str.size() ), &buf[0], static_cast<int>( buf.size() ) );
+    value_ = converter.to_bytes( buf );
+  }
+#endif
+}
+bool hasUTF8Characters( const std::string& str )
+{
+  for ( const auto& c : str )
+  {
+    if ( c & 0x80 )
+      return true;
+  }
+  return false;
+}
+toLowerFix( std::string& value_ )
+{
+  if ( !hasUTF8Characters(value_) )
+  {
+    Clib::mklowerASCII( value_ );
+    return;
+  }
+
+
+#ifndef WINDOWS
+  std::vector<wchar_t> codes = convertutf8<wchar_t>( value_ );
+  value_.clear();
+  for ( const auto& c : codes )
+  {
+    utf8::unchecked::append( std::towlower( c ), std::back_inserter( value_ ) );
+  }
+#else
+  std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+  std::wstring str = converter.from_bytes( value_ );
+
+  int len = LCMapStringW( LOCALE_USER_DEFAULT, LCMAP_LOWERCASE | LCMAP_LINGUISTIC_CASING, &str[0],
+                          static_cast<int>( str.size() ), 0, 0 );
+  if ( !len )
+    return;
+  else if ( len == str.size() )
+  {
+    LCMapStringW( LOCALE_USER_DEFAULT, LCMAP_LOWERCASE | LCMAP_LINGUISTIC_CASING, &str[0],
+                  static_cast<int>( str.size() ), &str[0], static_cast<int>( str.size() ) );
+    value_ = converter.to_bytes( str );
+  }
+  else
+  {
+    std::wstring buf;
+    buf.reserve( len );
+    LCMapStringW( LOCALE_USER_DEFAULT, LCMAP_LOWERCASE | LCMAP_LINGUISTIC_CASING, &str[0],
+                  static_cast<int>( str.size() ), &buf[0], static_cast<int>( buf.size() ) );
+    value_ = converter.to_bytes( buf );
+  }
+#endif
+}
+static void asciilower( benchmark::State& state )
+{
+  std::string t = "Dictionary";
+  while ( state.KeepRunning() )
+  {
+    benchmark::DoNotOptimize( Clib::mklowerASCI( t ) );
+  }
+}
+static void unilower( benchmark::State& state )
+{
+  std::string t = "Dictionary";
+  while ( state.KeepRunning() )
+  {
+    benchmark::DoNotOptimize( toLower( t ) );
+  }
+}
+BENCHMARK( unilower );
+static void unilowerfix( benchmark::State& state )
+{
+  std::string t = "Dictionary";
+  while ( state.KeepRunning() )
+  {
+    benchmark::DoNotOptimize( toLowerFix( t ) );
+  }
+}
+BENCHMARK( unilowerfix );
 #endif
 }  // namespace Testing
 }  // namespace Pol
