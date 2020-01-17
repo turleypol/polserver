@@ -206,9 +206,27 @@ static void BM_member_id( benchmark::State& state )
 #include <codecvt>
 #endif
 
+namespace
+{
+template <typename T, typename std::enable_if<sizeof( T ) == sizeof( unsigned int ), int>::type = 0>
+std::vector<wchar_t> convertutf8( const std::string& value )
+{
+  std::vector<wchar_t> codes;
+  utf8::unchecked::utf8to32( value.begin(), value.end(), std::back_inserter( codes ) );
+  return codes;
+}
+template <typename T,
+          typename std::enable_if<sizeof( T ) == sizeof( unsigned short ), int>::type = 0>
+std::vector<wchar_t> convertutf8( const std::string& value )
+{
+  std::vector<wchar_t> codes;
+  utf8::unchecked::utf8to16( value.begin(), value.end(), std::back_inserter( codes ) );
+  return codes;
+}
+}  // namespace
 
 
-toLower( std::string& value_ )
+void toLower( std::string& value_ )
 {
 #ifndef WINDOWS
   std::vector<wchar_t> codes = convertutf8<wchar_t>( value_ );
@@ -250,7 +268,7 @@ bool hasUTF8Characters( const std::string& str )
   }
   return false;
 }
-toLowerFix( std::string& value_ )
+void toLowerFix( std::string& value_ )
 {
   if ( !hasUTF8Characters(value_) )
   {
