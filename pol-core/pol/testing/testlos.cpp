@@ -319,7 +319,7 @@ std::string toLowerFix( std::string& value_ )
 #endif
 return value_;
 }
-bool lowerascii(std::string& t)
+std::string lowerascii(std::string& t)
 {
 Clib::mklowerASCII( t );
 return t;
