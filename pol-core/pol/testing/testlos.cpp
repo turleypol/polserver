@@ -227,7 +227,7 @@ std::vector<wchar_t> convertutf8( const std::string& value )
 }  // namespace
 
 
-void toLower( std::string& value_ )
+bool toLower( std::string& value_ )
 {
 #ifndef WINDOWS
   std::vector<wchar_t> codes = convertutf8<wchar_t>( value_ );
@@ -259,6 +259,7 @@ void toLower( std::string& value_ )
     value_ = converter.to_bytes( buf );
   }
 #endif
+return true;
 }
 bool hasUTF8Characters( const std::string& str )
 {
@@ -269,12 +270,12 @@ bool hasUTF8Characters( const std::string& str )
   }
   return false;
 }
-void toLowerFix( std::string& value_ )
+bool toLowerFix( std::string& value_ )
 {
   if ( !hasUTF8Characters(value_) )
   {
     Clib::mklowerASCII( value_ );
-    return;
+    return true;
   }
 
 
@@ -308,13 +309,14 @@ void toLowerFix( std::string& value_ )
     value_ = converter.to_bytes( buf );
   }
 #endif
+return true;
 }
 static void asciilower( benchmark::State& state )
 {
   std::string t = "Dictionary";
   while ( state.KeepRunning() )
   {
-    benchmark::DoNotOptimize( Clib::mklowerASCI( t ) );
+    benchmark::DoNotOptimize( Clib::mklowerASCII( t ) );
   }
 }
 static void unilower( benchmark::State& state )
