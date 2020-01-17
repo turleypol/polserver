@@ -1002,8 +1002,10 @@ int xmain_inner( bool testing, const std::string testscript )
   POLLOG_INFO << POL_VERSION_ID << " - " << Clib::ProgramConfig::build_target() << "\ncompiled on "
               << Clib::ProgramConfig::build_datetime() << "\n"
               << POL_COPYRIGHT << "\n\n";
-  if ( testing )
+  if ( testing ){
     POLLOG_INFO << "TESTING MODE\n\n";
+    Plib::systemstate.pol_script_test = true;
+    }
   if ( !testscript.empty() )
   {
     Plib::systemstate.pol_script_test = true;
