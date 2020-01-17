@@ -133,10 +133,7 @@ function(set_compile_flags target is_executable)
   endif()
   if (${windows})
     if (${target} STREQUAL "benchmark")
-    target_link_libraries(${target}
-      -LARGEADDRESSAWARE # more then 2gb for 32bit
-      -DEBUG # include debug information (otherwise attach to process does not work)
-    )
+    #
     else()
     target_link_libraries(${target} PRIVATE
       -LARGEADDRESSAWARE # more then 2gb for 32bit
@@ -145,9 +142,7 @@ function(set_compile_flags target is_executable)
     endif()
     if (${release})
     if (${target} STREQUAL "benchmark")
-      target_link_libraries(${target}
-        -OPT:REF # remove unused blocks
-      )
+    #
       else()
       target_link_libraries(${target} PRIVATE
         -OPT:REF # remove unused blocks
