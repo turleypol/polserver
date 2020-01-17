@@ -1108,7 +1108,7 @@ int xmain_inner( bool testing, const std::string testscript )
   Core::checkpoint( "reading menus" );
   Core::Menu::read_menus();
 
-  if ( Plib::systemstate.pol_script_test )
+  if ( !Plib::systemstate.pol_script_test )
   {
     Core::checkpoint( "loading intrinsic weapons" );
     Items::load_intrinsic_weapons();
