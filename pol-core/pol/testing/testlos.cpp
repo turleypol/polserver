@@ -18,6 +18,7 @@
 
 #include "../../clib/logfacility.h"
 #include "../../clib/rawtypes.h"
+#include "../../clib/strutil.h"
 #include "../globals/uvars.h"
 #include "../item/item.h"
 #include "../los.h"
