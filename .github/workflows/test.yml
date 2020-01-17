@@ -99,8 +99,8 @@ jobs:
           cp ../pol-core/support/animxlate.cfg config/
           cp ../pol-core/support/test.src scripts/
           cp ../pol-core/support/scripts/*.em .
-          #./ecompile scripts/test.src
           ./pol -test
+          #./ecompile scripts/test.src
           #-script=test
 
           #cd testsuite/escript
