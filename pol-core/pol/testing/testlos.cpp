@@ -235,7 +235,7 @@ std::vector<wchar_t> convertutf8( const std::string& value )
 }  // namespace
 
 
-bool toLower( std::string& value_ )
+std::string toLower( std::string& value_ )
 {
 #ifndef WINDOWS
   std::vector<wchar_t> codes = convertutf8<wchar_t>( value_ );
@@ -251,7 +251,7 @@ bool toLower( std::string& value_ )
   int len = LCMapStringW( LOCALE_USER_DEFAULT, LCMAP_LOWERCASE | LCMAP_LINGUISTIC_CASING, &str[0],
                           static_cast<int>( str.size() ), 0, 0 );
   if ( !len )
-    return;
+    return value_;
   else if ( len == str.size() )
   {
     LCMapStringW( LOCALE_USER_DEFAULT, LCMAP_LOWERCASE | LCMAP_LINGUISTIC_CASING, &str[0],
@@ -267,7 +267,7 @@ bool toLower( std::string& value_ )
     value_ = converter.to_bytes( buf );
   }
 #endif
-return true;
+return value_;
 }
 bool hasUTF8Characters( const std::string& str )
 {
@@ -278,12 +278,12 @@ bool hasUTF8Characters( const std::string& str )
   }
   return false;
 }
-bool toLowerFix( std::string& value_ )
+std::string toLowerFix( std::string& value_ )
 {
   if ( !hasUTF8Characters(value_) )
   {
     Clib::mklowerASCII( value_ );
-    return true;
+    return value_;
   }
 
 
@@ -301,7 +301,7 @@ bool toLowerFix( std::string& value_ )
   int len = LCMapStringW( LOCALE_USER_DEFAULT, LCMAP_LOWERCASE | LCMAP_LINGUISTIC_CASING, &str[0],
                           static_cast<int>( str.size() ), 0, 0 );
   if ( !len )
-    return;
+    return value_;
   else if ( len == str.size() )
   {
     LCMapStringW( LOCALE_USER_DEFAULT, LCMAP_LOWERCASE | LCMAP_LINGUISTIC_CASING, &str[0],
@@ -317,12 +317,12 @@ bool toLowerFix( std::string& value_ )
     value_ = converter.to_bytes( buf );
   }
 #endif
-return true;
+return value_;
 }
 bool lowerascii(std::string& t)
 {
 Clib::mklowerASCII( t );
-return true;
+return t;
 }
 static void asciilower( benchmark::State& state )
 {
@@ -330,7 +330,6 @@ static void asciilower( benchmark::State& state )
   while ( state.KeepRunning() )
   {
     benchmark::DoNotOptimize( lowerascii(t) );
-    benchmark::ClobberMemory();
   }
 }
 BENCHMARK( asciilower );
@@ -340,7 +339,6 @@ static void unilower( benchmark::State& state )
   while ( state.KeepRunning() )
   {
     benchmark::DoNotOptimize( toLower( t ) );
-    benchmark::ClobberMemory();
   }
 }
 BENCHMARK( unilower );
@@ -350,7 +348,6 @@ static void unilowerfix( benchmark::State& state )
   while ( state.KeepRunning() )
   {
     benchmark::DoNotOptimize( toLowerFix( t ) );
-    benchmark::ClobberMemory();
   }
 }
 BENCHMARK( unilowerfix );
