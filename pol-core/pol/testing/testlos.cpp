@@ -26,6 +26,24 @@
 #include "../realms/realm.h"
 #include "../uobject.h"
 
+#include <cstdlib>
+#include <ctype.h>
+#include <cwctype>
+#include <string>
+#include <utf8/utf8.h>
+#include "../../clib/clib_endian.h"
+#include "../../clib/stlutil.h"
+#include "../../clib/strutil.h"
+#include "../../bscript/berror.h"
+#include "../../bscript/bobject.h"
+#include "../../bscript/executor.h"
+#include "../../bscript/impstr.h"
+#include "../../bscript/objmethods.h"
+#ifdef _MSC_VER
+#pragma warning( disable : 4244 )
+#include "../../clib/Header_Windows.h"
+#include <codecvt>
+#endif
 namespace Pol
 {
 namespace Testing
@@ -196,16 +214,6 @@ static void BM_member_id( benchmark::State& state )
 }
 // BENCHMARK( BM_member_id );
 
-#include <cstdlib>
-#include <ctype.h>
-#include <cwctype>
-#include <string>
-#include <utf8/utf8.h>
-#ifdef _MSC_VER
-#pragma warning( disable : 4244 )
-#include "../../clib/Header_Windows.h"
-#include <codecvt>
-#endif
 
 namespace
 {
@@ -321,15 +329,18 @@ static void asciilower( benchmark::State& state )
   std::string t = "Dictionary";
   while ( state.KeepRunning() )
   {
-    benchmark::DoNotOptimize( t );
+    benchmark::DoNotOptimize( lowerascii(t) );
+    benchmark::ClobberMemory();
   }
 }
+BENCHMARK( asciilower );
 static void unilower( benchmark::State& state )
 {
   std::string t = "Dictionary";
   while ( state.KeepRunning() )
   {
     benchmark::DoNotOptimize( toLower( t ) );
+    benchmark::ClobberMemory();
   }
 }
 BENCHMARK( unilower );
@@ -339,6 +350,7 @@ static void unilowerfix( benchmark::State& state )
   while ( state.KeepRunning() )
   {
     benchmark::DoNotOptimize( toLowerFix( t ) );
+    benchmark::ClobberMemory();
   }
 }
 BENCHMARK( unilowerfix );
