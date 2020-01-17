@@ -20,7 +20,7 @@ namespace Testing
 
 void run_pol_tests()
 {
-  create_test_environment();
+//  create_test_environment();
 
 #ifdef ENABLE_BENCHMARK
   benchmark::RunSpecifiedBenchmarks();
