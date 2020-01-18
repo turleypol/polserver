@@ -99,10 +99,10 @@ jobs:
           cp ../pol-core/support/test.src scripts/
           cp ../pol-core/support/scripts/*.em .
           cd ../testsuite/escript
-          ../../bin/ecompile a.src
+          ../../bin/ecompile plain.src
           ../../bin/ecompile u.src
           ../../bin/ecompile uf.src
-          ../../bin/runecl -p a.ecl
+          ../../bin/runecl -p plain.ecl
           ../../bin/runecl -p u.ecl
           ../../bin/runecl -p uf.ecl
           #./pol -test

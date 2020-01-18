@@ -206,6 +206,7 @@ int RunEclMain::runecl()
 INFO_PRINT<<"1\n";
   const std::vector<std::string>& binArgs = programArgs();
 
+INFO_PRINT<<"size"<<binArgs.size()<<"\n";
   for ( size_t i = 1; i < binArgs.size(); i++ )
   {
   INFO_PRINT<<"'"<<binArgs[i]<<"'\n";
