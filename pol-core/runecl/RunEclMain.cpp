@@ -207,7 +207,7 @@ int RunEclMain::runecl()
 {
 INFO_PRINT<<"1\n";
   const std::vector<std::string>& binArgs = programArgs();
-
+std::cout<<"blubb"<<std::endl;
 INFO_PRINT<<"size"<<binArgs.size()<<"\n";
   for ( size_t i = 0; i < binArgs.size(); i++ )
   {
@@ -232,11 +232,13 @@ INFO_PRINT<<"size"<<binArgs.size()<<"\n";
       case 'P':
         break;
       default:
+std::cout<<"blubberror"<<std::endl;
         INFO_PRINT << "Unknown option: " << binArgs[i] << "\n";
         return 1;
       }
       break;
     default:
+std::cout<<"run"<<std::endl;
       return runeclScript( binArgs[i] );
     }
   }
