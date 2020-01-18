@@ -127,7 +127,8 @@ void ProgramMain::start( int argc, char* argv[] )
   }
 #endif
   Clib::Logging::global_logger->wait_for_empty_queue();
-
+std::cout.flush();
+std::cerr.flush();
   exit( exitcode );
 }
 
