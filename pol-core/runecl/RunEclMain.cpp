@@ -120,6 +120,7 @@ INFO_PRINT<<"S\n";
     ERROR_PRINT << "Error reading " << fileName << "\n";
     return 1;
   }
+INFO_PRINT<<"Si78\n";
   exe.setProgram( program.get() );
   // find and set pkg
   std::string dir = fileName;
@@ -137,8 +138,10 @@ INFO_PRINT<<"S\n";
    // ERROR_PRINT << "found pkg\n";
     program->pkg = *pkg;
   }
+INFO_PRINT<<"Sf\n";
   Module::load_fileaccess_cfg();  // after pkg load
 
+INFO_PRINT<<"Sff\n";
   exe.setDebugLevel( m_debug ? Executor::INSTRUCTIONS : Executor::NONE );
   clock_t start = clock();
 #ifdef _WIN32
