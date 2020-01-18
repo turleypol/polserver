@@ -936,8 +936,8 @@ BObjectImp* String::call_method_id( const int id, Executor& ex, bool /*forcebuil
 
   case MTH_LOWER:
   {
-    int a = ex.paramAsLong( 1 );
-    int b = ex.paramAsLong( 2 );
+    int a = ex.paramAsLong( 0 );
+    int b = ex.paramAsLong( 1 );
 //    if ( ex.numParams() == 0 )
     {
       toLower(a,b);
