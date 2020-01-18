@@ -90,7 +90,7 @@ jobs:
           ../../bin/ecompile plain.src
           ../../bin/ecompile u.src
           ../../bin/ecompile uf.src
-          ../../bin/runecl -p plain.ecl
+          ../../bin/runecl plain.ecl
           ../../bin/runecl -p u.ecl
           ../../bin/runecl -p uf.ecl
           #./pol -test
