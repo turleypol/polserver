@@ -436,8 +436,22 @@ void String::toUpper()
 #endif
 }
 
-void String::toLower()
+void String::toLower( bool a, bool b )
 {
+  if ( a )
+  {
+    Clib::mklowerASCII( value_ );
+    return;
+  }
+  else if ( b )
+  {
+    if ( !hasUTF8Characters() )
+    {
+      Clib::mklowerASCII( value_ );
+      return;
+    }
+  }
+
 #ifndef WINDOWS
   std::vector<wchar_t> codes = convertutf8<wchar_t>( value_ );
   value_.clear();
@@ -922,13 +936,15 @@ BObjectImp* String::call_method_id( const int id, Executor& ex, bool /*forcebuil
 
   case MTH_LOWER:
   {
-    if ( ex.numParams() == 0 )
+    int a = ex.paramAsLong( 0 );
+    int b = ex.paramAsLong( 1 );
+//    if ( ex.numParams() == 0 )
     {
-      toLower();
+      toLower(a,b);
       return this;
     }
-    else
-      return new BError( "string.lower() doesn't take parameters." );
+  //  else
+    //  return new BError( "string.lower() doesn't take parameters." );
   }
   case MTH_FORMAT:
   {
