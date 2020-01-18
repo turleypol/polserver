@@ -6,6 +6,8 @@
 #include <ctime>
 #include <format/format.h>
 #include <iostream>
+#include <thread>
+#include <chrono>
 
 #include "../bscript/bobject.h"
 #include "../bscript/config.h"
@@ -300,4 +302,6 @@ int main( int argc, char* argv[] )
 {
   Pol::Clib::RunEclMain* RunEclMain = new Pol::Clib::RunEclMain();
   RunEclMain->start( argc, argv );
+  std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+
 }
