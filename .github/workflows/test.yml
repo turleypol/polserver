@@ -87,14 +87,19 @@ jobs:
           ctest --output-on-failure
       - name: testing
         run: |
-          cd testsuite/escript
-          ../../bin/ecompile plain.src
-          ../../bin/ecompile u.src
-          ../../bin/ecompile uf.src
-          ../../bin/runecl plain.ecl
-          ../../bin/runecl -p u.ecl
-          ../../bin/runecl -p uf.ecl
-          #./pol -test
+          cd bin
+          mkdir config
+          mkdir data
+          mkdir scripts
+          touch data/accounts.txt
+          touch data/pol.txt
+          cp ../pol-core/support/pol.cfg.example pol.cfg
+          cp ../pol-core/support/boats.cfg config/
+          cp ../pol-core/support/extobj.cfg config/
+          cp ../pol-core/support/animxlate.cfg config/
+          cp ../pol-core/support/test.src scripts/
+          cp ../pol-core/support/scripts/*.em .
+          ./pol -test
           #./ecompile scripts/test.src
           #-script=test
 
