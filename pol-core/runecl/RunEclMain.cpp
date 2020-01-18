@@ -256,6 +256,11 @@ int RunEclMain::main()
    **********************************************/
   if ( !m_quiet )
   {
+INFO_PRINT<<"size"<<binArgs.size()<<"\n";
+  for ( size_t i = 0; i < binArgs.size(); i++ )
+  {
+  INFO_PRINT<<"'"<<binArgs[i]<<"'\n";
+  }
     double vernum = 1 + (double)( ESCRIPT_FILE_VER_CURRENT / 100.0f );
     ERROR_PRINT << "EScript Executor v" << vernum << "\n" << POL_COPYRIGHT << "\n\n";
   }
