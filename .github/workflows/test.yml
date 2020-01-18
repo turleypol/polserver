@@ -85,15 +85,16 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
       - name: testing
-        shell: pwsh
+        shell: python
         run: |
-          cd testsuite/escript
-          ../../bin/ecompile plain.src
-          ../../bin/ecompile u.src
-          ../../bin/ecompile uf.src
-          ../../bin/runecl -p plain.ecl
-          ../../bin/runecl -p u.ecl
-          ../../bin/runecl -p uf.ecl
+          import os
+          os.chdir("testsuite/escript")
+          os.system("../../bin/ecompile plain.src")
+          os.system("../../bin/ecompile u.src")
+          os.system("../../bin/ecompile uf.src")
+          os.system("../../bin/runecl -p plain.ecl")
+          os.system("../../bin/runecl -p u.ecl")
+          os.system("../../bin/runecl -p uf.ecl")
           #./pol -test
           #./ecompile scripts/test.src
           #-script=test
