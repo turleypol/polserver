@@ -79,7 +79,7 @@ jobs:
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja
+          cmake .. -G Ninja -DENABLE_BENCHMARK=1
       - name: Build
         run: |
           cd bin-build
