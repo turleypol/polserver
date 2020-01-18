@@ -63,7 +63,7 @@ void PolService::Run()
     LogEvent( EVENTLOG_INFORMATION_TYPE, EVMSG_DEBUG, PROG_CONFIG::programDir().c_str() );
     rc = SetCurrentDirectory( PROG_CONFIG::programDir().c_str() );
 
-    xmain_outer( false /*testing*/ );
+    xmain_outer( false /*testing*/,"" );
   }
   catch ( std::exception& ex )
   {
