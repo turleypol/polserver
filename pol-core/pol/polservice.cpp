@@ -85,7 +85,7 @@ int RunWindowsService( int argc, char** argv )
   if ( !MyService.ParseStandardArgs( argc, argv ) )
   {
     // no service-related parameters
-    return xmain_outer( false /*testing*/ );
+    return xmain_outer( false /*testing*/,"" );
   }
   else
   {
