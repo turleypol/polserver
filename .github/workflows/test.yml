@@ -100,13 +100,12 @@ jobs:
           cp ../pol-core/support/animxlate.cfg config/
           cp ../pol-core/support/test.src scripts/
           cp ../pol-core/support/scripts/*.em .
-          chmod +x pol
       - name: test
         shell: python
         run: |
           import os
           os.chdir("bin")
-          os.system("pol -test")
+          os.system("./pol -test")
           #./ecompile scripts/test.src
           #-script=test
 
