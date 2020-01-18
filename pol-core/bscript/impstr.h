@@ -63,7 +63,7 @@ public:
   const std::string& value() const { return value_; }
   size_t length() const;
   void toUpper();
-  void toLower();
+  void toLower(bool a=false, bool u=false);
 
   bool hasUTF8Characters() const;
   static bool hasUTF8Characters( const std::string& str );

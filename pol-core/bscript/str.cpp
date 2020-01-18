@@ -440,14 +440,14 @@ void String::toLower( bool a, bool b )
 {
   if ( a )
   {
-    Clib::mklowerASCII( _value );
+    Clib::mklowerASCII( value_ );
     return;
   }
   else if ( b )
   {
     if ( !hasUTF8Characters() )
     {
-      Clib::mklowerASCII( _value );
+      Clib::mklowerASCII( value_ );
       return;
     }
   }
