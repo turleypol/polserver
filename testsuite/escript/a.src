@@ -2,3 +2,4 @@ var s:="Dictionary";
 var i;
 for (i:=0;i<=10000;++i)
 s.lower(1,0);
+endfor
