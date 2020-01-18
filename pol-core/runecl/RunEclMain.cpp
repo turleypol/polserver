@@ -115,6 +115,7 @@ INFO_PRINT<<"S\n";
   exe.addModule( new DataFileExecutorModule( exe ) );
 
   ref_ptr<EScriptProgram> program( new EScriptProgram );
+INFO_PRINT<<"Sf "<<fileName<<"\n";
   if ( program->read( fileName.c_str() ) )
   {
     ERROR_PRINT << "Error reading " << fileName << "\n";
