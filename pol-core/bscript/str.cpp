@@ -943,8 +943,8 @@ BObjectImp* String::call_method_id( const int id, Executor& ex, bool /*forcebuil
       toLower(a,b);
       return this;
     }
-    else
-      return new BError( "string.lower() doesn't take parameters." );
+  //  else
+    //  return new BError( "string.lower() doesn't take parameters." );
   }
   case MTH_FORMAT:
   {
