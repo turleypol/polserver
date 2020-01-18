@@ -26,19 +26,19 @@
 #include "../realms/realm.h"
 #include "../uobject.h"
 
-#include <cstdlib>
-#include <ctype.h>
-#include <cwctype>
-#include <string>
-#include <utf8/utf8.h>
-#include "../../clib/clib_endian.h"
-#include "../../clib/stlutil.h"
-#include "../../clib/strutil.h"
 #include "../../bscript/berror.h"
 #include "../../bscript/bobject.h"
 #include "../../bscript/executor.h"
 #include "../../bscript/impstr.h"
 #include "../../bscript/objmethods.h"
+#include "../../clib/clib_endian.h"
+#include "../../clib/stlutil.h"
+#include "../../clib/strutil.h"
+#include <cstdlib>
+#include <ctype.h>
+#include <cwctype>
+#include <string>
+#include <utf8/utf8.h>
 #ifdef _MSC_VER
 #pragma warning( disable : 4244 )
 #include "../../clib/Header_Windows.h"
@@ -217,28 +217,28 @@ static void BM_member_id( benchmark::State& state )
 
 static void asciilower( benchmark::State& state )
 {
-auto s= new Bscript::String( "Dictionary");
+  auto s = new Bscript::String( "Dictionary" );
   while ( state.KeepRunning() )
   {
-    benchmark::DoNotOptimize( s->toLower(true) );
+    s->toLower( true );
   }
 }
 BENCHMARK( asciilower );
 static void unilower( benchmark::State& state )
 {
-auto s= new Bscript::String( "Dictionary");
+  auto s = new Bscript::String( "Dictionary" );
   while ( state.KeepRunning() )
   {
-    benchmark::DoNotOptimize( s->toLower() );
+    s->toLower();
   }
 }
 BENCHMARK( unilower );
 static void unilowerfix( benchmark::State& state )
 {
-auto s= new Bscript::String( "Dictionary");
+  auto s = new Bscript::String( "Dictionary" );
   while ( state.KeepRunning() )
   {
-    benchmark::DoNotOptimize( s->toLower(false,true) );
+    s->toLower( false, true );
   }
 }
 BENCHMARK( unilowerfix );
