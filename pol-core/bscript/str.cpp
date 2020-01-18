@@ -436,8 +436,22 @@ void String::toUpper()
 #endif
 }
 
-void String::toLower()
+void String::toLower( bool a, bool b )
 {
+  if ( a )
+  {
+    Clib::mklowerASCII( _value );
+    return;
+  }
+  else if ( b )
+  {
+    if ( !hasUTF8Characters() )
+    {
+      Clib::mklowerASCII( _value );
+      return;
+    }
+  }
+
 #ifndef WINDOWS
   std::vector<wchar_t> codes = convertutf8<wchar_t>( value_ );
   value_.clear();
