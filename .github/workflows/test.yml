@@ -84,6 +84,7 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
+          ctest --output-on-failure
       - name: testing
         run: |
           cd testsuite/escript
