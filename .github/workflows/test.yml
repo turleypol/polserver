@@ -85,12 +85,13 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
       - name: testing
+        shell: pwsh
         run: |
           cd testsuite/escript
           ../../bin/ecompile plain.src
           ../../bin/ecompile u.src
           ../../bin/ecompile uf.src
-          ../../bin/runecl plain.ecl
+          ../../bin/runecl -p plain.ecl
           ../../bin/runecl -p u.ecl
           ../../bin/runecl -p uf.ecl
           #./pol -test
