@@ -208,6 +208,7 @@ INFO_PRINT<<"1\n";
 
   for ( size_t i = 1; i < binArgs.size(); i++ )
   {
+  INFO_PRINT<<"'"<<binArgs[i]<<"'\n";
     switch ( binArgs[i][0] )
     {
     case '/':
