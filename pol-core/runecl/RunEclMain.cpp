@@ -94,6 +94,7 @@ void RunEclMain::dumpScript( std::string fileName )
 
 int RunEclMain::runeclScript( std::string fileName )
 {
+INFO_PRINT<<"S\n";
   // TODO: autoconvert to .ecl ?
   bool exres;
   double seconds;
@@ -144,8 +145,10 @@ int RunEclMain::runeclScript( std::string fileName )
   GetThreadTimes( GetCurrentThread(), &dummy, &dummy, &kernelStart, &userStart );
 #endif
 
+INFO_PRINT<<"e\n";
   exres = exe.exec();
 
+INFO_PRINT<<"ee\n";
 #ifdef _WIN32
   GetThreadTimes( GetCurrentThread(), &dummy, &dummy, &kernelEnd, &userEnd );
 #endif
@@ -196,6 +199,7 @@ int RunEclMain::runeclScript( std::string fileName )
 
 int RunEclMain::runecl()
 {
+INFO_PRINT<<"1\n";
   const std::vector<std::string>& binArgs = programArgs();
 
   for ( size_t i = 1; i < binArgs.size(); i++ )
