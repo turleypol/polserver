@@ -207,6 +207,10 @@ INFO_PRINT<<"1\n";
   const std::vector<std::string>& binArgs = programArgs();
 
 INFO_PRINT<<"size"<<binArgs.size()<<"\n";
+  for ( size_t i = 0; i < binArgs.size(); i++ )
+  {
+  INFO_PRINT<<"'"<<binArgs[i]<<"'\n";
+  }
   for ( size_t i = 1; i < binArgs.size(); i++ )
   {
   INFO_PRINT<<"'"<<binArgs[i]<<"'\n";
@@ -226,7 +230,7 @@ INFO_PRINT<<"size"<<binArgs.size()<<"\n";
       case 'P':
         break;
       default:
-        ERROR_PRINT << "Unknown option: " << binArgs[i] << "\n";
+        INFO_PRINT << "Unknown option: " << binArgs[i] << "\n";
         return 1;
       }
       break;
