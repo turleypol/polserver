@@ -89,12 +89,13 @@ jobs:
         run: |
           import os
           os.chdir("testsuite/escript")
-          os.system("../../bin/ecompile plain.src")
-          os.system("../../bin/ecompile u.src")
-          os.system("../../bin/ecompile uf.src")
-          os.system("../../bin/runecl -p plain.ecl")
-          os.system("../../bin/runecl -p u.ecl")
-          os.system("../../bin/runecl -p uf.ecl")
+          d=os.path.abspath("../../bin")
+          os.system(d+"/ecompile plain.src")
+          os.system(d+"/ecompile u.src")
+          os.system(d+"/ecompile uf.src")
+          os.system(d+"/runecl -p plain.ecl")
+          os.system(d+"/runecl -p u.ecl")
+          os.system(d+"/runecl -p uf.ecl")
           #./pol -test
           #./ecompile scripts/test.src
           #-script=test
