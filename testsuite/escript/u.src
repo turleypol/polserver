@@ -1,5 +1,6 @@
 var s:="Dictionary";
 var i;
-for (i:=0;i<=10000;++i)
+for (i:=0;i<=100000;++i)
 s.lower(0,0);
 endfor
+print("hallo");
