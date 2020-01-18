@@ -84,6 +84,7 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
+          echo "::set-env name=BENCHMARK_FORMAT::json"
       - name: testing
         shell: pwsh
         run: |
