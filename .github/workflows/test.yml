@@ -85,19 +85,8 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
       - name: testing
+        shell: cmd
         run: |
-          cd bin
-          mkdir config
-          mkdir data
-          mkdir scripts
-          touch data/accounts.txt
-          touch data/pol.txt
-          cp ../pol-core/support/pol.cfg.example pol.cfg
-          cp ../pol-core/support/boats.cfg config/
-          cp ../pol-core/support/extobj.cfg config/
-          cp ../pol-core/support/animxlate.cfg config/
-          cp ../pol-core/support/test.src scripts/
-          cp ../pol-core/support/scripts/*.em .
           cd ../testsuite/escript
           ../../bin/ecompile plain.src
           ../../bin/ecompile u.src
