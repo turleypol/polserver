@@ -85,9 +85,8 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
       - name: testing
-        shell: cmd
         run: |
-          cd ../testsuite/escript
+          cd testsuite/escript
           ../../bin/ecompile plain.src
           ../../bin/ecompile u.src
           ../../bin/ecompile uf.src
