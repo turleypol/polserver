@@ -119,11 +119,6 @@ endif()
 prepare_build()
 cmake_fake_target()
 
-if(POLICY CMP0077)
-  message("set policy")
-  cmake_policy(SET CMP0077 NEW)
-endif()
-
 include(cmake/Boost.cmake)
 include(cmake/Benchmark.cmake)
 include(cmake/Format.cmake)
