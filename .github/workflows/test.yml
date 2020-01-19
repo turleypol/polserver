@@ -103,9 +103,9 @@ jobs:
       - name: test
         shell: python
         run: |
-          import os
+          import os, subprocess
           os.chdir("bin")
-          os.system("./pol -test")
+          subprocess.call("pol -test")
           #./ecompile scripts/test.src
           #-script=test
 
