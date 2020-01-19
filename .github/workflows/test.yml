@@ -105,7 +105,7 @@ jobs:
           import os, subprocess
           os.chdir("bin")
           os.environ["PATH"] += os.pathsep+os.getcwd()
-          subprocess.call("pol -test")
+          subprocess.call("pol -test", shell=True)
           #./ecompile scripts/test.src
           #-script=test
 
