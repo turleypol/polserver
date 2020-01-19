@@ -84,7 +84,6 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
-          echo "::set-env name=BENCHMARK_FORMAT::json"
       - name: testing
         shell: pwsh
         run: |
@@ -103,8 +102,9 @@ jobs:
       - name: test
         shell: python
         run: |
-          import os, subprocess
+          import os, sys, subprocess
           os.chdir("bin")
+          sys.path.insert(0,'.')
           subprocess.call("pol -test")
           #./ecompile scripts/test.src
           #-script=test
