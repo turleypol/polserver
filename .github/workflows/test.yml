@@ -102,11 +102,10 @@ jobs:
       - name: test
         shell: python
         run: |
-          import os, platform, subprocess
+          import os, subprocess
           os.chdir("bin")
-          p=platform.system()
-          print(p)
-          subprocess.call("{}pol -test".format('./' if p=='Linux' else ''))
+          os.environ["PATH"] += os.pathsep+os.getcwd()
+          subprocess.call("pol -test")
           #./ecompile scripts/test.src
           #-script=test
 
