@@ -26,6 +26,7 @@ option(NO_PCH "Disable pre-compiled headers" OFF)
 option(USE_CCACHE "Use ccache if found" OFF)
 option(ENABLE_BENCHMARK "Enable benchmark support" OFF)
 option(ENABLE_FLYWEIGHT_REPORT "Enables flyweight memory report in memoryusage.log" OFF)
+option(ESCRIPT_PROFILE "Profiling of escript functions" OFF)
 
 option(BUILD_ALL "Build everything" ON)
 option(ONLY_ECOMPILE "Build only ecompile" OFF)
