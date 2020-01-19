@@ -106,7 +106,7 @@ jobs:
           os.chdir("bin")
           p=platform.system()
           print(p)
-          subprocess.call("{}pol -test".format('./' if p=='Linux' else '')
+          subprocess.call("{}pol -test".format('./' if p=='Linux' else ''))
           #./ecompile scripts/test.src
           #-script=test
 
