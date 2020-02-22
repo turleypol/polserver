@@ -217,7 +217,7 @@ void build_sysmessage_cl_affix( PktOut_CC* msg, unsigned int cliloc_num, const s
   msg->WriteFlipped<u32>( cliloc_num );
   msg->Write<u8>( ( prepend ) ? 1u : 0u );
   msg->WriteFixed( "System", 30, false );
-  msg->Write( affix, true, SPPECH_MAX_LEN + 1 );
+  msg->Write( affix, true, SPEECH_MAX_LEN + 1 );
   msg->WriteFlipped( utf16text, true );
   u16 len = msg->offset;
   msg->offset = 1;
