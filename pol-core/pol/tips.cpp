@@ -43,7 +43,6 @@ void send_tip( Network::Client* client, const std::string& tiptext )
   msg->Write<u8>( PKTOUT_A6_TYPE_TIP );
   msg->offset += 2;  // unk4,5
   msg->offset += 2;  // tipnum
-  msg->WriteFlipped<u16>( textlen + 1 );
   msg->WriteWithLen<u16>( tiptext, true, 9999 );
   u16 len = msg->offset;
   msg->offset = 1;
