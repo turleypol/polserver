@@ -2110,7 +2110,6 @@ void sendCharProfile( Character* chr, Character* of_who, const std::string& titl
   std::vector<u16> uwtext = Bscript::String::toUTF16( utext );
   std::vector<u16> ewtext = Bscript::String::toUTF16( etext );
 
-  size_t titlelen = title.size();
   // Check Lengths
   if ( uwtext.size() > SPEECH_MAX_LEN )
     uwtext.resize( SPEECH_MAX_LEN );

@@ -77,8 +77,8 @@ bool StartSkillScript( Network::Client* client, const Mobile::Attribute* attrib 
       return true;
     }
   }
-  std::string msg = "Unable to start skill script:";  //+attrib->script_.c_str();
-  msg += attrib->script_;
+  std::string msg = "Unable to start skill script:";
+  msg += attrib->script_.name();
   send_sysmessage( client, msg );
 
   return false;
