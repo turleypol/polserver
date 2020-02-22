@@ -144,7 +144,7 @@
 #include "../scrstore.h"
 #include "../spells.h"
 #include "../target.h"
-#include "../tiplst.h"
+#include "../tiplist.h"
 #include "../ufunc.h"
 #include "../uimport.h"
 #include "../umanip.h"
