@@ -144,6 +144,7 @@
 #include "../scrstore.h"
 #include "../spells.h"
 #include "../target.h"
+#include "../tiplst.h"
 #include "../ufunc.h"
 #include "../uimport.h"
 #include "../umanip.h"
@@ -166,7 +167,6 @@ void cancel_all_trades();
 Bscript::BObjectImp* place_item_in_secure_trade_container( Network::Client* client,
                                                            Items::Item* item );
 Bscript::BObjectImp* open_trade_window( Network::Client* client, Mobile::Character* dropon );
-void send_tip( Network::Client* client, const std::string& tiptext );
 std::string get_textcmd_help( Mobile::Character* chr, const std::string& cmd );
 void send_paperdoll( Network::Client* client, Mobile::Character* chr );
 void send_skillmsg( Network::Client* client, const Mobile::Character* chr );
@@ -495,8 +495,8 @@ BObjectImp* UOExecutorModule::mf_CreateItemInContainer()
   const ItemDesc* descriptor;
   int amount;
 
-  if ( getItemParam( 0, item ) && getObjtypeParam( 1, descriptor ) &&
-       getParam( 2, amount ) && item_create_params_ok( descriptor->objtype, amount ) )
+  if ( getItemParam( 0, item ) && getObjtypeParam( 1, descriptor ) && getParam( 2, amount ) &&
+       item_create_params_ok( descriptor->objtype, amount ) )
   {
     if ( item->isa( UOBJ_CLASS::CLASS_CONTAINER ) )
     {
@@ -520,8 +520,8 @@ BObjectImp* UOExecutorModule::mf_CreateItemInInventory()
   const ItemDesc* descriptor;
   int amount;
 
-  if ( getItemParam( 0, item ) && getObjtypeParam( 1, descriptor ) &&
-       getParam( 2, amount ) && item_create_params_ok( descriptor->objtype, amount ) )
+  if ( getItemParam( 0, item ) && getObjtypeParam( 1, descriptor ) && getParam( 2, amount ) &&
+       item_create_params_ok( descriptor->objtype, amount ) )
   {
     if ( item->isa( UOBJ_CLASS::CLASS_CONTAINER ) )
     {
@@ -735,7 +735,7 @@ BObjectImp* UOExecutorModule::mf_PrintTextAbove()
        getParam( 3, color ) && getParam( 4, journal_print ) )
   {
     if ( !ptext->hasUTF8Characters() )
-      return new BLong( say_above( obj, ptext->data(), font, color, journal_print ) );
+      return new BLong( say_above( obj, ptext->value(), font, color, journal_print ) );
     else
       return new BLong(
           say_above_unicode( obj, ptext->value(), "ENU", font, color, journal_print ) );
@@ -754,12 +754,11 @@ BObjectImp* UOExecutorModule::mf_PrintTextAbovePrivate()
   unsigned short color;
   int journal_print;
 
-  if ( getUObjectParam( 0, obj ) && getStringParam( 1, ptext ) &&
-       getCharacterParam( 2, chr ) && getParam( 3, font ) && getParam( 4, color ) &&
-       getParam( 5, journal_print ) )
+  if ( getUObjectParam( 0, obj ) && getStringParam( 1, ptext ) && getCharacterParam( 2, chr ) &&
+       getParam( 3, font ) && getParam( 4, color ) && getParam( 5, journal_print ) )
   {
     if ( !ptext->hasUTF8Characters() )
-      return new BLong( private_say_above( chr, obj, ptext->data(), font, color, journal_print ) );
+      return new BLong( private_say_above( chr, obj, ptext->value(), font, color, journal_print ) );
     else
       return new BLong( private_say_above_unicode( chr, obj, ptext->value(), "ENU", font, color ) );
   }

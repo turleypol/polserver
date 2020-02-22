@@ -58,7 +58,6 @@
 #include "scrsched.h"
 #include "scrstore.h"
 #include "ufunc.h"
-#include "ufuncstd.h"
 #include "uoexec.h"
 #include "uoscrobj.h"
 #include "utype.h"

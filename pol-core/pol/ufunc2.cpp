@@ -35,11 +35,7 @@ bool send_menu( Client* client, Menu* menu )
   msg->offset += 2;
   msg->offset += 4;  // used_item_serial
   msg->WriteFlipped<u16>( menu->menu_id );
-  size_t stringlen = strlen( menu->title );
-  if ( stringlen > 80 )
-    stringlen = 80;
-  msg->Write<u8>( stringlen );  // NOTE null-term not included!
-  msg->Write( menu->title, static_cast<u16>( stringlen ), false );
+  msg->WriteWithLen<u8>( menu->title, false, 80 );
   msg->Write<u8>( menu->menuitems_.size() );
 
   for ( unsigned idx = 0; idx < menu->menuitems_.size(); idx++ )
@@ -51,11 +47,7 @@ bool send_menu( Client* client, Menu* menu )
     MenuItem* mi = &menu->menuitems_[idx];
     msg->WriteFlipped<u16>( mi->graphic_ );
     msg->WriteFlipped<u16>( mi->color_ );
-    stringlen = strlen( mi->title );
-    if ( stringlen > 80 )
-      stringlen = 80;
-    msg->Write<u8>( stringlen );  // NOTE null-term not included!
-    msg->Write( mi->title, static_cast<u16>( stringlen ), false );
+    msg->WriteWithLen<u8>( mi->title, false, 80 );
   }
   u16 len = msg->offset;
   msg->offset = 1;
@@ -123,5 +115,5 @@ void send_container_contents( Client* client, const UContainer& cont )
     }
   }
 }
-}
-}
+}  // namespace Core
+}  // namespace Pol

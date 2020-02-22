@@ -172,7 +172,9 @@ void play_moving_effect2_ex( u16 xs, u16 ys, s8 zs, u16 xd, u16 yd, s8 zd, Realm
 Items::Item* find_legal_item( const Mobile::Character* chr, u32 serial, bool* additlegal = nullptr,
                               bool* isRemoteContainer = nullptr );
 
-void send_sysmessage( Network::Client* client, const char* text,
+void send_nametext( Network::Client* client, const Mobile::Character* chr, const std::string& str );
+
+void send_sysmessage( Network::Client* client, const std::string& text,
                       unsigned short font = Plib::DEFAULT_TEXT_FONT,
                       unsigned short color = Plib::DEFAULT_TEXT_COLOR );
 void send_sysmessage_unicode( Network::Client* client, const std::string& text,
@@ -186,7 +188,8 @@ void broadcast_unicode( const std::string& text, const std::string& lang,
                         unsigned short font = Plib::DEFAULT_TEXT_FONT,
                         unsigned short color = Plib::DEFAULT_TEXT_COLOR,
                         unsigned short requiredCmdLevel = Plib::DEFAULT_TEXT_REQUIREDCMD );
-bool say_above( const UObject* obj, const char* text, unsigned short font = Plib::DEFAULT_TEXT_FONT,
+bool say_above( const UObject* obj, const std::string& text,
+                unsigned short font = Plib::DEFAULT_TEXT_FONT,
                 unsigned short color = Plib::DEFAULT_TEXT_COLOR,
                 unsigned int journal_print = JOURNAL_PRINT_NAME );
 bool say_above_unicode( const UObject* obj, const std::string& text, const std::string& lang,
@@ -194,7 +197,7 @@ bool say_above_unicode( const UObject* obj, const std::string& text, const std::
                         unsigned short color = Plib::DEFAULT_TEXT_COLOR,
                         unsigned int journal_print = JOURNAL_PRINT_NAME );
 
-bool private_say_above( Mobile::Character* chr, const UObject* obj, const char* text,
+bool private_say_above( Mobile::Character* chr, const UObject* obj, const std::string& text,
                         unsigned short font = Plib::DEFAULT_TEXT_FONT,
                         unsigned short color = Plib::DEFAULT_TEXT_COLOR,
                         unsigned int journal_print = JOURNAL_PRINT_NAME );

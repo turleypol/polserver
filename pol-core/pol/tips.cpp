@@ -19,41 +19,36 @@ namespace Pol
 {
 namespace Core
 {
-bool send_tip( Network::Client* client, const char* tipname, unsigned short tipnum )
+bool send_tip( Network::Client* client, std::string& tipname, unsigned short tipnum )
 {
-  size_t textlen = strlen( tipname );
-  if ( textlen > 0 && unsigned( textlen ) <= 9999 )
-  {
-    Network::PktHelper::PacketOut<Network::PktOut_A6> msg;
-    msg->WriteFlipped<u16>( textlen + 11 );
-    msg->Write<u8>( PKTOUT_A6_TYPE_TIP );
-    msg->offset += 2;  // unk4,5
-    msg->WriteFlipped<u16>( tipnum );
-    msg->WriteFlipped<u16>( textlen + 1 );
-    msg->Write( tipname, static_cast<u16>( textlen + 1 ) );
-    msg.Send( client );
-    return true;
-  }
-  else
-  {
+  if ( tipname.empty() || tipname.size() > 9999 )
     return false;
-  }
+  Network::PktHelper::PacketOut<Network::PktOut_A6> msg;
+  msg->offset += 2;
+  msg->Write<u8>( PKTOUT_A6_TYPE_TIP );
+  msg->offset += 2;  // unk4,5
+  msg->WriteFlipped<u16>( tipnum );
+  msg->WriteWithLen<u16>( tipname );
+  u16 len = msg->offset;
+  msg->offset = 1;
+  msg->WriteFlipped<u16>( len );
+  msg.Send( client, len );
+  return true;
 }
 
 void send_tip( Network::Client* client, const std::string& tiptext )
 {
-  size_t textlen = tiptext.size();
-  if ( textlen >= 10000 )
-    textlen = 9999;
-
   Network::PktHelper::PacketOut<Network::PktOut_A6> msg;
-  msg->WriteFlipped<u16>( textlen + 11 );
+  msg->offset += 2;
   msg->Write<u8>( PKTOUT_A6_TYPE_TIP );
   msg->offset += 2;  // unk4,5
   msg->offset += 2;  // tipnum
   msg->WriteFlipped<u16>( textlen + 1 );
-  msg->Write( tiptext.c_str(), static_cast<u16>( textlen + 1 ) );
-  msg.Send( client );
+  msg->WriteWithLen<u16>( tiptext, true, 9999 );
+  u16 len = msg->offset;
+  msg->offset = 1;
+  msg->WriteFlipped<u16>( len );
+  msg.Send( client, len );
 }
 
 void handle_get_tip( Network::Client* client, PKTIN_A7* msg )
@@ -74,7 +69,7 @@ void handle_get_tip( Network::Client* client, PKTIN_A7* msg )
         tipnum = static_cast<u16>( gamestate.tipfilenames.size() ) - 1;
     }
 
-    send_tip( client, gamestate.tipfilenames[tipnum].c_str(), tipnum );
+    send_tip( client, gamestate.tipfilenames[tipnum], tipnum );
   }
 }
 }  // namespace Core

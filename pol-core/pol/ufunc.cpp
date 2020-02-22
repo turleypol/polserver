@@ -1147,22 +1147,18 @@ void play_moving_effect2_ex( u16 xs, u16 ys, s8 zs, u16 xd, u16 yd, s8 zd, Realm
 }
 
 // System message -- message in lower left corner
-void send_sysmessage( Network::Client* client, const char* text, unsigned short font,
+void send_sysmessage( Network::Client* client, const std::string& text, unsigned short font,
                       unsigned short color )
 {
   PktHelper::PacketOut<PktOut_1C> msg;
-  u16 textlen = static_cast<u16>( strlen( text ) + 1 );
-  if ( textlen > SPEECH_MAX_LEN + 1 )  // FIXME need to handle this better second msg?
-    textlen = SPEECH_MAX_LEN + 1;
-
   msg->offset += 2;
   msg->Write<u32>( 0x01010101u );
   msg->Write<u16>( 0x0101u );
   msg->Write<u8>( Plib::TEXTTYPE_NORMAL );
   msg->WriteFlipped<u16>( color );
   msg->WriteFlipped<u16>( font );
-  msg->Write( "System", 30 );
-  msg->Write( text, textlen );
+  msg->WriteFixed( "System", 30 );
+  msg->Write( text, true, SPEECH_MAX_LEN );
   u16 len = msg->offset;
   msg->offset = 1;
   msg->WriteFlipped<u16>( len );
@@ -1183,19 +1179,13 @@ void send_sysmessage_unicode( Network::Client* client, const std::string& text,
   msg->Write<u8>( Plib::TEXTTYPE_NORMAL );
   msg->WriteFlipped<u16>( color );
   msg->WriteFlipped<u16>( font );
-  msg->Write( lang.c_str(), 4 );
-  msg->Write( "System", 30 );
+  msg->WriteFixed( lang, 4 );
+  msg->WriteFixed( "System", 30 );
   msg->WriteFlipped( utf16text );
   u16 len = msg->offset;
   msg->offset = 1;
   msg->WriteFlipped<u16>( len );
   msg.Send( client, len );
-}
-
-void send_sysmessage( Network::Client* client, const std::string& text, unsigned short font,
-                      unsigned short color )
-{
-  send_sysmessage( client, text.c_str(), font, color );
 }
 
 void broadcast( const char* text, unsigned short font, unsigned short color,
@@ -1225,32 +1215,24 @@ void broadcast_unicode( const std::string& text, const std::string& lang, unsign
 void send_nametext( Client* client, const Character* chr, const std::string& str )
 {
   PktHelper::PacketOut<PktOut_1C> msg;
-  u16 textlen = static_cast<u16>( str.length() + 1 );
-  if ( textlen > SPEECH_MAX_LEN + 1 )
-    textlen = SPEECH_MAX_LEN + 1;
-
   msg->offset += 2;
   msg->Write<u32>( chr->serial_ext );
   msg->Write<u16>( 0x0101u );
   msg->Write<u8>( Plib::TEXTTYPE_YOU_SEE );
   msg->WriteFlipped<u16>( chr->name_color( client->chr ) );  // 0x03B2
   msg->WriteFlipped<u16>( 3u );
-  msg->Write( str.c_str(), 30 );
-  msg->Write( str.c_str(), textlen );
+  msg->WriteFixed( str, 30 );
+  msg->Write( str, true, SPEECH_MAX_LEN );
   u16 len = msg->offset;
   msg->offset = 1;
   msg->WriteFlipped<u16>( len );
   msg.Send( client, len );
 }
 
-bool say_above( const UObject* obj, const char* text, unsigned short font, unsigned short color,
-                unsigned int journal_print )
+bool say_above( const UObject* obj, const std::string& text, unsigned short font,
+                unsigned short color, unsigned int journal_print )
 {
   PktHelper::PacketOut<PktOut_1C> msg;
-  u16 textlen = static_cast<u16>( strlen( text ) + 1 );
-  if ( textlen > SPEECH_MAX_LEN + 1 )  // FIXME need to handle this better second msg?
-    textlen = SPEECH_MAX_LEN + 1;
-
   msg->offset += 2;
   msg->Write<u32>( obj->serial_ext );
   msg->WriteFlipped<u16>( obj->graphic );
@@ -1260,14 +1242,14 @@ bool say_above( const UObject* obj, const char* text, unsigned short font, unsig
   switch ( journal_print )
   {
   case JOURNAL_PRINT_YOU_SEE:
-    msg->Write( "You see", 30 );
+    msg->WriteFixed( "You see", 30 );
     break;
   case JOURNAL_PRINT_NAME:
   default:
-    msg->Write( obj->description().c_str(), 30 );
+    msg->WriteFixed( obj->description(), 30 );
     break;
   }
-  msg->Write( text, textlen );
+  msg->Write( text, true, SPEECH_MAX_LEN );
   u16 len = msg->offset;
   msg->offset = 1;
   msg->WriteFlipped<u16>( len );
@@ -1289,15 +1271,15 @@ bool say_above_unicode( const UObject* obj, const std::string& text, const std::
   msg->Write<u8>( Plib::TEXTTYPE_NORMAL );
   msg->WriteFlipped<u16>( color );
   msg->WriteFlipped<u16>( font );
-  msg->Write( lang.c_str(), 4 );
+  msg->WriteFixed( lang, 4 );
   switch ( journal_print )
   {
   case JOURNAL_PRINT_YOU_SEE:
-    msg->Write( "You see", 30 );
+    msg->WriteFixed( "You see", 30 );
     break;
   case JOURNAL_PRINT_NAME:
   default:
-    msg->Write( obj->description().c_str(), 30 );
+    msg->WriteFixed( obj->description(), 30 );
     break;
   }
   msg->WriteFlipped( utf16text );
@@ -1309,16 +1291,12 @@ bool say_above_unicode( const UObject* obj, const std::string& text, const std::
   return true;
 }
 
-bool private_say_above( Character* chr, const UObject* obj, const char* text, unsigned short font,
-                        unsigned short color, unsigned int journal_print )
+bool private_say_above( Character* chr, const UObject* obj, const std::string& text,
+                        unsigned short font, unsigned short color, unsigned int journal_print )
 {
   if ( chr->client == nullptr )
     return false;
   PktHelper::PacketOut<PktOut_1C> msg;
-  u16 textlen = static_cast<u16>( strlen( text ) + 1 );
-  if ( textlen > SPEECH_MAX_LEN + 1 )  // FIXME need to handle this better second msg?
-    textlen = SPEECH_MAX_LEN + 1;
-
   msg->offset += 2;
   msg->Write<u32>( obj->serial_ext );
   msg->WriteFlipped<u16>( obj->graphic );
@@ -1328,14 +1306,14 @@ bool private_say_above( Character* chr, const UObject* obj, const char* text, un
   switch ( journal_print )
   {
   case JOURNAL_PRINT_YOU_SEE:
-    msg->Write( "You see", 30 );
+    msg->WriteFixed( "You see", 30 );
     break;
   case JOURNAL_PRINT_NAME:
   default:
-    msg->Write( obj->description().c_str(), 30 );
+    msg->WriteFixed( obj->description(), 30 );
     break;
   }
-  msg->Write( text, textlen );
+  msg->Write( text, true, SPEECH_MAX_LEN );
   u16 len = msg->offset;
   msg->offset = 1;
   msg->WriteFlipped<u16>( len );
@@ -1347,11 +1325,11 @@ bool private_say_above_unicode( Character* chr, const UObject* obj, const std::s
                                 const std::string& lang, unsigned short font, unsigned short color,
                                 unsigned int journal_print )
 {
+  if ( chr->client == nullptr )
+    return false;
   std::vector<u16> utf16text = Bscript::String::toUTF16( text );
   if ( utf16text.size() > SPEECH_MAX_LEN )
     utf16text.resize( SPEECH_MAX_LEN );
-  if ( chr->client == nullptr )
-    return false;
 
   PktHelper::PacketOut<PktOut_AE> msg;
   msg->offset += 2;
@@ -1360,15 +1338,15 @@ bool private_say_above_unicode( Character* chr, const UObject* obj, const std::s
   msg->Write<u8>( Plib::TEXTTYPE_NORMAL );
   msg->WriteFlipped<u16>( color );
   msg->WriteFlipped<u16>( font );
-  msg->Write( lang.c_str(), 4 );
+  msg->WriteFixed( lang, 4 );
   switch ( journal_print )
   {
   case JOURNAL_PRINT_YOU_SEE:
-    msg->Write( "You see", 30 );
+    msg->WriteFixed( "You see", 30 );
     break;
   case JOURNAL_PRINT_NAME:
   default:
-    msg->Write( obj->description().c_str(), 30 );
+    msg->WriteFixed( obj->description(), 30 );
     break;
   }
   msg->WriteFlipped( utf16text );
@@ -1385,18 +1363,14 @@ bool private_say_above_ex( Character* chr, const UObject* obj, const char* text,
   if ( chr->client == nullptr )
     return false;
   PktHelper::PacketOut<PktOut_1C> msg;
-  u16 textlen = static_cast<u16>( strlen( text ) + 1 );
-  if ( textlen > SPEECH_MAX_LEN + 1 )  // FIXME need to handle this better second msg?
-    textlen = SPEECH_MAX_LEN + 1;
-
   msg->offset += 2;
   msg->Write<u32>( obj->serial_ext );
   msg->WriteFlipped<u16>( obj->graphic );
   msg->Write<u8>( Plib::TEXTTYPE_NORMAL );
   msg->WriteFlipped<u16>( color );
   msg->WriteFlipped<u16>( 3u );
-  msg->Write( obj->description().c_str(), 30 );
-  msg->Write( text, textlen );
+  msg->WriteFixed( obj->description(), 30 );
+  msg->Write( text, true, SPEECH_MAX_LEN );
   u16 len = msg->offset;
   msg->offset = 1;
   msg->WriteFlipped<u16>( len );
@@ -1407,17 +1381,14 @@ bool private_say_above_ex( Character* chr, const UObject* obj, const char* text,
 void send_objdesc( Client* client, Item* item )
 {
   PktHelper::PacketOut<PktOut_1C> msg;
-  u16 textlen = static_cast<u16>( item->description().length() + 1 );
-  if ( textlen > SPEECH_MAX_LEN + 1 )  // FIXME need to handle this better second msg?
-    textlen = SPEECH_MAX_LEN + 1;
   msg->offset += 2;
   msg->Write<u32>( item->serial_ext );
   msg->WriteFlipped<u16>( item->graphic );
   msg->Write<u8>( Plib::TEXTTYPE_YOU_SEE );
   msg->WriteFlipped<u16>( 0x03B2u );
   msg->WriteFlipped<u16>( 3u );
-  msg->Write( "System", 30 );
-  msg->Write( item->description().c_str(), textlen );
+  msg->WriteFixed( "System", 30 );
+  msg->Write( item->description(), true, SPEECH_MAX_LEN );
   u16 len = msg->offset;
   msg->offset = 1;
   msg->WriteFlipped<u16>( len );
@@ -2141,8 +2112,6 @@ void sendCharProfile( Character* chr, Character* of_who, const std::string& titl
 
   size_t titlelen = title.size();
   // Check Lengths
-  if ( titlelen > SPEECH_MAX_LEN )
-    titlelen = SPEECH_MAX_LEN;
   if ( uwtext.size() > SPEECH_MAX_LEN )
     uwtext.resize( SPEECH_MAX_LEN );
   if ( ewtext.size() > SPEECH_MAX_LEN )
@@ -2151,7 +2120,7 @@ void sendCharProfile( Character* chr, Character* of_who, const std::string& titl
   // Build Packet
   msg->offset += 2;
   msg->Write<u32>( of_who->serial_ext );
-  msg->Write( title.c_str(), static_cast<u16>( titlelen + 1 ) );
+  msg->Write( title, true, SPEECH_MAX_LEN );
   msg->WriteFlipped( uwtext );
   msg->WriteFlipped( ewtext );
   u16 len = msg->offset;

@@ -201,7 +201,7 @@ void loginserver_login( Network::Client* client, PKTIN_80* msg )
     {
       ++servcount;
       msgA8->WriteFlipped<u16>( idx + 1u );
-      msgA8->Write( server->name.c_str(), 30 );
+      msgA8->WriteFixed( server->name, 30 );
       msgA8->WriteFlipped<u16>( idx + 1u );
       msgA8->offset += 2;  // u8 percentfull, s8 timezone
       msgA8->Write( server->ip, 4 );
@@ -329,7 +329,7 @@ void send_start( Network::Client* client )
       Mobile::Character* chr = client->acct->get_character( i );
       if ( chr )
       {
-        msg->Write( chr->name().c_str(), 30, false );
+        msg->WriteFixed( chr->name(), 30, false );
         msg->offset += 30;  // password
       }
       else
@@ -346,8 +346,8 @@ void send_start( Network::Client* client )
     msg->Write<u8>( i );
     if ( client->ClientType & Network::CLIENTTYPE_70130 )
     {
-      msg->Write( gamestate.startlocations[i]->city.c_str(), 32, false );
-      msg->Write( gamestate.startlocations[i]->desc.c_str(), 32, false );
+      msg->WriteFixed( gamestate.startlocations[i]->city, 32, false );
+      msg->WriteFixed( gamestate.startlocations[i]->desc, 32, false );
 
       Coordinate coord = gamestate.startlocations[i]->coords[0];
 
@@ -360,8 +360,8 @@ void send_start( Network::Client* client )
     }
     else
     {
-      msg->Write( gamestate.startlocations[i]->city.c_str(), 31, false );
-      msg->Write( gamestate.startlocations[i]->desc.c_str(), 31, false );
+      msg->WriteFixed( gamestate.startlocations[i]->city, 31, false );
+      msg->WriteFixed( gamestate.startlocations[i]->desc, 31, false );
     }
   }
 
@@ -446,8 +446,7 @@ void login2( Network::Client* client, PKTIN_91* msg )  // Gameserver login and c
   // Dave moved the max_clients check to pol.cpp so character cmdlevel could be checked.
   //
 
-  POLLOG.Format( "Account {} logged in from {}\n" )
-      << acct->name() << client->ipaddrAsString();
+  POLLOG.Format( "Account {} logged in from {}\n" ) << acct->name() << client->ipaddrAsString();
 
   // ENHANCEMENT: could authenticate with real loginservers.
 

@@ -40,7 +40,7 @@ void send_sysmessage_cl( Client* client, /*Character *chr_from, ObjArray* oText,
   msg->WriteFlipped<u16>( color );
   msg->WriteFlipped<u16>( font );
   msg->WriteFlipped<u32>( cliloc_num );
-  msg->Write( "System", 30, false );
+  msg->WriteFixed( "System", 30, false );
   msg->Write( utf16text, true );  // ctLEu16
   u16 len = msg->offset;
   msg->offset = 1;
@@ -63,7 +63,7 @@ void say_above_cl( UObject* obj, unsigned int cliloc_num, const std::string& arg
   msg->WriteFlipped<u16>( color );
   msg->WriteFlipped<u16>( font );
   msg->WriteFlipped<u32>( cliloc_num );
-  msg->Write( obj->description().c_str(), 30, false );
+  msg->WriteFixed( obj->description(), 30, false );
   msg->Write( utf16text, true );  // ctLEu16
   u16 len = msg->offset;
   msg->offset = 1;
@@ -87,7 +87,7 @@ void private_say_above_cl( Mobile::Character* chr, const UObject* obj, unsigned 
   msg->WriteFlipped<u16>( color );
   msg->WriteFlipped<u16>( font );
   msg->WriteFlipped<u32>( cliloc_num );
-  msg->Write( obj->description().c_str(), 30, false );
+  msg->WriteFixed( obj->description(), 30, false );
   msg->Write( utf16text, true );  // ctLEu16
   u16 len = msg->offset;
   msg->offset = 1;
@@ -105,9 +105,6 @@ void send_sysmessage_cl_affix( Client* client, unsigned int cliloc_num, const st
   std::vector<u16> utf16text = Bscript::String::toUTF16( arguments );
   if ( utf16text.size() > SPEECH_MAX_LEN )
     utf16text.resize( SPEECH_MAX_LEN );
-  unsigned affix_len = static_cast<unsigned>( affix.size() + 1 );
-  if ( affix_len > SPEECH_MAX_LEN + 1 )
-    affix_len = SPEECH_MAX_LEN + 1;
 
   msg->Write<u32>( 0xFFFFFFFFu );  // serial
   msg->Write<u16>( 0xFFFFu );      // body
@@ -116,8 +113,8 @@ void send_sysmessage_cl_affix( Client* client, unsigned int cliloc_num, const st
   msg->WriteFlipped<u16>( font );
   msg->WriteFlipped<u32>( cliloc_num );
   msg->Write<u8>( ( prepend ) ? 1u : 0u );
-  msg->Write( "System", 30, false );
-  msg->Write( affix.c_str(), static_cast<u16>( affix_len ) );
+  msg->WriteFixed( "System", 30, false );
+  msg->Write( affix, true, SPEECH_MAX_LEN + 1 );
   msg->WriteFlipped( utf16text, true );
   u16 len = msg->offset;
   msg->offset = 1;
@@ -134,9 +131,6 @@ void say_above_cl_affix( UObject* obj, unsigned int cliloc_num, const std::strin
   std::vector<u16> utf16text = Bscript::String::toUTF16( arguments );
   if ( utf16text.size() > SPEECH_MAX_LEN )
     utf16text.resize( SPEECH_MAX_LEN );
-  unsigned affix_len = static_cast<unsigned>( affix.size() + 1 );
-  if ( affix_len > SPEECH_MAX_LEN + 1 )
-    affix_len = SPEECH_MAX_LEN + 1;
 
   msg->Write<u32>( obj->serial_ext );      // serial
   msg->WriteFlipped<u16>( obj->graphic );  // body
@@ -145,8 +139,8 @@ void say_above_cl_affix( UObject* obj, unsigned int cliloc_num, const std::strin
   msg->WriteFlipped<u16>( font );
   msg->WriteFlipped<u32>( cliloc_num );
   msg->Write<u8>( ( prepend ) ? 1u : 0u );
-  msg->Write( obj->description().c_str(), 30, false );
-  msg->Write( affix.c_str(), static_cast<u16>( affix_len ) );
+  msg->WriteFixed( obj->description(), 30, false );
+  msg->Write( affix, true, SPEECH_MAX_LEN + 1 );
   msg->WriteFlipped( utf16text, true );
   u16 len = msg->offset;
   msg->offset = 1;
@@ -166,9 +160,6 @@ void private_say_above_cl_affix( Mobile::Character* chr, const UObject* obj,
   std::vector<u16> utf16text = Bscript::String::toUTF16( arguments );
   if ( utf16text.size() > SPEECH_MAX_LEN )
     utf16text.resize( SPEECH_MAX_LEN );
-  unsigned affix_len = static_cast<unsigned>( affix.size() + 1 );
-  if ( affix_len > SPEECH_MAX_LEN + 1 )
-    affix_len = SPEECH_MAX_LEN + 1;
 
   msg->Write<u32>( obj->serial_ext );      // serial
   msg->WriteFlipped<u16>( obj->graphic );  // body
@@ -177,8 +168,8 @@ void private_say_above_cl_affix( Mobile::Character* chr, const UObject* obj,
   msg->WriteFlipped<u16>( font );
   msg->WriteFlipped<u32>( cliloc_num );
   msg->Write<u8>( ( prepend ) ? 1u : 0u );
-  msg->Write( obj->description().c_str(), 30, false );
-  msg->Write( affix.c_str(), static_cast<u16>( affix_len ) );
+  msg->WriteFixed( obj->description(), 30, false );
+  msg->Write( affix, true, SPEECH_MAX_LEN + 1 );
   msg->WriteFlipped( utf16text, true );
   u16 len = msg->offset;
   msg->offset = 1;
@@ -201,7 +192,7 @@ void build_sysmessage_cl( PktOut_C1* msg, unsigned int cliloc_num, const std::st
   msg->WriteFlipped<u16>( color );
   msg->WriteFlipped<u16>( font );
   msg->WriteFlipped<u32>( cliloc_num );
-  msg->Write( "System", 30, false );
+  msg->WriteFixed( "System", 30, false );
   msg->Write( utf16text, true );  // ctLEu16
   u16 len = msg->offset;
   msg->offset = 1;
@@ -217,9 +208,6 @@ void build_sysmessage_cl_affix( PktOut_CC* msg, unsigned int cliloc_num, const s
   std::vector<u16> utf16text = Bscript::String::toUTF16( arguments );
   if ( utf16text.size() > SPEECH_MAX_LEN )
     utf16text.resize( SPEECH_MAX_LEN );
-  unsigned affix_len = static_cast<unsigned>( affix.size() + 1 );
-  if ( affix_len > SPEECH_MAX_LEN + 1 )
-    affix_len = SPEECH_MAX_LEN + 1;
 
   msg->Write<u32>( 0xFFFFFFFu );  // serial
   msg->Write<u16>( 0xFFFFu );     // body
@@ -228,8 +216,8 @@ void build_sysmessage_cl_affix( PktOut_CC* msg, unsigned int cliloc_num, const s
   msg->WriteFlipped<u16>( font );
   msg->WriteFlipped<u32>( cliloc_num );
   msg->Write<u8>( ( prepend ) ? 1u : 0u );
-  msg->Write( "System", 30, false );
-  msg->Write( affix.c_str(), static_cast<u16>( affix_len ) );
+  msg->WriteFixed( "System", 30, false );
+  msg->Write( affix, true, SPPECH_MAX_LEN + 1 );
   msg->WriteFlipped( utf16text, true );
   u16 len = msg->offset;
   msg->offset = 1;

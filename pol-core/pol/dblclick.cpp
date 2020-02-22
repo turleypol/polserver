@@ -58,10 +58,10 @@ void send_paperdoll( Network::Client* client, Mobile::Character* chr )
                        ( !chr->has_title_suffix() ? "" : " " + chr->title_suffix() );
     if ( chr->has_title_race() )
       name += " (" + chr->title_race() + ")";
-    msg->Write( name.c_str(), 60 );
+    msg->WriteFixed( name, 60 );
   }
   else
-    msg->Write( chr->name().c_str(), 60 );
+    msg->WriteFixed( chr->name(), 60 );
 
 
   // MuadDib changed to reflect true status for 0x20 packet. 1/4/2007

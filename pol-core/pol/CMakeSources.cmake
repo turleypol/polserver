@@ -396,7 +396,6 @@ set (pol_sources  # sorted !
   ufunc.h
   ufunc2.cpp
   ufuncinl.h
-  ufuncstd.h
   uimport.cpp
   uimport.h
   umanip.h

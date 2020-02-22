@@ -157,7 +157,6 @@
 #include "../syshook.h"
 #include "../syshookscript.h"
 #include "../ufunc.h"
-#include "../ufuncstd.h"
 #include "../uobjcnt.h"
 #include "../uoexec.h"
 #include "../uoscrobj.h"

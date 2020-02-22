@@ -243,11 +243,11 @@ void USpell::speak_power_words( Mobile::Character* chr, unsigned short font, uns
 {
   if ( chr->client != nullptr && chr->hidden() )
   {
-    private_say_above( chr, chr, power_words_.c_str(), font, color );
+    private_say_above( chr, chr, power_words_, font, color );
   }
   else if ( !chr->hidden() )
   {
-    say_above( chr, power_words_.c_str(), font, color );
+    say_above( chr, power_words_, font, color );
   }
 }
 

@@ -66,7 +66,6 @@ void packet_test()
     INFO_PRINT << w.str() << "\n";
   };
   auto test = []( const PacketOut<PktOut_2F>& p, const std::array<s8, 10>& a ) {
-
     if ( std::equal( std::begin( p->buffer ), std::end( p->buffer ), std::begin( a ) ) )
       INFO_PRINT << "success\n";
     else
@@ -124,7 +123,7 @@ void packet_test()
   {
     PacketOut<PktOut_2F> p;  // size 10
     std::string s( "1234" );
-    p->Write( s.c_str(), 4, false );
+    p->WriteFixed( s, 4, false );
     u8 b[] = {0x12, 0x34, 0x43, 0x21};
     p->Write( b, 4 );
     p->Write<u8>( 0u );

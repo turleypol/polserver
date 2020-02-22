@@ -525,15 +525,12 @@ BObjectImp* OSExecutorModule::mf_OpenURL()
     if ( chr->has_active_client() )
     {
       Network::PktHelper::PacketOut<Network::PktOut_A5> msg;
-      unsigned urllen;
-      const char* url = str->data();
+      std::string url = str->value();
+      if ( url.size() > URL_MAX_LEN )
+        url.resize( URL_MAX_LEN );
 
-      urllen = static_cast<unsigned int>( strlen( url ) );
-      if ( urllen > URL_MAX_LEN )
-        urllen = URL_MAX_LEN;
-
-      msg->WriteFlipped<u16>( urllen + 4u );
-      msg->Write( url, static_cast<u16>( urllen + 1 ) );
+      msg->WriteFlipped<u16>( url.size() + 4u );
+      msg->Write( url );
       msg.Send( chr->client );
       return new BLong( 1 );
     }

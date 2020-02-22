@@ -243,34 +243,73 @@ public:
       PktWriterTemplateSpecs::WriteHelper<T>::WriteFlipped( static_cast<T>( x ), buffer, offset );
   };
 
-  void Write( const char* x, u16 len, bool nullterm = true )
+  void WriteFixed( const std::string& x, u16 len, bool nullterm = true )
   {
     if ( len < 1 )
       return;
+    passert_always_r( offset + len <= SIZE, "pkt " + Clib::hexint( ID ) );
     if ( true )  // TODO cfg flag
     {
       std::string ascii = Clib::convertToASCII( x );
-      if ( strlen( x ) == len )
-        len = ascii.size(); // guessing game, need a method without length param
 
-      passert_always_r( offset + len <= SIZE, "pkt " + Clib::hexint( ID ) );
       strncpy( &buffer[offset], ascii.c_str(), nullterm ? len - 1 : len );
     }
     else
     {
-      passert_always_r( offset + len <= SIZE, "pkt " + Clib::hexint( ID ) );
-      strncpy( &buffer[offset], x, nullterm ? len - 1 : len );
+      strncpy( &buffer[offset], x.c_str(), nullterm ? len - 1 : len );
     }
     offset += len;
   };
-/*  void Write( u8 x[], u16 len )
+  size_t Write( const std::string& x, bool nullterm = true, size_t maxlen = 0 )
+  {
+    size_t len = x.size();
+    if ( true )  // TODO cfg flag
+    {
+      std::string ascii = Clib::convertToASCII( x );
+      len = ascii.size();
+      if ( nullterm )
+        ++len;
+      else if ( !len )
+        return 0;
+      if ( maxlen && len > maxlen )
+        len = nullterm ? maxlen - 1 : maxlen;
+      passert_always_r( offset + len <= SIZE, "pkt " + Clib::hexint( ID ) );
+      strncpy( &buffer[offset], ascii.c_str(), len );
+    }
+    else
+    {
+      len = x.size();
+      if ( nullterm )
+        ++len;
+      else if ( !len )
+        return 0;
+      if ( maxlen && len > maxlen )
+        len = nullterm ? maxlen - 1 : maxlen;
+      passert_always_r( offset + len <= SIZE, "pkt " + Clib::hexint( ID ) );
+      strncpy( &buffer[offset], x.c_str(), len );
+    }
+    offset += len;
+    return len;
+  };
+  template <typename T>
+  void WriteWithLen( const std::string& x, bool nullterm = true, size_t maxlen = 0 )
+  {
+    u16 oldpos = offset;
+    offset += sizeof( T );
+    size_t len = Write( x, nullterm, maxlen );
+    u16 newpos = offset;
+    offset = oldpos;
+    WriteFlipped<T>( len );
+    offset = newpos;
+  };
+  void Write( u8 x[], u16 len )
   {
     if ( len < 1 )
       return;
     passert_always_r( offset + len <= SIZE, "pkt " + Clib::hexint( ID ) );
     memcpy( &buffer[offset], x, len );
     offset += len;
-  };*/
+  };
   void Write( const u16* x, u16 len, bool nullterm = true )
   {
     passert_always_r( offset + len * 2 <= SIZE, "pkt " + Clib::hexint( ID ) );

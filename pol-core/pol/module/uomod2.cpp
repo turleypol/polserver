@@ -188,8 +188,7 @@ bool send_vendorwindow_contents( Client* client, UContainer* for_sale, bool send
       return false;
     }
     msg->WriteFlipped<u32>( item->sellprice() );
-    msg->Write<u8>( desc.size() + 1 );  // Don't forget the nullptr
-    msg->Write( desc.c_str(), static_cast<u16>( desc.size() + 1 ) );
+    msg->WriteWithLen<u8>( desc );
     ++num_items;
 
     if ( send_aos_tooltip )
@@ -213,9 +212,8 @@ BObjectImp* UOExecutorModule::mf_SendBuyWindow( /* character, container, vendor,
   UContainer *for_sale, *bought;
   unsigned char save_layer_one, save_layer_two;
 
-  if ( getCharacterParam( 0, chr ) && getItemParam( 1, item ) &&
-       getCharacterParam( 2, mrchnt ) && getItemParam( 3, item2 ) &&
-       getParam( 4, flags ) )
+  if ( getCharacterParam( 0, chr ) && getItemParam( 1, item ) && getCharacterParam( 2, mrchnt ) &&
+       getItemParam( 3, item2 ) && getParam( 4, flags ) )
   {
     if ( !chr->has_active_client() )
     {
@@ -685,8 +683,7 @@ bool send_vendorsell( Client* client, NPC* merchant, UContainer* sellfrom, UCont
       msg->WriteFlipped<u16>( item->color );
       msg->WriteFlipped<u16>( item->getamount() );
       msg->WriteFlipped<u16>( buyprice );
-      msg->WriteFlipped<u16>( desc.size() );
-      msg->Write( desc.c_str(), static_cast<u16>( desc.size() ), false );  // No null term
+      msg->WriteWithLen<u16>( desc, false );  // No null term
       ++num_items;
 
       if ( send_aos_tooltip )
@@ -716,8 +713,8 @@ BObjectImp* UOExecutorModule::mf_SendSellWindow( /* character, vendor, i1, i2, i
   UContainer* merchant_buyable = nullptr;
 
   if ( !( getCharacterParam( 0, chr ) && getCharacterParam( 1, mrchnt ) &&
-          getItemParam( 2, wi1a ) && getItemParam( 3, wi1b ) &&
-          getItemParam( 4, wi1c ) && getParam( 5, flags ) ) )
+          getItemParam( 2, wi1a ) && getItemParam( 3, wi1b ) && getItemParam( 4, wi1c ) &&
+          getParam( 5, flags ) ) )
   {
     return new BError( "A parameter was invalid" );
   }
@@ -1045,14 +1042,14 @@ BObjectImp* UOExecutorModule::internal_SendUnCompressedGumpMenu( Character* chr,
     std::string s = imp->getStringRep();
 
     size_t addlen = 4 + s.length();
-    layoutlen += addlen;
     if ( msg->offset + addlen > sizeof msg->buffer )
     {
       return new BError( "Buffer length exceeded" );
     }
-    msg->Write( "{ ", 2, false );
-    msg->Write( s.c_str(), static_cast<u16>( s.length() ), false );
-    msg->Write( " }", 2, false );
+    msg->Write( "{ ", false );
+    addlen = msg->Write( s, false ) + 4;
+    msg->Write( " }", false );
+    layoutlen += addlen;
   }
 
   if ( msg->offset + 1 > static_cast<int>( sizeof msg->buffer ) )
@@ -1153,10 +1150,10 @@ BObjectImp* UOExecutorModule::internal_SendCompressedGumpMenu( Character* chr, O
     {
       return new BError( "Buffer length exceeded" );
     }
+    bfr->Write( "{ ", false );
+    addlen = bfr->Write( s, false ) + 4;
+    bfr->Write( " }", false );
     layoutdlen += static_cast<u32>( addlen );
-    bfr->Write( "{ ", 2, false );
-    bfr->Write( s.c_str(), static_cast<u16>( s.length() ), false );
-    bfr->Write( " }", 2, false );
   }
   if ( layoutdlen + 1 > static_cast<u32>( sizeof bfr->buffer ) )
   {
@@ -1361,8 +1358,7 @@ BObjectImp* UOExecutorModule::mf_CloseGump( /* who, pid, response := 0 */ )
   unsigned int pid;
   BObjectImp* resp;
 
-  if ( !( getCharacterParam( 0, chr ) && exec.getParam( 1, pid ) &&
-          ( getParamImp( 2, resp ) ) ) )
+  if ( !( getCharacterParam( 0, chr ) && exec.getParam( 1, pid ) && ( getParamImp( 2, resp ) ) ) )
   {
     return new BError( "Invalid parameter" );
   }
@@ -1398,8 +1394,7 @@ BObjectImp* UOExecutorModule::mf_CloseWindow( /* chr, type, obj */ )
   unsigned int type;
   UObject* obj;
 
-  if ( !getCharacterParam( 0, chr ) || !getParam( 1, type ) ||
-       !getUObjectParam( 2, obj ) )
+  if ( !getCharacterParam( 0, chr ) || !getParam( 1, type ) || !getUObjectParam( 2, obj ) )
     return new BError( "Invalid parameter" );
 
   if ( !chr->has_active_client() )
@@ -1594,20 +1589,12 @@ BObjectImp* UOExecutorModule::mf_SendTextEntryGump()
   msg->Write<u32>( chr->serial_ext );
   msg->offset += 2;  // u8 type,index
 
-  size_t numbytes = line1->length() + 1;
-  if ( numbytes > 256 )
-    numbytes = 256;
-  msg->WriteFlipped<u16>( numbytes );
-  msg->Write( line1->data(), static_cast<u16>( numbytes ) );  // null-terminated
+  msg->WriteWithLen<u16>( line1->value(), true, 255 );  // null-terminated
 
   msg->Write<u8>( static_cast<u8>( cancel ) );
   msg->Write<u8>( static_cast<u8>( style ) );
   msg->WriteFlipped<s32>( maximum );
-  numbytes = line2->length() + 1;
-  if ( numbytes > 256 )
-    numbytes = 256;
-  msg->WriteFlipped<u16>( numbytes );
-  msg->Write( line2->data(), static_cast<u16>( numbytes ) );  // null-terminated
+  msg->WriteWithLen<u16>( line2->value(), true, 255 );  // null-terminated
   u16 len = msg->offset;
   msg->offset = 1;
   msg->WriteFlipped<u16>( len );
@@ -2271,8 +2258,8 @@ BObjectImp* UOExecutorModule::mf_SendOpenBook()
   msg93->Write<u8>( writable ? 1u : 0u );
   msg93->Write<u8>( 1u );
   msg93->WriteFlipped<u16>( static_cast<u16>( npages ) );
-  msg93->Write( title.c_str(), 60, false );
-  msg93->Write( author.c_str(), 30, false );
+  msg93->WriteFixed( title, 60, false );
+  msg93->WriteFixed( author, 30, false );
   msg93.Send( chr->client );
 
   if ( writable )
@@ -2306,7 +2293,7 @@ BObjectImp* UOExecutorModule::mf_SendOpenBook()
         {
           return new BError( "Buffer overflow" );
         }
-        msg->Write( linetext.c_str(), static_cast<u16>( linetext.size() + 1 ) );
+        msg->Write( linetext );
       }
       u16 len = msg->offset;
       msg->offset = offset;
@@ -2403,7 +2390,7 @@ void read_book_page_handler( Client* client, PKTBI_66* msg )
       {
         return;
       }
-      msgOut->Write( linetext.c_str(), static_cast<u16>( linetext.size() + 1 ) );
+      msgOut->Write( linetext );
     }
 
     u16 len = msgOut->offset;
@@ -2830,8 +2817,7 @@ BObjectImp* UOExecutorModule::mf_ListStaticsNearLocationOfType(
   Realms::Realm* realm;
 
   if ( getParam( 0, x ) && getParam( 1, y ) && getParam( 2, z ) && getParam( 3, range ) &&
-       getObjtypeParam( 4, objtype ) && getParam( 5, flags ) &&
-       getStringParam( 6, strrealm ) )
+       getObjtypeParam( 4, objtype ) && getParam( 5, flags ) && getStringParam( 6, strrealm ) )
   {
     realm = find_realm( strrealm->value() );
     if ( !realm )
