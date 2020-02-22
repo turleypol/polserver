@@ -263,14 +263,14 @@ public:
     }
     offset += len;
   };
-  void Write( u8 x[], u16 len )
+/*  void Write( u8 x[], u16 len )
   {
     if ( len < 1 )
       return;
     passert_always_r( offset + len <= SIZE, "pkt " + Clib::hexint( ID ) );
     memcpy( &buffer[offset], x, len );
     offset += len;
-  };
+  };*/
   void Write( const u16* x, u16 len, bool nullterm = true )
   {
     passert_always_r( offset + len * 2 <= SIZE, "pkt " + Clib::hexint( ID ) );
