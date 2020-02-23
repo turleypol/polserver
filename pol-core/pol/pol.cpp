@@ -1023,6 +1023,7 @@ int xmain_inner( bool testing )
   Core::checkpoint( "installing signal handlers" );
   Core::install_signal_handlers();
 
+    Testing::run_pol_tests();
   Core::checkpoint( "starting POL clocks" );
   Core::start_pol_clocks();
   Core::pause_pol_clocks();
