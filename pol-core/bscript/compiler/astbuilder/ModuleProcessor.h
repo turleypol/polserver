@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-#include "DeclarationBuilder.h"
+#include "ModuleDeclarationBuilder.h"
 
 namespace Pol::Bscript::Compiler
 {
@@ -34,7 +34,7 @@ private:
   const SourceFileIdentifier& source_file_identifier;
   BuilderWorkspace& workspace;
 
-  DeclarationBuilder tree_builder;
+  ModuleDeclarationBuilder tree_builder;
   const std::string modulename;
 };
 

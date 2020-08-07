@@ -3,8 +3,8 @@
 #include "../clib/timer.h"
 
 #include "BuilderWorkspace.h"
-#include "DeclarationBuilder.h"
 #include "compiler/Profile.h"
+#include "compiler/ast/ConstDeclaration.h"
 #include "compiler/ast/ModuleFunctionDeclaration.h"
 #include "compiler/file/SourceFile.h"
 #include "compiler/model/CompilerWorkspace.h"
@@ -52,6 +52,8 @@ antlrcpp::Any ModuleProcessor::visitModuleDeclarationStatement(
   }
   else if ( auto constStatement = ctx->constStatement() )
   {
+    workspace.compiler_workspace.const_declarations.push_back(
+        tree_builder.const_declaration( constStatement ) );
   }
   return antlrcpp::Any();
 }
@@ -68,6 +70,8 @@ antlrcpp::Any ModuleProcessor::visitUnambiguousModuleDeclarationStatement(
   }
   else if ( auto constStatement = ctx->unambiguousConstStatement() )
   {
+    workspace.compiler_workspace.const_declarations.push_back(
+        tree_builder.const_declaration( constStatement ) );
   }
   return antlrcpp::Any();
 }
