@@ -5,7 +5,9 @@
 #include "BuilderWorkspace.h"
 #include "DeclarationBuilder.h"
 #include "compiler/Profile.h"
+#include "compiler/ast/ModuleFunctionDeclaration.h"
 #include "compiler/file/SourceFile.h"
+#include "compiler/model/CompilerWorkspace.h"
 
 namespace Pol::Bscript::Compiler
 {
@@ -41,6 +43,12 @@ antlrcpp::Any ModuleProcessor::visitModuleDeclarationStatement(
 {
   if ( auto moduleFunctionDeclaration = ctx->moduleFunctionDeclaration() )
   {
+    auto ast =
+        tree_builder.module_function_declaration( moduleFunctionDeclaration, modulename );
+
+    workspace.function_resolver.register_module_function( ast.get() );
+
+    workspace.compiler_workspace.module_function_declarations.push_back( std::move( ast ) );
   }
   else if ( auto constStatement = ctx->constStatement() )
   {
