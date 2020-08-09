@@ -1,6 +1,8 @@
 #include "SourceFileProcessor.h"
 
 #include "../clib/fileutil.h"
+#include "../clib/logfacility.h"
+#include "../clib/timer.h"
 
 #include "BuilderWorkspace.h"
 #include "ModuleProcessor.h"
@@ -12,6 +14,7 @@
 #include "compiler/file/SourceFileCache.h"
 #include "compiler/file/SourceFileIdentifier.h"
 #include "compiler/model/CompilerWorkspace.h"
+#include "compilercfg.h"
 
 using EscriptGrammar::EscriptParser;
 
