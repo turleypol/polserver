@@ -69,6 +69,11 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
+      - name: ls antlr
+        run: |
+          ls lib/antlr/dist
+          ls lib/antlr/install
+          ls lib/antlr/install/lib
  
   notify_on_failure:
     needs: build
