@@ -12,28 +12,28 @@ jobs:
             cxx-compiler: cl
             c-compiler: cl
             compiler-version: default
-            build-type: Release
+            build-type: Debug
             nopch: 1
             ninja: 1
           - os: "windows-latest"
             cxx-compiler: clang-cl
             c-compiler: clang-cl
             compiler-version: default
-            build-type: Release
+            build-type: RelWithDebInfo
             nopch: 1
             ninja: 1
           - os: "windows-latest"
             cxx-compiler: cl
             c-compiler: cl
             compiler-version: default
-            build-type: Release
+            build-type: RelWithDebInfo
             nopch: 1
             ninja: 0
           - os: "windows-latest"
             cxx-compiler: clang-cl
             c-compiler: clang-cl
             compiler-version: default
-            build-type: Release
+            build-type: Debug
             nopch: 1
             ninja: 0
 
