@@ -31,6 +31,7 @@ if (NOT EXISTS ${ANTLR_LIB})
     LOG_CONFIGURE 1
     LOG_BUILD 1
     LOG_INSTALL 1
+    LOG_OUTPUT_ON_FAILURE 1
   )
 else()
   message("Antlr already build")
