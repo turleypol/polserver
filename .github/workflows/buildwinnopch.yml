@@ -12,21 +12,21 @@ jobs:
             cxx-compiler: cl
             c-compiler: cl
             compiler-version: default
-            build-type: Debug
+            build-type: Release
             nopch: 1
             ninja: 1
           - os: "windows-latest"
             cxx-compiler: clang-cl
             c-compiler: clang-cl
             compiler-version: default
-            build-type: RelWithDebInfo
+            build-type: Release
             nopch: 1
             ninja: 1
           - os: "windows-latest"
             cxx-compiler: cl
             c-compiler: cl
             compiler-version: default
-            build-type: RelWithDebInfo
+            build-type: Debug
             nopch: 1
             ninja: 0
           - os: "windows-latest"
@@ -77,7 +77,7 @@ jobs:
         run: |
           cd bin-build
           cmake .. -GNinja -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
-      - name: Config (msvc)
+      - name: Config (msbuild)
         if: matrix.config.ninja == 0
         run: |
           cd bin-build
@@ -87,11 +87,11 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
-      - name: Build (msvc)
+      - name: Build (msbuild)
         if: matrix.config.ninja == 0
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }}
+          cmake --build . --config ${{ matrix.config.build-type }}  -- /nologo /verbosity:minimal /maxcpucount
       - name: ls antlr
         if: always()
         run: |
