@@ -14,12 +14,28 @@ jobs:
             compiler-version: default
             build-type: Release
             nopch: 1
+            ninja: 1
           - os: "windows-latest"
             cxx-compiler: clang-cl
             c-compiler: clang-cl
             compiler-version: default
             build-type: Release
             nopch: 1
+            ninja: 1
+          - os: "windows-latest"
+            cxx-compiler: cl
+            c-compiler: cl
+            compiler-version: default
+            build-type: Release
+            nopch: 1
+            ninja: 0
+          - os: "windows-latest"
+            cxx-compiler: clang-cl
+            c-compiler: clang-cl
+            compiler-version: default
+            build-type: Release
+            nopch: 1
+            ninja: 0
 
     runs-on: ${{ matrix.config.os }}
 
@@ -56,11 +72,23 @@ jobs:
           echo "::set-env name=CXX::$cxx_compiler"
           echo "::set-env name=CC::$c_compiler"
 
-      - name: Config
+      - name: Config (Ninja)
+        if: matrix.config.ninja == 1
         run: |
           cd bin-build
-          cmake ..  -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
-      - name: Build
+          cmake .. -GNinja -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
+      - name: Config (msvc)
+        if: matrix.config.ninja == 0
+        run: |
+          cd bin-build
+          cmake .. -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
+      - name: Build (Ninja)
+        if: matrix.config.ninja == 1
+        run: |
+          cd bin-build
+          cmake --build . --config ${{ matrix.config.build-type }} -- j2
+      - name: Build (msvc)
+        if: matrix.config.ninja == 0
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }}
