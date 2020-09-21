@@ -78,6 +78,7 @@ jobs:
           ls /usr/local/Cellar/openssl@1.1/1.1.1g/include
           ls /usr/local/Cellar/openssl@1.1/1.1.1g/include/openssl
           echo "::set-env name=PKG_CONFIG_PATH::/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/mysql-client/lib/pkgconfig:$PKG_CONFIG_PATH"
+          echo "::set-env name=OPENSSL_LIB_DIR::$(brew --prefix openssl)/lib"
 
       - name: Install Compiler and Dependencies
         if: matrix.config.os == 'ubuntu-latest'
