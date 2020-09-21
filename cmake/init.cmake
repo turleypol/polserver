@@ -157,6 +157,7 @@ macro(prepare_build)
   if (${OpenSSL_FOUND})
     include_directories(${OPENSSL_INCLUDE_DIR})
     link_directories(${OPENSSL_INCLUDE_DIR}/../lib)
+    message( "OpenSSL not found1")
   endif()
 
   if(windows)
