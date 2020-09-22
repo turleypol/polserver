@@ -41,14 +41,14 @@ jobs:
             c-compiler: clang
             compiler-version: default
             build-type: Release
-            nopch: 1
+            nopch: 0
 
           - os: "macos-latest"
             cxx-compiler: g++
             c-compiler: gcc
             compiler-version: 9
             build-type: RelWithDebInfo
-            nopch: 1
+            nopch: 0
 
     runs-on: ${{ matrix.config.os }}
 
@@ -75,8 +75,6 @@ jobs:
           brew reinstall openssl@1.1
           brew install ninja openssl@1.1 glib-openssl mysql-client mysql-connector-c++
           brew list
-          ls /usr/local/Cellar/openssl@1.1/1.1.1g/include
-          ls /usr/local/Cellar/openssl@1.1/1.1.1g/include/openssl
           echo "::set-env name=PKG_CONFIG_PATH::/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/mysql-client/lib/pkgconfig:$PKG_CONFIG_PATH"
           echo "::set-env name=OPENSSL_LIB_DIR::$(brew --prefix openssl)/lib"
 
