@@ -66,6 +66,7 @@ if(HAVE_MYSQL)
       target_link_libraries(${ex_name} PUBLIC
         mysqlclient
       )
+    endif()
   endif()
 endif()
 
