@@ -60,7 +60,7 @@ if(HAVE_MYSQL)
       pkg_search_module(MYSQL mysqlclient IMPORTED_TARGET)
       message( "mysql  found ${MYSQL_INCLUDEDIR}")
       message( "mysql  found ${MYSQL_FOUND}")
-      target_include_directories(${ex_name} PUBLIC ${MYSQL_INCLUDEDIR}../)
+      target_include_directories(${ex_name} PUBLIC ${MYSQL_INCLUDEDIR}/..)
       target_link_libraries(${ex_name} PUBLIC PkgConfig::MYSQL)
     else()
       target_link_libraries(${ex_name} PUBLIC
