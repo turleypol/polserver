@@ -3,7 +3,7 @@ name: StyleCheck
 on: [push, pull_request]
 
 jobs:
-  build:
+  stylecheck:
     strategy:
       fail-fast: false
       matrix:

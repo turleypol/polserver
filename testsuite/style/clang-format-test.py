@@ -30,7 +30,7 @@ class FormatTest:
     cmd=('clang-format','--version')
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd=self.polroot)
     r=proc.communicate()
-    print(r[0].decode)
+    print(r[0].decode())
     with ThreadPoolExecutor(os.cpu_count()) as p:
       futures = [p.submit(self.clangformat,f) for f in self.files]
       for future in concurrent.futures.as_completed(futures):
