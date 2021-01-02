@@ -65,7 +65,7 @@ class FormatTest:
   def check_format(self, file, lineno, context, added, removed):
     for i in range(len(context)):
       if context[i].startswith('-'):
-        context[i]='033[0;40;32m'+context[i]
+        context[i]='\x1b[6;30;42m'+context[i]+'\x1b[0m'
     if 'PolToolMain.h' in file:
       print('\n'.join(context))
     res=True
