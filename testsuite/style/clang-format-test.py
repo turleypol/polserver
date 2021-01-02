@@ -27,6 +27,10 @@ class FormatTest:
 
   def run_clang(self):
     print('Formating {} files in {} threads'.format(len(self.files), os.cpu_count()))
+    cmd=('clang-format','--version')
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd=self.polroot)
+    r=proc.communicate()
+    print(r[0].decode)
     with ThreadPoolExecutor(os.cpu_count()) as p:
       futures = [p.submit(self.clangformat,f) for f in self.files]
       for future in concurrent.futures.as_completed(futures):
@@ -47,7 +51,7 @@ class FormatTest:
       del linesplit[0] #remove index line
       for orig_lo,new_lo,l in zip(linesplit[0::3], linesplit[1::3], linesplit[2::3]):
         l=l.splitlines()
-        orig_lo=int(orig_lo)
+        orig_lo=int(orig_lo) -1
         while not l[0].startswith('+') and not l[0].startswith('-'):
           del l[0]
           orig_lo+=1
