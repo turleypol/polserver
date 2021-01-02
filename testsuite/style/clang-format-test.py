@@ -61,13 +61,13 @@ class FormatTest:
     any_length_added=any([len(l)>100 for l in added])
     any_length_removed=any([len(l)>100 for l in removed])
     if (not any_length_added and any_length_removed):
-      print('::error file={},line={},col=0::{}'.format(file,lineno,'\n'.join(['Invalid line length:']+context)))
+      print('::error file={},line={},col=0::{}'.format(file,lineno,'%0A'.join(['Invalid line length:']+context)))
       res=False
     
     any_tab_added=any(['\t' in l for l in added])
     any_tab_removed=any(['\t' in l for l in removed])
     if (not any_tab_added and any_tab_removed):
-      print('::error file={},line={},col=0::{}'.format(file,lineno,'\n'.join(['Tabulator in line:']+context)))
+      print('::error file={},line={},col=0::{}'.format(file,lineno,'%0A'.join(['Tabulator in line:']+context)))
       res=False
 
     ident_width_added=[len(l)-len(l.lstrip(' ')) for l in added]
@@ -75,7 +75,7 @@ class FormatTest:
     any_ident_added=any([i%2 for i in ident_width_added])
     any_ident_removed=any([i%2 for i in ident_width_removed])
     if (not any_ident_added and any_ident_removed):
-      print('::error file={},line={},col=0::{}'.format(file,lineno,'\n'.join(['Invalid ident in line:']+context)))
+      print('::error file={},line={},col=0::{}'.format(file,lineno,'%0A'.join(['Invalid ident in line:']+context)))
       res=False
     return res
 
