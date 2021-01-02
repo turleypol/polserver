@@ -20,6 +20,7 @@ jobs:
           sudo apt-get update
 
           sudo apt-get install clang-format-10 -y
+          sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-10 800
       - name: Stylecheck
         run: |
           cd testsuite/style
