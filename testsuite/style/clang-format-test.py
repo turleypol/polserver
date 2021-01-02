@@ -63,6 +63,8 @@ class FormatTest:
 
 
   def check_format(self, file, lineno, context, added, removed):
+    if 'PolToolMain.h' in file:
+      print('\n'.join(context))
     res=True
     any_length_added=any([len(l)>100 for l in added])
     any_length_removed=any([len(l)>100 for l in removed])
@@ -76,13 +78,13 @@ class FormatTest:
       print('::error file={},line={},col=0::{}'.format(file,lineno,'%0A'.join(['Tabulator in line:']+context)))
       res=False
 
-    ident_width_added=[len(l)-len(l.lstrip(' ')) for l in added]
-    ident_width_removed=[len(l)-len(l.lstrip(' ')) for l in removed]
-    any_ident_added=any([i%2 for i in ident_width_added])
-    any_ident_removed=any([i%2 for i in ident_width_removed])
-    if (not any_ident_added and any_ident_removed):
-      print('::error file={},line={},col=0::{}'.format(file,lineno,'%0A'.join(['Invalid ident in line:']+context)))
-      res=False
+#    ident_width_added=[len(l)-len(l.lstrip(' ')) for l in added]
+#    ident_width_removed=[len(l)-len(l.lstrip(' ')) for l in removed]
+#    any_ident_added=any([i%2 for i in ident_width_added])
+#    any_ident_removed=any([i%2 for i in ident_width_removed])
+#    if (not any_ident_added and any_ident_removed):
+#      print('::error file={},line={},col=0::{}'.format(file,lineno,'%0A'.join(['Invalid ident in line:']+context)))
+#      res=False
     return res
 
 if __name__ == '__main__':
