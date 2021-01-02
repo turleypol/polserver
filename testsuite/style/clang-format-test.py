@@ -47,8 +47,10 @@ class FormatTest:
       del linesplit[0] #remove index line
       for orig_lo,new_lo,l in zip(linesplit[0::3], linesplit[1::3], linesplit[2::3]):
         l=l.splitlines()
+        orig_lo=int(orig_lo)
         while not l[0].startswith('+') and not l[0].startswith('-'):
           del l[0]
+          orig_lo+=1
         added=[a[1:] for a in l if a.startswith('+')]
         removed=[r[1:] for r in l if r.startswith('-')]
         if not self.check_format(f[0],orig_lo, l, added, removed):
