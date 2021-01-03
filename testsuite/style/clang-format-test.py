@@ -27,6 +27,10 @@ class FormatTest:
 
   def run_clang(self):
     print('Formating {} files in {} threads'.format(len(self.files), os.cpu_count()))
+    cmd=('clang-format','--version')
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,cwd=self.polroot)
+    r=proc.communicate()
+    print(r[0].decode())
     with ThreadPoolExecutor(os.cpu_count()) as p:
       futures = [p.submit(self.clangformat,f) for f in self.files]
       for future in concurrent.futures.as_completed(futures):
@@ -47,8 +51,10 @@ class FormatTest:
       del linesplit[0] #remove index line
       for orig_lo,new_lo,l in zip(linesplit[0::3], linesplit[1::3], linesplit[2::3]):
         l=l.splitlines()
+        orig_lo=int(orig_lo) -1
         while not l[0].startswith('+') and not l[0].startswith('-'):
           del l[0]
+          orig_lo+=1
         added=[a[1:] for a in l if a.startswith('+')]
         removed=[r[1:] for r in l if r.startswith('-')]
         if not self.check_format(f[0],orig_lo, l, added, removed):
@@ -57,26 +63,31 @@ class FormatTest:
 
 
   def check_format(self, file, lineno, context, added, removed):
+    for i in range(len(context)):
+      if context[i].startswith('-'):
+        context[i]='\x1b[6;30;42m'+context[i]+'\x1b[0m'
+    if 'PolToolMain.h' in file:
+      print('\n'.join(context))
     res=True
     any_length_added=any([len(l)>100 for l in added])
     any_length_removed=any([len(l)>100 for l in removed])
     if (not any_length_added and any_length_removed):
-      print('::error file={},line={},col=0::{}'.format(file,lineno,'\n'.join(['Invalid line length:']+context)))
+      print('::error file={},line={},col=0::{}'.format(file,lineno,'%0A'.join(['Invalid line length:']+context)))
       res=False
     
     any_tab_added=any(['\t' in l for l in added])
     any_tab_removed=any(['\t' in l for l in removed])
     if (not any_tab_added and any_tab_removed):
-      print('::error file={},line={},col=0::{}'.format(file,lineno,'\n'.join(['Tabulator in line:']+context)))
+      print('::error file={},line={},col=0::{}'.format(file,lineno,'%0A'.join(['Tabulator in line:']+context)))
       res=False
 
-    ident_width_added=[len(l)-len(l.lstrip(' ')) for l in added]
-    ident_width_removed=[len(l)-len(l.lstrip(' ')) for l in removed]
-    any_ident_added=any([i%2 for i in ident_width_added])
-    any_ident_removed=any([i%2 for i in ident_width_removed])
-    if (not any_ident_added and any_ident_removed):
-      print('::error file={},line={},col=0::{}'.format(file,lineno,'\n'.join(['Invalid ident in line:']+context)))
-      res=False
+#    ident_width_added=[len(l)-len(l.lstrip(' ')) for l in added]
+#    ident_width_removed=[len(l)-len(l.lstrip(' ')) for l in removed]
+#    any_ident_added=any([i%2 for i in ident_width_added])
+#    any_ident_removed=any([i%2 for i in ident_width_removed])
+#    if (not any_ident_added and any_ident_removed):
+#      print('::error file={},line={},col=0::{}'.format(file,lineno,'%0A'.join(['Invalid ident in line:']+context)))
+#      res=False
     return res
 
 if __name__ == '__main__':
