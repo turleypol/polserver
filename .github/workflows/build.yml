@@ -180,7 +180,7 @@ jobs:
           zip -j Nightly-Linux-clang.zip Nightly-Linux-clang++/*
 
       - name: Create Release
-        uses: "turleypol/actions/packages/automatic-releases@master"
+        uses: "turleypol/release_action_dist@master"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "NightlyRelease"
