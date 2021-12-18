@@ -38,6 +38,7 @@ jobs:
         shell: pwsh
         run: |
           sudo apt-get update
+          sudo apt-get upgrade
 
           $compiler = "${{ matrix.config.cxx-compiler }}"
           $version = "${{ matrix.config.compiler-version }}"
