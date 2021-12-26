@@ -169,6 +169,7 @@ Package::Package( const std::string& pkg_dir, Clib::ConfigElem& elem )
       replaces_( elem, "Replaces" ),
       provides_system_home_page_( elem.remove_bool( "ProvidesSystemHomePage", false ) )
 {
+  INFO_PRINT << "PACKAGE " << name_ << " " << dir_ << "\n";
   Clib::mklowerASCII( name_ );
   std::string tmp = elem.read_string( "CoreRequired", "0" );
   if ( isdigit( tmp[0] ) )
@@ -312,6 +313,7 @@ void load_package( const std::string& pkg_dir, Clib::ConfigElem& elem, bool quie
 void load_packages( const std::string& basedir, bool quiet )
 {
   std::error_code ec;
+  INFO_PRINT << "load packages " << basedir << "\n";
   for ( const auto& dir_entry : fs::directory_iterator( basedir, ec ) )
   {
     if ( !dir_entry.is_directory() )
@@ -320,7 +322,7 @@ void load_packages( const std::string& basedir, bool quiet )
       continue;
     const auto pkg_dir = dir_entry.path();
     const auto pkg_cfg = pkg_dir / "pkg.cfg";
-
+    INFO_PRINT << "pkgcfg " << pkg_cfg.string() << "\n";
     if ( fs::exists( pkg_cfg ) )
     {
       Clib::ConfigFile cf( pkg_cfg.c_str() );
