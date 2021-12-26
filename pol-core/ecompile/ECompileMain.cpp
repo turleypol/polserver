@@ -36,7 +36,7 @@ namespace Pol
 {
 namespace ECompile
 {
-using namespace std;
+namespace fs = std::filesystem;
 using namespace Pol::Core;
 using namespace Pol::Plib;
 using namespace Pol::Bscript;
@@ -568,17 +568,17 @@ void apply_configuration()
  * @param basedir Path of the folder to recurse into
  * @param files
  */
-void recurse_compile( const std::filesystem::path& basedir, std::vector<std::string>* files )
+void recurse_compile( const fs::path& basedir, std::vector<std::string>* files )
 {
   int s_compiled, s_uptodate, s_errors;
   clock_t start, finish;
 
-  if ( !basedir.is_directory() )
+  if ( !fs::is_directory( basedir ) )
     return;
 
   s_compiled = s_uptodate = s_errors = 0;
   start = clock();
-  for ( const auto& dir_entry : std::filesystem::directory_iterator( basedir ) )
+  for ( const auto& dir_entry : fs::directory_iterator( basedir ) )
   {
     if ( Clib::exit_signalled )
       return;
@@ -586,7 +586,7 @@ void recurse_compile( const std::filesystem::path& basedir, std::vector<std::str
       recurse_compile( dir_entry.path(), files );
     else if ( !dir_entry.is_regular_file() )
       continue;
-    const auto ext = dir_entry.extension();
+    const auto ext = dir_entry.path().extension();
     if ( !ext.compare( ".src" ) || !ext.compare( ".hsr" ) ||
          ( compilercfg.CompileAspPages && !ext.compare( ".asp" ) ) )
     {
@@ -636,11 +636,11 @@ void recurse_compile( const std::filesystem::path& basedir, std::vector<std::str
                  << " had errors.\n";
   }
 }
-void recurse_compile_inc( const std::filesystem::path& basedir, std::vector<std::string>* files )
+void recurse_compile_inc( const fs::path& basedir, std::vector<std::string>* files )
 {
-  if ( !basedir.is_directory() )
+  if ( !fs::is_directory( basedir ) )
     return;
-  for ( const auto& dir_entry : std::filesystem::directory_iterator( basedir ) )
+  for ( const auto& dir_entry : fs::directory_iterator( basedir ) )
   {
     if ( Clib::exit_signalled )
       return;
@@ -648,7 +648,7 @@ void recurse_compile_inc( const std::filesystem::path& basedir, std::vector<std:
       recurse_compile_inc( dir_entry.path(), files );
     else if ( !dir_entry.is_regular_file() )
       continue;
-    const auto ext = dir_entry.extension();
+    const auto ext = dir_entry.path().extension();
 
     if ( !ext.compare( ".inc" ) )
     {
@@ -720,19 +720,19 @@ void AutoCompile()
   if ( compilercfg.ThreadedCompilation )
   {
     std::vector<std::string> files;
-    recurse_compile( std::filesystem::path( compilercfg.PolScriptRoot ), &files );
+    recurse_compile( fs::path( compilercfg.PolScriptRoot ), &files );
     for ( const auto& pkg : Plib::systemstate.packages )
     {
-      recurse_compile( std::filesystem::path( pkg->dir() ), &files );
+      recurse_compile( fs::path( pkg->dir() ), &files );
     }
     parallel_compile( files );
   }
   else
   {
-    recurse_compile( std::filesystem::path( compilercfg.PolScriptRoot ), nullptr );
+    recurse_compile( fs::path( compilercfg.PolScriptRoot ), nullptr );
     for ( const auto& pkg : Plib::systemstate.packages )
     {
-      recurse_compile( std::filesystem::path( pkg->dir() ), nullptr );
+      recurse_compile( fs::path( pkg->dir() ), nullptr );
     }
   }
   compilercfg.OnlyCompileUpdatedScripts = save;
@@ -786,17 +786,17 @@ bool run( int argc, char** argv, int* res )
         {
           std::vector<std::string> files;
           if ( compile_inc )
-            recurse_compile_inc( std::filesystem::path( dir ), &files );
+            recurse_compile_inc( fs::path( dir ), &files );
           else
-            recurse_compile( std::filesystem::path( dir ), &files );
+            recurse_compile( fs::path( dir ), &files );
           parallel_compile( files );
         }
         else
         {
           if ( compile_inc )
-            recurse_compile_inc( std::filesystem::path( dir ), nullptr );
+            recurse_compile_inc( fs::path( dir ), nullptr );
           else
-            recurse_compile( std::filesystem::path( dir ), nullptr );
+            recurse_compile( fs::path( dir ), nullptr );
         }
       }
       else if ( argv[i][1] == 'C' )
