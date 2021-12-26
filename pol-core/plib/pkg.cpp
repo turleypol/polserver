@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <stdlib.h>
+#include <system_error>
 
 #include "../clib/cfgelem.h"
 #include "../clib/cfgfile.h"
@@ -310,7 +311,8 @@ void load_package( const std::string& pkg_dir, Clib::ConfigElem& elem, bool quie
 
 void load_packages( const std::string& basedir, bool quiet )
 {
-  for ( const auto& dir_entry : fs::directory_iterator( basedir ) )
+  std::system_error ec;
+  for ( const auto& dir_entry : fs::directory_iterator( basedir, ec ) )
   {
     if ( !dir_entry.is_directory() )
       continue;

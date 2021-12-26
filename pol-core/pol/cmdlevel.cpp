@@ -11,6 +11,7 @@
 #include <memory>
 #include <stddef.h>
 #include <string>
+#include <system_error>
 
 #include "../bscript/bstruct.h"
 #include "../bscript/impstr.h"
@@ -147,8 +148,8 @@ std::unique_ptr<Bscript::ObjArray> ListCommandsInPackageAtCmdlevel( Plib::Packag
         continue;
       dir_name = std::string( pkg->dir().c_str() ) + dir_name;
     }
-
-    for ( const auto& dir_entry : fs::directory_iterator( dir_name ) )
+    std::system_error ec;
+    for ( const auto& dir_entry : fs::directory_iterator( dir_name, ec ) )
     {
       if ( !dir_entry.is_regular_file() )
         continue;
@@ -158,7 +159,7 @@ std::unique_ptr<Bscript::ObjArray> ListCommandsInPackageAtCmdlevel( Plib::Packag
       {
         std::unique_ptr<Bscript::BStruct> cmdinfo( new Bscript::BStruct );
         cmdinfo->addMember( "dir", new Bscript::String( search_dir->dir ) );
-        cmdinfo->addMember( "script", new Bscript::String( dir_entry.path().filename().c_str() ) );
+        cmdinfo->addMember( "script", new Bscript::String( dir_entry.path().filename().string() ) );
         script_names->addElement( cmdinfo.release() );
       }
     }

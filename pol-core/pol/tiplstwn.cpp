@@ -13,11 +13,13 @@ namespace Pol
 {
 namespace Core
 {
+namespace fs = std::filesystem;
 void load_tips()
 {
   gamestate.tipfilenames.clear();
 
-  for ( const auto& dir_entry : std::filesystem::directory_iterator( "tips/" ) )
+  std::system_error ec;
+  for ( const auto &dir_entry : fs::directory_iterator( fs::current_path() / "tips" ), ec )
   {
     if ( !dir_entry.is_regular_file() )
       continue;
