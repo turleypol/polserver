@@ -11,6 +11,7 @@
 
 #include <cerrno>
 #include <ctime>
+#include <filesystem>
 #include <iosfwd>
 #include <string>
 
@@ -20,7 +21,6 @@
 #include "../../clib/cfgelem.h"
 #include "../../clib/cfgfile.h"
 #include "../../clib/clib.h"
-#include "../../clib/dirlist.h"
 #include "../../clib/fileutil.h"
 #include "../../clib/logfacility.h"
 #include "../../clib/stlutil.h"
@@ -39,6 +39,7 @@ namespace Pol
 namespace Module
 {
 using namespace Bscript;
+namespace fs = std::filesystem;
 
 /**
  * I'm thinking that, if anything, I'd want to present a VERY simple, high-level interface.
@@ -627,13 +628,9 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
 
   Bscript::ObjArray* arr = new Bscript::ObjArray;
 
-  for ( Clib::DirList dl( path.c_str() ); !dl.at_end(); dl.next() )
+  for ( const auto& dir_entry : fs::directory_iterator( path ) )
   {
-    std::string name = dl.name();
-    if ( name[0] == '.' )
-      continue;
-
-    if ( Clib::IsDirectory( ( path + name ).c_str() ) )
+    if ( dir_entry.is_directory() )
     {
       if ( listdirs == 0 )
         continue;
@@ -642,14 +639,11 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
       continue;
     else if ( !asterisk )
     {
-      std::string::size_type extensionPointPos = name.rfind( '.' );
-      if ( extensionPointPos == std::string::npos )
-        continue;
-      if ( name.substr( extensionPointPos + 1 ) != extension->value() )
+      if ( dir_entry.path().extension().compare( extension->value ) != 0 )
         continue;
     }
 
-    arr->addElement( new String( name ) );
+    arr->addElement( new String( dir_entry.path().filename() ) );
   }
 
   return arr;
