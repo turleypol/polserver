@@ -639,7 +639,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
       continue;
     else if ( !asterisk )
     {
-      if ( dir_entry.path().extension().compare( extension->value ) != 0 )
+      if ( dir_entry.path().extension().compare( extension->value() ) != 0 )
         continue;
     }
 
