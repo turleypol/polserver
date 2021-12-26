@@ -312,7 +312,7 @@ void load_package( const std::string& pkg_dir, Clib::ConfigElem& elem, bool quie
 void load_packages( const std::string& basedir, bool quiet )
 {
   std::system_error ec;
-  for ( const auto& dir_entry : fs::directory_iterator( basedir, ec ) )
+  for ( const auto& dir_entry : fs::directory_iterator( basedir, &ec ) )
   {
     if ( !dir_entry.is_directory() )
       continue;
