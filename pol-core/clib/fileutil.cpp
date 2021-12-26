@@ -5,6 +5,7 @@
 
 
 #include "fileutil.h"
+#include "Header_Windows.h"
 
 #include <filesystem>
 #include <limits.h>
