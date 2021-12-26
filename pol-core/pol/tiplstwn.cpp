@@ -26,7 +26,7 @@ void load_tips()
     const auto path = dir_entry.path();
     if ( !path.extension().compare( ".txt" ) )
     {
-      gamestate.tipfilenames.push_back( path.filename().string() );
+      gamestate.tipfilenames.push_back( path.filename().u8string() );
     }
   }
 }

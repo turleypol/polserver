@@ -33,6 +33,7 @@
 #include "filemod.h"
 
 #include <module_defs/file.h>
+#include <system_error>
 
 namespace Pol
 {
@@ -627,8 +628,8 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
     nofiles = true;
 
   Bscript::ObjArray* arr = new Bscript::ObjArray;
-
-  for ( const auto& dir_entry : fs::directory_iterator( path ) )
+  std::error_code ec;
+  for ( const auto& dir_entry : fs::directory_iterator( path, ec ) )
   {
     if ( dir_entry.is_directory() )
     {
@@ -643,7 +644,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
         continue;
     }
 
-    arr->addElement( new String( dir_entry.path().filename() ) );
+    arr->addElement( new String( dir_entry.path().filename().u8string() ) );
   }
 
   return arr;

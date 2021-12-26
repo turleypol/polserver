@@ -159,7 +159,8 @@ std::unique_ptr<Bscript::ObjArray> ListCommandsInPackageAtCmdlevel( Plib::Packag
       {
         std::unique_ptr<Bscript::BStruct> cmdinfo( new Bscript::BStruct );
         cmdinfo->addMember( "dir", new Bscript::String( search_dir->dir ) );
-        cmdinfo->addMember( "script", new Bscript::String( dir_entry.path().filename().string() ) );
+        cmdinfo->addMember( "script",
+                            new Bscript::String( dir_entry.path().filename().u8string() ) );
         script_names->addElement( cmdinfo.release() );
       }
     }

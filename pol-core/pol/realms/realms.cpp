@@ -12,6 +12,7 @@
 
 #include <filesystem>
 #include <stddef.h>
+#include <system_error>
 
 #include "clib/logfacility.h"
 #include "clib/passert.h"
@@ -31,18 +32,20 @@ bool load_realms()
 {
   Realms::Realm* temprealm;
   int realm_counter = 0;
-  for ( const auto& dir_entry : fs::directory_iterator( Plib::systemstate.config.realm_data_path ) )
+  std::error_code ec;
+  for ( const auto& dir_entry :
+        fs::directory_iterator( Plib::systemstate.config.realm_data_path, ec ) )
   {
     if ( !dir_entry.is_directory() )
       continue;
-    const auto realm_name = dir_entry.path().stem().string();
+    const auto realm_name = dir_entry.path().stem().u8string();
 
     passert_r( gamestate.Realms.size() < MAX_NUMER_REALMS,
                "You can't use more than " + Clib::tostring( MAX_NUMER_REALMS ) + " realms" );
 
     POLLOG_INFO << "Loading Realm " << realm_name << ".\n";
     Tools::Timer<> timer;
-    temprealm = new Realms::Realm( realm_name, dir_entry.path().string() );
+    temprealm = new Realms::Realm( realm_name, dir_entry.path().u8string() );
     POLLOG_INFO << "Completed in " << timer.ellapsed() << " ms.\n";
     gamestate.Realms.push_back( temprealm );
     ++realm_counter;
