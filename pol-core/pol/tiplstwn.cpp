@@ -4,9 +4,9 @@
  */
 
 
+#include <filesystem>
 #include <string>
 
-#include "../clib/dirlist.h"
 #include "globals/uvars.h"
 
 namespace Pol
@@ -17,16 +17,16 @@ void load_tips()
 {
   gamestate.tipfilenames.clear();
 
-  for ( Clib::DirList dl( "tips/" ); !dl.at_end(); dl.next() )
+  for ( const auto& dir_entry : std::filesystem::directory_iterator( "tips/" ) )
   {
-    std::string name = dl.name();
-    if ( name[0] == '.' )
+    if ( !dir_entry.is_regular_file() )
       continue;
-    if ( name.find( ".txt" ) != std::string::npos )
+    const auto path = dir_entry.path();
+    if ( !path.extension().compare( ".txt" ) )
     {
-      gamestate.tipfilenames.push_back( name.c_str() );
+      gamestate.tipfilenames.push_back( path.filename().string() );
     }
   }
 }
-}
-}
+}  // namespace Core
+}  // namespace Pol
