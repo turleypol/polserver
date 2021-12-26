@@ -170,6 +170,7 @@ Package::Package( const std::string& pkg_dir, Clib::ConfigElem& elem )
       provides_system_home_page_( elem.remove_bool( "ProvidesSystemHomePage", false ) )
 {
   INFO_PRINT << "PACKAGE " << name_ << " " << dir_ << "\n";
+
   Clib::mklowerASCII( name_ );
   std::string tmp = elem.read_string( "CoreRequired", "0" );
   if ( isdigit( tmp[0] ) )
@@ -325,7 +326,7 @@ void load_packages( const std::string& basedir, bool quiet )
     INFO_PRINT << "pkgcfg " << pkg_cfg.string() << "\n";
     if ( fs::exists( pkg_cfg ) )
     {
-      Clib::ConfigFile cf( pkg_cfg.c_str() );
+      Clib::ConfigFile cf( pkg_cfg.u8string().c_str() );
       Clib::ConfigElem elem;
 
       cf.readraw( elem );
@@ -335,9 +336,9 @@ void load_packages( const std::string& basedir, bool quiet )
       {
         if ( !quiet )
           INFO_PRINT << "Loading package in " << pkg_dir.string() << "\n";
-        load_package( pkg_dir.string(), elem, quiet );
+        load_package( pkg_dir.u8string() + "/", elem, quiet );
 
-        load_packages( pkg_dir.string(), quiet );
+        load_packages( pkg_dir.u8string(), quiet );
       }
     }
     else
