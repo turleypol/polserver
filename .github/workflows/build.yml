@@ -112,11 +112,11 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
 
-      - name: Test (EScript)
-        if: matrix.config.nopch == 0
-        run: |
-          cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
+          #- name: Test (EScript)
+          #if: matrix.config.nopch == 0
+          #run: |
+          #cd bin-build
+          #cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
       - name: Test (Shard Fixtures)
         if: matrix.config.nopch == 0
         run: |
