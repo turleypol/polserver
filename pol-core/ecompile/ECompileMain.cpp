@@ -595,7 +595,7 @@ void recurse_compile( const fs::path& basedir, std::vector<std::string>* files )
       {
         try
         {
-          if ( compile_file( dir_entry.path().c_str() )
+          if ( compile_file( dir_entry.path().c_str() ) )
           {
             ++summary.CompiledScripts;
           }
@@ -626,7 +626,7 @@ void recurse_compile( const fs::path& basedir, std::vector<std::string>* files )
        files != nullptr )
   {
     INFO_PRINT << "Compiled " << s_compiled << " script" << ( s_compiled == 1 ? "" : "s" ) << " in "
-               << basedir << " in " << (int)( ( finish - start ) / CLOCKS_PER_SEC )
+               << basedir.string() << " in " << (int)( ( finish - start ) / CLOCKS_PER_SEC )
                << " second(s)\n";
     if ( s_uptodate > 0 )
       INFO_PRINT << "    " << s_uptodate << " script" << ( s_uptodate == 1 ? " was" : "s were" )
