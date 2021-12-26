@@ -18,7 +18,7 @@ void load_tips()
 {
   gamestate.tipfilenames.clear();
 
-  std::system_error ec;
+  std::error_code ec;
   for ( const auto &dir_entry : fs::directory_iterator( fs::current_path() / "tips" ), &ec )
   {
     if ( !dir_entry.is_regular_file() )
