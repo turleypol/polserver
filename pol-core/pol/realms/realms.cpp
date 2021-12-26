@@ -35,7 +35,7 @@ bool load_realms()
   {
     if ( !dir_entry.is_directory() )
       continue;
-    const auto realm_name = dir_entry.path().stem();
+    const auto realm_name = dir_entry.path().stem().string();
 
     passert_r( gamestate.Realms.size() < MAX_NUMER_REALMS,
                "You can't use more than " + Clib::tostring( MAX_NUMER_REALMS ) + " realms" );
