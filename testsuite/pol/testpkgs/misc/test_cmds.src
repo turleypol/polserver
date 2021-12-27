@@ -1,0 +1,13 @@
+use uo;
+use os;
+
+include "testutil";
+
+program testcmds()
+  return 1;
+endprogram
+
+exported function find_cmds()
+  print(ListTextCommands());
+  return 1;
+endfunction

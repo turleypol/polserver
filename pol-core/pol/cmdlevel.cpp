@@ -146,7 +146,7 @@ std::unique_ptr<Bscript::ObjArray> ListCommandsInPackageAtCmdlevel( Plib::Packag
     {
       if ( pkg != m_pkg )
         continue;
-      dir_name = std::string( pkg->dir().c_str() ) + dir_name;
+      dir_name = pkg->dir() + dir_name;
     }
     std::error_code ec;
     for ( const auto& dir_entry : fs::directory_iterator( dir_name, ec ) )
