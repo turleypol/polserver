@@ -17,4 +17,4 @@ endfunction
 
 exported function test_cmds()
   print(ListTextCommands());
-endprogram
+endfunction
