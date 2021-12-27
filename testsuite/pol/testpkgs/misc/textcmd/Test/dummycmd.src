@@ -1,4 +1,4 @@
 
-program(who, unused arg)
+program dummy(who, unused arg)
   return 1;
 endprogram
