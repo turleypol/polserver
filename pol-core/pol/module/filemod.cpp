@@ -622,10 +622,16 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
     return new BError( "Directory not found." );
   bool asterisk = false;
   bool nofiles = false;
-  if ( extension->getStringRep().find( '*', 0 ) != std::string::npos )
+  std::string ext_s = extension->value();
+  INFO_PRINT << "ext " << ext_s << "\n";
+  if ( ext_s.find( '*', 0 ) != std::string::npos )
     asterisk = true;
-  else if ( extension->length() == 0 )
+  else if ( ext_s.length() == 0 )
     nofiles = true;
+  else if ( *ext_s.begin() != '.' )
+    ext_s.insert( 0, '.' );
+  INFO_PRINT << "ext " << ext_s << "\n";
+
 
   Bscript::ObjArray* arr = new Bscript::ObjArray;
   std::error_code ec;
@@ -640,7 +646,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
       continue;
     else if ( !asterisk )
     {
-      if ( dir_entry.path().extension().compare( extension->value() ) != 0 )
+      if ( dir_entry.path().extension().compare( ext_s ) != 0 )
         continue;
     }
 
