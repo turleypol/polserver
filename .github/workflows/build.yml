@@ -138,6 +138,12 @@ jobs:
         with:
           name: Testlog-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin-build/coretest/log/pol.log
+      - name: Upload shard test log2
+        if: matrix.config.nopch == 0
+        uses: actions/upload-artifact@v1
+        with:
+          name: Testlog2-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
+          path: bin-build/coretest/
 
       - name: Create Artefact
         if: matrix.config.nopch == 0
