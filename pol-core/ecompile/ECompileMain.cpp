@@ -580,6 +580,7 @@ void recurse_compile( const fs::path& basedir, std::vector<std::string>* files )
   start = clock();
   for ( const auto& dir_entry : fs::directory_iterator( basedir ) )
   {
+    INFO_PRINT << basedir.u8string() << " " << dir_entry.path().u8string() << "\n";
     if ( Clib::exit_signalled )
       return;
     if ( dir_entry.is_directory() )
