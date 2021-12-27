@@ -9,6 +9,10 @@ program testcmds()
 endprogram
 
 exported function find_cmds()
-  print(ListTextCommands());
+  var cmds:=ListTextCommands();
+  if (cmds["testmisc"][1][1].dir != "textcmd/test1/" ||
+      cmds["testmisc"][1][1].script != "dummycmd.ecl")
+    return ret_error("missing textcmd: "+cmds);
+  endif
   return 1;
 endfunction
