@@ -1,0 +1,3 @@
+program tedt(who, unused arg)
+  return 1;
+endprogram
