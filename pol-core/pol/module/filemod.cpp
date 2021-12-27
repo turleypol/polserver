@@ -629,7 +629,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
   else if ( ext_s.length() == 0 )
     nofiles = true;
   else if ( *ext_s.begin() != '.' )
-    ext_s.insert( 0, '.' );
+    ext_s.insert( 0, "." );
   INFO_PRINT << "ext " << ext_s << "\n";
 
 
