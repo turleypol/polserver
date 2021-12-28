@@ -593,7 +593,7 @@ void recurse_collect( const fs::path& basedir, std::set<std::string>* files, boo
   }
 }
 
-void recurse_compile( const std::set<std::string>& files )
+void serial_compile( const std::set<std::string>& files )
 {
   for ( const auto& file : files )
   {
@@ -661,15 +661,13 @@ void AutoCompile()
   bool save = compilercfg.OnlyCompileUpdatedScripts;
   compilercfg.OnlyCompileUpdatedScripts = compilercfg.UpdateOnlyOnAutoCompile;
   std::set<std::string> files;
-  recurse_collect( fs::path( compilercfg.PolScriptRoot ), &files );
+  recurse_collect( fs::path( compilercfg.PolScriptRoot ), &files, false );
   for ( const auto& pkg : Plib::systemstate.packages )
-  {
     recurse_collect( fs::path( pkg->dir() ), &files, false );
-  }
   if ( compilercfg.ThreadedCompilation )
     parallel_compile( files );
   else
-    recurse_compile( files );
+    serial_compile( files );
   compilercfg.OnlyCompileUpdatedScripts = save;
 }
 
@@ -722,7 +720,7 @@ bool run( int argc, char** argv, int* res )
         if ( compilercfg.ThreadedCompilation )
           parallel_compile( files );
         else
-          recurse_compile( files );
+          serial_compile( files );
       }
       else if ( argv[i][1] == 'C' )
       {
