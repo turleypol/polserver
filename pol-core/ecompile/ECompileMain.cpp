@@ -583,7 +583,9 @@ void recurse_compile( const fs::path& basedir, std::vector<std::string>* files )
     INFO_PRINT << basedir.u8string() << " " << dir_entry.path().u8string() << "\n";
     if ( Clib::exit_signalled )
       return;
-    if ( dir_entry.is_directory() )
+    if ( dir_entry.path().has_filename() && *dir_entry.path().begin() == '.' )
+      continue;
+    else if ( dir_entry.is_directory() )
       recurse_compile( dir_entry.path(), files );
     else if ( !dir_entry.is_regular_file() )
       continue;
