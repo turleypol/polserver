@@ -100,7 +100,7 @@ jobs:
         if: matrix.config.ninja == 0
         run: |
           cd bin-build
-        cmake --build . --config ${{ matrix.config.build-type }}  -- /nologo /verbosity:minimal /maxcpucount:4
+          cmake --build . --config ${{ matrix.config.build-type }}  -- /nologo /verbosity:minimal /maxcpucount:4
  
   notify_on_failure:
     needs: build
