@@ -63,7 +63,9 @@ jobs:
         shell: powershell
         run: |
           Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-          scoop -RunAsAdmin install llvm --global
+          scoop help
+          scoop help install
+          scoop install -RunAsAdmin llvm --global
           #echo "::set-env name=PATH::$env:PATH"
 
       - name: Set CXX and CC
