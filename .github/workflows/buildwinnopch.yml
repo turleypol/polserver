@@ -62,11 +62,9 @@ jobs:
         if: matrix.config.cxx-compiler == 'clang-cl'
         shell: powershell
         run: |
-          $scooppath= ((New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh'))
-          Invoke-Command -ScriptBlock ([scriptblock]::Create($scooppath)) -ArgumentList "-RunAsAdmin"
-          scoop help
-          scoop help install
-          scoop install -RunAsAdmin llvm --global
+          iwr -useb get.scoop.sh -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
+          scoop install llvm --global
           #echo "::set-env name=PATH::$env:PATH"
 
       - name: Set CXX and CC
