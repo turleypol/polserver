@@ -126,13 +126,13 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
       - name: Upload shard test log
-        if: matrix.config.nopch == 0
+        if: always() && matrix.config.nopch == 0
         uses: actions/upload-artifact@v1
         with:
           name: Testlog-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin-build/coretest/log/pol.log
       - name: Upload shard test log2
-        if: matrix.config.nopch == 0
+        if: always() && matrix.config.nopch == 0
         uses: actions/upload-artifact@v1
         with:
           name: Testlog2-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
