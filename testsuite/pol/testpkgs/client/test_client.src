@@ -25,6 +25,7 @@ endprogram
 exported function say_something()
   Clear_Event_Queue();
   clientcon.sendevent(struct{todo:="speech", arg:="Hello Test", id:=0});
+  print(char.client.acct);
   while (1)
     var ev:=waitForClient(0, {EVT_SPEECH});
     if (!ev)
