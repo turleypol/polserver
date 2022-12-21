@@ -274,7 +274,7 @@ class PolServer:
       pass
 
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.INFO, stream=sys.stderr,
+  logging.basicConfig(level=logging.INFO, stream=logging.NullHandler,
           format="      %(name)s:%(message)s")
   
   serv = PolServer()
