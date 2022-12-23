@@ -21,6 +21,12 @@ jobs:
             compiler-version: 14
             build-type: RelWithDebInfo
             name: AddressSanitizer
+          - san: -DENABLE_MSAN=1
+            cxx-compiler: clang++
+            c-compiler: clang
+            compiler-version: 14
+            build-type: RelWithDebInfo
+            name: MemorySanitizer
 
     runs-on: "ubuntu-latest"
 
