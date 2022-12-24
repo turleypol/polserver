@@ -104,10 +104,15 @@ jobs:
           mkdir build
           cmake -GNinja -Sruntimes -Bbuild -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DLLVM_USE_SANITIZER=MemoryWithOrigins
           ninja -C build cxx cxxabi
+          ls /home/runner/work/polserver/polserver/bin-build/llvm-project
+          ls /home/runner/work/polserver/polserver/bin-build/llvm-project/include
+          ls /home/runner/work/polserver/polserver/bin-build/llvm-project/lib
+          ls /home/runner/work/polserver/polserver/bin-build/llvm-project/include/c++/v1
+
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} ${{ matrix.config.san }} -DCMAKE_C_FLAGS="-stdlib=libc++ -L/home/runner/work/polserver/polserver/bin-build/llvm-project/lib -lc++abi -I/home/runner/work/polserver/polserver/llvm-project/include -I/home/runner/work/polserver/polserver/llvm-project/include/c++/v1" -DCMAKE_CXX_FLAGS="-stdlib=libc++ -L/home/runner/work/polserver/polserver/bin-build/llvm-project/lib -lc++abi -I/home/runner/work/polserver/polserver/llvm-project/include -I/home/runner/work/polserver/polserver/llvm-project/include/c++/v1"
+          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} ${{ matrix.config.san }} -DCMAKE_C_FLAGS="-stdlib=libc++ -L/home/runner/work/polserver/polserver/bin-build/llvm-project/lib -lc++abi -I/home/runner/work/polserver/polserver/bin-build/llvm-project/include -I/home/runner/work/polserver/polserver/bin-build/llvm-project/include/c++/v1" -DCMAKE_CXX_FLAGS="-stdlib=libc++ -L/home/runner/work/polserver/polserver/bin-build/llvm-project/lib -lc++abi -I/home/runner/work/polserver/polserver/bin-build/llvm-project/include -I/home/runner/work/polserver/polserver/bin-build/llvm-project/include/c++/v1"
       - name: Build
         run: |
           cd bin-build
