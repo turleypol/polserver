@@ -113,7 +113,7 @@ jobs:
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} ${{ matrix.config.san }} -DCMAKE_C_FLAGS="-stdlib=libc++ -L/home/runner/work/polserver/polserver/bin-build/llvm-project/build/lib -lc++abi -I/home/runner/work/polserver/polserver/bin-build/llvm-project/build/include -I/home/runner/work/polserver/polserver/bin-build/llvm-project/build/include/c++/v1" -DCMAKE_CXX_FLAGS="-stdlib=libc++ -L/home/runner/work/polserver/polserver/bin-build/llvm-project/build/lib -lc++abi -I/home/runner/work/polserver/polserver/bin-build/llvm-project/build/include -I/home/runner/work/polserver/polserver/bin-build/llvm-project/build/include/c++/v1"
+          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} ${{ matrix.config.san }} -DCMAKE_C_FLAGS="-stdlib=libc++ -L/home/runner/work/polserver/polserver/bin-build/llvm-project/build/lib -lc++abi -I/home/runner/work/polserver/polserver/bin-build/llvm-project/build/include -I/home/runner/work/polserver/polserver/bin-build/llvm-project/build/include/c++/v1 -fsanitize=memory" -DCMAKE_CXX_FLAGS="-stdlib=libc++ -L/home/runner/work/polserver/polserver/bin-build/llvm-project/build/lib -lc++abi -I/home/runner/work/polserver/polserver/bin-build/llvm-project/build/include -I/home/runner/work/polserver/polserver/bin-build/llvm-project/build/include/c++/v1 -fsanitize=memory"
       - name: Build
         run: |
           cd bin-build
