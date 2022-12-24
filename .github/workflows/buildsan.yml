@@ -105,6 +105,7 @@ jobs:
           cmake -GNinja -Sruntimes -Bbuild -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DLLVM_USE_SANITIZER=MemoryWithOrigins
           ninja -C build cxx cxxabi
           ls /home/runner/work/polserver/polserver/bin-build/llvm-project
+          ls /home/runner/work/polserver/polserver/bin-build/llvm-project/build
           ls /home/runner/work/polserver/polserver/bin-build/llvm-project/include
           ls /home/runner/work/polserver/polserver/bin-build/llvm-project/lib
           ls /home/runner/work/polserver/polserver/bin-build/llvm-project/include/c++/v1
