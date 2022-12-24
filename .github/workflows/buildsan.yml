@@ -39,17 +39,19 @@ jobs:
         uses: actions/cache@v3
         with:
           path: lib/curl-7.57.0
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-c++17-buildtype-curl-7.57.0
+          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-curl-${{matrix.config.name}}
       - name: Cache antlr
         uses: actions/cache@v3
         with:
           path: lib/antlr
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-antlr-buildtypefix
+          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-antlr-${{matrix.config.name}}
+
       - name: Cache boost
         uses: actions/cache@v3
         with:
           path: lib/boost_1_78_0
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-boost-buildtypefix
+          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-boost-${{matrix.config.name}}
+
       - name: Install Compiler and Dependencies
         shell: pwsh
         run: |
@@ -97,7 +99,7 @@ jobs:
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} ${{ matrix.config.san }}
+          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} ${{ matrix.config.san }} -DCMAKE_C_FLAGS="-stdlib=libc++" -DCMAKE_CXX_FLAGS="-stdlib=libc++"
       - name: Build
         run: |
           cd bin-build
