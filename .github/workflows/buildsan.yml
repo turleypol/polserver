@@ -96,10 +96,23 @@ jobs:
 
       - name: Register problem matcher
         run: echo "::add-matcher::.github/problem-matchers/${{ matrix.config.c-compiler }}.json"
+      - name: libcpp
+        run: |
+          cd bin-build
+          git clone --depth=1 https://github.com/llvm/llvm-project
+          cd llvm-project
+          mkdir build; cd build
+          cmake -GNinja ../llvm \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DLLVM_ENABLE_PROJECTS="libcxx;libcxxabi" \
+	-DCMAKE_C_COMPILER=clang \
+	-DCMAKE_CXX_COMPILER=clang++ \
+	-DLLVM_USE_SANITIZER=MemoryWithOrigins
+          cmake --build . -- cxx cxxabi
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} ${{ matrix.config.san }} -DCMAKE_C_FLAGS="-stdlib=libc++" -DCMAKE_CXX_FLAGS="-stdlib=libc++"
+          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} ${{ matrix.config.san }} -DCMAKE_C_FLAGS="-stdlib=libc++ -L/home/runner/work/polserver/polserver/bin-build/lib -lc++abi -I/home/runner/work/polserver/polserver/include -I/home/runner/work/polserver/polserver/include/c++/v1" -DCMAKE_CXX_FLAGS="-stdlib=libc++ -L/home/runner/work/polserver/polserver/bin-build/lib -lc++abi -I/home/runner/work/polserver/polserver/include -I/home/runner/work/polserver/polserver/include/c++/v1"
       - name: Build
         run: |
           cd bin-build
