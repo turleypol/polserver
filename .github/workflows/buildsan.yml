@@ -102,7 +102,8 @@ jobs:
           git clone --depth=1 https://github.com/llvm/llvm-project
           cd llvm-project
           mkdir build; cd build
-          cmake -GNinja ../llvm -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS="libcxx;libcxxabi" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DLLVM_USE_SANITIZER=MemoryWithOrigins cmake --build . -- cxx cxxabi
+          cmake -GNinja ../llvm -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS="libcxx;libcxxabi" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DLLVM_USE_SANITIZER=MemoryWithOrigins
+          cmake --build . -- cxx cxxabi
       - name: Config
         run: |
           cd bin-build
