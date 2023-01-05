@@ -35,18 +35,19 @@ class GottenItem
 {
 public:
   GottenItem() = default;
-  GottenItem( Items::Item* item, Core::Pos4d pos, u32 cnt_serial, GOTTEN_ITEM_TYPE source );
 
   Items::Item* item() { return _item; };
-  GOTTEN_ITEM_TYPE source() const { return _source; };
   void undo( Mobile::Character* chr );
+  static void handle( Network::Client* client, PKTIN_07* msg );
+
   bool operator==( const GottenItem& o ) const { return _item == o._item; }
-  static void get_item( Network::Client* client, PKTIN_07* msg );
 
 private:
+  GottenItem( Items::Item* item, Core::Pos4d pos );
   Items::Item* _item = nullptr;
   Core::Pos4d _pos = Core::Pos4d( 0, 0, 0, nullptr );
   u32 _cnt_serial = 0;
+  u8 _slot_index = 0;
   GOTTEN_ITEM_TYPE _source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND;
 };
 

@@ -56,7 +56,7 @@ namespace Pol
 {
 namespace Core
 {
-void GottenItem::get_item( Network::Client* client, PKTIN_07* msg )
+void GottenItem::handle( Network::Client* client, PKTIN_07* msg )
 {
   u32 serial = cfBEu32( msg->serial );
   u16 amount = cfBEu16( msg->amount );
@@ -144,21 +144,19 @@ void GottenItem::get_item( Network::Client* client, PKTIN_07* msg )
   Pos4d orig_pos = item->pos();  // potential container pos
   Pos4d orig_toppos = item->toplevel_pos();
 
-  GottenItem gotten_info;
+  GottenItem gotten_info{ item, orig_pos };
   if ( orig_container != nullptr )
   {
     if ( IsCharacter( orig_container->serial ) )
-      gotten_info = GottenItem( item, orig_pos, 0, GOTTEN_ITEM_TYPE::GOTTEN_ITEM_EQUIPPED_ON_SELF );
+      gotten_info._source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_EQUIPPED_ON_SELF;
     else
-    {
-      gotten_info = GottenItem( item, orig_pos, orig_container->serial,
-                                GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER );
-    }
+      gotten_info._source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER;
+    gotten_info._slot_index = item->slot_index();
     item->extricate();
   }
   else
   {
-    gotten_info = GottenItem( item, orig_pos, 0, GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND );
+    gotten_info._source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND;
     remove_item_from_world( item );
   }
 
@@ -222,14 +220,13 @@ void GottenItem::get_item( Network::Client* client, PKTIN_07* msg )
   }
 
   // FIXME : Are these all the possibilities for sources and updating, correctly?
-  const auto gotten_info_source = gotten_info.source();
-  if ( gotten_info_source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND )
+  if ( gotten_info._source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND )
   {
     // Item was on the ground, so we ONLY need to update the character's weight
     // to the client.
     send_full_statmsg( client, client->chr );
   }
-  else if ( gotten_info_source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_EQUIPPED_ON_SELF )
+  else if ( gotten_info._source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_EQUIPPED_ON_SELF )
   {
     // Item was equipped, let's send the full update for ar and statmsg.
     client->chr->refresh_ar();
@@ -247,9 +244,8 @@ void GottenItem::get_item( Network::Client* client, PKTIN_07* msg )
 }
 
 
-GottenItem::GottenItem( Items::Item* item, Core::Pos4d pos, u32 cnt_serial,
-                        GOTTEN_ITEM_TYPE source )
-    : _item( item ), _pos( std::move( pos ) ), _cnt_serial( cnt_serial ), _source( source )
+GottenItem::GottenItem( Items::Item* item, Core::Pos4d pos )
+    : _item( item ), _pos( std::move( pos ) ), _cnt_serial( 0 )
 {
 }
 /*
@@ -288,99 +284,55 @@ void GottenItem::undo( Mobile::Character* chr )
     if ( _item->orphan() )
       return;
     _source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER;
+    _pos = chr->pos();
   }
 
   if ( _source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER )
   {
     // First attempt to put it back in the original container.
-    UContainer* orig_container = nullptr;
-    u8 newSlot = 1;
+    UContainer* container = nullptr;
     auto* orig_obj = system_find_object( _cnt_serial );
     if ( orig_obj && orig_obj->isa( UOBJ_CLASS::CLASS_CONTAINER ) )
-      orig_container = static_cast<UContainer*>( orig_obj );
-    if ( orig_container &&
-         orig_container->can_insert_add_item( chr, UContainer::MT_PLAYER, _item ) )
     {
-      if ( _item->orphan() )
-        return;
-      else if ( orig_container->is_legal_posn( _pos.xy() ) )
+      container = static_cast<UContainer*>( orig_obj );
+      if ( !container->can_add( *_item ) ||
+           !container->can_insert_add_item( chr, UContainer::MT_PLAYER, _item ) )
+        container = nullptr;
+    }
+    if ( _item->orphan() )
+      return;
+    if ( !container )
+    {
+      // Attempt to place the item in the player's backpack.
+      container = chr->backpack();
+      if ( !container || !container->can_add( *_item ) ||
+           !container->can_insert_add_item( chr, UContainer::MT_PLAYER, _item ) )
+        container = nullptr;
+    }
+    if ( _item->orphan() )
+      return;
+    if ( container )
+    {
+      u8 newSlot = _slot_index ? _slot_index : 1;
+      if ( container->can_add_to_slot( newSlot ) && _item->slot_index( newSlot ) )
       {
-        if ( !orig_container->can_add_to_slot( newSlot ) || !_item->slot_index( newSlot ) )
-        {
-          _item->setposition( chr->pos() );
-          add_item_to_world( _item );
-          register_with_supporting_multi( _item );
-          move_item( _item, chr->pos() );
-          return;
-        }
-        else
+        if ( container->is_legal_posn( _pos.xy() ) )
         {
           _item->setposition( _pos );
-          orig_container->add( _item );
-        }
-      }
-      else
-      {
-        if ( !orig_container->can_add_to_slot( newSlot ) || !_item->slot_index( newSlot ) )
-        {
-          _item->setposition( chr->pos() );
-          add_item_to_world( _item );
-          register_with_supporting_multi( _item );
-          move_item( _item, chr->pos() );
-          return;
+          container->add( _item );
         }
         else
-          orig_container->add_at_random_location( _item );
-      }
-      update_item_to_inrange( _item );
-      orig_container->on_insert_add_item( chr, UContainer::MT_PLAYER, _item );
-      return;
-    }
-
-    // Attempt to place the item in the player's backpack.
-    UContainer* bp = chr->backpack();
-    if ( bp != nullptr && bp->can_add( *_item ) &&
-         bp->can_insert_add_item( chr, UContainer::MT_PLAYER, _item ) )
-    {
-      if ( _item->orphan() )
+          container->add_at_random_location( _item );
+        update_item_to_inrange( _item );
+        container->on_insert_add_item( chr, UContainer::MT_PLAYER, _item );
         return;
-      else if ( bp->is_legal_posn( _pos.xy() ) )
-      {
-        if ( !bp->can_add_to_slot( newSlot ) || !_item->slot_index( newSlot ) )
-        {
-          _item->setposition( chr->pos() );
-          add_item_to_world( _item );
-          register_with_supporting_multi( _item );
-          move_item( _item, chr->pos() );
-          return;
-        }
-        else
-        {
-          _item->setposition( _pos );
-          bp->add( _item );
-        }
       }
-      else
-      {
-        if ( !bp->can_add_to_slot( newSlot ) || !_item->slot_index( newSlot ) )
-        {
-          _item->setposition( chr->pos() );
-          add_item_to_world( _item );
-          register_with_supporting_multi( _item );
-          move_item( _item, chr->pos() );
-          return;
-        }
-        else
-          bp->add_at_random_location( _item );
-      }
-      update_item_to_inrange( _item );
-      bp->on_insert_add_item( chr, UContainer::MT_PLAYER, _item );
-      return;
     }
+    _pos = chr->pos();
   }
 
-  // Last resort - put it at the player's feet.
-  _item->setposition( chr->pos() );
+  // Last resort - put it on the ground, to players feet in case of error from above.
+  _item->setposition( _pos );
   _item->container = nullptr;
   // 12-17-2008 MuadDib added to clear item.layer properties.
   _item->layer = 0;
