@@ -857,7 +857,9 @@ inline void WriteGottenItem( Mobile::Character* chr, Items::Item* item, Clib::St
 
   item->printOn( sw );
 
-  item->setposition( Pos4d( 0, 0, 0, item->realm() ) );
+  item->setposition(
+      Pos4d( 0, 0, 0,
+             item->realm() ) );  // TODO POS positiin should have no meaning remove this completely
 }
 
 void write_characters( Core::SaveContext& sc )
