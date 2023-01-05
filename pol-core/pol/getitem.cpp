@@ -121,10 +121,8 @@ void get_item( Network::Client* client, PKTIN_07* msg )
     send_item_move_failure( client, MOVE_ITEM_FAILURE_CANNOT_PICK_THAT_UP );
     return;
   }
-  if ( item->orphan() )  // dave added 1/28/3, item might be destroyed in RTC script
-  {
+  if ( item->orphan() )
     return;
-  }
 
   if ( item->container )
   {
@@ -133,10 +131,8 @@ void get_item( Network::Client* client, PKTIN_07* msg )
       send_item_move_failure( client, MOVE_ITEM_FAILURE_CANNOT_PICK_THAT_UP );
       return;
     }
-    if ( item->orphan() )  // dave added 1/28/3, item might be destroyed in RTC script
-    {
+    if ( item->orphan() )
       return;
-    }
   }
 
   UObject* my_owner = item->toplevel_owner();
@@ -153,17 +149,17 @@ void get_item( Network::Client* client, PKTIN_07* msg )
   if ( item->container != nullptr )
   {
     if ( IsCharacter( item->container->serial ) )
-      gotten_info.source = Mobile::Character::GOTTEN_ITEM_EQUIPPED_ON_SELF;
+      gotten_info.source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_EQUIPPED_ON_SELF;
     else
     {
-      gotten_info.source = Mobile::Character::GOTTEN_ITEM_IN_CONTAINER;
+      gotten_info.source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER;
       gotten_info.cnt_serial = item->container->serial;
     }
     item->extricate();
   }
   else
   {
-    gotten_info.source = Mobile::Character::GOTTEN_ITEM_ON_GROUND;
+    gotten_info.source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND;
     remove_item_from_world( item );
   }
 
@@ -175,10 +171,8 @@ void get_item( Network::Client* client, PKTIN_07* msg )
   if ( orig_container != nullptr )
   {
     orig_container->on_remove( client->chr, item );
-    if ( item->orphan() )  // dave added 1/28/3, item might be destroyed in RTC script
-    {
+    if ( item->orphan() )
       return;
-    }
   }
 
   /* Check for moving part of a stack.  Here are the possibilities:
@@ -229,14 +223,14 @@ void get_item( Network::Client* client, PKTIN_07* msg )
   }
 
   // FIXME : Are these all the possibilities for sources and updating, correctly?
-  const auto& gotten_info_source = gotten_item.source;
-  if ( gotten_info_source == Mobile::Character::GOTTEN_ITEM_ON_GROUND )
+  const auto& gotten_info_source = gotten_info.source;
+  if ( gotten_info_source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND )
   {
     // Item was on the ground, so we ONLY need to update the character's weight
     // to the client.
     send_full_statmsg( client, client->chr );
   }
-  else if ( gotten_info_source == Mobile::Character::GOTTEN_ITEM_EQUIPPED_ON_SELF )
+  else if ( gotten_info_source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_EQUIPPED_ON_SELF )
   {
     // Item was equipped, let's send the full update for ar and statmsg.
     client->chr->refresh_ar();
@@ -255,7 +249,7 @@ void get_item( Network::Client* client, PKTIN_07* msg )
 
 
 /*
-  undo_get_item:
+  undo:
   when a client issues a get_item command, the item is moved into gotten_items.
   all other clients are told to delete it, so they no longer have access to it.
   when the client finally tries to do something with it, if that fails, the
@@ -275,7 +269,7 @@ void GottenItem::undo( Mobile::Character* chr )
   ItemRef itemref( item );  // dave 1/28/3 prevent item from being destroyed before function ends
   item->restart_decay_timer();  // MuadDib: moved to top to help with instant decay.
   item->gotten_by( nullptr );
-  if ( source == Mobile::Character::GOTTEN_ITEM_EQUIPPED_ON_SELF )
+  if ( source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_EQUIPPED_ON_SELF )
   {
     if ( chr->equippable( item ) && item->check_equiptest_scripts( chr ) &&
          item->check_equip_script( chr, false ) )
@@ -289,15 +283,15 @@ void GottenItem::undo( Mobile::Character* chr )
     }
     if ( item->orphan() )
       return;
-    source = Mobile::Character::GOTTEN_ITEM_IN_CONTAINER;
+    source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER;
   }
 
-  if ( source == Mobile::Character::GOTTEN_ITEM_IN_CONTAINER )
+  if ( source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER )
   {
     // First attempt to put it back in the original container.
     UContainer* orig_container = nullptr;
     u8 newSlot = 1;
-    auto* orig_obj = system_find_object( serial );
+    auto* orig_obj = system_find_object( cnt_serial );
     if ( orig_obj && orig_obj->isa( UOBJ_CLASS::CLASS_CONTAINER ) )
       orig_container = static_cast<UContainer*>( orig_obj );
     if ( orig_container && orig_container->can_insert_add_item( chr, UContainer::MT_PLAYER, item ) )
