@@ -147,21 +147,27 @@ void get_item( Network::Client* client, PKTIN_07* msg )
   Pos4d orig_pos = item->pos();  // potential container pos
   Pos4d orig_toppos = item->toplevel_pos();
 
+  GottenItem gotten_info{};
+  gotten_info.pos = orig_pos;
+  gotten_info.item = item;
   if ( item->container != nullptr )
   {
     if ( IsCharacter( item->container->serial ) )
-      client->chr->gotten_item_source = Mobile::Character::GOTTEN_ITEM_EQUIPPED_ON_SELF;
+      gotten_info.source = Mobile::Character::GOTTEN_ITEM_EQUIPPED_ON_SELF;
     else
-      client->chr->gotten_item_source = Mobile::Character::GOTTEN_ITEM_IN_CONTAINER;
+    {
+      gotten_info.source = Mobile::Character::GOTTEN_ITEM_IN_CONTAINER;
+      gotten_info.cnt_serial = item->container->serial;
+    }
     item->extricate();
   }
   else
   {
-    client->chr->gotten_item_source = Mobile::Character::GOTTEN_ITEM_ON_GROUND;
+    gotten_info.source = Mobile::Character::GOTTEN_ITEM_ON_GROUND;
     remove_item_from_world( item );
   }
 
-  client->chr->gotten_item( item );
+  client->chr->gotten_item( gotten_info );
   item->inuse( true );
   item->gotten_by( client->chr );
   item->setposition( Pos4d( 0, 0, 0, item->realm() ) );  // don't let a boat carry it around
@@ -223,13 +229,14 @@ void get_item( Network::Client* client, PKTIN_07* msg )
   }
 
   // FIXME : Are these all the possibilities for sources and updating, correctly?
-  if ( client->chr->gotten_item_source == Mobile::Character::GOTTEN_ITEM_ON_GROUND )
+  const auto& gotten_info_source = gotten_item.source;
+  if ( gotten_info_source == Mobile::Character::GOTTEN_ITEM_ON_GROUND )
   {
     // Item was on the ground, so we ONLY need to update the character's weight
     // to the client.
     send_full_statmsg( client, client->chr );
   }
-  else if ( client->chr->gotten_item_source == Mobile::Character::GOTTEN_ITEM_EQUIPPED_ON_SELF )
+  else if ( gotten_info_source == Mobile::Character::GOTTEN_ITEM_EQUIPPED_ON_SELF )
   {
     // Item was equipped, let's send the full update for ar and statmsg.
     client->chr->refresh_ar();
@@ -258,49 +265,46 @@ void get_item( Network::Client* client, PKTIN_07* msg )
   is replaced in gotten_items, for a later EQUIP_ITEM message.
   */
 
-void undo_get_item( Mobile::Character* chr, Items::Item* item )
+void GottenItem::undo( Mobile::Character* chr )
 {
+  if ( !item )
+    return;
   // item needs to be returned to where it was..  either on
   // the ground, or equipped on the current character,
   // or in whatever it used to be in.
   ItemRef itemref( item );  // dave 1/28/3 prevent item from being destroyed before function ends
   item->restart_decay_timer();  // MuadDib: moved to top to help with instant decay.
-
   item->gotten_by( nullptr );
-  if ( chr->gotten_item_source == Mobile::Character::GOTTEN_ITEM_EQUIPPED_ON_SELF )
+  if ( source == Mobile::Character::GOTTEN_ITEM_EQUIPPED_ON_SELF )
   {
     if ( chr->equippable( item ) && item->check_equiptest_scripts( chr ) &&
          item->check_equip_script( chr, false ) )
     {
-      if ( item->orphan() )  // dave added 1/28/3, item might be destroyed in RTC script
-      {
+      if ( item->orphan() )
         return;
-      }
       // is it possible the character doesn't exist? no, it's my character doing the undoing.
       chr->equip( item );
       send_wornitem_to_inrange( chr, item );
       return;
     }
-    if ( item->orphan() )  // dave added 1/28/3, item might be destroyed in RTC script
-    {
+    if ( item->orphan() )
       return;
-    }
-    chr->gotten_item_source = Mobile::Character::GOTTEN_ITEM_IN_CONTAINER;
+    source = Mobile::Character::GOTTEN_ITEM_IN_CONTAINER;
   }
 
-  if ( chr->gotten_item_source == Mobile::Character::GOTTEN_ITEM_IN_CONTAINER )
+  if ( source == Mobile::Character::GOTTEN_ITEM_IN_CONTAINER )
   {
     // First attempt to put it back in the original container.
-    // NOTE: This is lost somewhere before it gets here and so never happens.
+    UContainer* orig_container = nullptr;
     u8 newSlot = 1;
-    UContainer* orig_container = item->container;
+    auto* orig_obj = system_find_object( serial );
+    if ( orig_obj && orig_obj->isa( UOBJ_CLASS::CLASS_CONTAINER ) )
+      orig_container = static_cast<UContainer*>( orig_obj );
     if ( orig_container && orig_container->can_insert_add_item( chr, UContainer::MT_PLAYER, item ) )
     {
       if ( item->orphan() )
-      {
         return;
-      }
-      else if ( orig_container->is_legal_posn( item->pos2d() ) )
+      else if ( orig_container->is_legal_posn( pos.xy() ) )
       {
         if ( !orig_container->can_add_to_slot( newSlot ) || !item->slot_index( newSlot ) )
         {
@@ -311,7 +315,10 @@ void undo_get_item( Mobile::Character* chr, Items::Item* item )
           return;
         }
         else
+        {
+          item->setposition( pos );
           orig_container->add( item );
+        }
       }
       else
       {
@@ -338,9 +345,8 @@ void undo_get_item( Mobile::Character* chr, Items::Item* item )
     {
       if ( item->orphan() )
         return;
-      else if ( bp->is_legal_posn( item->pos2d() ) )
+      else if ( bp->is_legal_posn( pos.xy() ) )
       {
-        // NOTE it's never in a legal position, cause we clear the x/y/z in getitem
         if ( !bp->can_add_to_slot( newSlot ) || !item->slot_index( newSlot ) )
         {
           item->setposition( chr->pos() );
@@ -350,7 +356,10 @@ void undo_get_item( Mobile::Character* chr, Items::Item* item )
           return;
         }
         else
+        {
+          item->setposition( pos );
           bp->add( item );
+        }
       }
       else
       {
