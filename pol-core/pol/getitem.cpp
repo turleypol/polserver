@@ -20,6 +20,7 @@
 #include "../clib/clib_endian.h"
 #include "../clib/rawtypes.h"
 #include "containr.h"
+#include "fnsearch.h"
 #include "item/item.h"
 #include "mobile/charactr.h"
 #include "network/client.h"
