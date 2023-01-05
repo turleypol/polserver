@@ -56,7 +56,7 @@ namespace Pol
 {
 namespace Core
 {
-void get_item( Network::Client* client, PKTIN_07* msg )
+void GottenItem::get_item( Network::Client* client, PKTIN_07* msg )
 {
   u32 serial = cfBEu32( msg->serial );
   u16 amount = cfBEu16( msg->amount );

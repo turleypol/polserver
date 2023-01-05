@@ -9,6 +9,10 @@
 #include "base/position.h"
 namespace Pol
 {
+namespace Network
+{
+class Client;
+}
 namespace Mobile
 {
 class Character;
@@ -19,6 +23,8 @@ class Item;
 }
 namespace Core
 {
+struct PKTIN_07;
+
 enum class GOTTEN_ITEM_TYPE : u8
 {
   GOTTEN_ITEM_ON_GROUND,
@@ -35,6 +41,7 @@ public:
   GOTTEN_ITEM_TYPE source() const { return _source; };
   void undo( Mobile::Character* chr );
   bool operator==( const GottenItem& o ) const { return _item == o._item; }
+  static void get_item( Network::Client* client, PKTIN_07* msg );
 
 private:
   Items::Item* _item = nullptr;
