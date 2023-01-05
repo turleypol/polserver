@@ -249,6 +249,11 @@ void get_item( Network::Client* client, PKTIN_07* msg )
 }
 
 
+GottenItem::GottenItem( Items::Item* item, Core::Pos4d pos, u32 cnt_serial,
+                        GOTTEN_ITEM_TYPE source )
+    : _item( item ), _pos( std::move( pos ) ), _cnt_serial( cnt_serial ), _source( source )
+{
+}
 /*
   undo:
   when a client issues a get_item command, the item is moved into gotten_items.
@@ -262,129 +267,130 @@ void get_item( Network::Client* client, PKTIN_07* msg )
 
 void GottenItem::undo( Mobile::Character* chr )
 {
-  if ( !item )
+  if ( !_item )
     return;
   // item needs to be returned to where it was..  either on
   // the ground, or equipped on the current character,
   // or in whatever it used to be in.
-  ItemRef itemref( item );  // dave 1/28/3 prevent item from being destroyed before function ends
-  item->restart_decay_timer();  // MuadDib: moved to top to help with instant decay.
-  item->gotten_by( nullptr );
-  if ( source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_EQUIPPED_ON_SELF )
+  ItemRef itemref( _item );  // dave 1/28/3 prevent item from being destroyed before function ends
+  _item->restart_decay_timer();  // MuadDib: moved to top to help with instant decay.
+  _item->gotten_by( nullptr );
+  if ( _source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_EQUIPPED_ON_SELF )
   {
-    if ( chr->equippable( item ) && item->check_equiptest_scripts( chr ) &&
-         item->check_equip_script( chr, false ) )
+    if ( chr->equippable( _item ) && _item->check_equiptest_scripts( chr ) &&
+         _item->check_equip_script( chr, false ) )
     {
-      if ( item->orphan() )
+      if ( _item->orphan() )
         return;
       // is it possible the character doesn't exist? no, it's my character doing the undoing.
-      chr->equip( item );
-      send_wornitem_to_inrange( chr, item );
+      chr->equip( _item );
+      send_wornitem_to_inrange( chr, _item );
       return;
     }
-    if ( item->orphan() )
+    if ( _item->orphan() )
       return;
-    source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER;
+    _source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER;
   }
 
-  if ( source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER )
+  if ( _source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER )
   {
     // First attempt to put it back in the original container.
     UContainer* orig_container = nullptr;
     u8 newSlot = 1;
-    auto* orig_obj = system_find_object( cnt_serial );
+    auto* orig_obj = system_find_object( _cnt_serial );
     if ( orig_obj && orig_obj->isa( UOBJ_CLASS::CLASS_CONTAINER ) )
       orig_container = static_cast<UContainer*>( orig_obj );
-    if ( orig_container && orig_container->can_insert_add_item( chr, UContainer::MT_PLAYER, item ) )
+    if ( orig_container &&
+         orig_container->can_insert_add_item( chr, UContainer::MT_PLAYER, _item ) )
     {
-      if ( item->orphan() )
+      if ( _item->orphan() )
         return;
-      else if ( orig_container->is_legal_posn( pos.xy() ) )
+      else if ( orig_container->is_legal_posn( _pos.xy() ) )
       {
-        if ( !orig_container->can_add_to_slot( newSlot ) || !item->slot_index( newSlot ) )
+        if ( !orig_container->can_add_to_slot( newSlot ) || !_item->slot_index( newSlot ) )
         {
-          item->setposition( chr->pos() );
-          add_item_to_world( item );
-          register_with_supporting_multi( item );
-          move_item( item, chr->pos() );
+          _item->setposition( chr->pos() );
+          add_item_to_world( _item );
+          register_with_supporting_multi( _item );
+          move_item( _item, chr->pos() );
           return;
         }
         else
         {
-          item->setposition( pos );
-          orig_container->add( item );
+          _item->setposition( _pos );
+          orig_container->add( _item );
         }
       }
       else
       {
-        if ( !orig_container->can_add_to_slot( newSlot ) || !item->slot_index( newSlot ) )
+        if ( !orig_container->can_add_to_slot( newSlot ) || !_item->slot_index( newSlot ) )
         {
-          item->setposition( chr->pos() );
-          add_item_to_world( item );
-          register_with_supporting_multi( item );
-          move_item( item, chr->pos() );
+          _item->setposition( chr->pos() );
+          add_item_to_world( _item );
+          register_with_supporting_multi( _item );
+          move_item( _item, chr->pos() );
           return;
         }
         else
-          orig_container->add_at_random_location( item );
+          orig_container->add_at_random_location( _item );
       }
-      update_item_to_inrange( item );
-      orig_container->on_insert_add_item( chr, UContainer::MT_PLAYER, item );
+      update_item_to_inrange( _item );
+      orig_container->on_insert_add_item( chr, UContainer::MT_PLAYER, _item );
       return;
     }
 
     // Attempt to place the item in the player's backpack.
     UContainer* bp = chr->backpack();
-    if ( bp != nullptr && bp->can_add( *item ) &&
-         bp->can_insert_add_item( chr, UContainer::MT_PLAYER, item ) )
+    if ( bp != nullptr && bp->can_add( *_item ) &&
+         bp->can_insert_add_item( chr, UContainer::MT_PLAYER, _item ) )
     {
-      if ( item->orphan() )
+      if ( _item->orphan() )
         return;
-      else if ( bp->is_legal_posn( pos.xy() ) )
+      else if ( bp->is_legal_posn( _pos.xy() ) )
       {
-        if ( !bp->can_add_to_slot( newSlot ) || !item->slot_index( newSlot ) )
+        if ( !bp->can_add_to_slot( newSlot ) || !_item->slot_index( newSlot ) )
         {
-          item->setposition( chr->pos() );
-          add_item_to_world( item );
-          register_with_supporting_multi( item );
-          move_item( item, chr->pos() );
+          _item->setposition( chr->pos() );
+          add_item_to_world( _item );
+          register_with_supporting_multi( _item );
+          move_item( _item, chr->pos() );
           return;
         }
         else
         {
-          item->setposition( pos );
-          bp->add( item );
+          _item->setposition( _pos );
+          bp->add( _item );
         }
       }
       else
       {
-        if ( !bp->can_add_to_slot( newSlot ) || !item->slot_index( newSlot ) )
+        if ( !bp->can_add_to_slot( newSlot ) || !_item->slot_index( newSlot ) )
         {
-          item->setposition( chr->pos() );
-          add_item_to_world( item );
-          register_with_supporting_multi( item );
-          move_item( item, chr->pos() );
+          _item->setposition( chr->pos() );
+          add_item_to_world( _item );
+          register_with_supporting_multi( _item );
+          move_item( _item, chr->pos() );
           return;
         }
         else
-          bp->add_at_random_location( item );
+          bp->add_at_random_location( _item );
       }
-      update_item_to_inrange( item );
-      bp->on_insert_add_item( chr, UContainer::MT_PLAYER, item );
+      update_item_to_inrange( _item );
+      bp->on_insert_add_item( chr, UContainer::MT_PLAYER, _item );
       return;
     }
   }
 
   // Last resort - put it at the player's feet.
-  item->setposition( chr->pos() );
-  item->container = nullptr;
+  _item->setposition( chr->pos() );
+  _item->container = nullptr;
   // 12-17-2008 MuadDib added to clear item.layer properties.
-  item->layer = 0;
+  _item->layer = 0;
 
-  add_item_to_world( item );
+  add_item_to_world( _item );
 
-  register_with_supporting_multi( item );
-  send_item_to_inrange( item );
+  register_with_supporting_multi( _item );
+  send_item_to_inrange( _item );
 }
 }  // namespace Core
 }  // namespace Pol

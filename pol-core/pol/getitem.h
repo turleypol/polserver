@@ -25,14 +25,21 @@ enum class GOTTEN_ITEM_TYPE : u8
   GOTTEN_ITEM_EQUIPPED_ON_SELF,
   GOTTEN_ITEM_IN_CONTAINER
 };
-struct GottenItem
+class GottenItem
 {
-  Items::Item* item = nullptr;
-  Core::Pos4d pos = Core::Pos4d( 0, 0, 0, nullptr );
-  u32 cnt_serial = 0;
-  GOTTEN_ITEM_TYPE source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND;
-  bool operator==( const GottenItem& o ) const { return item == o.item; }
+public:
+  GottenItem() = default;
+  GottenItem( Items::Item* item, Core::Pos4d pos, u32 cnt_serial, GOTTEN_ITEM_TYPE source );
+
+  Items::Item* item() { return _item; };
   void undo( Mobile::Character* chr );
+  bool operator==( const GottenItem& o ) const { return item == o.item; }
+
+private:
+  Items::Item* _item = nullptr;
+  Core::Pos4d _pos = Core::Pos4d( 0, 0, 0, nullptr );
+  u32 _cnt_serial = 0;
+  GOTTEN_ITEM_TYPE _source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND;
 };
 
 }  // namespace Core

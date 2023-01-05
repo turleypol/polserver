@@ -777,7 +777,7 @@ void drop_item( Network::Client* client, PKTIN_08_V1* msg )
   u32 target_serial = cfBEu32( msg->target_serial );
 
   GottenItem info = client->chr->gotten_item();
-  Items::Item* item = info.item;
+  Items::Item* item = info.item();
   if ( item == nullptr )
   {
     SuspiciousActs::DropItemButNoneGotten( client, item_serial );
@@ -840,7 +840,7 @@ void drop_item_v2( Network::Client* client, PKTIN_08_V2* msg )
   u32 target_serial = cfBEu32( msg->target_serial );
 
   GottenItem info = client->chr->gotten_item();
-  Items::Item* item = info.item;
+  Items::Item* item = info.item();
   if ( item == nullptr )
   {
     SuspiciousActs::DropItemButNoneGotten( client, item_serial );

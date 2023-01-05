@@ -928,7 +928,7 @@ void write_items( Clib::StreamWriter& sw_items )
       {
         // Figure out where to save the 'gotten item' - Austin (Oct. 17, 2006)
         if ( chr->has_gotten_item() )
-          WriteGottenItem( chr, chr->gotten_item().item, sw_items );
+          WriteGottenItem( chr, chr->gotten_item().item(), sw_items );
       }
     }
   }

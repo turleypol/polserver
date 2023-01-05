@@ -42,7 +42,7 @@ void equip_item( Network::Client* client, PKTIN_13* msg )
   }
 
   auto info = client->chr->gotten_item();
-  Items::Item* item = info.item;
+  Items::Item* item = info.item();
 
   if ( item == nullptr )
   {

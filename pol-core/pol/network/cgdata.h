@@ -13,7 +13,6 @@
 #include "../../clib/rawtypes.h"
 #include "../../clib/refptr.h"
 #include "../reftypes.h"
-#include "base/position.h"
 
 namespace Pol
 {

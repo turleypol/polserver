@@ -475,10 +475,10 @@ void Character::clear_gotten_item()
   if ( !has_gotten_item() )
     return;
   auto info = gotten_item();
-  if ( info.item != nullptr )
+  if ( info.item() != nullptr )
   {
     gotten_item( {} );
-    info.item->inuse( false );
+    info.item()->inuse( false );
     if ( connected() )
       Core::send_item_move_failure( client, MOVE_ITEM_FAILURE_UNKNOWN );
     info.undo( this );
@@ -535,7 +535,7 @@ unsigned int Character::weight() const
 {
   unsigned int wt = 10 + wornitems->weight();
   if ( has_gotten_item() )
-    wt += gotten_item().item->weight();
+    wt += gotten_item().item()->weight();
   if ( trading_cont.get() )
     wt += trading_cont->weight();
   return wt;
@@ -3967,7 +3967,7 @@ void Character::realm_changed()
   wornitems->for_each_item( Core::setrealm, (void*)realm() );
   // TODO Pos: realm should be all the time nullptr for these items
   if ( has_gotten_item() )
-    gotten_item().item->setposition( Core::Pos4d( gotten_item().item->pos().xyz(), realm() ) );
+    gotten_item().item->setposition( Core::Pos4d( gotten_item().item()->pos().xyz(), realm() ) );
   if ( trading_cont.get() )
     trading_cont->setposition( Core::Pos4d( trading_cont->pos().xyz(), realm() ) );
 
