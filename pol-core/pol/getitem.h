@@ -33,7 +33,7 @@ public:
 
   Items::Item* item() { return _item; };
   void undo( Mobile::Character* chr );
-  bool operator==( const GottenItem& o ) const { return item == o.item; }
+  bool operator==( const GottenItem& o ) const { return _item == o._item; }
 
 private:
   Items::Item* _item = nullptr;
