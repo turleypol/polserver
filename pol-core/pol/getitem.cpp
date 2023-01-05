@@ -144,23 +144,21 @@ void get_item( Network::Client* client, PKTIN_07* msg )
   Pos4d orig_pos = item->pos();  // potential container pos
   Pos4d orig_toppos = item->toplevel_pos();
 
-  GottenItem gotten_info{};
-  gotten_info.pos = orig_pos;
-  gotten_info.item = item;
-  if ( item->container != nullptr )
+  GottenItem gotten_info;
+  if ( orig_container != nullptr )
   {
-    if ( IsCharacter( item->container->serial ) )
-      gotten_info.source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_EQUIPPED_ON_SELF;
+    if ( IsCharacter( orig_container->serial ) )
+      gotten_info = GottenItem( item, orig_pos, 0, GOTTEN_ITEM_TYPE::GOTTEN_ITEM_EQUIPPED_ON_SELF );
     else
     {
-      gotten_info.source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER;
-      gotten_info.cnt_serial = item->container->serial;
+      gotten_info = GottenItem( item, orig_pos, orig_container->serial,
+                                GOTTEN_ITEM_TYPE::GOTTEN_ITEM_IN_CONTAINER );
     }
     item->extricate();
   }
   else
   {
-    gotten_info.source = GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND;
+    gotten_info = GottenItem( item, orig_pos, 0, GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND );
     remove_item_from_world( item );
   }
 
@@ -224,7 +222,7 @@ void get_item( Network::Client* client, PKTIN_07* msg )
   }
 
   // FIXME : Are these all the possibilities for sources and updating, correctly?
-  const auto& gotten_info_source = gotten_info.source;
+  const auto gotten_info_source = gotten_info.source();
   if ( gotten_info_source == GOTTEN_ITEM_TYPE::GOTTEN_ITEM_ON_GROUND )
   {
     // Item was on the ground, so we ONLY need to update the character's weight

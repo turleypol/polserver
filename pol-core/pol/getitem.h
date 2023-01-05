@@ -32,6 +32,7 @@ public:
   GottenItem( Items::Item* item, Core::Pos4d pos, u32 cnt_serial, GOTTEN_ITEM_TYPE source );
 
   Items::Item* item() { return _item; };
+  GOTTEN_ITEM_TYPE source() const { return _source; };
   void undo( Mobile::Character* chr );
   bool operator==( const GottenItem& o ) const { return _item == o._item; }
 
