@@ -84,7 +84,7 @@ void send_container_contents( Client* client, const UContainer& cont )
   u16 count = 0;
   for ( UContainer::const_iterator itr = cont.begin(), itrend = cont.end(); itr != itrend; ++itr )
   {
-    const Items::Item* item = itr;
+    const Items::Item* item = *itr;
     if ( !item->invisible() || client->chr->can_seeinvisitems() )
     {
       msg->Write<u32>( item->serial_ext );
@@ -117,7 +117,7 @@ void send_container_contents( Client* client, const UContainer& cont )
     // revision
     for ( UContainer::const_iterator itr = cont.begin(), itrend = cont.end(); itr != itrend; ++itr )
     {
-      const Items::Item* item = itr;
+      const Items::Item* item = *itr;
       if ( !item->invisible() || client->chr->can_seeinvisitems() )
       {
         send_object_cache( client, item );
