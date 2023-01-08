@@ -22,16 +22,18 @@
 #include "containr.h"
 #include "fnsearch.h"
 #include "item/item.h"
+#include "los.h"
 #include "mobile/charactr.h"
 #include "network/client.h"
+#include "network/packethelper.h"
 #include "network/pktdef.h"
 #include "network/pktin.h"
 #include "reftypes.h"
 #include "statmsg.h"
+#include "systems/suspiciousacts.h"
 #include "ufunc.h"
 #include "uobject.h"
 #include "uworld.h"
-
 
 /* How get_item works:
    when the client drags an item off the ground,
@@ -98,7 +100,7 @@ void GottenItem::handle_lift( Network::Client* client, PKTIN_07* msg )
 
   u8 oldSlot = item->slot_index();
 
-  if ( !client->chr->pos().in_range( item.pos(), 2 ) && !client->chr->can_moveanydist() )
+  if ( !client->chr->pos().in_range( item->pos(), 2 ) && !client->chr->can_moveanydist() )
   {
     send_item_move_failure( client, MOVE_ITEM_FAILURE_TOO_FAR_AWAY );
     return;
@@ -340,7 +342,7 @@ void GottenItem::handle_drop_v2( Network::Client* client, PKTIN_08_V2* msg )
   u32 target_serial = cfBEu32( msg->target_serial );
 
   GottenItem info = client->chr->gotten_item();
-  if ( !info.drop( client, item_serial, pos, target_serial, slot_index ) )
+  if ( !info.drop( client, item_serial, pos, target_serial, slotIndex ) )
     return;
 
   Network::PktHelper::PacketOut<Network::PktOut_29> drop_msg;
