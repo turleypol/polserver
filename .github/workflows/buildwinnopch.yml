@@ -52,17 +52,17 @@ jobs:
         uses: actions/cache@v3
         with:
           path: lib/curl-7.57.0
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-${{ matrix.config.build-type }}-${{ matrix.config.nopch }}-${{ matrix.config.ninja }}-curl-7.57.0
+          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-${{ matrix.config.build-type }}-${{ matrix.config.nopch }}-${{ matrix.config.ninja }}-curl-7.57.01
       - name: Cache antlr
         uses: actions/cache@v3
         with:
           path: lib/antlr
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-${{ matrix.config.build-type }}-${{ matrix.config.nopch }}-${{ matrix.config.ninja }}-antlr-buildtypefix
+          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-${{ matrix.config.build-type }}-${{ matrix.config.nopch }}-${{ matrix.config.ninja }}-antlr-buildtypefix1
       - name: Cache boost
         uses: actions/cache@v3
         with:
           path: lib/boost_1_78_0
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-boost-buildtypefix
+          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-boost-buildtypefix1
       - name: Install llvm
         if: matrix.config.cxx-compiler == 'clang-cl'
         shell: powershell
