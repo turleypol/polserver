@@ -3,9 +3,6 @@
 #include "rawtypes.h"
 #include <type_traits>
 
-namespace Pol::Clib
-{
-
 namespace
 {
 
@@ -85,16 +82,14 @@ template <typename T>
 
 // Aliases using statement
 template <typename T>
-using ctLEu16 = cfLEu16<T>;
+using ctLEu16 = decltype( cfLEu16<T> );
 
 template <typename T>
-using ctLEu32 = cfLEu32<T>;
+using ctLEu32 = decltype( cfLEu32<T> );
 
 template <typename T>
-using ctBEu32 = cfBEu32<T>;
+using ctBEu32 = decltype( cfBEu32<T> );
 
 template <typename T>
-using ctBEu16 = cfBEu16<T>;
-
-}  // namespace Pol::Clib
+using ctBEu16 = decltype( cfBEu16<T> );
 
