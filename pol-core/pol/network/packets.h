@@ -275,7 +275,7 @@ public:
     passert_always_r( offset + x.size() * 2 <= SIZE, "pkt " + Clib::hexint( ID ) );
     for ( const auto& c : x )
     {
-      u16 tmp = ctBEu16( c );
+      u16 tmp = cfBEu16( c );
       std::memcpy( &buffer[offset], &tmp, 2 );
       offset += 2;
     }
