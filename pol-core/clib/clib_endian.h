@@ -53,25 +53,25 @@ template <typename T>
 }  // anonymous namespace
 
 template <typename T>
-[[nodiscard]] constexpr T cfLEu16( T value )
-{
-  return UseBigEndian ? value : flipEndian( value );
-}
-
-template <typename T>
-[[nodiscard]] constexpr T cfLEu32( T value )
-{
-  return UseBigEndian ? value : flipEndian( value );
-}
-
-template <typename T>
 [[nodiscard]] constexpr T cfBEu16( T value )
+{
+  return UseBigEndian ? value : flipEndian( value );
+}
+
+template <typename T>
+[[nodiscard]] constexpr T cfBEu32( T value )
+{
+  return UseBigEndian ? value : flipEndian( value );
+}
+
+template <typename T>
+[[nodiscard]] constexpr T cfLEu16( T value )
 {
   return UseBigEndian ? flipEndian( value ) : value;
 }
 
 template <typename T>
-[[nodiscard]] constexpr T cfBEu32( T value )
+[[nodiscard]] constexpr T cfLEu32( T value )
 {
   return UseBigEndian ? flipEndian( value ) : value;
 }
