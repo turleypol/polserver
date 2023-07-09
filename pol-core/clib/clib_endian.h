@@ -1,50 +1,100 @@
-/** @file
- *
- * @par History
- * - 2009/09/10 MuadDib:   FlipEndian32 Update for compilers. Submitted by Grin.
- */
-
-
-#ifndef __CLIB_ENDIAN_H
-#define __CLIB_ENDIAN_H
+#pragma once
 
 #include "rawtypes.h"
+#include <type_traits>
 
-#ifndef U_BIG_ENDIAN
-#define U_LITTLE_ENDIAN
-#endif
+namespace Pol::Clib
+{
 
-#define flipEndian32( x )                                                   \
-  ( ( (unsigned)( x ) >> 24 ) | ( ( (unsigned)( x ) >> 8 ) & 0x0000FF00 ) | \
-    ( ( ( x ) << 8 ) & 0x00FF0000 ) | ( ( x ) << 24 ) )
-#define flipEndian16( x ) ( ( ( ( x ) >> 8 ) & 0x00FF ) | ( ( ( x ) << 8 ) & 0xFF00 ) )
+namespace
+{
 
 #ifdef U_BIG_ENDIAN
-/* big endian */
-
-#define cfLEu32( x ) flipEndian32( x )
-#define cfLEu16( x ) flipEndian16( x )
-#define ctLEu32( x ) flipEndian32( x )
-#define ctLEu16( x ) flipEndian16( x )
-
-#define cfBEu32( x ) ( x )
-#define cfBEu16( x ) ( x )
-#define ctBEu32( x ) ( x )
-#define ctBEu16( x ) ( x )
-
+constexpr bool UseBigEndian = true;
 #else
-/* little endian */
-
-#define cfLEu32( x ) ( x )
-#define cfLEu16( x ) ( x )
-#define ctLEu32( x ) ( x )
-#define ctLEu16( x ) ( x )
-
-#define cfBEu32( x ) flipEndian32( x )
-#define cfBEu16( x ) flipEndian16( x )
-#define ctBEu32( x ) flipEndian32( x )
-#define ctBEu16( x ) flipEndian16( x )
-
+constexpr bool UseBigEndian = false;
 #endif
 
-#endif
+template <typename T>
+[[nodiscard]] constexpr T flipEndian( T value )
+{
+  static_assert( std::is_integral_v<T> && sizeof( T ) <= 8,
+                 "flipEndian supports only integral types with size up to 8 bytes" );
+
+  if constexpr ( sizeof( T ) == 2 )
+  {
+    return static_cast<T>( ( value >> 8 ) | ( value << 8 ) );
+  }
+  else if constexpr ( sizeof( T ) == 4 )
+  {
+    return static_cast<T>( ( value >> 24 ) | ( ( value >> 8 ) & 0xFF00 ) |
+                           ( ( value << 8 ) & 0xFF0000 ) | ( value << 24 ) );
+  }
+  else if constexpr ( sizeof( T ) == 8 )
+  {
+    return static_cast<T>( ( value >> 56 ) | ( ( value >> 40 ) & 0xFF00 ) |
+                           ( ( value >> 24 ) & 0xFF0000 ) | ( ( value >> 8 ) & 0xFF000000 ) |
+                           ( ( value << 8 ) & 0xFF00000000 ) |
+                           ( ( value << 24 ) & 0xFF0000000000 ) |
+                           ( ( value << 40 ) & 0xFF000000000000 ) | ( value << 56 ) );
+  }
+  return value;
+}
+
+}  // anonymous namespace
+
+template <typename T>
+[[nodiscard]] constexpr std::enable_if_t<sizeof( T ) == 2 && std::is_unsigned_v<T>, T> cfLEu16(
+    T value )
+{
+  return UseBigEndian ? value : flipEndian<T>( value );
+}
+
+template <typename T>
+[[nodiscard]] constexpr std::enable_if_t<sizeof( T ) == 4 && std::is_unsigned_v<T>, T> cfLEu32(
+    T value )
+{
+  return UseBigEndian ? value : flipEndian<T>( value );
+}
+
+template <typename T>
+[[nodiscard]] constexpr std::enable_if_t<sizeof( T ) == 2 && std::is_unsigned_v<T>, T> cfBEu16(
+    T value )
+{
+  return UseBigEndian ? flipEndian<T>( value ) : value;
+}
+
+template <typename T>
+[[nodiscard]] constexpr std::enable_if_t<sizeof( T ) == 4 && std::is_unsigned_v<T>, T> cfBEu32(
+    T value )
+{
+  return UseBigEndian ? flipEndian<T>( value ) : value;
+}
+
+template <typename T>
+[[nodiscard]] constexpr T cfLE( T value )
+{
+  return UseBigEndian ? flipEndian<T>( value ) : value;
+}
+
+template <typename T>
+[[nodiscard]] constexpr T cfBE( T value )
+{
+  return UseBigEndian ? value : flipEndian<T>( value );
+}
+
+// Aliases using statement
+template <typename T>
+using ctLEu16 = cfLEu16<T>;
+
+template <typename T>
+using ctLEu32 = cfLEu32<T>;
+
+template <typename T>
+using ctBEu32 = cfBEu32<T>;
+
+template <typename T>
+using ctBEu16 = cfBEu16<T>;
+
+}  // namespace Pol::Clib
+
