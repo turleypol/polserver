@@ -88,18 +88,28 @@ template <typename T>
   return UseBigEndian ? value : flipEndian( value );
 }
 
-// Aliases using statement
 template <typename T>
-using ctLEu16 = decltype( cfLEu16<T> );
+[[nodiscard]] constexpr T ctLEu16( T value )
+{
+  return cfLEu16<T>( value );
+}
 
 template <typename T>
-using ctLEu32 = decltype( cfLEu32<T> );
+[[nodiscard]] constexpr T ctLEu32( T value )
+{
+  return cfLEu32<T>( value );
+}
 
 template <typename T>
-using ctBEu32 = decltype( cfBEu32<T> );
+[[nodiscard]] constexpr T ctBEu16( T value )
+{
+  return cfBEu16<T>( value );
+}
 
 template <typename T>
-using ctBEu16 = decltype( cfBEu16<T> );
-
+[[nodiscard]] constexpr T ctBEu32( T value )
+{
+  return cfBEu32<T>( value );
+}
 }  // namespace Pol
 
