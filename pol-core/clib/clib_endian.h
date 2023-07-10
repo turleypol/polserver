@@ -75,7 +75,7 @@ template <typename T>
 }
 
 template <typename T>
-[[nodiscard]] constexpr T cfBEu32( T value )
+[[nodiscard]] constexpr auto cfBEu32( T value )
 {
   if constexpr ( std::is_unsigned_v<T> )
   {
