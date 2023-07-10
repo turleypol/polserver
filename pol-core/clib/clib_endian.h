@@ -57,7 +57,8 @@ template <typename T>
 {
   if constexpr ( std::is_unsigned_v<T> )
   {
-    if constexpr ( std::is_same_v<decltype( value ), std::integral_constant<T, value>> )
+    constexpr bool isCompiler = std::is_same_v<decltype( value ), std::integral_constant<T, value>>;
+    if constexpr ( isCompiler )
     {
       static_assert( value >= std::numeric_limits<unsigned short>::min() &&
                          value <= std::numeric_limits<unsigned short>::max(),
@@ -73,7 +74,8 @@ template <typename T>
   }
   if constexpr ( std::is_signed_v<T> )
   {
-    if constexpr ( std::is_same_v<decltype( value ), std::integral_constant<T, value>> )
+    constexpr bool isCompiler = std::is_same_v<decltype( value ), std::integral_constant<T, value>>;
+    if constexpr ( isCompiler )
     {
       static_assert(
           value >= std::numeric_limits<short>::min() && value <= std::numeric_limits<short>::max(),
