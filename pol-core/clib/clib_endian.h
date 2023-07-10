@@ -57,9 +57,11 @@ template <typename T>
 {
   if constexpr ( std::is_unsigned_v<T> )
   {
-    static_assert( value >= std::numeric_limits<unsigned short>::min() &&
-                       value <= std::numeric_limits<unsigned short>::max(),
-                   "Value exceeds the range of unsigned short" );
+    static_assert(
+        std::integral_constant<bool,
+                               ( value >= std::numeric_limits<unsigned short>::min() &&
+                                 value <= std::numeric_limits<unsigned short>::max() )>::value,
+        "Value exceeds the range of unsigned short" );
 
     return UseBigEndian ? static_cast<unsigned short>( value )
                         : flipEndian( static_cast<unsigned short>( value ) );
@@ -67,7 +69,8 @@ template <typename T>
   if constexpr ( std::is_signed_v<T> )
   {
     static_assert(
-        value >= std::numeric_limits<short>::min() && value <= std::numeric_limits<short>::max(),
+        std::integral_constant<bool, ( value >= std::numeric_limits<short>::min() &&
+                                       value <= std::numeric_limits<short>::max() )>::value,
         "Value exceeds the range of short" );
 
     return UseBigEndian ? static_cast<short>( value ) : flipEndian( static_cast<short>( value ) );
@@ -79,9 +82,10 @@ template <typename T>
 {
   if constexpr ( std::is_unsigned_v<T> )
   {
-    static_assert( value >= std::numeric_limits<unsigned int>::min() &&
-                       value <= std::numeric_limits<unsigned int>::max(),
-                   "Value exceeds the range of unsigned int" );
+    static_assert(
+        std::integral_constant<bool, ( value >= std::numeric_limits<unsigned int>::min() &&
+                                       value <= std::numeric_limits<unsigned int>::max() )>::value,
+        "Value exceeds the range of unsigned int" );
 
     return UseBigEndian ? static_cast<unsigned int>( value )
                         : flipEndian( static_cast<unsigned int>( value ) );
@@ -89,7 +93,8 @@ template <typename T>
   if constexpr ( std::is_signed_v<T> )
   {
     static_assert(
-        value >= std::numeric_limits<int>::min() && value <= std::numeric_limits<int>::max(),
+        std::integral_constant<bool, ( value >= std::numeric_limits<int>::min() &&
+                                       value <= std::numeric_limits<int>::max() )>::value,
         "Value exceeds the range of int" );
 
     return UseBigEndian ? static_cast<int>( value ) : flipEndian( static_cast<int>( value ) );
