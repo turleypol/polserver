@@ -53,15 +53,47 @@ template <typename T>
 }  // anonymous namespace
 
 template <typename T>
-[[nodiscard]] constexpr T cfBEu16( T value )
+[[nodiscard]] constexpr auto cfBEu16( T value )
 {
-  return UseBigEndian ? value : flipEndian( value );
+  if constexpr ( std::is_unsigned_v<T> )
+  {
+    static_assert( value >= std::numeric_limits<unsigned short>::min() &&
+                       value <= std::numeric_limits<unsigned short>::max(),
+                   "Value exceeds the range of unsigned short" );
+
+    return UseBigEndian ? static_cast<unsigned short>( value )
+                        : flipEndian( static_cast<unsigned short>( value ) );
+  }
+  if constexpr ( std::is_signed_v<T> )
+  {
+    static_assert(
+        value >= std::numeric_limits<short>::min() && value <= std::numeric_limits<short>::max(),
+        "Value exceeds the range of short" );
+
+    return UseBigEndian ? static_cast<short>( value ) : flipEndian( static_cast<short>( value ) );
+  }
 }
 
 template <typename T>
 [[nodiscard]] constexpr T cfBEu32( T value )
 {
-  return UseBigEndian ? value : flipEndian( value );
+  if constexpr ( std::is_unsigned_v<T> )
+  {
+    static_assert( value >= std::numeric_limits<unsigned int>::min() &&
+                       value <= std::numeric_limits<unsigned int>::max(),
+                   "Value exceeds the range of unsigned int" );
+
+    return UseBigEndian ? static_cast<unsigned int>( value )
+                        : flipEndian( static_cast<unsigned int>( value ) );
+  }
+  if constexpr ( std::is_signed_v<T> )
+  {
+    static_assert(
+        value >= std::numeric_limits<int>::min() && value <= std::numeric_limits<int>::max(),
+        "Value exceeds the range of int" );
+
+    return UseBigEndian ? static_cast<int>( value ) : flipEndian( static_cast<int>( value ) );
+  }
 }
 
 template <typename T>
