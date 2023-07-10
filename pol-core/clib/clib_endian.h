@@ -65,7 +65,7 @@ template <typename T>
     }
     else
     {
-      static_assert( std::is_same_v<std::remove_cvref_t<T>, unsigned short>,
+      static_assert( std::is_same_v<std::remove_cv_t<std::remove_reference_t<T>>, unsigned short>,
                      "T must be 'unsigned short'" );
     }
     return UseBigEndian ? static_cast<unsigned short>( value )
@@ -81,7 +81,8 @@ template <typename T>
     }
     else
     {
-      static_assert( std::is_same_v<std::remove_cvref_t<T>, short>, "T must be 'short'" );
+      static_assert( std::is_same_v<std::remove_cv_t<std::remove_reference_t<T>>, short>,
+                     "T must be 'short'" );
     }
     return UseBigEndian ? static_cast<short>( value ) : flipEndian( static_cast<short>( value ) );
   }
