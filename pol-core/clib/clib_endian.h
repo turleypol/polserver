@@ -57,22 +57,32 @@ template <typename T>
 {
   if constexpr ( std::is_unsigned_v<T> )
   {
-    static_assert(
-        std::integral_constant<bool,
-                               ( value >= std::numeric_limits<unsigned short>::min() &&
-                                 value <= std::numeric_limits<unsigned short>::max() )>::value,
-        "Value exceeds the range of unsigned short" );
-
+    if constexpr ( std::is_constant_evaluated() )
+    {
+      static_assert( value >= std::numeric_limits<unsigned short>::min() &&
+                         value <= std::numeric_limits<unsigned short>::max(),
+                     "Value exceeds the range of unsigned short" );
+    }
+    else
+    {
+      static_assert( std::is_same_v<std::remove_cvref_t<T>, unsigned short>,
+                     "T must be 'unsigned short'" );
+    }
     return UseBigEndian ? static_cast<unsigned short>( value )
                         : flipEndian( static_cast<unsigned short>( value ) );
   }
   if constexpr ( std::is_signed_v<T> )
   {
-    static_assert(
-        std::integral_constant<bool, ( value >= std::numeric_limits<short>::min() &&
-                                       value <= std::numeric_limits<short>::max() )>::value,
-        "Value exceeds the range of short" );
-
+    if constexpr ( std::is_constant_evaluated() )
+    {
+      static_assert(
+          value >= std::numeric_limits<short>::min() && value <= std::numeric_limits<short>::max(),
+          "Value exceeds the range of short" );
+    }
+    else
+    {
+      static_assert( std::is_same_v<std::remove_cvref_t<T>, short>, "T must be 'short'" );
+    }
     return UseBigEndian ? static_cast<short>( value ) : flipEndian( static_cast<short>( value ) );
   }
 }
