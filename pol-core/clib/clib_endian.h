@@ -1,6 +1,5 @@
 #pragma once
 
-// #include "rawtypes.h"
 #include <type_traits>
 
 namespace Pol
@@ -27,25 +26,26 @@ template <typename T>
     using UnsignedT = std::make_unsigned_t<T>;
     return static_cast<T>( flipEndian( static_cast<UnsignedT>( value ) ) );
   }
+
+  if constexpr ( sizeof( T ) == 2 )
+  {
+    return static_cast<T>( ( value >> 8 ) | ( value << 8 ) );
+  }
+  else if constexpr ( sizeof( T ) == 4 )
+  {
+    return static_cast<T>( ( value >> 24 ) | ( ( value >> 8 ) & 0xFF00 ) |
+                           ( ( value << 8 ) & 0xFF0000 ) | ( value << 24 ) );
+  }
+  else if constexpr ( sizeof( T ) == 8 )
+  {
+    return static_cast<T>( ( value >> 56 ) | ( ( value >> 40 ) & 0xFF00 ) |
+                           ( ( value >> 24 ) & 0xFF0000 ) | ( ( value >> 8 ) & 0xFF000000 ) |
+                           ( ( value << 8 ) & 0xFF00000000 ) |
+                           ( ( value << 24 ) & 0xFF0000000000 ) |
+                           ( ( value << 40 ) & 0xFF000000000000 ) | ( value << 56 ) );
+  }
   else
   {
-    if constexpr ( sizeof( T ) == 2 )
-    {
-      return static_cast<T>( ( value >> 8 ) | ( value << 8 ) );
-    }
-    else if constexpr ( sizeof( T ) == 4 )
-    {
-      return static_cast<T>( ( value >> 24 ) | ( ( value >> 8 ) & 0xFF00 ) |
-                             ( ( value << 8 ) & 0xFF0000 ) | ( value << 24 ) );
-    }
-    else if constexpr ( sizeof( T ) == 8 )
-    {
-      return static_cast<T>( ( value >> 56 ) | ( ( value >> 40 ) & 0xFF00 ) |
-                             ( ( value >> 24 ) & 0xFF0000 ) | ( ( value >> 8 ) & 0xFF000000 ) |
-                             ( ( value << 8 ) & 0xFF00000000 ) |
-                             ( ( value << 24 ) & 0xFF0000000000 ) |
-                             ( ( value << 40 ) & 0xFF000000000000 ) | ( value << 56 ) );
-    }
     return value;
   }
 }
