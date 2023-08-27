@@ -241,3 +241,14 @@ exported function client_warmodeinhibitsregen()
   char.setwarmode(0);
   return ret_error($"PC health did not change between sleeping: {damaged_health} -> {waited_health}");
 endfunction
+
+exported function show_gump()
+  Clear_Event_Queue();
+  SendDialogGump(char,{"hello","world"},{"more"});
+  var ev:=waitForClient(0, {EVT_GUMP});
+  if (!ev)
+    return ev;
+  endif
+  print(ev);
+  return 1;
+endfunction

@@ -1529,6 +1529,23 @@ class CompressedGumpPacket(Packet):
     assert len(self.texts) == dtxtLen
     #self.duchar() # Trailing byte?
 
+class CloseGumpResponsePacket(Packet):
+  ''' close gump '''
+
+  cmd = 0xb1
+
+  def fill(serial,gumpid):
+    self.serial=serial
+    self.gumpid =gumpid
+    self.length=17
+
+  def encodeChild(self):
+    self.eulen()
+    self.euint(self.serial)
+    self.euint(self.gumpid)
+    self.euint(0) #button id
+    self.euint(0) #switch count
+
 
 class NewObjectInfoPacket(Packet):
   ''' Draws an item '''
