@@ -1522,7 +1522,7 @@ class CompressedGumpPacket(Packet):
     dLen = self.duint()
     self.commands = zlib.decompress(self.rpb(cLen-4))
     assert len(self.commands) == dLen
-    self.commands=self.commands.decode()
+    self.commands=self.commands[:-1].decode()
     textLines = self.duint()
     ctxtLen = self.duint()
     dtxtLen = self.duint()
