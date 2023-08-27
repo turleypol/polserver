@@ -1537,7 +1537,7 @@ class CloseGumpResponsePacket(Packet):
   def fill(self,serial,gumpid):
     self.serial=serial
     self.gumpid =gumpid
-    self.length=17
+    self.length=19
 
   def encodeChild(self):
     self.eulen()
