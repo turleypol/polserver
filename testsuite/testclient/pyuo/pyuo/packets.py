@@ -1525,7 +1525,7 @@ class CompressedGumpPacket(Packet):
     self.commands=commands[:-1].decode().split(' }{ ')
     if len(self.commands):
       self.commands[0]=self.commands[0].strip('{ ')
-      self.commands[-1]=self.commands[-1].strip('{ ')
+      self.commands[-1]=self.commands[-1].strip(' }')
 
     textLines = self.duint()
     ctxtLen = self.duint()
