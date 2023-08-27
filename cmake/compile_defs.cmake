@@ -291,8 +291,8 @@ function(use_zlib target)
       if (NOT EXISTS ${ZLIB_LIB})
         add_dependencies(${target} libz)
       endif()
-      target_include_directories(${target}  PRIVATE
-        "${ZLIB_HEADERS}"
+      target_include_directories(${target}
+        PUBLIC ${ZLIB_HEADERS}
       )
       target_link_libraries(${target} PRIVATE
         ${ZLIB_LIB}
