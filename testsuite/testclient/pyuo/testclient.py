@@ -287,8 +287,10 @@ class PolServer:
     elif ev.type==Event.EVT_DROP_APPROVED:
       pass
     elif ev.type==Event.EVT_GUMP:
-      res['commands']=ev.commands
-      res['texts']=ev.texts
+      res['commands']=ev.commands.decode()
+      res['texts']=ev.texts.decode('utf-16')
+      self.log.info(ev.commands)
+      self.log.info(ev.texts)
     else:
       raise NotImplementedError("Unknown event {}",format(ev.type))
 
