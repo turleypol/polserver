@@ -249,6 +249,12 @@ exported function show_gump()
   if (!ev)
     return ev;
   endif
+  if (ev.commands!="{ hello }{ world }")
+    return ret_error($"wrong gump cmdstring: {ev}");
+  endif
+  if (ev.texts!="more")
+    return ret_error($"wrong gump textstring: {ev}");
+  endif
   print(ev);
   return 1;
 endfunction
