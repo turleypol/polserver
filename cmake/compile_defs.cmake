@@ -288,13 +288,20 @@ endfunction()
 
 function(use_zlib target)
     if(${windows})
+      if (NOT EXISTS ${ZLIB_LIB})
+        add_dependencies(${target} libz)
+      endif()
       target_include_directories(${target}  PRIVATE
-        "${POL_EXT_LIB_DIR}/zlib"
+        "${ZLIB_SOURCE_DIR}"
+      )
+      target_link_libraries(${target} PRIVATE
+        ${ZLIB_LIB}
+      )
+    else()
+      target_link_libraries(${target} PRIVATE
+        z
       )
     endif()
-    target_link_libraries(${target} PRIVATE
-      z
-    )
 endfunction()
 
 function(warning_suppression target)
