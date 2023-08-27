@@ -8,6 +8,8 @@ set(ZLIB_LIB "${ZLIB_INSTALL_DIR}/lib/zlibstatic.lib")
 set(ZLIB_HEADERS "${ZLIB_INSTALL_DIR}/include")
 set(ZLIB_FLAGS -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake)
 
+message(" -${ZLIB_HEADERS}-")
+message(" -${ZLIB_LIB}-")
 if(NOT EXISTS "${ZLIB_LIB}")
   ExternalProject_Add(libz
     URL "${ZLIB_SOURCE_DIR}/../zlib13.zip"
