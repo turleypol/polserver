@@ -1520,16 +1520,23 @@ class CompressedGumpPacket(Packet):
     self.y = self.duint()
     cLen = self.duint()
     dLen = self.duint()
-    self.commands = zlib.decompress(self.rpb(cLen-4))
-    assert len(self.commands) == dLen
-    self.commands=self.commands[:-1].decode()
+    commands = zlib.decompress(self.rpb(cLen-4))
+    assert len(commands) == dLen
+    self.commands=commands[:-1].decode().split(' }{ ')
+    if len(self.commands):
+      self.commands[0]=self.commands[0].strip('{ ')
+      self.commands[-1]=self.commands[-1].strip('{ ')
+
     textLines = self.duint()
     ctxtLen = self.duint()
     dtxtLen = self.duint()
-    self.texts = zlib.decompress(self.rpb(ctxtLen-4))
-    assert len(self.texts) == dtxtLen
-    #first two bytes is textlen
-    self.texts=self.texts[2:].decode('utf_16_be')
+    texts = zlib.decompress(self.rpb(ctxtLen-4))
+    assert len(texts) == dtxtLen
+    self.texts=[]
+    for i in range(textLines):
+        tlen=struct.unpack('>H',texts[:2])[0]
+        self.texts.append(texts[2:tlen*2+2].decode('utf_16_be'))
+        texts=texts[tlen*2+2:]
     #self.duchar() # Trailing byte?
 
 class CloseGumpResponsePacket(Packet):
