@@ -287,8 +287,8 @@ class PolServer:
     elif ev.type==Event.EVT_DROP_APPROVED:
       pass
     elif ev.type==Event.EVT_GUMP:
-      res['commands']=ev.commands.decode()
-      res['texts']=ev.texts.decode('utf-16')
+      res['commands']=ev.commands
+      res['texts']=ev.texts
       self.log.info(ev.commands)
       self.log.info(ev.texts)
     else:

@@ -1522,11 +1522,14 @@ class CompressedGumpPacket(Packet):
     dLen = self.duint()
     self.commands = zlib.decompress(self.rpb(cLen-4))
     assert len(self.commands) == dLen
+    self.commands=self.commands.decode()
     textLines = self.duint()
     ctxtLen = self.duint()
     dtxtLen = self.duint()
     self.texts = zlib.decompress(self.rpb(ctxtLen-4))
     assert len(self.texts) == dtxtLen
+    #first two bytes is textlen
+    self.texts=self.texts[2:].decode('utf_16_be')
     #self.duchar() # Trailing byte?
 
 class CloseGumpResponsePacket(Packet):
