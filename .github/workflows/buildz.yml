@@ -25,21 +25,6 @@ jobs:
         with:
           python-version: '3.x'
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
-      - name: Cache curl
-        uses: actions/cache@v3
-        with:
-          path: lib/curl-8.2.1
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}
-      - name: Cache antlr
-        uses: actions/cache@v3
-        with:
-          path: lib/antlr
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-antlr-buildtypefix
-      - name: Cache boost
-        uses: actions/cache@v3
-        with:
-          path: lib/boost_1_78_0
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-boost-buildtypefix
       - name: Install Compiler and Dependencies
         if: matrix.config.os == 'ubuntu-latest'
         shell: pwsh
@@ -94,7 +79,7 @@ jobs:
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
+          cmake .. -G Ninja -DCMAKE_VERBOSE_MAKEFILE=1 -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
       - name: Build
         run: |
           cd bin-build
