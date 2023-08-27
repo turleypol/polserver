@@ -5,6 +5,7 @@ set(ZLIB_SOURCE_DIR "${POL_EXT_LIB_DIR}/zlib-1.3")
 
 set(ZLIB_INSTALL_DIR "${ZLIB_SOURCE_DIR}/builds")
 set(ZLIB_LIB "${ZLIB_INSTALL_DIR}/lib/zlibstatic.lib")
+set(ZLIB_HEADERS "${ZLIB_INSTALL_DIR}/include")
 set(ZLIB_FLAGS -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake)
 
 if(NOT EXISTS "${ZLIB_LIB}")

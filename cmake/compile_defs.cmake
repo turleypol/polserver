@@ -292,7 +292,7 @@ function(use_zlib target)
         add_dependencies(${target} libz)
       endif()
       target_include_directories(${target}  PRIVATE
-        "${ZLIB_SOURCE_DIR}"
+        "${ZLIB_HEADERS}"
       )
       target_link_libraries(${target} PRIVATE
         ${ZLIB_LIB}
