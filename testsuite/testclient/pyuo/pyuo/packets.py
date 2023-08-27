@@ -1534,7 +1534,7 @@ class CloseGumpResponsePacket(Packet):
 
   cmd = 0xb1
 
-  def fill(serial,gumpid):
+  def fill(self,serial,gumpid):
     self.serial=serial
     self.gumpid =gumpid
     self.length=17
