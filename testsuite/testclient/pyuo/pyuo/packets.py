@@ -1540,7 +1540,7 @@ class CloseGumpResponsePacket(Packet):
   def fill(self,serial,gumpid):
     self.serial=serial
     self.gumpid =gumpid
-    self.length=19
+    self.length=23
 
   def encodeChild(self):
     self.eulen()
@@ -1548,6 +1548,7 @@ class CloseGumpResponsePacket(Packet):
     self.euint(self.gumpid)
     self.euint(0) #button id
     self.euint(0) #switch count
+    self.euint(0) #string count
 
 
 class NewObjectInfoPacket(Packet):
