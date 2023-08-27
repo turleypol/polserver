@@ -103,6 +103,7 @@ jobs:
           dir ../lib/zlib-1.3
           dir ../lib/zlib-1.3/builds
           dir ../lib/zlib-1.3/builds/lib
+          dir ../lib/zlib-1.3/builds/include
           cmake --build . --config ${{ matrix.config.build-type }} -- kaitai -j 2
 
       - name: Test (EScript)
