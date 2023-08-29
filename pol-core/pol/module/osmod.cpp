@@ -620,7 +620,7 @@ BObjectImp* OSExecutorModule::mf_OpenConnection()
               uoexec_w.get_weakptr()->revive();
             }
             std::unique_ptr<Network::AuxClientThread> client(
-                new Network::AuxClientThread( sd, std::move( s ), p->release(), assume_string,
+                new Network::AuxClientThread( sd, std::move( s ), p.release(), assume_string,
                                               keep_connection, ignore_line_breaks ) );
             client->run();
           } ) );
