@@ -557,24 +557,24 @@ DynTaskThreadPool::~DynTaskThreadPool()
 }
 
 /// simply fire and forget only the deconstructor ensures the msg to be finished
-void DynTaskThreadPool::push( const msg& msg )
+void DynTaskThreadPool::push( msg&& msg )
 {
   create_thread();
-  _msg_queue.push( msg );
+  _msg_queue.push_move( std::move( msg ) );
 }
 
 /// returns a future which will be set once the msg is processed
-std::future<bool> DynTaskThreadPool::checked_push( const msg& msg )
+std::future<bool> DynTaskThreadPool::checked_push( msg&& msg )
 {
   auto promise = std::make_shared<std::promise<bool>>();
   auto ret = promise->get_future();
   create_thread();
   _msg_queue.push(
-      [=]()
+      [=, m = std::move( msg )]()
       {
         try
         {
-          msg();
+          m();
           promise->set_value( true );
         }
         catch ( ... )
