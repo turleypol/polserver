@@ -621,7 +621,8 @@ BObjectImp* OSExecutorModule::mf_OpenConnection()
         std::unique_ptr<Network::AuxClientThread> client( new Network::AuxClientThread(
             sd, std::move( s ), p.release(), assume_string, keep_connection, ignore_line_breaks ) );
         client->run();
-      } Core::networkManager.auxthreadpool->push( std::move( l ) );
+      };
+      Core::networkManager.auxthreadpool->push( std::move( l ) );
 
       return new BLong( 0 );
     }
