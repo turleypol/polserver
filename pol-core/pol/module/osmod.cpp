@@ -595,35 +595,33 @@ BObjectImp* OSExecutorModule::mf_OpenConnection()
       bool keep_connection = keep_connection_int != 0;
       bool ignore_line_breaks = ignore_line_breaks_int != 0;
       std::unique_ptr<BObjectImp> paramobj( scriptparam->copy() );  // prevent delete
-      Core::networkManager.auxthreadpool->push( std::move(
-          [uoexec_w, sd, hostname, port, p = std::move( paramobj ), assume_string, keep_connection,
-           ignore_line_breaks]() mutable
+      auto l = [uoexec_w, sd, hostname, port, p = std::move( paramobj ), assume_string,
+                keep_connection, ignore_line_breaks]() mutable
+      {
+        Clib::Socket s;
+        bool success_open = s.open( hostname.c_str(), port );
+        {
+          Core::PolLock lck;
+          if ( !uoexec_w.exists() )
           {
-            Clib::Socket s;
-            bool success_open = s.open( hostname.c_str(), port );
-            {
-              Core::PolLock lck;
-              if ( !uoexec_w.exists() )
-              {
-                DEBUGLOG << "OpenConnection Script has been destroyed\n";
-                s.close();
-                return;
-              }
-              if ( !success_open )
-              {
-                uoexec_w.get_weakptr()->ValueStack.back().set(
-                    new BObject( new BError( "Error connecting to client" ) ) );
-                uoexec_w.get_weakptr()->revive();
-                return;
-              }
-              uoexec_w.get_weakptr()->ValueStack.back().set( new BObject( new BLong( 1 ) ) );
-              uoexec_w.get_weakptr()->revive();
-            }
-            std::unique_ptr<Network::AuxClientThread> client(
-                new Network::AuxClientThread( sd, std::move( s ), p.release(), assume_string,
-                                              keep_connection, ignore_line_breaks ) );
-            client->run();
-          } ) );
+            DEBUGLOG << "OpenConnection Script has been destroyed\n";
+            s.close();
+            return;
+          }
+          if ( !success_open )
+          {
+            uoexec_w.get_weakptr()->ValueStack.back().set(
+                new BObject( new BError( "Error connecting to client" ) ) );
+            uoexec_w.get_weakptr()->revive();
+            return;
+          }
+          uoexec_w.get_weakptr()->ValueStack.back().set( new BObject( new BLong( 1 ) ) );
+          uoexec_w.get_weakptr()->revive();
+        }
+        std::unique_ptr<Network::AuxClientThread> client( new Network::AuxClientThread(
+            sd, std::move( s ), p.release(), assume_string, keep_connection, ignore_line_breaks ) );
+        client->run();
+      } Core::networkManager.auxthreadpool->push( std::move( l ) );
 
       return new BLong( 0 );
     }
