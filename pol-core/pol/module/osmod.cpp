@@ -596,7 +596,7 @@ BObjectImp* OSExecutorModule::mf_OpenConnection()
       bool ignore_line_breaks = ignore_line_breaks_int != 0;
       std::unique_ptr<BObjectImp> paramobj( scriptparam->copy() );  // prevent delete
       Core::networkManager.auxthreadpool->push(
-          [uoexec_w, sd, hostname, port, std::move( paramobj ), assume_string, keep_connection,
+          [uoexec_w, sd, hostname, port, p = std::move( paramobj ), assume_string, keep_connection,
            ignore_line_breaks]()
           {
             Clib::Socket s;
@@ -619,9 +619,9 @@ BObjectImp* OSExecutorModule::mf_OpenConnection()
               uoexec_w.get_weakptr()->ValueStack.back().set( new BObject( new BLong( 1 ) ) );
               uoexec_w.get_weakptr()->revive();
             }
-            std::unique_ptr<Network::AuxClientThread> client( new Network::AuxClientThread(
-                sd, std::move( s ), paramobj->release(), assume_string, keep_connection,
-                ignore_line_breaks ) );
+            std::unique_ptr<Network::AuxClientThread> client(
+                new Network::AuxClientThread( sd, std::move( s ), p->release(), assume_string,
+                                              keep_connection, ignore_line_breaks ) );
             client->run();
           } );
 
