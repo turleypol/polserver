@@ -597,7 +597,7 @@ BObjectImp* OSExecutorModule::mf_OpenConnection()
       std::unique_ptr<BObjectImp> paramobj( scriptparam->copy() );  // prevent delete
       Core::networkManager.auxthreadpool->push( std::move(
           [uoexec_w, sd, hostname, port, p = std::move( paramobj ), assume_string, keep_connection,
-           ignore_line_breaks]()
+           ignore_line_breaks]() -> mutable
           {
             Clib::Socket s;
             bool success_open = s.open( hostname.c_str(), port );
