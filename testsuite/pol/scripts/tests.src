@@ -11,7 +11,7 @@ program tests()
     "\n##########################\n"
     + "#  starting testscripts  #\n"
     + "#         Run: "+test_count+"         #\n"
-    + "##########################\n",0,CONSOLE_COLOR_BLUE);
+    + "##########################\n",0,CONSOLE_COLOR_CYAN);
   var exitcode:=0;
   var testpkgs:={};
   var restartpkg;
@@ -32,7 +32,7 @@ program tests()
   
   var filter:=GetEnvironmentVariable("POLCORE_TEST_FILTER");
   if (filter)
-    syslog("## using testfilter \""+filter+"\"\n",0,CONSOLE_COLOR_BLUE);
+    syslog("## using testfilter \""+filter+"\"\n",0,CONSOLE_COLOR_CYAN);
   endif
 
   foreach pkg in testpkgs
@@ -96,6 +96,6 @@ program tests()
   syslog(
     "\n###########################\n"
     + "# finished tests: {} #\n".format(result)
-    + "###########################\n",0,CONSOLE_COLOR_BLUE);
+    + "###########################\n",0,CONSOLE_COLOR_CYAN);
   shutdown(exitcode);
 endprogram
