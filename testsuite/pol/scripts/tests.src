@@ -8,10 +8,10 @@ include "testutil";
 program tests()
   var test_count:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
   syslog(
-    "\n##########################\n"
-    + "#  starting testscripts  #\n"
-    + "#         Run: "+test_count+"         #\n"
-    + "##########################\n",0,CONSOLE_COLOR_CYAN);
+    "\n\x1B[36m##########################\n"
+    + "\x1B[36m#  starting testscripts  #\n"
+    + "\x1B[36m#         Run: "+test_count+"         #\n"
+    + "\x1B[36m##########################\n",0,CONSOLE_COLOR_CYAN);
   var exitcode:=0;
   var testpkgs:={};
   var restartpkg;
