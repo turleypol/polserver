@@ -11,7 +11,7 @@ program tests()
     "\n##########################\n"
     + "#  starting testscripts  #\n"
     + "#         Run: "+test_count+"         #\n"
-    + "##########################\n",0);
+    + "##########################\n",0,CONSOLE_COLOR_BLUE);
   var exitcode:=0;
   var testpkgs:={};
   var restartpkg;
@@ -32,7 +32,7 @@ program tests()
   
   var filter:=GetEnvironmentVariable("POLCORE_TEST_FILTER");
   if (filter)
-    syslog("## using testfilter \""+filter+"\"\n",0);
+    syslog("## using testfilter \""+filter+"\"\n",0,CONSOLE_COLOR_BLUE);
   endif
 
   foreach pkg in testpkgs
@@ -44,16 +44,16 @@ program tests()
       continue;
     endif
 
-    syslog(pkg[2],0);
+    syslog(pkg[2],0,CONSOLE_COLOR_GREEN);
     var scripts:=listdirectory(":{}:".format(pkg[1]),"ecl");
     scripts.sort();
     if ("setup.ecl" in scripts)
-      syslog("  Calling setup.ecl..",0);
+      syslog("  Calling setup.ecl..",0,CONSOLE_COLOR_GREEN);
       var res:=run_script(":{}:setup.ecl".format(pkg[1]));
       if (res == IGNORE_TEST)
         continue;
       elseif (res != 1)
-        syslog("    failed: "+res.errortext,0);
+        syslog("    failed: "+res.errortext,0,CONSOLE_COLOR_RED);
         exitcode:=1;
         continue;
       endif
@@ -62,10 +62,10 @@ program tests()
       if (file.find("test") != 1)
         continue;
       endif
-      syslog("  Calling {}..".format(file),0);
+      syslog("  Calling {}..".format(file),0,CONSOLE_COLOR_GREEN);
       var script:=LoadExportedScript(":{}:{}".format(pkg[1], file));
       if (!script[2])
-        syslog("    failed: "+script[2],0);
+        syslog("    failed: "+script[2],0,CONSOLE_COLOR_RED);
         exitcode:=1;
         continue;
       endif
@@ -74,17 +74,17 @@ program tests()
       endif
  
       foreach func in (script[1].exported_functions)
-        syslog("    Calling {}..".format(func),0);
+        syslog("    Calling {}..".format(func),0,CONSOLE_COLOR_GREEN);
         var res:=script[1].call(func);  
         if (res != 1)
-          syslog("      failed: "+res.errortext,0);
+          syslog("      failed: "+res.errortext,0,CONSOLE_COLOR_RED);
           exitcode:=1;
           continue;
         endif
       endforeach
     endforeach
     if ("cleanup.ecl" in scripts)
-      syslog("  Calling cleanup.ecl..",0);
+      syslog("  Calling cleanup.ecl..",0,CONSOLE_COLOR_GREEN);
       run_script(":{}:cleanup.ecl".format(pkg[1]));
     endif
   endforeach
@@ -96,6 +96,6 @@ program tests()
   syslog(
     "\n###########################\n"
     + "# finished tests: {} #\n".format(result)
-    + "###########################\n",0);
+    + "###########################\n",0,CONSOLE_COLOR_BLUE);
   shutdown(exitcode);
 endprogram
