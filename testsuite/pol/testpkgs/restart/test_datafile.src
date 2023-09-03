@@ -1,0 +1,39 @@
+use os;
+use uo;
+use datafile;
+include "testutil";
+
+var testrun:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
+
+program test_datafile()
+  if (testrun != 1) 
+    return 1;
+  endif
+  var df:=CreateDataFile("datafiletest");
+  if (!df)
+    return ret_error($"failed to create df: {df}");
+  endif
+  var de:=df.createelement("test");
+  de.setprop("test1","hello world");
+  de.setprop("test2","hello\nworld");
+  return 1;
+endprogram
+
+exported function test_reload()
+  if (testrun != 2)
+    return 1;
+  endif
+  var df:=OpenDataFile("datafiletest");
+  var de:=df.findelement("test");
+  var res:=de.getprop("test1");
+  if (res != "hello world")
+    return ret_error($"failed to read test1: {res}");
+  endif
+  res:=de.getprop("test2");
+  if (res != "hello\nworld")
+    return ret_error($"failed to read test2: {res}");
+  endif
+    
+
+  return 1;
+endfunction
