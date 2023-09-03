@@ -44,7 +44,7 @@ program tests()
       continue;
     endif
 
-    syslog(pkg[2],0,CONSOLE_COLOR_GREEN);
+    syslog("\x1B[1m"+pkg[2],0,CONSOLE_COLOR_GREEN);
     var scripts:=listdirectory(":{}:".format(pkg[1]),"ecl");
     scripts.sort();
     if ("setup.ecl" in scripts)
