@@ -5,6 +5,7 @@
 
 
 #include "basiciomod.h"
+#include "../../clib/berror.h"
 #include "../../clib/logfacility.h"
 
 #include <module_defs/basicio.h>
