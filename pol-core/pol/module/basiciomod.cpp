@@ -6,6 +6,7 @@
 
 #include "basiciomod.h"
 #include "bscript/berror.h"
+#include "bscript/impstr.h"
 #include "clib/logfacility.h"
 
 #include <module_defs/basicio.h>
@@ -21,13 +22,12 @@ BasicIoExecutorModule::BasicIoExecutorModule( Bscript::Executor& exec )
 
 Bscript::BObjectImp* BasicIoExecutorModule::mf_Print()
 {
-  int color{ 0 };
-  if ( !exec.getParam( 1, color ) )
+  Bscript::String* color;
+  if ( !exec.getStringParam( 1, color ) )
     return new Bscript::BError( "Invalid parameter type" );
-  if ( color > 0 && color < 100 )
+  if ( color->length() )
   {
-    constexpr char RESET_COLOR[] = "\x1b[0m";
-    INFO_PRINT << "\x1b[" << color << 'm' << exec.getParamImp( 0 )->getStringRep() << RESET_COLOR
+    INFO_PRINT << color << exec.getParamImp( 0 )->getStringRep() << Logging::CONSOLE_RESET_COLOR
                << "\n";
   }
   else
