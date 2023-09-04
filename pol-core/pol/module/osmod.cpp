@@ -473,7 +473,7 @@ BObjectImp* OSExecutorModule::mf_SysLog()
     if ( color->length() )
     {
       POLLOG << strval << "\n";
-      INFO_PRINT << color->value() << strval << Logging::CONSOLE_RESET_COLOR << "\n";
+      INFO_PRINT << color->value() << strval << Clib::Logging::CONSOLE_RESET_COLOR << "\n";
     }
     else
     {
