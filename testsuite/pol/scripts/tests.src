@@ -8,10 +8,10 @@ include "testutil";
 program tests()
   var test_count:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
   syslog(
-    "\n\x1B[36m##########################\n"
-    + "\x1B[36m#  starting testscripts  #\n"
-    + "\x1B[36m#         Run: "+test_count+"         #\n"
-    + "\x1B[36m##########################\n",0,CONSOLE_COLOR_CYAN);
+    $"\n{CONSOLE_COLOR_CYAN}##########################\n"
+    + $"{CONSOLE_COLOR_CYAN}#  starting testscripts  #\n"
+    + $"{CONSOLE_COLOR_CYAN}#         Run: "+test_count+"         #\n"
+    + $"{CONSOLE_COLOR_CYAN}##########################\n",0,CONSOLE_COLOR_CYAN);
   var exitcode:=0;
   var testpkgs:={};
   var restartpkg;
@@ -44,7 +44,7 @@ program tests()
       continue;
     endif
 
-    syslog("\x1B[1m"+pkg[2],0,CONSOLE_COLOR_GREEN);
+    syslog(pkg[2],0,"\x1B[1;32m");
     var scripts:=listdirectory(":{}:".format(pkg[1]),"ecl");
     scripts.sort();
     if ("setup.ecl" in scripts)
@@ -89,13 +89,13 @@ program tests()
     endif
   endforeach
   
-  var result:="success";
+  var result:=$"{CONSOLE_COLOR_GREEN}success";
   if (exitcode)
-    result:="failed ";
+    result:=$"{CONSOLE_COLOR_RED}failed ";
   endif
   syslog(
-    "\n###########################\n"
-    + "# finished tests: {} #\n".format(result)
-    + "###########################\n",0,CONSOLE_COLOR_CYAN);
+    $"\n{CONSOLE_COLOR_CYAN}###########################\n"
+    + $"{CONSOLE_COLOR_CYAN}# finished tests: {result} {CONSOLE_COLOR_CYAN}#\n"
+    + $"{CONSOLE_COLOR_CYAN}###########################\n",0,CONSOLE_COLOR_CYAN);
   shutdown(exitcode);
 endprogram
