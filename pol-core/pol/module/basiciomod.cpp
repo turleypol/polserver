@@ -11,9 +11,7 @@
 
 #include <module_defs/basicio.h>
 
-namespace Pol
-{
-namespace Module
+namespace Pol::Module
 {
 BasicIoExecutorModule::BasicIoExecutorModule( Bscript::Executor& exec )
     : Bscript::TmplExecutorModule<BasicIoExecutorModule, Bscript::ExecutorModule>( exec )
@@ -28,7 +26,7 @@ Bscript::BObjectImp* BasicIoExecutorModule::mf_Print()
   if ( color->length() )
   {
     INFO_PRINT << color->value() << exec.getParamImp( 0 )->getStringRep()
-               << Logging::CONSOLE_RESET_COLOR << "\n";
+               << Clib::Logging::CONSOLE_RESET_COLOR << "\n";
   }
   else
   {
@@ -36,5 +34,4 @@ Bscript::BObjectImp* BasicIoExecutorModule::mf_Print()
   }
   return new Bscript::UninitObject;
 }
-}  // namespace Module
-}  // namespace Pol
+}  // namespace Pol::Module

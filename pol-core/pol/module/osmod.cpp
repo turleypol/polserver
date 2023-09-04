@@ -461,7 +461,7 @@ BObjectImp* OSExecutorModule::mf_SysLog()
     if ( color->length() )
     {
       INFO_PRINT << color->value() << "syslog [" << exec.scriptname() << "]: " << strval
-                 << Logging::CONSOLE_RESET_COLOR << "\n";
+                 << Clib::Logging::CONSOLE_RESET_COLOR << "\n";
     }
     else
     {
