@@ -451,7 +451,7 @@ BObjectImp* OSExecutorModule::mf_SysLog()
 {
   BObjectImp* imp = exec.getParamImp( 0 );
   int log_verbose;
-  String* color;
+  const String* color;
   if ( !exec.getParam( 1, log_verbose ) || !exec.getStringParam( 2, color ) )
     return new BError( "Invalid parameter type" );
   std::string strval = imp->getStringRep();
@@ -460,7 +460,7 @@ BObjectImp* OSExecutorModule::mf_SysLog()
     POLLOG << "[" << exec.scriptname() << "]: " << strval << "\n";
     if ( color->length() )
     {
-      INFO_PRINT << color << "syslog [" << exec.scriptname() << "]: " << strval
+      INFO_PRINT << color->value() << "syslog [" << exec.scriptname() << "]: " << strval
                  << Logging::CONSOLE_RESET_COLOR << "\n";
     }
     else
@@ -473,7 +473,7 @@ BObjectImp* OSExecutorModule::mf_SysLog()
     if ( color->length() )
     {
       POLLOG << strval << "\n";
-      INFO_PRINT << color << strval << Logging::CONSOLE_RESET_COLOR << "\n";
+      INFO_PRINT << color->value() << strval << Logging::CONSOLE_RESET_COLOR << "\n";
     }
     else
     {

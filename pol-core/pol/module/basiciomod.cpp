@@ -22,13 +22,13 @@ BasicIoExecutorModule::BasicIoExecutorModule( Bscript::Executor& exec )
 
 Bscript::BObjectImp* BasicIoExecutorModule::mf_Print()
 {
-  Bscript::String* color;
+  const Bscript::String* color;
   if ( !exec.getStringParam( 1, color ) )
     return new Bscript::BError( "Invalid parameter type" );
   if ( color->length() )
   {
-    INFO_PRINT << color << exec.getParamImp( 0 )->getStringRep() << Logging::CONSOLE_RESET_COLOR
-               << "\n";
+    INFO_PRINT << color->value() << exec.getParamImp( 0 )->getStringRep()
+               << Logging::CONSOLE_RESET_COLOR << "\n";
   }
   else
   {
