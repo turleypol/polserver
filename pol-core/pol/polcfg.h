@@ -56,7 +56,7 @@ struct PolConfig
   bool enable_secure_trading;
   unsigned int runaway_script_threshold;
   bool ignore_load_errors;
-  unsigned short min_cmdlvl_ignore_inactivity;
+  std::atomic<unsigned short> min_cmdlvl_ignore_inactivity;
   std::atomic<unsigned short> inactivity_warning_timeout;
   std::atomic<unsigned short> inactivity_disconnect_timeout;
   std::atomic<unsigned short> min_cmdlevel_to_login;
