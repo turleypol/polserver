@@ -61,7 +61,7 @@ function compare_path(res,exp)
   if (len(res) != len(exp))
     return ret_error($"different length result: {res} expected: {exp}");
   endif
-  for (i:=1 to len(res))
+  for i:=1 to res.size()
     if (res[i].x!=exp[i].x || 
         res[i].y!=exp[i].y ||
         res[i].z!=exp[i].z)
