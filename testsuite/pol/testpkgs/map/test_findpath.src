@@ -141,7 +141,8 @@ print(getMapInfo(32,31));
   return 1;
 endfunction
 
-/* water ends at 30,30, walls block complete land 
+/* water ends at 30,30, walls block complete land
+movemode set to LS to reach the target
 OOXO
 OX-X
 O-oo
@@ -150,10 +151,15 @@ exported function path_water_blocking2_ls()
   var wall:=CreateItemAtLocation(31,30,0,0x6);
   var wall2:=CreateItemAtLocation(30,31,0,0x6);
   var res:=FindPath( 30, 30, 0, 32, 30, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5, movemode:="LS" );
+  var expected:={
+    struct{x:=31,y:=29,z:=-5},
+    struct{x:=32,y:=30,z:=0}
+  };
   DestroyItem(wall);
   DestroyItem(wall2);
-  if (res.errortext != "Failed to find a path.")
-    return ret_error($"expected failed to find path, got: {res}");
+  var comp:=compare_path(res,expected);
+  if (!comp)
+    return comp;
   endif
   return 1;
 endfunction
