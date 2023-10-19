@@ -5057,7 +5057,6 @@ BObjectImp* UOExecutorModule::mf_FindPath()
     return new BError( "End Coordinates Invalid for Realm" );
   auto astarsearch = std::make_unique<UOSearch>();
   unsigned int SearchState;
-  short xL, xH, yL, yH;
 
   Range2d range( pos1.xy().min( pos2.xy() ) - Vec2d( theSkirt, theSkirt ),
                  pos1.xy().max( pos2.xy() ) + Vec2d( theSkirt, theSkirt ), realm );

@@ -117,28 +117,26 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
       short newy = pos.y() + j;
       short newz = pos.z();
 
-      if (!theBlockers->range.contains(Pos2d(newx,newy))
-          continue;
-
-      if ( ( newx < 0 ) ||
-           ( newx > ( (int)realm->width() ) ) )
+      if ( !theBlockers->range.contains( Pos2d( newx, newy ) ) )
         continue;
 
-      if ( ( newy < 0 ) ||
-           ( newy > ( (int)realm->height() ) ) )
+      if ( newx < 0 || newx > realm->width() )
         continue;
-      Pos2d newpos( static_cast<u16>( newx ), static_cast<u16>( newy ));
 
-      if ( realm->walkheight( newpos, z, &newz, &supporting_multi, &walkon_item, doors_block,
+      if ( newy < 0 || newy > realm->height() )
+        continue;
+      Pos2d newpos( static_cast<u16>( newx ), static_cast<u16>( newy ) );
+
+      if ( realm->walkheight( newpos, pos.z(), &newz, &supporting_multi, &walkon_item, doors_block,
                               Plib::MOVEMODE_LAND ) )
       {
         // Forbid diagonal move, if between 2 blockers - OWHorus {2011-04-26)
         if ( ( i != 0 ) && ( j != 0 ) )  // do only for diagonal moves
         {
           // If both neighbouring tiles are blocked, the move is illegal (diagonal move)
-          if ( !realm->walkheight( newpos + Vec2d( i, 0 ), z, &newz, &supporting_multi,
+          if ( !realm->walkheight( newpos + Vec2d( i, 0 ), pos.z(), &newz, &supporting_multi,
                                    &walkon_item, doors_block, Plib::MOVEMODE_LAND ) )
-            if ( !realm->walkheight( newpos + Vec2d( 0, j ), z, &newz, &supporting_multi,
+            if ( !realm->walkheight( newpos + Vec2d( 0, j ), pos.z(), &newz, &supporting_multi,
                                      &walkon_item, doors_block, Plib::MOVEMODE_LAND ) )
               continue;
         }
