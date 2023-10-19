@@ -5056,7 +5056,6 @@ BObjectImp* UOExecutorModule::mf_FindPath()
   if ( !realm->valid( pos2.xy() ) )
     return new BError( "End Coordinates Invalid for Realm" );
   auto astarsearch = std::make_unique<UOSearch>();
-  unsigned int SearchState;
 
   Range2d range( pos1.xy().min( pos2.xy() ) - Vec2d( theSkirt, theSkirt ),
                  pos1.xy().max( pos2.xy() ) + Vec2d( theSkirt, theSkirt ), realm );
@@ -5098,6 +5097,7 @@ BObjectImp* UOExecutorModule::mf_FindPath()
   UOPathState nodeEnd( pos2, realm, &theBlockers );
   // Set Start and goal states
   astarsearch->SetStartAndGoalStates( nodeStart, nodeEnd );
+  unsigned int SearchState;
   do
   {
     SearchState = astarsearch->SearchStep( doors_block );
