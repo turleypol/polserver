@@ -17,9 +17,9 @@ exported function path_nonblocking()
     struct{x:=104,y:=100,z:=0},
     struct{x:=105,y:=100,z:=0}
   };
-  var compare:=compare_path(res,expected);
-  if (!compare)
-    return compare;
+  var comp:=compare_path(res,expected);
+  if (!comp)
+    return comp;
   endif
   return 1;
 endfunction
@@ -34,9 +34,9 @@ exported function path_nonblocking1()
     struct{x:=104,y:=100,z:=0},
     struct{x:=105,y:=100,z:=0}
   };
-  var compare:=compare_path(res,expected);
-  if (!compare)
-    return compare;
+  var comp:=compare_path(res,expected);
+  if (!comp)
+    return comp;
   endif
   return 1;
 endfunction
@@ -50,9 +50,9 @@ exported function path_nonblocking2()
     struct{x:=104,y:=100,z:=0},
     struct{x:=105,y:=100,z:=0}
   };
-  var compare:=compare_path(res,expected);
-  if (!compare)
-    return compare;
+  var comp:=compare_path(res,expected);
+  if (!comp)
+    return comp;
   endif
   return 1;
 endfunction
