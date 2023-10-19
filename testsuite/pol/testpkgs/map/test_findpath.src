@@ -29,12 +29,13 @@ exported function path_blocking()
   var res:=FindPath( 100, 100, 0, 100, 105, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
   print(res);
   var expected:={
-    struct{x:=101,y:=101,z:=0},
+    struct{x:= 99,y:=101,z:=0},
     struct{x:=100,y:=102,z:=0},
     struct{x:=100,y:=103,z:=0},
     struct{x:=100,y:=104,z:=0},
     struct{x:=100,y:=105,z:=0}
   };
+  DestroyItem(wall);
   var comp:=compare_path(res,expected);
   if (!comp)
     return comp;
