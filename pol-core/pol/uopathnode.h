@@ -53,6 +53,8 @@ public:
                                 m_movemode );
   }
 
+  Realms::Realm* realm() { return realm; };
+
 private:
   Range2d m_range;
   std::vector<Pos3d> m_blocker;

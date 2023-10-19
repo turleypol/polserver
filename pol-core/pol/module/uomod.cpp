@@ -5073,7 +5073,7 @@ BObjectImp* UOExecutorModule::mf_FindPath()
   }
 
   bool doors_block = ( flags & FP_IGNORE_DOORS ) ? false : true;
-  AStarParams params( range, doors_block, movemode );
+  AStarParams params( range, doors_block, movemode, realm );
 
   if ( !( flags & FP_IGNORE_MOBILES ) )
   {
@@ -5095,9 +5095,9 @@ BObjectImp* UOExecutorModule::mf_FindPath()
   }
 
   // Create a start state
-  UOPathState nodeStart( pos1, realm, &params );
+  UOPathState nodeStart( pos1, &params );
   // Define the goal state
-  UOPathState nodeEnd( pos2, realm, &params );
+  UOPathState nodeEnd( pos2, &params );
   // Set Start and goal states
   astarsearch->SetStartAndGoalStates( nodeStart, nodeEnd );
   unsigned int SearchState;
