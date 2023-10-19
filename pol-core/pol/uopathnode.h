@@ -13,6 +13,9 @@
 
 #include "realms/realms.h"
 
+#include "base/position.h"
+#include "base/vector.h"
+
 namespace Pol
 {
 namespace Core
@@ -23,14 +26,7 @@ class AStarBlockers
 public:
   int xLow, xHigh, yLow, yHigh;
 
-  struct BlockNode
-  {
-    short x;
-    short y;
-    short z;
-  };
-
-  typedef std::vector<BlockNode*> BlockNodeVector;
+  typedef std::vector<Pos3d> BlockNodeVector;
 
 public:
   AStarBlockers( short xL, short xH, short yL, short yH )
@@ -41,31 +37,16 @@ public:
     yHigh = yH;
   }
 
-  void AddBlocker( short x, short y, short z )
+  void AddBlocker( Pos3d pos ) { m_List.push_back( std::move( pos ) ); }
+
+  ~AStarBlockers() = default;
+
+  bool IsBlocking( const Pos3d& pos )
   {
-    BlockNode* theNode = new BlockNode;
-
-    theNode->x = x;
-    theNode->y = y;
-    theNode->z = z;
-
-    m_List.push_back( theNode );
-  }
-
-  ~AStarBlockers()
-  {
-    for ( auto blockNode : m_List )
+    for ( const auto& blockNode : m_List )
     {
-      delete blockNode;
-    }
-  }
-
-  bool IsBlocking( short x, short y, short z )
-  {
-    for ( const auto blockNode : m_List )
-    {
-      if ( ( blockNode->x == x ) && ( blockNode->y == y ) &&
-           ( abs( blockNode->z - z ) < settingsManager.ssopt.default_character_height ) )
+      if ( blockNode.xy() == pos.xy() &
+           ( abs( blockNode.z() - pos.z() ) < settingsManager.ssopt.default_character_height ) )
         return true;
     }
     return false;
@@ -117,7 +98,6 @@ bool UOPathState::IsGoal( UOPathState& nodeGoal )
 {
   return ( ( nodeGoal.x == x ) && ( nodeGoal.y == y ) &&
            ( abs( nodeGoal.z - z ) <= settingsManager.ssopt.default_character_height ) );
-  // return (IsSameState(nodeGoal));
 }
 float UOPathState::GetCost( UOPathState& successor )
 {
@@ -142,7 +122,7 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
 
   UOPathState SolutionStartNode = ( *( astarsearch->GetSolutionStart() ) );
   UOPathState SolutionEndNode = ( *( astarsearch->GetSolutionEnd() ) );
-  UOPathState* NewNode = new UOPathState();
+  UOPathState NewNode{};
 
   for ( short i = -1; i <= 1; i++ )
   {
@@ -150,7 +130,6 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
     {
       if ( ( i == 0 ) && ( j == 0 ) )
         continue;
-
       short newx = x + i;
       short newy = y + j;
       short newz = z;
@@ -162,8 +141,9 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
       if ( ( newy < 0 ) || ( newy < ( theBlockers->yLow ) ) || ( ( newy > theBlockers->yHigh ) ) ||
            ( newy > ( (int)realm->height() ) ) )
         continue;
+      Pos3d newpos{ static_cast<u16>( newx ), static_cast<u16>( newy ), z };
 
-      if ( realm->walkheight( newx, newy, z, &newz, &supporting_multi, &walkon_item, doors_block,
+      if ( realm->walkheight( newpos.xy(), z, &newz, &supporting_multi, &walkon_item, doors_block,
                               Plib::MOVEMODE_LAND ) )
       {
         // Forbid diagonal move, if between 2 blockers - OWHorus {2011-04-26)
@@ -171,38 +151,35 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
         if ( ( i != 0 ) && ( j != 0 ) )  // do only for diagonal moves
         {
           // If both neighbouring tiles are blocked, the move is illegal (diagonal move)
-          if ( !realm->walkheight( x + i, y, z, &newz, &supporting_multi, &walkon_item, doors_block,
-                                   Plib::MOVEMODE_LAND ) )
-            blocked = !( realm->walkheight( x, y + j, z, &newz, &supporting_multi, &walkon_item,
-                                            doors_block, Plib::MOVEMODE_LAND ) );
+          if ( !realm->walkheight( newpos.xy() + Vec2d( i, 0 ), z, &newz, &supporting_multi,
+                                   &walkon_item, doors_block, Plib::MOVEMODE_LAND ) )
+            blocked =
+                !( realm->walkheight( newpos.xy() + Vec2d( 0, j ), z, &newz, &supporting_multi,
+                                      &walkon_item, doors_block, Plib::MOVEMODE_LAND ) );
         }
 
         if ( !blocked )
         {
-          NewNode->x = newx;
-          NewNode->y = newy;
-          NewNode->z = newz;
-          NewNode->realm = realm;
-          NewNode->theBlockers = theBlockers;
+          NewNode.x = newx;
+          NewNode.y = newy;
+          NewNode.z = newz;
+          NewNode.realm = realm;
+          NewNode.theBlockers = theBlockers;
 
-          if ( ( !NewNode->IsSameState( SolutionStartNode ) ) &&
-               ( !NewNode->IsSameState( SolutionEndNode ) ) )
-            blocked = ( theBlockers->IsBlocking( newx, newy, newz ) );
+          if ( ( !NewNode.IsSameState( SolutionStartNode ) ) &&
+               ( !NewNode.IsSameState( SolutionEndNode ) ) )
+            blocked = ( theBlockers->IsBlocking( newpos ) );
         }
 
         if ( !blocked )
         {
-          if ( !astarsearch->AddSuccessor( *NewNode ) )
-          {
-            delete NewNode;
+          if ( !astarsearch->AddSuccessor( NewNode ) )
             return false;
-          }
         }
       }
     }
   }
 
-  delete NewNode;
   return true;
 }
 }  // namespace Core

@@ -71,6 +71,7 @@
 #include <cmath>
 #include <cstddef>
 #include <exception>
+#include <memory>
 #include <optional>
 #include <stdlib.h>
 #include <string>
@@ -5060,9 +5061,8 @@ BObjectImp* UOExecutorModule::mf_FindPath()
       return new BError( "Start Coordinates Invalid for Realm" );
     if ( !realm->valid( x2, y2, z2 ) )
       return new BError( "End Coordinates Invalid for Realm" );
-    UOSearch* astarsearch;
+    auto astarsearch = std::make_unique<UOSearch>();
     unsigned int SearchState;
-    astarsearch = new UOSearch;
     short xL, xH, yL, yH;
 
     if ( x1 < x2 )
@@ -5111,7 +5111,7 @@ BObjectImp* UOExecutorModule::mf_FindPath()
       WorldIterator<MobileFilter>::InBox( xL, yL, xH, yH, realm,
                                           [&]( Mobile::Character* chr )
                                           {
-                                            theBlockers.AddBlocker( chr->x(), chr->y(), chr->z() );
+                                            theBlockers.AddBlocker( chr->pos3d() );
 
                                             if ( Plib::systemstate.config.loglevel >= 12 )
                                               POLLOG << "[FindPath]   add Blocker " << chr->name()
@@ -5154,26 +5154,21 @@ BObjectImp* UOExecutorModule::mf_FindPath()
         nodeArray->addElement( nextStep );
       }
       astarsearch->FreeSolutionNodes();
-      delete astarsearch;
       return nodeArray;
     }
     else if ( SearchState == UOSearch::SEARCH_STATE_FAILED )
     {
-      delete astarsearch;
       return new BError( "Failed to find a path." );
     }
     else if ( SearchState == UOSearch::SEARCH_STATE_OUT_OF_MEMORY )
     {
-      delete astarsearch;
       return new BError( "Out of memory." );
     }
     else if ( SearchState == UOSearch::SEARCH_STATE_SOLUTION_CORRUPTED )
     {
-      delete astarsearch;
       return new BError( "Solution Corrupted!" );
     }
 
-    delete astarsearch;
     return new BError( "Pathfind Error." );
   }
   else
