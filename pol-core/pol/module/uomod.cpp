@@ -5067,23 +5067,21 @@ BObjectImp* UOExecutorModule::mf_FindPath()
     POLLOG.Format( "[FindPath]   search for Blockers inside {}\n" ) << range;
   }
 
-  AStarBlockers theBlockers( range );
+  bool doors_block = ( flags & FP_IGNORE_DOORS ) ? false : true;
+  AStarParams params( range, doors_block );
 
   if ( !( flags & FP_IGNORE_MOBILES ) )
   {
     WorldIterator<MobileFilter>::InBox( range, realm,
                                         [&]( Mobile::Character* chr )
                                         {
-                                          theBlockers.AddBlocker( chr->pos3d() );
+                                          params.AddBlocker( chr->pos3d() );
 
                                           if ( Plib::systemstate.config.loglevel >= 12 )
                                             POLLOG << "[FindPath]   add Blocker " << chr->name()
                                                    << " at " << chr->pos() << "\n";
                                         } );
   }
-
-  // passed via GetSuccessors to realm->walkheight
-  bool doors_block = ( flags & FP_IGNORE_DOORS ) ? false : true;
 
   if ( Plib::systemstate.config.loglevel >= 12 )
   {
@@ -5092,15 +5090,15 @@ BObjectImp* UOExecutorModule::mf_FindPath()
   }
 
   // Create a start state
-  UOPathState nodeStart( pos1, realm, &theBlockers );
+  UOPathState nodeStart( pos1, realm, &params );
   // Define the goal state
-  UOPathState nodeEnd( pos2, realm, &theBlockers );
+  UOPathState nodeEnd( pos2, realm, &params );
   // Set Start and goal states
   astarsearch->SetStartAndGoalStates( nodeStart, nodeEnd );
   unsigned int SearchState;
   do
   {
-    SearchState = astarsearch->SearchStep( doors_block );
+    SearchState = astarsearch->SearchStep();
   } while ( SearchState == UOSearch::SEARCH_STATE_SEARCHING );
   if ( SearchState == UOSearch::SEARCH_STATE_SUCCEEDED )
   {

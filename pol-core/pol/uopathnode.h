@@ -17,17 +17,20 @@ namespace Pol
 {
 namespace Core
 {
-class AStarBlockers
+class AStarParams
 {
 public:
-  AStarBlockers( Range2d searchrange ) : m_range( std::move( searchrange ) ) {}
-  ~AStarBlockers() = default;
+  AStarParams( Range2d searchrange, bool doors_block )
+      : m_range( std::move( searchrange ) ), m_blocker(), m_doors_block( doors_block )
+  {
+  }
+  ~AStarParams() = default;
 
-  void AddBlocker( Pos3d pos ) { m_List.push_back( std::move( pos ) ); }
+  void AddBlocker( Pos3d pos ) { m_blocker.push_back( std::move( pos ) ); }
 
   bool IsBlocking( const Pos3d& pos ) const
   {
-    for ( const auto& blockNode : m_List )
+    for ( const auto& blockNode : m_blocker )
     {
       if ( blockNode.xy() == pos.xy() &&
            ( abs( blockNode.z() - pos.z() ) < settingsManager.ssopt.default_character_height ) )
@@ -37,16 +40,19 @@ public:
   }
   bool inSearchRange( const Pos2d& pos ) const { return m_range.contains( pos ); };
 
+  bool doorsBlock() const { return m_doors_block; };
+
 private:
   Range2d m_range;
-  std::vector<Pos3d> m_List;
+  std::vector<Pos3d> m_blocker;
+  bool m_doors_block;
 };
 
 class UOPathState
 {
 public:
   UOPathState();
-  UOPathState( Pos3d p, Realms::Realm* newrealm, AStarBlockers* blockers );
+  UOPathState( Pos3d p, Realms::Realm* newrealm, AStarParams* params );
   ~UOPathState() = default;
 
   float GoalDistanceEstimate( const UOPathState& nodeGoal ) const;
@@ -60,14 +66,14 @@ public:
   const Pos3d& position() const;
 
 private:
-  AStarBlockers* theBlockers;
+  AStarParams* params;
   Pos3d pos;
   Realms::Realm* realm;
 };
 
-UOPathState::UOPathState() : theBlockers( nullptr ), pos(), realm( nullptr ){};
+UOPathState::UOPathState() : params( nullptr ), pos(), realm( nullptr ){};
 
-UOPathState::UOPathState( Pos3d p, Realms::Realm* newrealm, AStarBlockers* blockers )
+UOPathState::UOPathState( Pos3d p, Realms::Realm* newrealm, AStarParams* params )
     : theBlockers( blockers ), pos( std::move( p ) ), realm( newrealm ){};
 
 bool UOPathState::IsSameState( const UOPathState& rhs ) const
@@ -104,7 +110,7 @@ std::string UOPathState::Name() const
 }
 
 bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
-                                 UOPathState* /*parent_node*/, bool doors_block ) const
+                                 UOPathState* /*parent_node*/ ) const
 {
   Multi::UMulti* supporting_multi = nullptr;
   Items::Item* walkon_item = nullptr;
@@ -116,27 +122,27 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
   {
     if ( newpos == pos.xy() )
       continue;
-    if ( !theBlockers->inSearchRange( newpos ) )
+    if ( !params->inSearchRange( newpos ) )
       continue;
     short newz;
-    if ( !realm->walkheight( newpos, pos.z(), &newz, &supporting_multi, &walkon_item, doors_block,
-                             Plib::MOVEMODE_LAND ) )
+    if ( !realm->walkheight( newpos, pos.z(), &newz, &supporting_multi, &walkon_item,
+                             params->doorsBlock(), Plib::MOVEMODE_LAND ) )
       continue;
     // Forbid diagonal move, if between 2 blockers - OWHorus {2011-04-26)
     if ( ( newpos.x() != pos.x() ) && ( newpos.y() != pos.y() ) )  // do only for diagonal moves
     {
       // If both neighbouring tiles are blocked, the move is illegal (diagonal move)
       if ( !realm->walkheight( Pos2d( pos.xy() ).x( newpos.x() ), pos.z(), &newz, &supporting_multi,
-                               &walkon_item, doors_block, Plib::MOVEMODE_LAND ) &&
+                               &walkon_item, parms->doorsBlock(), Plib::MOVEMODE_LAND ) &&
            !realm->walkheight( Pos2d( pos.xy() ).y( newpos.y() ), pos.z(), &newz, &supporting_multi,
-                               &walkon_item, doors_block, Plib::MOVEMODE_LAND ) )
+                               &walkon_item, params->doorsBlock(), Plib::MOVEMODE_LAND ) )
         continue;
     }
 
     UOPathState NewNode{ Pos3d( newpos, Pos3d::clip_s8( newz ) ), realm, theBlockers };
 
     if ( !NewNode.IsSameState( *SolutionStartNode ) && !NewNode.IsSameState( *SolutionEndNode ) &&
-         theBlockers->IsBlocking( NewNode.pos ) )
+         params->IsBlocking( NewNode.pos ) )
       continue;
 
     if ( !astarsearch->AddSuccessor( NewNode ) )
