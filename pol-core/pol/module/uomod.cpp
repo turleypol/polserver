@@ -5030,151 +5030,111 @@ typedef Plib::AStarSearch<UOPathState> UOSearch;
 
 BObjectImp* UOExecutorModule::mf_FindPath()
 {
-  unsigned short x1, x2;
-  unsigned short y1, y2;
-  short z1, z2;
-  const String* strrealm;
+  Pos3d pos1, pos2;
+  Realms::Realm* realm;
 
-  if ( getParam( 0, x1 ) && getParam( 1, y1 ) && getParam( 2, z1, ZCOORD_MIN, ZCOORD_MAX ) &&
-       getParam( 3, x2 ) && getParam( 4, y2 ) && getParam( 5, z2, ZCOORD_MIN, ZCOORD_MAX ) &&
-       getStringParam( 6, strrealm ) )
-  {
-    if ( pol_distance( x1, y1, x2, y2 ) > settingsManager.ssopt.max_pathfind_range )
-      return new BError( "Beyond Max Range." );
-
-    short theSkirt;
-    int flags;
-
-    if ( !getParam( 7, flags ) )
-      flags = FP_IGNORE_MOBILES;
-
-    if ( !getParam( 8, theSkirt ) )
-      theSkirt = 5;
-
-    if ( theSkirt < 0 )
-      theSkirt = 0;
-
-    Realms::Realm* realm = find_realm( strrealm->value() );
-    if ( !realm )
-      return new BError( "Realm not found" );
-    if ( !realm->valid( x1, y1, z1 ) )
-      return new BError( "Start Coordinates Invalid for Realm" );
-    if ( !realm->valid( x2, y2, z2 ) )
-      return new BError( "End Coordinates Invalid for Realm" );
-    auto astarsearch = std::make_unique<UOSearch>();
-    unsigned int SearchState;
-    short xL, xH, yL, yH;
-
-    if ( x1 < x2 )
-    {
-      xL = x1 - theSkirt;
-      xH = x2 + theSkirt;
-    }
-    else
-    {
-      xH = x1 + theSkirt;
-      xL = x2 - theSkirt;
-    }
-
-    if ( y1 < y2 )
-    {
-      yL = y1 - theSkirt;
-      yH = y2 + theSkirt;
-    }
-    else
-    {
-      yH = y1 + theSkirt;
-      yL = y2 - theSkirt;
-    }
-
-    if ( xL < 0 )
-      xL = 0;
-    if ( yL < 0 )
-      yL = 0;
-    if ( xH >= realm->width() )
-      xH = realm->width() - 1;
-    if ( yH >= realm->height() )
-      yH = realm->height() - 1;
-
-    if ( Plib::systemstate.config.loglevel >= 12 )
-    {
-      POLLOG.Format( "[FindPath] Calling FindPath({}, {}, {}, {}, {}, {}, {}, 0x{:X}, {})\n" )
-          << x1 << y1 << z1 << x2 << y2 << z2 << strrealm->data() << flags << theSkirt;
-      POLLOG.Format( "[FindPath]   search for Blockers inside {} {} {} {}\n" )
-          << xL << yL << xH << yH;
-    }
-
-    AStarBlockers theBlockers( xL, xH, yL, yH );
-
-    if ( !( flags & FP_IGNORE_MOBILES ) )
-    {
-      WorldIterator<MobileFilter>::InBox( xL, yL, xH, yH, realm,
-                                          [&]( Mobile::Character* chr )
-                                          {
-                                            theBlockers.AddBlocker( chr->pos3d() );
-
-                                            if ( Plib::systemstate.config.loglevel >= 12 )
-                                              POLLOG << "[FindPath]   add Blocker " << chr->name()
-                                                     << " at " << chr->pos() << "\n";
-                                          } );
-    }
-
-    // passed via GetSuccessors to realm->walkheight
-    bool doors_block = ( flags & FP_IGNORE_DOORS ) ? false : true;
-
-    if ( Plib::systemstate.config.loglevel >= 12 )
-    {
-      POLLOG.Format( "[FindPath]   use StartNode {} {} {}\n" ) << x1 << y1 << z1;
-      POLLOG.Format( "[FindPath]   use EndNode {} {} {}\n" ) << x2 << y2 << z2;
-    }
-
-    // Create a start state
-    UOPathState nodeStart( x1, y1, z1, realm, &theBlockers );
-    // Define the goal state
-    UOPathState nodeEnd( x2, y2, z2, realm, &theBlockers );
-    // Set Start and goal states
-    astarsearch->SetStartAndGoalStates( nodeStart, nodeEnd );
-    do
-    {
-      SearchState = astarsearch->SearchStep( doors_block );
-    } while ( SearchState == UOSearch::SEARCH_STATE_SEARCHING );
-    if ( SearchState == UOSearch::SEARCH_STATE_SUCCEEDED )
-    {
-      UOPathState* node = astarsearch->GetSolutionStart();
-      ObjArray* nodeArray = nullptr;
-      BStruct* nextStep = nullptr;
-
-      nodeArray = new ObjArray();
-      while ( ( node = astarsearch->GetSolutionNext() ) != nullptr )
-      {
-        nextStep = new BStruct;
-        nextStep->addMember( "x", new BLong( node->x ) );
-        nextStep->addMember( "y", new BLong( node->y ) );
-        nextStep->addMember( "z", new BLong( node->z ) );
-        nodeArray->addElement( nextStep );
-      }
-      astarsearch->FreeSolutionNodes();
-      return nodeArray;
-    }
-    else if ( SearchState == UOSearch::SEARCH_STATE_FAILED )
-    {
-      return new BError( "Failed to find a path." );
-    }
-    else if ( SearchState == UOSearch::SEARCH_STATE_OUT_OF_MEMORY )
-    {
-      return new BError( "Out of memory." );
-    }
-    else if ( SearchState == UOSearch::SEARCH_STATE_SOLUTION_CORRUPTED )
-    {
-      return new BError( "Solution Corrupted!" );
-    }
-
-    return new BError( "Pathfind Error." );
-  }
-  else
-  {
+  if ( !getPos3dParam( 0, 1, 2, &pos1 ) || !getPos3dParam( 3, 4, 5, &pos2 ) ||
+       !getRealmParam( 6, &realm ) )
     return new BError( "Invalid parameter" );
+  if ( !pos1.in_range( pos2, settingsManager.ssopt.max_pathfind_range ) )
+    return new BError( "Beyond Max Range." );
+
+  short theSkirt;
+  int flags;
+
+  if ( !getParam( 7, flags ) )
+    flags = FP_IGNORE_MOBILES;
+
+  if ( !getParam( 8, theSkirt ) )
+    theSkirt = 5;
+
+  if ( theSkirt < 0 )
+    theSkirt = 0;
+
+  if ( !realm->valid( pos1.xy() ) )
+    return new BError( "Start Coordinates Invalid for Realm" );
+  if ( !realm->valid( pos2.xy() ) )
+    return new BError( "End Coordinates Invalid for Realm" );
+  auto astarsearch = std::make_unique<UOSearch>();
+  unsigned int SearchState;
+  short xL, xH, yL, yH;
+
+  Range2d range( pos1.xy().min( pos2.xy() ) - Vec2d( theSkirt, theSkirt ),
+                 pos1.xy().max( pos2.xy() ) + Vec2d( theSkirt, theSkirt ), realm );
+
+  if ( Plib::systemstate.config.loglevel >= 12 )
+  {
+    POLLOG.Format( "[FindPath] Calling FindPath({}, {}, {}, 0x{:X}, {})\n" )
+        << pos1 << pos2 << realm->name() << flags << theSkirt;
+    POLLOG.Format( "[FindPath]   search for Blockers inside {}\n" ) << range;
   }
+
+  AStarBlockers theBlockers( range );
+
+  if ( !( flags & FP_IGNORE_MOBILES ) )
+  {
+    WorldIterator<MobileFilter>::InBox( range, realm,
+                                        [&]( Mobile::Character* chr )
+                                        {
+                                          theBlockers.AddBlocker( chr->pos3d() );
+
+                                          if ( Plib::systemstate.config.loglevel >= 12 )
+                                            POLLOG << "[FindPath]   add Blocker " << chr->name()
+                                                   << " at " << chr->pos() << "\n";
+                                        } );
+  }
+
+  // passed via GetSuccessors to realm->walkheight
+  bool doors_block = ( flags & FP_IGNORE_DOORS ) ? false : true;
+
+  if ( Plib::systemstate.config.loglevel >= 12 )
+  {
+    POLLOG.Format( "[FindPath]   use StartNode {}\n" ) << pos1;
+    POLLOG.Format( "[FindPath]   use EndNode {}\n" ) << pos2;
+  }
+
+  // Create a start state
+  UOPathState nodeStart( pos1, realm, &theBlockers );
+  // Define the goal state
+  UOPathState nodeEnd( pos2, realm, &theBlockers );
+  // Set Start and goal states
+  astarsearch->SetStartAndGoalStates( nodeStart, nodeEnd );
+  do
+  {
+    SearchState = astarsearch->SearchStep( doors_block );
+  } while ( SearchState == UOSearch::SEARCH_STATE_SEARCHING );
+  if ( SearchState == UOSearch::SEARCH_STATE_SUCCEEDED )
+  {
+    UOPathState* node = astarsearch->GetSolutionStart();
+    ObjArray* nodeArray = nullptr;
+    BStruct* nextStep = nullptr;
+
+    nodeArray = new ObjArray();
+    while ( ( node = astarsearch->GetSolutionNext() ) != nullptr )
+    {
+      nextStep = new BStruct;
+      nextStep->addMember( "x", new BLong( node->pos.x() ) );
+      nextStep->addMember( "y", new BLong( node->pos.y() ) );
+      nextStep->addMember( "z", new BLong( node->pos.z() ) );
+      nodeArray->addElement( nextStep );
+    }
+    astarsearch->FreeSolutionNodes();
+    return nodeArray;
+  }
+  else if ( SearchState == UOSearch::SEARCH_STATE_FAILED )
+  {
+    return new BError( "Failed to find a path." );
+  }
+  else if ( SearchState == UOSearch::SEARCH_STATE_OUT_OF_MEMORY )
+  {
+    return new BError( "Out of memory." );
+  }
+  else if ( SearchState == UOSearch::SEARCH_STATE_SOLUTION_CORRUPTED )
+  {
+    return new BError( "Solution Corrupted!" );
+  }
+
+  return new BError( "Pathfind Error." );
 }
 
 
