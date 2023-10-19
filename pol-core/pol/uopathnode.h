@@ -113,7 +113,7 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
       continue;
     if ( !theBlockers->range.contains( newpos ) )
       continue;
-
+    short newz;
     if ( !realm->walkheight( newpos, pos.z(), &newz, &supporting_multi, &walkon_item, doors_block,
                              Plib::MOVEMODE_LAND ) )
       continue;
