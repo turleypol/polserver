@@ -1,16 +1,14 @@
+#pragma once
+
 /** @file
  *
  * @par History
  * - 2005/09/03 Shinigami: GetSuccessors - added support for non-blocking doors
  */
 
-
-#pragma once
 // AStar search class
 #include "../plib/stlastar.h"
 #include "realms/realm.h"
-
-#include "realms/realms.h"
 
 #include "base/position.h"
 #include "base/vector.h"
@@ -37,7 +35,7 @@ public:
     }
     return false;
   }
-  const Range2d& range() const { return m_range; };
+  bool inSearchRange( const Pos2d& pos ) const { return m_range.contains( pos ); };
 
 private:
   Range2d range;
@@ -117,7 +115,7 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
   {
     if ( newpos == pos.xy() )
       continue;
-    if ( !theBlockers->range().contains( newpos ) )
+    if ( !theBlockers->inSearchRange( newpos ) )
       continue;
     short newz;
     if ( !realm->walkheight( newpos, pos.z(), &newz, &supporting_multi, &walkon_item, doors_block,
@@ -128,19 +126,17 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
     {
       // If both neighbouring tiles are blocked, the move is illegal (diagonal move)
       if ( !realm->walkheight( Pos2d( pos.xy() ).x( newpos.x() ), pos.z(), &newz, &supporting_multi,
+                               &walkon_item, doors_block, Plib::MOVEMODE_LAND ) &&
+           !realm->walkheight( Pos2d( pos.xy() ).y( newpos.y() ), pos.z(), &newz, &supporting_multi,
                                &walkon_item, doors_block, Plib::MOVEMODE_LAND ) )
-        if ( !realm->walkheight( Pos2d( pos.xy() ).y( newpos.y() ), pos.z(), &newz,
-                                 &supporting_multi, &walkon_item, doors_block,
-                                 Plib::MOVEMODE_LAND ) )
-          continue;
+        continue;
     }
 
-    UOPathState NewNode{ Pos3d( newpos, newz ), realm, theBlockers };
+    UOPathState NewNode{ Pos3d( newpos, Pos3d::clip_s8( newz ) ), realm, theBlockers };
 
-    if ( ( !NewNode.IsSameState( *SolutionStartNode ) ) &&
-         ( !NewNode.IsSameState( *SolutionEndNode ) ) )
-      if ( theBlockers->IsBlocking( NewNode.pos ) )
-        continue;
+    if ( !NewNode.IsSameState( *SolutionStartNode ) && !NewNode.IsSameState( *SolutionEndNode ) &&
+         theBlockers->IsBlocking( NewNode.pos ) )
+      continue;
 
     if ( !astarsearch->AddSuccessor( NewNode ) )
       return false;
