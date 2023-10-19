@@ -1,0 +1,73 @@
+use uo;
+use os;
+
+include "testutil";
+
+program findpathtests()
+  return 1;
+endprogram
+
+exported function path_nonblocking()
+  var res:=FindPath( 100, 100, 0, 100, 105, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
+  print(res);
+  var expected:={
+    struct{x:=101,y:=100,z:=0},
+    struct{x:=102,y:=100,z:=0},
+    struct{x:=103,y:=100,z:=0},
+    struct{x:=104,y:=100,z:=0},
+    struct{x:=105,y:=100,z:=0}
+  };
+  var compare:=compare_path(res,expected);
+  if (!compare)
+    return compare;
+  endif
+  return 1;
+endfunction
+
+exported function path_nonblocking1()
+  var res:=FindPath( 100, 100, 0, 100, 105, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
+  print(res);
+  var expected:={
+    struct{x:=101,y:=100,z:=0},
+    struct{x:=102,y:=100,z:=0},
+    struct{x:=103,y:=100,z:=1},
+    struct{x:=104,y:=100,z:=0},
+    struct{x:=105,y:=100,z:=0}
+  };
+  var compare:=compare_path(res,expected);
+  if (!compare)
+    return compare;
+  endif
+  return 1;
+endfunction
+
+exported function path_nonblocking2()
+  var res:=FindPath( 100, 100, 0, 100, 105, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
+  print(res);
+  var expected:={
+    struct{x:=101,y:=100,z:=0},
+    struct{x:=102,y:=100,z:=0},
+    struct{x:=104,y:=100,z:=0},
+    struct{x:=105,y:=100,z:=0}
+  };
+  var compare:=compare_path(res,expected);
+  if (!compare)
+    return compare;
+  endif
+  return 1;
+endfunction
+
+function compare_path(res,exp)
+  if (len(res) != len(exp))
+    return ret_error($"different length result: {res} expected: {exp}");
+  endif
+  for (i:=1 to len(res))
+    if (res[i].x!=exp[i].x || 
+        res[i].y!=exp[i].y ||
+        res[i].z!=exp[i].z)
+      return ret_error($"different entry result: {res} expected: {exp}");
+    endif
+  endfor
+  return 1;
+endfunction
+
