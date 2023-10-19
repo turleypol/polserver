@@ -5037,7 +5037,7 @@ BObjectImp* UOExecutorModule::mf_FindPath()
   if ( !getPos3dParam( 0, 1, 2, &pos1 ) || !getPos3dParam( 3, 4, 5, &pos2 ) ||
        !getRealmParam( 6, &realm ) || !getStringParam( 9, movemode_name ) )
     return new BError( "Invalid parameter" );
-  if ( !pos1.in_range( pos2, settingsManager.ssopt.max_pathfind_range ) )
+  if ( !pos1.in_range( pos2, static_cast<u16>( settingsManager.ssopt.max_pathfind_range ) ) )
     return new BError( "Beyond Max Range." );
 
   short theSkirt;

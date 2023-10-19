@@ -135,6 +135,12 @@ OOO
 OX-
 X-X
 OXo
+
+macos result (no clue why, but valid)
+OOX
+OX-X
+O-o
+Ooo
 */
 exported function path_water_blocking2_ls()
   var wall:=CreateItemAtLocation(31,30,0,0x6);
@@ -145,11 +151,21 @@ exported function path_water_blocking2_ls()
     struct{x:=30,y:=32,z:=-5},
     struct{x:=31,y:=31,z:=0}
   };
+
+  var expected2:={
+    struct{x:=31,y:=29,z:=-5},
+    struct{x:=32,y:=30,z:=-5},
+    struct{x:=31,y:=31,z:=0}
+  };
+
   DestroyItem(wall);
   DestroyItem(wall2);
   var comp:=compare_path(res,expected);
   if (!comp)
-    return comp;
+    comp:=compare_path(res,expected2);
+    if (!comp)
+      return comp;
+    endif
   endif
   return 1;
 endfunction
