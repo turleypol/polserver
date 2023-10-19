@@ -5060,6 +5060,7 @@ BObjectImp* UOExecutorModule::mf_FindPath()
     return new BError( "Start Coordinates Invalid for Realm" );
   if ( !realm->valid( pos2.xy() ) )
     return new BError( "End Coordinates Invalid for Realm" );
+
   auto astarsearch = std::make_unique<UOSearch>();
 
   Range2d range( pos1.xy().min( pos2.xy() ) - Vec2d( theSkirt, theSkirt ),
@@ -5108,21 +5109,19 @@ BObjectImp* UOExecutorModule::mf_FindPath()
   if ( SearchState == UOSearch::SEARCH_STATE_SUCCEEDED )
   {
     UOPathState* node = astarsearch->GetSolutionStart();
-    ObjArray* nodeArray = nullptr;
-    BStruct* nextStep = nullptr;
 
-    nodeArray = new ObjArray();
+    auto nodeArray = std::make_unique<ObjArray>();
     while ( ( node = astarsearch->GetSolutionNext() ) != nullptr )
     {
-      nextStep = new BStruct;
+      auto nextStep = std::make_unique<BStruct>();
       const auto& pos = node->position();
       nextStep->addMember( "x", new BLong( pos.x() ) );
       nextStep->addMember( "y", new BLong( pos.y() ) );
       nextStep->addMember( "z", new BLong( pos.z() ) );
-      nodeArray->addElement( nextStep );
+      nodeArray->addElement( nextStep.release() );
     }
     astarsearch->FreeSolutionNodes();
-    return nodeArray;
+    return nodeArray.release();
   }
   else if ( SearchState == UOSearch::SEARCH_STATE_FAILED )
   {

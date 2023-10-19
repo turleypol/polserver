@@ -53,7 +53,7 @@ public:
                                 m_movemode );
   }
 
-  Realms::Realm* realm() { return m_realm; };
+  Realms::Realm* realm() const { return m_realm; };
 
 private:
   Range2d m_range;
@@ -125,8 +125,8 @@ std::string UOPathState::Name() const
 bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
                                  UOPathState* /*parent_node*/ ) const
 {
-  UOPathState* SolutionStartNode = astarsearch->GetSolutionStart();
-  UOPathState* SolutionEndNode = astarsearch->GetSolutionEnd();
+  auto* SolutionStartNode = astarsearch->GetSolutionStart();
+  auto* SolutionEndNode = astarsearch->GetSolutionEnd();
 
   for ( const auto& newpos :
         Range2d( pos.xy() - Vec2d( 1, 1 ), pos.xy() + Vec2d( 1, 1 ), params->realm() ) )
