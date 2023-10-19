@@ -20,8 +20,11 @@ namespace Core
 class AStarParams
 {
 public:
-  AStarParams( Range2d searchrange, bool doors_block )
-      : m_range( std::move( searchrange ) ), m_blocker(), m_doors_block( doors_block )
+  AStarParams( Range2d searchrange, bool doors_block, Plib::MOVEMODE movemode )
+      : m_range( std::move( searchrange ) ),
+        m_blocker(),
+        m_doors_block( doors_block ),
+        m_movemode( movemode )
   {
   }
   ~AStarParams() = default;
@@ -41,11 +44,13 @@ public:
   bool inSearchRange( const Pos2d& pos ) const { return m_range.contains( pos ); };
 
   bool doorsBlock() const { return m_doors_block; };
+  Plib::MOVEMODE moveMode() const { return m_movemode; };
 
 private:
   Range2d m_range;
   std::vector<Pos3d> m_blocker;
   bool m_doors_block;
+  Plib::MOVEMODE m_movemode;
 };
 
 class UOPathState
@@ -126,16 +131,16 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
       continue;
     short newz;
     if ( !realm->walkheight( newpos, pos.z(), &newz, &supporting_multi, &walkon_item,
-                             params->doorsBlock(), Plib::MOVEMODE_LAND ) )
+                             params->doorsBlock(), params->moveMode() ) )
       continue;
     // Forbid diagonal move, if between 2 blockers - OWHorus {2011-04-26)
     if ( ( newpos.x() != pos.x() ) && ( newpos.y() != pos.y() ) )  // do only for diagonal moves
     {
       // If both neighbouring tiles are blocked, the move is illegal (diagonal move)
       if ( !realm->walkheight( Pos2d( pos.xy() ).x( newpos.x() ), pos.z(), &newz, &supporting_multi,
-                               &walkon_item, parms->doorsBlock(), Plib::MOVEMODE_LAND ) &&
+                               &walkon_item, parms->doorsBlock(), params->moveMode() ) &&
            !realm->walkheight( Pos2d( pos.xy() ).y( newpos.y() ), pos.z(), &newz, &supporting_multi,
-                               &walkon_item, params->doorsBlock(), Plib::MOVEMODE_LAND ) )
+                               &walkon_item, params->doorsBlock(), params->moveMode() ) )
         continue;
     }
 

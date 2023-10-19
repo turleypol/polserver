@@ -5032,9 +5032,10 @@ BObjectImp* UOExecutorModule::mf_FindPath()
 {
   Pos3d pos1, pos2;
   Realms::Realm* realm;
+  const String* movemode_name;
 
   if ( !getPos3dParam( 0, 1, 2, &pos1 ) || !getPos3dParam( 3, 4, 5, &pos2 ) ||
-       !getRealmParam( 6, &realm ) )
+       !getRealmParam( 6, &realm ) || !getStringParam( 9, movemode_name ) )
     return new BError( "Invalid parameter" );
   if ( !pos1.in_range( pos2, settingsManager.ssopt.max_pathfind_range ) )
     return new BError( "Beyond Max Range." );
@@ -5047,6 +5048,10 @@ BObjectImp* UOExecutorModule::mf_FindPath()
 
   if ( !getParam( 8, theSkirt ) )
     theSkirt = 5;
+
+  Plib::MOVEMODE movemode = Plib::MOVEMODE_LAND;
+  if ( movemode_name->length() > 0 )
+    movemode = Character::decode_movemode( movemode_name->value() );
 
   if ( theSkirt < 0 )
     theSkirt = 0;
@@ -5068,7 +5073,7 @@ BObjectImp* UOExecutorModule::mf_FindPath()
   }
 
   bool doors_block = ( flags & FP_IGNORE_DOORS ) ? false : true;
-  AStarParams params( range, doors_block );
+  AStarParams params( range, doors_block, movemode );
 
   if ( !( flags & FP_IGNORE_MOBILES ) )
   {
