@@ -11,11 +11,11 @@ exported function path_nonblocking()
   var res:=FindPath( 100, 100, 0, 100, 105, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
   print(res);
   var expected:={
-    struct{x:=101,y:=100,z:=0},
-    struct{x:=102,y:=100,z:=0},
-    struct{x:=103,y:=100,z:=0},
-    struct{x:=104,y:=100,z:=0},
-    struct{x:=105,y:=100,z:=0}
+    struct{x:=100,y:=101,z:=0},
+    struct{x:=100,y:=102,z:=0},
+    struct{x:=100,y:=103,z:=0},
+    struct{x:=100,y:=104,z:=0},
+    struct{x:=100,y:=105,z:=0}
   };
   var comp:=compare_path(res,expected);
   if (!comp)
@@ -24,15 +24,16 @@ exported function path_nonblocking()
   return 1;
 endfunction
 
-exported function path_nonblocking1()
+exported function path_blocking()
+  var wall:=CreateItemAtLocation(100,101,0,0x6);
   var res:=FindPath( 100, 100, 0, 100, 105, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
   print(res);
   var expected:={
-    struct{x:=101,y:=100,z:=0},
-    struct{x:=102,y:=100,z:=0},
-    struct{x:=103,y:=100,z:=1},
-    struct{x:=104,y:=100,z:=0},
-    struct{x:=105,y:=100,z:=0}
+    struct{x:=101,y:=101,z:=0},
+    struct{x:=100,y:=102,z:=0},
+    struct{x:=100,y:=103,z:=0},
+    struct{x:=100,y:=104,z:=0},
+    struct{x:=100,y:=105,z:=0}
   };
   var comp:=compare_path(res,expected);
   if (!comp)
@@ -41,21 +42,6 @@ exported function path_nonblocking1()
   return 1;
 endfunction
 
-exported function path_nonblocking2()
-  var res:=FindPath( 100, 100, 0, 100, 105, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
-  print(res);
-  var expected:={
-    struct{x:=101,y:=100,z:=0},
-    struct{x:=102,y:=100,z:=0},
-    struct{x:=104,y:=100,z:=0},
-    struct{x:=105,y:=100,z:=0}
-  };
-  var comp:=compare_path(res,expected);
-  if (!comp)
-    return comp;
-  endif
-  return 1;
-endfunction
 
 function compare_path(res,exp)
   if (len(res) != len(exp))
