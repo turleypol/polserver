@@ -5,8 +5,7 @@
  */
 
 
-#ifndef __UOPATHNODE_H
-#define __UOPATHNODE_H
+#pragma once
 // AStar search class
 #include "../plib/stlastar.h"
 #include "realms/realm.h"
@@ -20,22 +19,15 @@ namespace Pol
 {
 namespace Core
 {
-#define BORDER_SKIRT 5
 class AStarBlockers
 {
 public:
-  Range2d range;
-
-  typedef std::vector<Pos3d> BlockNodeVector;
-
-public:
   AStarBlockers( Range2d searchrange ) : range( std::move( searchrange ) ) {}
+  ~AStarBlockers() = default;
 
   void AddBlocker( Pos3d pos ) { m_List.push_back( std::move( pos ) ); }
 
-  ~AStarBlockers() = default;
-
-  bool IsBlocking( const Pos3d& pos )
+  bool IsBlocking( const Pos3d& pos ) const
   {
     for ( const auto& blockNode : m_List )
     {
@@ -45,45 +37,57 @@ public:
     }
     return false;
   }
-  BlockNodeVector m_List;
+  const Range2d& range() const { return m_range; };
+
+private:
+  Range2d range;
+  std::vector<Pos3d> m_List;
 };
 
 class UOPathState
 {
 public:
+  UOPathState();
+  UOPathState( Pos3d p, Realms::Realm* newrealm, AStarBlockers* blockers );
+  ~UOPathState() = default;
+
+  float GoalDistanceEstimate( const UOPathState& nodeGoal ) const;
+  bool IsGoal( const UOPathState& nodeGoal ) const;
+  bool GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch, UOPathState* parent_node,
+                      bool doors_block ) const;
+  float GetCost( const UOPathState& successor ) const;
+  bool IsSameState( const UOPathState& rhs ) const;
+  std::string Name() const;
+
+private:
   AStarBlockers* theBlockers;
   Pos3d pos;
   Realms::Realm* realm;
-
-  UOPathState();
-  UOPathState( Pos3d p, Realms::Realm* newrealm, AStarBlockers* blockers );
-  float GoalDistanceEstimate( UOPathState& nodeGoal );
-  bool IsGoal( UOPathState& nodeGoal );
-  bool GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch, UOPathState* parent_node,
-                      bool doors_block );
-  float GetCost( UOPathState& successor );
-  bool IsSameState( UOPathState& rhs );
-  std::string Name();
 };
-UOPathState::UOPathState()
-    : theBlockers( nullptr ), pos(), realm( Core::find_realm( std::string( "britannia" ) ) ){};
+
+UOPathState::UOPathState() : theBlockers( nullptr ), pos(), realm( nullptr ){};
+
 UOPathState::UOPathState( Pos3d p, Realms::Realm* newrealm, AStarBlockers* blockers )
     : theBlockers( blockers ), pos( std::move( p ) ), realm( newrealm ){};
-bool UOPathState::IsSameState( UOPathState& rhs )
+
+bool UOPathState::IsSameState( const UOPathState& rhs ) const
 {
   return pos == rhs.pos && realm == rhs.realm;
 }
-float UOPathState::GoalDistanceEstimate( UOPathState& nodeGoal )
+
+float UOPathState::GoalDistanceEstimate( const UOPathState& nodeGoal ) const
 {
   return ( (float)( abs( pos.x() - nodeGoal.pos.x() ) + abs( pos.y() - nodeGoal.pos.y() ) +
                     abs( pos.z() - nodeGoal.pos.z() ) ) );
 }
-bool UOPathState::IsGoal( UOPathState& nodeGoal )
+
+bool UOPathState::IsGoal( const UOPathState& nodeGoal ) const
 {
   return pos.xy() == nodeGoal.pos.xy() &&
          ( abs( nodeGoal.pos.z() - pos.z() ) <= settingsManager.ssopt.default_character_height );
 }
-float UOPathState::GetCost( UOPathState& successor )
+
+float UOPathState::GetCost( const UOPathState& successor ) const
 {
   int xdiff = abs( pos.x() - successor.pos.x() );
   int ydiff = abs( pos.y() - successor.pos.y() );
@@ -92,14 +96,16 @@ float UOPathState::GetCost( UOPathState& successor )
   else
     return 1.0f;
 }
-std::string UOPathState::Name()
+
+std::string UOPathState::Name() const
 {
   fmt::Writer writer;
   writer << pos;
   return writer.str();
 }
+
 bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
-                                 UOPathState* /*parent_node*/, bool doors_block )
+                                 UOPathState* /*parent_node*/, bool doors_block ) const
 {
   Multi::UMulti* supporting_multi = nullptr;
   Items::Item* walkon_item = nullptr;
@@ -111,7 +117,7 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
   {
     if ( newpos == pos.xy() )
       continue;
-    if ( !theBlockers->range.contains( newpos ) )
+    if ( !theBlockers->range().contains( newpos ) )
       continue;
     short newz;
     if ( !realm->walkheight( newpos, pos.z(), &newz, &supporting_multi, &walkon_item, doors_block,
@@ -144,4 +150,3 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
 }
 }  // namespace Core
 }  // namespace Pol
-#endif
