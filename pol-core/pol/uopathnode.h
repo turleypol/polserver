@@ -77,8 +77,8 @@ bool UOPathState::IsSameState( const UOPathState& rhs ) const
 
 float UOPathState::GoalDistanceEstimate( const UOPathState& nodeGoal ) const
 {
-  return ( (float)( abs( pos.x() - nodeGoal.pos.x() ) + abs( pos.y() - nodeGoal.pos.y() ) +
-                    abs( pos.z() - nodeGoal.pos.z() ) ) );
+  return (float)( abs( pos.x() - nodeGoal.pos.x() ) + abs( pos.y() - nodeGoal.pos.y() ) +
+                  abs( pos.z() - nodeGoal.pos.z() ) );
 }
 
 bool UOPathState::IsGoal( const UOPathState& nodeGoal ) const
@@ -93,8 +93,7 @@ float UOPathState::GetCost( const UOPathState& successor ) const
   int ydiff = abs( pos.y() - successor.pos.y() );
   if ( xdiff && ydiff )
     return 1.414f;
-  else
-    return 1.0f;
+  return 1.0f;
 }
 
 std::string UOPathState::Name() const

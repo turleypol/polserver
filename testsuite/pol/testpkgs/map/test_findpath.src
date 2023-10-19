@@ -112,6 +112,26 @@ exported function path_blocking_diagonal2()
   return 1;
 endfunction
 
+exported function path_blocking2()
+  var wall:=CreateItemAtLocation(31,30,0,0x6);
+  var wall2:=CreateItemAtLocation(30,31,0,0x6);
+  var res:=FindPath( 30, 30, 0, 32, 30, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
+  print(res);
+  var expected:={
+    struct{x:=101,y:=100,z:=0},
+    struct{x:=102,y:=100,z:=0},
+    struct{x:=103,y:=101,z:=0},
+    struct{x:=102,y:=102,z:=0}
+  };
+  DestroyItem(wall);
+  DestroyItem(wall2);
+  var comp:=compare_path(res,expected);
+  if (!comp)
+    return comp;
+  endif
+  return 1;
+endfunction
+
 function compare_path(res,exp)
   if (len(res) != len(exp))
     return ret_error($"different length result: {res} expected: {exp}");
