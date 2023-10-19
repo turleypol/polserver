@@ -43,7 +43,53 @@ exported function path_blocking()
   return 1;
 endfunction
 
+/*
+xooo
+oo-o
+ooxo
+*/
+exported function path_blocking_diagonal()
+  var wall:=CreateItemAtLocation(102,101,0,0x6);
+  var res:=FindPath( 100, 100, 0, 102, 102, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
+  print(res);
+  var expected:={
+    struct{x:=101,y:=101,z:=0},
+    struct{x:=102,y:=102,z:=0}
+  };
+  DestroyItem(wall);
+  var comp:=compare_path(res,expected);
+  if (!comp)
+    return comp;
+  endif
+  return 1;
+endfunction
 
+/*
+two diagonal will block
+xooo
+oo-o
+o-xo
+*/
+exported function path_blocking_diagonal2()
+  var wall:=CreateItemAtLocation(102,101,0,0x6);
+  var wall2:=CreateItemAtLocation(101,102,0,0x6);
+  var res:=FindPath( 100, 100, 0, 102, 102, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
+  print(res);
+  var expected:={
+    struct{x:= 99,y:=101,z:=0},
+    struct{x:=100,y:=102,z:=0},
+    struct{x:=100,y:=103,z:=0},
+    struct{x:=100,y:=104,z:=0},
+    struct{x:=100,y:=105,z:=0}
+  };
+  DestroyItem(wall);
+  DestroyItem(wall2);
+  var comp:=compare_path(res,expected);
+  if (!comp)
+    return comp;
+  endif
+  return 1;
+endfunction
 function compare_path(res,exp)
   if (len(res) != len(exp))
     return ret_error($"different length result: {res} expected: {exp}");
