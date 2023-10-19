@@ -7,6 +7,13 @@ program findpathtests()
   return 1;
 endprogram
 
+/*
+oxo
+oxo
+oxo
+oxo
+oxo
+/*
 exported function path_nonblocking()
   var res:=FindPath( 100, 100, 0, 100, 105, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
   print(res);
@@ -24,6 +31,13 @@ exported function path_nonblocking()
   return 1;
 endfunction
 
+/*
+oxo
+x-o
+oxo
+oxo
+oxo
+/*
 exported function path_blocking()
   var wall:=CreateItemAtLocation(100,101,0,0x6);
   var res:=FindPath( 100, 100, 0, 100, 105, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
@@ -44,8 +58,9 @@ exported function path_blocking()
 endfunction
 
 /*
+one diagonal does not block
 xooo
-oo-o
+ox-o
 ooxo
 */
 exported function path_blocking_diagonal()
@@ -67,8 +82,9 @@ endfunction
 /*
 two diagonal will block
 xooo
-oo-o
-o-xo
+xo-o
+x-xo
+oxoo
 */
 exported function path_blocking_diagonal2()
   var wall:=CreateItemAtLocation(102,101,0,0x6);
@@ -76,11 +92,10 @@ exported function path_blocking_diagonal2()
   var res:=FindPath( 100, 100, 0, 102, 102, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
   print(res);
   var expected:={
-    struct{x:= 99,y:=101,z:=0},
+    struct{x:=100,y:=101,z:=0},
     struct{x:=100,y:=102,z:=0},
-    struct{x:=100,y:=103,z:=0},
-    struct{x:=100,y:=104,z:=0},
-    struct{x:=100,y:=105,z:=0}
+    struct{x:=101,y:=103,z:=0},
+    struct{x:=102,y:=102,z:=0}
   };
   DestroyItem(wall);
   DestroyItem(wall2);
@@ -90,14 +105,15 @@ exported function path_blocking_diagonal2()
   endif
   return 1;
 endfunction
+
 function compare_path(res,exp)
   if (len(res) != len(exp))
     return ret_error($"different length result: {res} expected: {exp}");
   endif
   for i:=1 to res.size()
-    if (res[i].x!=exp[i].x || 
-        res[i].y!=exp[i].y ||
-        res[i].z!=exp[i].z)
+    if (res[i].x != exp[i].x || 
+        res[i].y != exp[i].y ||
+        res[i].z != exp[i].z)
       return ret_error($"different entry result: {res} expected: {exp}");
     endif
   endfor
