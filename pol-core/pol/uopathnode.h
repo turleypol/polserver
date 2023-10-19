@@ -57,13 +57,12 @@ class UOPathState
 {
 public:
   UOPathState();
-  UOPathState( Pos3d p, Realms::Realm* newrealm, AStarParams* params );
+  UOPathState( Pos3d p, Realms::Realm* newrealm, AStarParams* astarparams );
   ~UOPathState() = default;
 
   float GoalDistanceEstimate( const UOPathState& nodeGoal ) const;
   bool IsGoal( const UOPathState& nodeGoal ) const;
-  bool GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch, UOPathState* parent_node,
-                      bool doors_block ) const;
+  bool GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch, UOPathState* parent_node ) const;
   float GetCost( const UOPathState& successor ) const;
   bool IsSameState( const UOPathState& rhs ) const;
   std::string Name() const;
@@ -78,8 +77,8 @@ private:
 
 UOPathState::UOPathState() : params( nullptr ), pos(), realm( nullptr ){};
 
-UOPathState::UOPathState( Pos3d p, Realms::Realm* newrealm, AStarParams* params )
-    : theBlockers( blockers ), pos( std::move( p ) ), realm( newrealm ){};
+UOPathState::UOPathState( Pos3d p, Realms::Realm* newrealm, AStarParams* astarparams )
+    : params( astarparams ), pos( std::move( p ) ), realm( newrealm ){};
 
 bool UOPathState::IsSameState( const UOPathState& rhs ) const
 {
@@ -138,13 +137,13 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
     {
       // If both neighbouring tiles are blocked, the move is illegal (diagonal move)
       if ( !realm->walkheight( Pos2d( pos.xy() ).x( newpos.x() ), pos.z(), &newz, &supporting_multi,
-                               &walkon_item, parms->doorsBlock(), params->moveMode() ) &&
+                               &walkon_item, params->doorsBlock(), params->moveMode() ) &&
            !realm->walkheight( Pos2d( pos.xy() ).y( newpos.y() ), pos.z(), &newz, &supporting_multi,
                                &walkon_item, params->doorsBlock(), params->moveMode() ) )
         continue;
     }
 
-    UOPathState NewNode{ Pos3d( newpos, Pos3d::clip_s8( newz ) ), realm, theBlockers };
+    UOPathState NewNode{ Pos3d( newpos, Pos3d::clip_s8( newz ) ), realm, params };
 
     if ( !NewNode.IsSameState( *SolutionStartNode ) && !NewNode.IsSameState( *SolutionEndNode ) &&
          params->IsBlocking( NewNode.pos ) )
