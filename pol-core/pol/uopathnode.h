@@ -53,7 +53,7 @@ public:
                                 m_movemode );
   }
 
-  Realms::Realm* realm() { return realm; };
+  Realms::Realm* realm() { return m_realm; };
 
 private:
   Range2d m_range;
