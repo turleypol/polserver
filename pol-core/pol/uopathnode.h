@@ -134,9 +134,9 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
         if ( ( i != 0 ) && ( j != 0 ) )  // do only for diagonal moves
         {
           // If both neighbouring tiles are blocked, the move is illegal (diagonal move)
-          if ( !realm->walkheight( newpos + Vec2d( i, 0 ), pos.z(), &newz, &supporting_multi,
+          if ( !realm->walkheight( pos.xy() + Vec2d( i, 0 ), pos.z(), &newz, &supporting_multi,
                                    &walkon_item, doors_block, Plib::MOVEMODE_LAND ) )
-            if ( !realm->walkheight( newpos + Vec2d( 0, j ), pos.z(), &newz, &supporting_multi,
+            if ( !realm->walkheight( pos.xy() + Vec2d( 0, j ), pos.z(), &newz, &supporting_multi,
                                      &walkon_item, doors_block, Plib::MOVEMODE_LAND ) )
               continue;
         }
