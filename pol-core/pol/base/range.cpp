@@ -130,5 +130,10 @@ fmt::Writer& operator<<( fmt::Writer& w, const Range3d& v )
   w << "( " << v.nw_b() << " - " << v.se_t() << " )";
   return w;
 }
+std::ostream& operator<<( std::ostream& os, const Range3d& v )
+{
+  os << "( " << v.nw_b() << " - " << v.se_t() << " )";
+  return os;
+}
 }  // namespace Core
 }  // namespace Pol

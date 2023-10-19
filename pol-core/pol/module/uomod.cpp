@@ -5112,9 +5112,10 @@ BObjectImp* UOExecutorModule::mf_FindPath()
     while ( ( node = astarsearch->GetSolutionNext() ) != nullptr )
     {
       nextStep = new BStruct;
-      nextStep->addMember( "x", new BLong( node->pos.x() ) );
-      nextStep->addMember( "y", new BLong( node->pos.y() ) );
-      nextStep->addMember( "z", new BLong( node->pos.z() ) );
+      const auto& pos = node->position();
+      nextStep->addMember( "x", new BLong( pos.x() ) );
+      nextStep->addMember( "y", new BLong( pos.y() ) );
+      nextStep->addMember( "z", new BLong( pos.z() ) );
       nodeArray->addElement( nextStep );
     }
     astarsearch->FreeSolutionNodes();

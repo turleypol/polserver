@@ -20,7 +20,7 @@ namespace Core
 class AStarBlockers
 {
 public:
-  AStarBlockers( Range2d searchrange ) : range( std::move( searchrange ) ) {}
+  AStarBlockers( Range2d searchrange ) : m_range( std::move( searchrange ) ) {}
   ~AStarBlockers() = default;
 
   void AddBlocker( Pos3d pos ) { m_List.push_back( std::move( pos ) ); }
@@ -38,7 +38,7 @@ public:
   bool inSearchRange( const Pos2d& pos ) const { return m_range.contains( pos ); };
 
 private:
-  Range2d range;
+  Range2d m_range;
   std::vector<Pos3d> m_List;
 };
 
@@ -56,6 +56,8 @@ public:
   float GetCost( const UOPathState& successor ) const;
   bool IsSameState( const UOPathState& rhs ) const;
   std::string Name() const;
+
+  const Pos3d& position() const;
 
 private:
   AStarBlockers* theBlockers;
@@ -143,6 +145,11 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
   }
 
   return true;
+}
+
+const Pos3d& UOPathState::position() const
+{
+  return pos;
 }
 }  // namespace Core
 }  // namespace Pol
