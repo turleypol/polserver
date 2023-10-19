@@ -82,6 +82,11 @@ fmt::Writer& operator<<( fmt::Writer& w, const Range2d& v )
   w << "( " << v.nw() << " - " << v.se() << " )";
   return w;
 }
+std::ostream& operator<<( std::ostream& os, const Range2d& v )
+{
+  os << "( " << v.nw() << " - " << v.se() << " )";
+  return os;
+}
 
 Range3d::Range3d( const Pos3d& p1, const Pos3d& p2, const Realms::Realm* realm )
     : _range( p1.xy(), p2.xy(), realm )
