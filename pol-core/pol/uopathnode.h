@@ -107,51 +107,36 @@ bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
   UOPathState SolutionStartNode = ( *( astarsearch->GetSolutionStart() ) );
   UOPathState SolutionEndNode = ( *( astarsearch->GetSolutionEnd() ) );
 
-  for ( short i = -1; i <= 1; i++ )
+  for ( const auto& newpos : Range2d( pos.xy() - Vec2d( 1, 1 ), pos.xy() + Vec2d( 1, 1 ), realm ) )
   {
-    for ( short j = -1; j <= 1; j++ )
+    if ( newpos == pos.xy() )
+      continue;
+    if ( !theBlockers->range.contains( newpos ) )
+      continue;
+
+    if ( !realm->walkheight( newpos, pos.z(), &newz, &supporting_multi, &walkon_item, doors_block,
+                             Plib::MOVEMODE_LAND ) )
+      continue;
+    // Forbid diagonal move, if between 2 blockers - OWHorus {2011-04-26)
+    if ( ( newpos.x() != pos.x() ) && ( newpos.y() != pos.y() ) )  // do only for diagonal moves
     {
-      if ( ( i == 0 ) && ( j == 0 ) )
-        continue;
-      short newx = pos.x() + i;
-      short newy = pos.y() + j;
-      short newz = pos.z();
-
-      if ( !theBlockers->range.contains( Pos2d( newx, newy ) ) )
-        continue;
-
-      if ( newx < 0 || newx > realm->width() )
-        continue;
-
-      if ( newy < 0 || newy > realm->height() )
-        continue;
-      Pos2d newpos( static_cast<u16>( newx ), static_cast<u16>( newy ) );
-
-      if ( realm->walkheight( newpos, pos.z(), &newz, &supporting_multi, &walkon_item, doors_block,
-                              Plib::MOVEMODE_LAND ) )
-      {
-        // Forbid diagonal move, if between 2 blockers - OWHorus {2011-04-26)
-        if ( ( i != 0 ) && ( j != 0 ) )  // do only for diagonal moves
-        {
-          // If both neighbouring tiles are blocked, the move is illegal (diagonal move)
-          if ( !realm->walkheight( pos.xy() + Vec2d( i, 0 ), pos.z(), &newz, &supporting_multi,
-                                   &walkon_item, doors_block, Plib::MOVEMODE_LAND ) )
-            if ( !realm->walkheight( pos.xy() + Vec2d( 0, j ), pos.z(), &newz, &supporting_multi,
-                                     &walkon_item, doors_block, Plib::MOVEMODE_LAND ) )
-              continue;
-        }
-
-        UOPathState NewNode{ Pos3d( newpos, newz ), realm, theBlockers };
-
-        if ( ( !NewNode.IsSameState( SolutionStartNode ) ) &&
-             ( !NewNode.IsSameState( SolutionEndNode ) ) )
-          if ( theBlockers->IsBlocking( NewNode.pos ) )
-            continue;
-
-        if ( !astarsearch->AddSuccessor( NewNode ) )
-          return false;
-      }
+      // If both neighbouring tiles are blocked, the move is illegal (diagonal move)
+      if ( !realm->walkheight( Pos2d( pos.xy() ).x( newpos.x() ), pos.z(), &newz, &supporting_multi,
+                               &walkon_item, doors_block, Plib::MOVEMODE_LAND ) )
+        if ( !realm->walkheight( Pos2d( pos.xy() ).y( newpos.y ), pos.z(), &newz, &supporting_multi,
+                                 &walkon_item, doors_block, Plib::MOVEMODE_LAND ) )
+          continue;
     }
+
+    UOPathState NewNode{ Pos3d( newpos, newz ), realm, theBlockers };
+
+    if ( ( !NewNode.IsSameState( SolutionStartNode ) ) &&
+         ( !NewNode.IsSameState( SolutionEndNode ) ) )
+      if ( theBlockers->IsBlocking( NewNode.pos ) )
+        continue;
+
+    if ( !astarsearch->AddSuccessor( NewNode ) )
+      return false;
   }
 
   return true;
