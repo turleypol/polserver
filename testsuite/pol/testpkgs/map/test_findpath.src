@@ -112,8 +112,24 @@ exported function path_blocking_diagonal2()
   return 1;
 endfunction
 
-/* water ends at 30,30, walls block complete land */
+/* water ends at 30,30, walls block complete land
+OOOO
+OX-X
+O-oo
+*/
 exported function path_water_blocking2()
+print(getMapInfo(29,29));
+print(getMapInfo(30,29));
+print(getMapInfo(31,29));
+print(getMapInfo(32,29));
+print(getMapInfo(29,30));
+print(getMapInfo(30,30));
+print(getMapInfo(31,30));
+print(getMapInfo(32,30));
+print(getMapInfo(29,31));
+print(getMapInfo(30,31));
+print(getMapInfo(31,31));
+print(getMapInfo(32,31));
   var wall:=CreateItemAtLocation(31,30,0,0x6);
   var wall2:=CreateItemAtLocation(30,31,0,0x6);
   var res:=FindPath( 30, 30, 0, 32, 30, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5 );
@@ -125,7 +141,11 @@ exported function path_water_blocking2()
   return 1;
 endfunction
 
-/* water ends at 30,30, walls block complete land */
+/* water ends at 30,30, walls block complete land 
+OOXO
+OX-X
+O-oo
+*/
 exported function path_water_blocking2_ls()
   var wall:=CreateItemAtLocation(31,30,0,0x6);
   var wall2:=CreateItemAtLocation(30,31,0,0x6);

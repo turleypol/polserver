@@ -20,11 +20,13 @@ namespace Core
 class AStarParams
 {
 public:
-  AStarParams( Range2d searchrange, bool doors_block, Plib::MOVEMODE movemode )
+  AStarParams( Range2d searchrange, bool doors_block, Plib::MOVEMODE movemode,
+               Realms::Realm* realm )
       : m_range( std::move( searchrange ) ),
         m_blocker(),
         m_doors_block( doors_block ),
-        m_movemode( movemode )
+        m_movemode( movemode ),
+        m_realm( realm )
   {
   }
   ~AStarParams() = default;
@@ -43,21 +45,27 @@ public:
   }
   bool inSearchRange( const Pos2d& pos ) const { return m_range.contains( pos ); };
 
-  bool doorsBlock() const { return m_doors_block; };
-  Plib::MOVEMODE moveMode() const { return m_movemode; };
+  bool walkheight( const Pos2d& pos, s8 z, short* newz )
+  {
+    static Multi::UMulti* supporting_multi = nullptr;
+    static Items::Item* walkon_item = nullptr;
+    return m_realm->walkheight( pos, z, newz, &supporting_multi, &walkon_item, m_doors_block,
+                                m_movemode );
+  }
 
 private:
   Range2d m_range;
   std::vector<Pos3d> m_blocker;
   bool m_doors_block;
   Plib::MOVEMODE m_movemode;
+  Realms::Realm* m_realm;
 };
 
 class UOPathState
 {
 public:
   UOPathState();
-  UOPathState( Pos3d p, Realms::Realm* newrealm, AStarParams* astarparams );
+  UOPathState( Pos3d p, AStarParams* astarparams );
   ~UOPathState() = default;
 
   float GoalDistanceEstimate( const UOPathState& nodeGoal ) const;
@@ -72,17 +80,16 @@ public:
 private:
   AStarParams* params;
   Pos3d pos;
-  Realms::Realm* realm;
 };
 
-UOPathState::UOPathState() : params( nullptr ), pos(), realm( nullptr ){};
+UOPathState::UOPathState() : params( nullptr ), pos(){};
 
-UOPathState::UOPathState( Pos3d p, Realms::Realm* newrealm, AStarParams* astarparams )
-    : params( astarparams ), pos( std::move( p ) ), realm( newrealm ){};
+UOPathState::UOPathState( Pos3d p, AStarParams* astarparams )
+    : params( astarparams ), pos( std::move( p ) ){};
 
 bool UOPathState::IsSameState( const UOPathState& rhs ) const
 {
-  return pos == rhs.pos && realm == rhs.realm;
+  return pos == rhs.pos;
 }
 
 float UOPathState::GoalDistanceEstimate( const UOPathState& nodeGoal ) const
@@ -116,34 +123,29 @@ std::string UOPathState::Name() const
 bool UOPathState::GetSuccessors( Plib::AStarSearch<UOPathState>* astarsearch,
                                  UOPathState* /*parent_node*/ ) const
 {
-  Multi::UMulti* supporting_multi = nullptr;
-  Items::Item* walkon_item = nullptr;
-
   UOPathState* SolutionStartNode = astarsearch->GetSolutionStart();
   UOPathState* SolutionEndNode = astarsearch->GetSolutionEnd();
 
-  for ( const auto& newpos : Range2d( pos.xy() - Vec2d( 1, 1 ), pos.xy() + Vec2d( 1, 1 ), realm ) )
+  for ( const auto& newpos :
+        Range2d( pos.xy() - Vec2d( 1, 1 ), pos.xy() + Vec2d( 1, 1 ), params->realm() ) )
   {
     if ( newpos == pos.xy() )
       continue;
     if ( !params->inSearchRange( newpos ) )
       continue;
     short newz;
-    if ( !realm->walkheight( newpos, pos.z(), &newz, &supporting_multi, &walkon_item,
-                             params->doorsBlock(), params->moveMode() ) )
+    if ( !params->walkheight( newpos, pos.z(), &newz ) )
       continue;
     // Forbid diagonal move, if between 2 blockers - OWHorus {2011-04-26)
     if ( ( newpos.x() != pos.x() ) && ( newpos.y() != pos.y() ) )  // do only for diagonal moves
     {
       // If both neighbouring tiles are blocked, the move is illegal (diagonal move)
-      if ( !realm->walkheight( Pos2d( pos.xy() ).x( newpos.x() ), pos.z(), &newz, &supporting_multi,
-                               &walkon_item, params->doorsBlock(), params->moveMode() ) &&
-           !realm->walkheight( Pos2d( pos.xy() ).y( newpos.y() ), pos.z(), &newz, &supporting_multi,
-                               &walkon_item, params->doorsBlock(), params->moveMode() ) )
+      if ( !params->walkheight( Pos2d( pos.xy() ).x( newpos.x() ), pos.z(), &newz ) &&
+           !params->walkheight( Pos2d( pos.xy() ).y( newpos.y() ), pos.z(), &newz ) )
         continue;
     }
 
-    UOPathState NewNode{ Pos3d( newpos, Pos3d::clip_s8( newz ) ), realm, params };
+    UOPathState NewNode{ Pos3d( newpos, Pos3d::clip_s8( newz ) ), params };
 
     if ( !NewNode.IsSameState( *SolutionStartNode ) && !NewNode.IsSameState( *SolutionEndNode ) &&
          params->IsBlocking( NewNode.pos ) )
