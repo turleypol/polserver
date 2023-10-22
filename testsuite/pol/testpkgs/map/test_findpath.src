@@ -177,9 +177,9 @@ endfunction
 
 // end of map with blocking walls
 exported function path_failure_end_of_map()
-  var wall:=CreateItemAtLocation(192,191,0,0x6);
-  var wall2:=CreateItemAtLocation(191,192,0,0x6);
-  var res:=FindPath( 192, 192, 0, 191, 191, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5, movemode:="LS" );
+  var wall:=CreateItemAtLocation(191,190,0,0x6);
+  var wall2:=CreateItemAtLocation(190,191,0,0x6);
+  var res:=FindPath( 191, 191, 0, 190, 190, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5, movemode:="LS" );
   print(res);
   DestroyItem(wall);
   DestroyItem(wall2);
