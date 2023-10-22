@@ -170,6 +170,22 @@ exported function path_water_blocking2_ls()
   return 1;
 endfunction
 
+exported function path_wrongmovemode()
+  var res:=FindPath( 100, 100, 0, 100, 105, 0, realm := _DEFAULT_REALM, flags := FP_IGNORE_MOBILES, searchskirt := 5, movemode:="B");
+  print(res);
+  var expected:={
+    struct{x:=100,y:=101,z:=0},
+    struct{x:=100,y:=102,z:=0},
+    struct{x:=100,y:=103,z:=0},
+    struct{x:=100,y:=104,z:=0},
+    struct{x:=100,y:=105,z:=0}
+  };
+  var comp:=compare_path(res,expected);
+  if (!comp)
+    return comp;
+  endif
+  return 1;
+endfunction
 function compare_path(res,exp)
   if (len(res) != len(exp))
     return ret_error($"different length result: {res} expected: {exp}");
