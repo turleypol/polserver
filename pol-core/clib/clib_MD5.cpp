@@ -98,7 +98,7 @@ bool MD5_Encrypt( const std::string& in, std::string& out )
 {
   auto mctx = EVP_MD_CTX_new();
 
-  EVP_DigestInit_ex( mctx, EVP_MD5(), nullptr );
+  EVP_DigestInit_ex( mctx, EVP_md5(), nullptr );
   EVP_DigestUpdate( mctx, in.c_str(), in.length() );
 
   unsigned char hash[16];
