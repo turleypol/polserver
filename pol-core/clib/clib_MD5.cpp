@@ -96,14 +96,14 @@ namespace Clib
 {
 bool MD5_Encrypt( const std::string& in, std::string& out )
 {
-  auto mctx = EVP_MD_CTX_new()
+  auto mctx = EVP_MD_CTX_new();
 
-      EVP_DigestInit_ex( mctx, EVP_MD5(), nullptr );
+  EVP_DigestInit_ex( mctx, EVP_MD5(), nullptr );
   EVP_DigestUpdate( mctx, in.c_str(), in.length() );
 
   unsigned char hash[16];
   EVP_DigestFinal_ex( mctx, hash, nullptr );
-
+  EVP_MD_CTX_free( mctx );
   fmt::Writer w;
   for ( auto& elem : hash )
   {
