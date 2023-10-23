@@ -88,7 +88,7 @@ void MD5_Cleanup()
 
 #else
 
-#include <openssl/md5.h>
+#include <openssl/evp.h>
 
 namespace Pol
 {
@@ -96,16 +96,21 @@ namespace Clib
 {
 bool MD5_Encrypt( const std::string& in, std::string& out )
 {
-  unsigned char sum[16];
+  EVP_MD_CTX mctx;
+  EVP_MD_CTX_init( &mctx );
 
-  MD5( reinterpret_cast<const unsigned char*>( in.c_str() ), in.length(), sum );
+  EVP_DigestInit_ex( mctx, EVP_MD5(), nullptr );
+  EVP_DigestUpdate( mctx, in.c_str(), in.length() );
 
-  std::ostringstream os;
-  for ( auto& elem : sum )
+  unsigned char hash[16];
+  EVP_DigestFinal_ex( mctx, hash, nullptr );
+
+  fmt::Writer w;
+  for ( auto& elem : hash )
   {
-    os << std::setfill( '0' ) << std::setw( 2 ) << std::hex << (int)elem;
+    w.Format( "{:02x}" ) << (int)elem;
   }
-  out = os.str();
+  out = w.str();
 
   return true;
 }
