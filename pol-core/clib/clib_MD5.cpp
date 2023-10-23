@@ -9,16 +9,15 @@
 
 #include "clib_MD5.h"
 
-#include <iomanip>
-#include <sstream>
+#include <format/format.h>
 
-#include "logfacility.h"
-#include "pol_global_config.h"
 #include "stlutil.h"
 
 #ifdef WINDOWS
 #include "Header_Windows.h"
 #include <wincrypt.h>
+
+#include "logfacility.h"
 
 namespace Pol
 {
@@ -28,10 +27,6 @@ static HCRYPTPROV hProv = 0;
 
 bool MD5_Encrypt( const std::string& in, std::string& out )
 {
-  // bool bResult = true;
-
-  // HCRYPTKEY hKey = nullptr;
-  // HCRYPTKEY hXchgKey = nullptr;
   HCRYPTHASH hHash = 0;
 
   if ( !hProv )
@@ -67,12 +62,12 @@ bool MD5_Encrypt( const std::string& in, std::string& out )
     return false;
   }
 
-  std::ostringstream os;
-  for ( unsigned int i = 0; i < len; i++ )
+  fmt::Writer w;
+  for ( auto& elem : buf )
   {
-    os << std::setfill( '0' ) << std::setw( 2 ) << std::hex << (int)buf[i];
+    w.Format( "{:02x}" ) << (int)elem;
   }
-  out = os.str();
+  out = w.str();
 
   CryptDestroyHash( hHash );
   return true;
@@ -96,14 +91,15 @@ namespace Clib
 {
 bool MD5_Encrypt( const std::string& in, std::string& out )
 {
-  auto mctx = EVP_MD_CTX_new();
+  auto ctx = EVP_MD_CTX_new();
 
-  EVP_DigestInit_ex( mctx, EVP_md5(), nullptr );
-  EVP_DigestUpdate( mctx, in.c_str(), in.length() );
+  EVP_DigestInit_ex( ctx, EVP_md5(), nullptr );
+  EVP_DigestUpdate( ctx, in.c_str(), in.length() );
 
   unsigned char hash[16];
-  EVP_DigestFinal_ex( mctx, hash, nullptr );
-  EVP_MD_CTX_free( mctx );
+  EVP_DigestFinal_ex( ctx, hash, nullptr );
+  EVP_MD_CTX_free( ctx );
+
   fmt::Writer w;
   for ( auto& elem : hash )
   {
@@ -122,11 +118,7 @@ void MD5_Cleanup()
 
 bool MD5_Compare( const std::string& a, const std::string& b )
 {
-  bool ret = false;
-  if ( stringicmp( a, b ) == 0 )
-    ret = true;
-
-  return ret;
+  return stringicmp( a, b ) == 0;
 }
 }
 }
