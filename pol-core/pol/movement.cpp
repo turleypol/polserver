@@ -43,8 +43,9 @@ void send_char_if_newly_inrange( Mobile::Character* chr, Network::Client* client
 
 void send_item_if_newly_inrange( Items::Item* item, Network::Client* client )
 {
-  if ( client->chr->in_visual_range( item ) && !Pos2d( client->chr->lastx, client->chr->lasty )
-                                                    .in_range( item, client->chr->update_range() ) )
+  if ( client->chr->in_visual_range( item ) &&
+       !Pos2d( client->chr->lastx, client->chr->lasty )
+            .in_range( item->pos2d(), client->chr->update_range() ) )
   {
     send_item( client, item );
   }
