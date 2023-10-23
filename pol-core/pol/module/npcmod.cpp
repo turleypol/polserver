@@ -143,10 +143,9 @@ BObjectImp* NPCExecutorModule::mf_Self()
 
 BObjectImp* NPCExecutorModule::mf_SetAnchor()
 {
-  Pos2d pos;
+  Core::Pos2d pos;
   int dstart, psub;
-  if ( getParam( 0, x ) && getPos2dParam( 1, 2, &pos, npc.realm() ) && getParam( 2, dstart ) &&
-       getParam( 3, psub ) )
+  if ( getPos2dParam( 0, 1, &pos, npc.realm() ) && getParam( 2, dstart ) && getParam( 3, psub ) )
   {
     if ( dstart )
     {
