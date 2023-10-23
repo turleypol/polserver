@@ -32,8 +32,8 @@ void cancel_trade( Mobile::Character* chr1 );
 
 void send_char_if_newly_inrange( Mobile::Character* chr, Network::Client* client )
 {
-  if ( inrange( chr, client->chr ) &&
-       !inrange( chr->x(), chr->y(), client->chr->lastx, client->chr->lasty ) &&
+  if ( client->chr->in_visual_range( chr ) &&
+       !Pos2d( client->chr->lastx, client->chr->lasty ).in_visual_range( chr ) &&
        client->chr->is_visible_to_me( chr ) && client->chr != chr )
   {
     send_owncreate( client, chr );
@@ -42,8 +42,8 @@ void send_char_if_newly_inrange( Mobile::Character* chr, Network::Client* client
 
 void send_item_if_newly_inrange( Items::Item* item, Network::Client* client )
 {
-  if ( inrange( client->chr, item ) &&
-       !inrange( item->x(), item->y(), client->chr->lastx, client->chr->lasty ) )
+  if ( client->chr->in_visual_range( item ) &&
+       !Pos2d( client->chr->lastx, client->chr->lasty ).in_visual_range( item ) )
   {
     send_item( client, item );
   }
@@ -173,8 +173,7 @@ void handle_walk( Network::Client* client, PKTIN_02* msg02 )
         if ( chr->is_trading() )
         {
           if ( ( oldfacing == ( msg02->dir & PKTIN_02_FACING_MASK ) ) &&
-               ( pol_distance( chr->x(), chr->y(), chr->trading_with->x(),
-                               chr->trading_with->y() ) > 3 ) )
+               !chr->in_range( chr->trading_with, 3 ) )
           {
             cancel_trade( chr );
           }

@@ -420,7 +420,7 @@ void send_remove_object_if_inrange( Client* client, const Item* item )
   if ( !client->ready ) /* if a client is just connecting, don't bother him. */
     return;
 
-  if ( !inrange( client->chr, item ) )
+  if ( !client->chr->in_visual_range( item ) )
     return;
   Network::RemoveObjectPkt msgremove( item->serial_ext );
   msgremove.Send( client );
@@ -447,37 +447,6 @@ void send_remove_object( Client* client, const UObject* item, RemoveObjectPkt& p
     return;
   pkt.update( item->serial_ext );
   pkt.Send( client );
-}
-
-bool inrangex( const Character* c1, const Character* c2, int maxdist )
-{
-  return ( ( c1->realm() == c2->realm() ) && ( abs( c1->x() - c2->x() ) <= maxdist ) &&
-           ( abs( c1->y() - c2->y() ) <= maxdist ) );
-}
-
-bool inrangex( const UObject* c1, unsigned short x, unsigned short y, int maxdist )
-{
-  return ( ( abs( c1->x() - x ) <= maxdist ) && ( abs( c1->y() - y ) <= maxdist ) );
-}
-
-bool inrange( const UObject* c1, unsigned short x, unsigned short y )
-{
-  return ( ( abs( c1->x() - x ) <= RANGE_VISUAL ) && ( abs( c1->y() - y ) <= RANGE_VISUAL ) );
-}
-
-bool inrange( const Mobile::Character* c1, const Mobile::Character* c2 )
-{
-  // note, these are unsigned.  abs converts to signed, so everything _should_ be okay.
-  return ( ( c1->realm() == c2->realm() ) && ( abs( c1->x() - c2->x() ) <= RANGE_VISUAL ) &&
-           ( abs( c1->y() - c2->y() ) <= RANGE_VISUAL ) );
-}
-
-bool inrange( const Mobile::Character* c1, const UObject* obj )
-{
-  obj = obj->toplevel_owner();
-
-  return ( ( c1->realm() == obj->realm() ) && ( abs( c1->x() - obj->x() ) <= RANGE_VISUAL ) &&
-           ( abs( c1->y() - obj->y() ) <= RANGE_VISUAL ) );
 }
 
 bool multi_inrange( const Mobile::Character* c1, const Multi::UMulti* obj )
@@ -512,20 +481,15 @@ unsigned short pol_distance( const Mobile::Character* c1, const UObject* obj )
 
 bool in_say_range( const Character* c1, const Character* c2 )
 {
-  return inrangex( c1, c2, settingsManager.ssopt.speech_range );
+  return c1->in_range( c2, settingsManager.ssopt.speech_range );
 }
 bool in_yell_range( const Character* c1, const Character* c2 )
 {
-  return inrangex( c1, c2, settingsManager.ssopt.yell_range );
+  return c1->in_range( c2, settingsManager.ssopt.yell_range );
 }
 bool in_whisper_range( const Character* c1, const Character* c2 )
 {
-  return inrangex( c1, c2, settingsManager.ssopt.whisper_range );
-}
-
-bool inrange( unsigned short x1, unsigned short y1, unsigned short x2, unsigned short y2 )
-{
-  return ( ( abs( x1 - x2 ) <= RANGE_VISUAL ) && ( abs( y1 - y2 ) <= RANGE_VISUAL ) );
+  return c1->in_range( c2, settingsManager.ssopt.whisper_range );
 }
 
 bool multi_inrange( unsigned short x1, unsigned short y1, unsigned short x2, unsigned short y2 )
@@ -804,7 +768,7 @@ void send_char_data( Client* client, Character* chr )
   if ( !client->chr->is_visible_to_me( chr ) )
     return;
 
-  if ( inrange( client->chr, chr ) )
+  if ( client->chr->in_visual_range( chr ) )
   {
     send_owncreate( client, chr );
   }
@@ -821,7 +785,7 @@ void send_client_char_data( Character* chr, Client* client )
   if ( !client->chr->is_visible_to_me( chr ) )
     return;
 
-  if ( inrange( client->chr, chr ) )
+  if ( client->chr->in_visual_range( chr ) )
   {
     send_owncreate( client, chr );
   }
@@ -1624,7 +1588,8 @@ void move_item( Items::Item* item, const Core::Pos4d& oldpos )
       oldpos, RANGE_VISUAL,
       [&]( Character* zonechr )
       {
-        if ( !inrange( zonechr, item ) )  // not in range.  If old loc was in range, send a delete.
+        if ( !zonechr->in_visual_range(
+                 item ) )  // not in range.  If old loc was in range, send a delete.
           msgremove.Send( zonechr->client );
       } );
 }
@@ -1865,7 +1830,8 @@ void register_with_supporting_multi( Item* item )
 void send_create_mobile_if_nearby_cansee( Client* client, const Character* chr )
 {
   if ( client->ready &&  // must be logged into game
-       inrange( client->chr, chr ) && client->chr != chr && client->chr->is_visible_to_me( chr ) )
+       client->chr->in_visual_range( chr ) && client->chr != chr &&
+       client->chr->is_visible_to_me( chr ) )
   {
     send_owncreate( client, chr );
   }

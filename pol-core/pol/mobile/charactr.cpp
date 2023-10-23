@@ -1162,7 +1162,7 @@ bool Character::can_access( const Items::Item* item, int range ) const
   if ( range == -1 )
     range = Core::settingsManager.ssopt.default_accessible_range;
 
-  const bool within_range = ( range < -1 ) || pol_distance( this, item ) <= range;
+  const bool within_range = ( range < -1 ) || item->in_range( this, range );
   if ( within_range && ( find_legal_item( this, item->serial ) != nullptr ) )
     return true;
 
@@ -1965,7 +1965,7 @@ void Character::send_warmode()
 
 void send_remove_if_hidden_ghost( Character* chr, Network::Client* client )
 {
-  if ( !inrange( chr, client->chr ) )
+  if ( !chr->in_visual_range( client->chr ) )
     return;
 
   if ( !client->chr->is_visible_to_me( chr ) )
@@ -1975,7 +1975,7 @@ void send_remove_if_hidden_ghost( Character* chr, Network::Client* client )
 }
 void send_create_ghost( Character* chr, Network::Client* client )
 {
-  if ( !inrange( chr, client->chr ) )
+  if ( !chr->in_visual_range( client->chr ) )
     return;
 
   if ( chr->dead() && client->chr->is_visible_to_me( chr ) )
@@ -2754,7 +2754,7 @@ void PropagateMove( /*Client *client,*/ Character* chr )
               msginvul.Send( client );
           }
         }
-        else if ( Core::inrange( zonechr->x(), zonechr->y(), chr->lastx, chr->lasty ) )
+        else if ( zonechr->in_visual_range( Pos2d( chr->lastx, chr->lasty ) ) )
         {
           msgmove.Send( client );
           if ( chr->poisoned() )
@@ -2781,7 +2781,7 @@ void PropagateMove( /*Client *client,*/ Character* chr )
         if ( !zonechr->is_visible_to_me( chr ) )
           return;
 
-        if ( Core::inrange( zonechr, chr ) )  // already handled
+        if ( chr->in_visual_range( zonechr ) )  // already handled
           return;
         // if we just walked out of range of this character, send its
         // client a remove object, or else a ghost character will remain.
