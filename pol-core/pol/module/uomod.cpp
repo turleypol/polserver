@@ -3302,7 +3302,7 @@ BObjectImp* UOExecutorModule::mf_DistanceEuclidean()
 BObjectImp* UOExecutorModule::mf_CoordinateDistance()
 {
   Pos2d pos1, pos2;
-  if ( !getPos2dParam( 0, 1, pos1 ) || !getPos2dParam( 2, 3, pos2 ) )
+  if ( !getPos2dParam( 0, 1, &pos1 ) || !getPos2dParam( 2, 3, &pos2 ) )
     return new BError( "Invalid parameter type" );
   return new BLong( pos1.pol_distance( pos2 ) );
 }
