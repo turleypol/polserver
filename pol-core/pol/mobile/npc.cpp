@@ -154,7 +154,7 @@ bool NPC::anchor_allows_move( Core::UFACING fdir ) const
   if ( anchor.enabled && !warmode() )
   {
     unsigned short curdist = pos().pol_distance( anchor.pos );
-    unsigned short newdist = newpos().pol_distance( anchor.pos );
+    unsigned short newdist = newpos.pol_distance( anchor.pos );
     if ( newdist > curdist )  // if we're moving further away, see if we can
     {
       if ( newdist > anchor.dstart )
@@ -745,7 +745,7 @@ void NPC::on_ghost_pc_spoke( Character* src_chr, const std::string& speech, u8 t
   }
   if ( ( ( ex->eventmask & Core::EVID_GHOST_SPEECH ) ||
          ( ex->eventmask & Core::EVID_TOKEN_GHOST_SPOKE ) ) &&
-       in_rang( src_chr, ex->speech_size ) && !deafened() )
+       in_range( src_chr, ex->speech_size ) && !deafened() )
   {
     if ( ( !Core::settingsManager.ssopt.event_visibility_core_checks ) ||
          is_visible_to_me( src_chr ) )
