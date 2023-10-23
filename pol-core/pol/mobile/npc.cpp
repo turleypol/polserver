@@ -153,8 +153,8 @@ bool NPC::anchor_allows_move( Core::UFACING fdir ) const
 
   if ( anchor.enabled && !warmode() )
   {
-    unsigned short curdist = pos().pol_distance( anchor.pos );
-    unsigned short newdist = newpos.pol_distance( anchor.pos );
+    unsigned short curdist = pos2d().pol_distance( anchor.pos );
+    unsigned short newdist = newpos.xy().pol_distance( anchor.pos );
     if ( newdist > curdist )  // if we're moving further away, see if we can
     {
       if ( newdist > anchor.dstart )
