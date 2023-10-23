@@ -3278,24 +3278,8 @@ BObjectImp* UOExecutorModule::mf_Distance()
   UObject* obj1;
   UObject* obj2;
   if ( getUObjectParam( 0, obj1 ) && getUObjectParam( 1, obj2 ) )
-  {
-    const UObject* tobj1 = obj1->toplevel_owner();
-    const UObject* tobj2 = obj2->toplevel_owner();
-    int xd = tobj1->x() - tobj2->x();
-    int yd = tobj1->y() - tobj2->y();
-    if ( xd < 0 )
-      xd = -xd;
-    if ( yd < 0 )
-      yd = -yd;
-    if ( xd > yd )
-      return new BLong( xd );
-    else
-      return new BLong( yd );
-  }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+    return new BLong( obj1->toplevel_pos().pol_distance( obj2->toplevel_pos() ) );
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* UOExecutorModule::mf_DistanceEuclidean()
@@ -3318,7 +3302,7 @@ BObjectImp* UOExecutorModule::mf_DistanceEuclidean()
 BObjectImp* UOExecutorModule::mf_CoordinateDistance()
 {
   Pos2d pos1, pos2;
-  if ( !get2dParam( 0, 1, pos1 ) || !get2dParam( 2, 3, pos2 ) )
+  if ( !getPos2dParam( 0, 1, pos1 ) || !getPos2dParam( 2, 3, pos2 ) )
     return new BError( "Invalid parameter type" );
   return new BLong( pos1.pol_distance( pos2 ) );
 }
