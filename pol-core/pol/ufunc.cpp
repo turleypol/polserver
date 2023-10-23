@@ -449,19 +449,6 @@ void send_remove_object( Client* client, const UObject* item, RemoveObjectPkt& p
   pkt.Send( client );
 }
 
-bool in_say_range( const Character* c1, const Character* c2 )
-{
-  return c1->in_range( c2, settingsManager.ssopt.speech_range );
-}
-bool in_yell_range( const Character* c1, const Character* c2 )
-{
-  return c1->in_range( c2, settingsManager.ssopt.yell_range );
-}
-bool in_whisper_range( const Character* c1, const Character* c2 )
-{
-  return c1->in_range( c2, settingsManager.ssopt.whisper_range );
-}
-
 void send_put_in_container( Client* client, const Item* item )
 {
   auto msg = Network::AddItemContainerMsg(

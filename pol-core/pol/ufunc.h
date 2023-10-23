@@ -63,10 +63,6 @@ u32 UseItemSerialNumber( u32 serial );
 
 void send_login_error( Network::Client* client, unsigned char reason );
 
-bool in_say_range( const Mobile::Character* c1, const Mobile::Character* c2 );
-bool in_yell_range( const Mobile::Character* c1, const Mobile::Character* c2 );
-bool in_whisper_range( const Mobile::Character* c1, const Mobile::Character* c2 );
-
 void send_owncreate( Network::Client* client, const Mobile::Character* chr );
 void send_owncreate( Network::Client* client, const Mobile::Character* chr,
                      Network::PktOut_78* owncreate );
