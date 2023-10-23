@@ -30,6 +30,7 @@
 #include "../../clib/boostutils.h"
 #include "../../clib/rawtypes.h"
 #include "../../plib/uconst.h"
+#include "../base/position.h"
 #include "../dynproperties.h"
 #include "../eventid.h"
 #include "../item/weapon.h"
@@ -76,7 +77,7 @@ struct Anchor
 {
   Anchor() : enabled( false ), pos( 0, 0 ), dstart( 0 ), psub( 0 ){};
   bool enabled;
-  Pos2d pos;
+  Core::Pos2d pos;
   unsigned short dstart;
   unsigned short psub;
 };
