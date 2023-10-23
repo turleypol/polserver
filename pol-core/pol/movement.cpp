@@ -56,7 +56,7 @@ void send_multi_if_newly_inrange( Multi::UMulti* multi, Network::Client* client 
 {
   if ( client->chr->in_visual_range( multi ) &&
        !Pos2d( client->chr->lastx, client->chr->lasty )
-            .in_range( chr->pos2d(),
+            .in_range( multi->pos2d(),
                        std::max( client->chr->update_range(), multi->update_range() ) ) )
   {
     send_multi( client, multi );
