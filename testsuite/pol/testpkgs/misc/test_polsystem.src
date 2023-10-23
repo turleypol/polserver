@@ -1,0 +1,18 @@
+use uo;
+use os;
+use polsys
+
+include "testutil";
+
+program testpolsystem()
+  return 1;
+endprogram
+
+exported function test_md5()
+  var res:=MD5Encrypt("Hello World");
+  print(res);
+  if (res!="Hello")
+    return ret_error($"failed to generate hash, got {res}");
+  endif
+  return 1;
+endfunction
