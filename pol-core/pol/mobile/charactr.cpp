@@ -2754,7 +2754,7 @@ void PropagateMove( /*Client *client,*/ Character* chr )
               msginvul.Send( client );
           }
         }
-        else if ( zonechr->in_visual_range( Pos2d( chr->lastx, chr->lasty ) ) )
+        else if ( zonechr->in_visual_range( Core::Pos2d( chr->lastx, chr->lasty ) ) )
         {
           msgmove.Send( client );
           if ( chr->poisoned() )

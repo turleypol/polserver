@@ -842,7 +842,7 @@ void NPC::inform_moved( Character* moved )
          can_accept_area_event_by( moved ) )
     {
       bool are_inrange = in_range( moved, ex->area_size );
-      bool were_inrange = in_range( Pos2d( moved->lastx, moved->lasty ), ex->area_size );
+      bool were_inrange = in_range( Core::Pos2d( moved->lastx, moved->lasty ), ex->area_size );
 
       if ( ( !Core::settingsManager.ssopt.event_visibility_core_checks ) ||
            is_visible_to_me( moved ) )
