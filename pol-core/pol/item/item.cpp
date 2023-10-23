@@ -1413,7 +1413,7 @@ void Pol::Items::Item::inform_moved( Mobile::Character* moved )
     return;
 
   const bool are_inrange = in_range( moved, ex->area_size );
-  const bool were_inrange = in_range( Pos2d( moved->lastx, moved->lasty ), ex->area_size );
+  const bool were_inrange = in_range( Core::Pos2d( moved->lastx, moved->lasty ), ex->area_size );
 
   if ( are_inrange && !were_inrange && ex->listens_to( Core::EVID_ENTEREDAREA ) )
   {
