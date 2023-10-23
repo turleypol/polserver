@@ -53,8 +53,8 @@ void send_item_if_newly_inrange( Items::Item* item, Network::Client* client )
 
 void send_multi_if_newly_inrange( Multi::UMulti* multi, Network::Client* client )
 {
-  if ( multi_inrange( client->chr, multi ) &&
-       !multi_inrange( multi->x(), multi->y(), client->chr->lastx, client->chr->lasty ) )
+  if ( client->chr->in_visual_range( multi ) &&
+       !multi->in_visual_range( Pos2d( client->chr->lastx, client->chr->lasty ) ) )
   {
     send_multi( client, multi );
     Multi::UHouse* house = multi->as_house();

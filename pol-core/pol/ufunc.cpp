@@ -449,36 +449,6 @@ void send_remove_object( Client* client, const UObject* item, RemoveObjectPkt& p
   pkt.Send( client );
 }
 
-bool multi_inrange( const Mobile::Character* c1, const Multi::UMulti* obj )
-{
-  return ( ( c1->realm() == obj->realm() ) &&
-           ( abs( c1->x() - obj->x() ) <= RANGE_VISUAL_LARGE_BUILDINGS ) &&
-           ( abs( c1->y() - obj->y() ) <= RANGE_VISUAL_LARGE_BUILDINGS ) );
-}
-
-unsigned short pol_distance( unsigned short x1, unsigned short y1, unsigned short x2,
-                             unsigned short y2 )
-{
-  int xd = abs( x1 - x2 );
-  int yd = abs( y1 - y2 );
-  if ( xd > yd )
-    return static_cast<unsigned short>( xd );
-  else
-    return static_cast<unsigned short>( yd );
-}
-
-unsigned short pol_distance( const Mobile::Character* c1, const UObject* obj )
-{
-  obj = obj->toplevel_owner();
-
-  int xd = abs( c1->x() - obj->x() );
-  int yd = abs( c1->y() - obj->y() );
-  if ( xd > yd )
-    return static_cast<unsigned short>( xd );
-  else
-    return static_cast<unsigned short>( yd );
-}
-
 bool in_say_range( const Character* c1, const Character* c2 )
 {
   return c1->in_range( c2, settingsManager.ssopt.speech_range );
@@ -490,12 +460,6 @@ bool in_yell_range( const Character* c1, const Character* c2 )
 bool in_whisper_range( const Character* c1, const Character* c2 )
 {
   return c1->in_range( c2, settingsManager.ssopt.whisper_range );
-}
-
-bool multi_inrange( unsigned short x1, unsigned short y1, unsigned short x2, unsigned short y2 )
-{
-  return ( ( abs( x1 - x2 ) <= RANGE_VISUAL_LARGE_BUILDINGS ) &&
-           ( abs( y1 - y2 ) <= RANGE_VISUAL_LARGE_BUILDINGS ) );
 }
 
 void send_put_in_container( Client* client, const Item* item )
