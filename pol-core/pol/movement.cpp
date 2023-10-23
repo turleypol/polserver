@@ -33,7 +33,8 @@ void cancel_trade( Mobile::Character* chr1 );
 void send_char_if_newly_inrange( Mobile::Character* chr, Network::Client* client )
 {
   if ( client->chr->in_visual_range( chr ) &&
-       !Pos2d( client->chr->lastx, client->chr->lasty ).in_visual_range( chr ) &&
+       !Pos2d( client->chr->lastx, client->chr->lasty )
+            .in_range( chr->pos2d(), client->chr->update_range() ) &&
        client->chr->is_visible_to_me( chr ) && client->chr != chr )
   {
     send_owncreate( client, chr );
@@ -42,8 +43,8 @@ void send_char_if_newly_inrange( Mobile::Character* chr, Network::Client* client
 
 void send_item_if_newly_inrange( Items::Item* item, Network::Client* client )
 {
-  if ( client->chr->in_visual_range( item ) &&
-       !Pos2d( client->chr->lastx, client->chr->lasty ).in_visual_range( item ) )
+  if ( client->chr->in_visual_range( item ) && !Pos2d( client->chr->lastx, client->chr->lasty )
+                                                    .in_range( item, client->chr->update_range() ) )
   {
     send_item( client, item );
   }
