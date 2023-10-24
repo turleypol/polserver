@@ -746,7 +746,7 @@ public:
 public:
   u8 dir;  // the entire 'dir' from their last MSG02_WALK
   short gradual_boost;
-  Pos4d lastpos;  // position before their last MSG02_WALK
+  Core::Pos4d lastpos;  // position before their last MSG02_WALK
 
   enum MOVEREASON : u8
   {
