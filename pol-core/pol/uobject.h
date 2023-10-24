@@ -366,8 +366,8 @@ inline bool UObject::in_range( const Pos4d& other, u16 range ) const
 }
 inline u8 UObject::update_range() const
 {
-  // TODO Pos: for multis it needs to be based on the footprint and objects on a multi need to take
-  // it into account
+  // TODO Pos: should objects on a multi need to take
+  // it into account that multis due to the footprint have a higher updaterange?
   return (u8)RANGE_VISUAL;
 }
 }  // namespace Core
