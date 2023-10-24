@@ -144,11 +144,11 @@ void Realm::notify_moved( Mobile::Character& whomoved )
   if ( whomoved.pos().pol_distance( whomoved.lastpos ) > 32 )
   {
     Core::WorldIterator<Core::MobileFilter>::InRange(
-        lastp, this, 32,
+        whomoved.lastpos, this, 32,
         [&]( Mobile::Character* chr ) { Mobile::NpcPropagateMove( chr, &whomoved ); } );
 
     Core::WorldIterator<Core::ItemFilter>::InRange(
-        lastp, this, 32, [&]( Items::Item* item ) { item->inform_moved( &whomoved ); } );
+        whomoved.lastpos, this, 32, [&]( Items::Item* item ) { item->inform_moved( &whomoved ); } );
   }
 
   // Inform nearby mobiles that a movement has been made.
