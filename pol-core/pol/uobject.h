@@ -177,6 +177,7 @@ public:
 
   virtual u8 update_range() const;
   bool in_range( const UObject* other, u16 range ) const;
+  bool in_range( const Pos4d& other, u16 range ) const;
   bool in_range( const Pos2d& other, u16 range ) const;
 
   void setposition( Pos4d newpos );
@@ -356,6 +357,10 @@ inline bool UObject::in_range( const UObject* other, u16 range ) const
   return toplevel_pos().in_range( other->toplevel_pos(), range );
 }
 inline bool UObject::in_range( const Pos2d& other, u16 range ) const
+{
+  return toplevel_pos().in_range( other, range );
+}
+inline bool UObject::in_range( const Pos4d& other, u16 range ) const
 {
   return toplevel_pos().in_range( other, range );
 }
