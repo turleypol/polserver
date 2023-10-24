@@ -4293,7 +4293,7 @@ size_t Character::estimatedSize() const
                 + sizeof( u32 )                                       /*registered_house*/
                 + sizeof( unsigned char )                             /*cmdlevel_*/
                 + sizeof( u8 )                                        /*dir*/
-                + sizeof( Pos4d )                                     /*lastpos*/
+                + sizeof( Core::Pos4d )                               /*lastpos*/
                 + sizeof( MOVEREASON )                                /*move_reason*/
                 + sizeof( Plib::MOVEMODE )                            /*movemode*/
                 + sizeof( time_t )                                    /*disable_regeneration_until*/

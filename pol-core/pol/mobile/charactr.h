@@ -291,6 +291,7 @@ private:
 public:
   virtual u8 update_range() const override;
   bool in_visual_range( const Core::UObject* other ) const;
+  bool in_visual_range( const Core::Pos4d& other ) const;
   bool in_visual_range( const Core::Pos2d& other ) const;
 
   virtual size_t estimatedSize() const override;
@@ -1019,6 +1020,10 @@ inline bool Character::in_visual_range( const Core::UObject* other ) const
 {
   if ( !other->isa( Core::UOBJ_CLASS::CLASS_CHARACTER ) )
     return in_range( other, std::max( update_range(), other->update_range() ) );
+  return in_range( other, update_range() );
+}
+inline bool Character::in_visual_range( const Core::Pos4d& other ) const
+{
   return in_range( other, update_range() );
 }
 inline bool Character::in_visual_range( const Core::Pos2d& other ) const
