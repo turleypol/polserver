@@ -842,7 +842,7 @@ void NPC::inform_moved( Character* moved )
          can_accept_area_event_by( moved ) )
     {
       bool are_inrange = in_range( moved, ex->area_size );
-      bool were_inrange = in_range( Core::Pos2d( moved->lastx, moved->lasty ), ex->area_size );
+      bool were_inrange = in_range( moved->lastpos, ex->area_size );
 
       if ( ( !Core::settingsManager.ssopt.event_visibility_core_checks ) ||
            is_visible_to_me( moved ) )
@@ -886,9 +886,7 @@ void NPC::inform_imoved( Character* chr )
          can_accept_area_event_by( chr ) )
     {
       bool are_inrange = in_range( chr, ex->area_size );
-      bool were_inrange =
-          Core::Pos2d( chr->lastx, chr->lasty )
-              .in_range( chr->pos2d(), ex->area_size );  // TODO Pos lastx should be pos4d
+      bool were_inrange = lastpos.in_range( chr->pos(), ex->area_size );
 
       if ( ( !Core::settingsManager.ssopt.event_visibility_core_checks ) ||
            is_visible_to_me( chr ) )

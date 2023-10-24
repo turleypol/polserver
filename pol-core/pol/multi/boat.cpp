@@ -770,8 +770,7 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
       if ( chr->logged_in() )
       {
         Core::Pos4d oldpos = chr->pos();
-        chr->lastx = chr->x();
-        chr->lasty = chr->y();
+        chr->lastpos = oldpos;
 
         if ( newx != USHRT_MAX &&
              newy != USHRT_MAX )  // dave added 3/27/3, if move_xy was used, dont use facing
@@ -809,7 +808,7 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
           else
           {
             Core::send_goxyz( chr->client, chr );
-            // lastx and lasty are set above so these two calls will work right.
+            // lastpos are set above so these two calls will work right.
             // FIXME these are also called, in this order, in MOVEMENT.CPP.
             // should be consolidated.
             Core::send_objects_newly_inrange_on_boat( chr->client, this->serial );
@@ -821,8 +820,8 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
       {
         // characters that are logged out move with the boat
         // they aren't in the worldzones so this is real easy.
-        chr->lastx = chr->x();  // I think in this case setting last? isn't
-        chr->lasty = chr->y();  // necessary, but I'll do it anyway.
+        chr->lastpos = chr->pos();  // I think in this case setting last? isn't
+                                    // necessary, but I'll do it anyway.
 
         if ( newx != USHRT_MAX &&
              newy != USHRT_MAX )  // dave added 3/27/3, if move_xy was used, dont use facing
@@ -898,8 +897,7 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
 
 void UBoat::turn_traveller_coords( Mobile::Character* chr, RELATIVE_DIR dir )
 {
-  chr->lastx = chr->x();
-  chr->lasty = chr->y();
+  chr->lastpos = chr->pos();
 
   s16 xd = chr->x() - x();
   s16 yd = chr->y() - y();
