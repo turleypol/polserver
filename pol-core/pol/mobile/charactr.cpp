@@ -1963,7 +1963,7 @@ void Character::send_warmode()
 
 void send_remove_if_hidden_ghost( Character* chr, Network::Client* client )
 {
-  if ( !chr->in_visual_range( client->chr ) )
+  if ( !client->chr->in_visual_range( chr ) )
     return;
 
   if ( !client->chr->is_visible_to_me( chr ) )
@@ -1973,7 +1973,7 @@ void send_remove_if_hidden_ghost( Character* chr, Network::Client* client )
 }
 void send_create_ghost( Character* chr, Network::Client* client )
 {
-  if ( !chr->in_visual_range( client->chr ) )
+  if ( !client->chr->in_visual_range( chr ) )
     return;
 
   if ( chr->dead() && client->chr->is_visible_to_me( chr ) )

@@ -157,7 +157,7 @@ void srequest( Network::Client* client, PKTIN_34* msg )
         return;
       if ( !client->chr->is_concealed_from_me( bob ) && client->chr->is_visible_to_me( bob ) )
       {
-        if ( bob->in_visual_range( client->chr ) )
+        if ( client->chr->in_visual_range( bob ) )
           statrequest( client, serial );
       }
       if ( client->chr->has_party() )

@@ -51,7 +51,7 @@ void handle_attack( Network::Client* client, Core::PKTIN_05* msg )
     client->chr->send_highlight();
     return;
   }
-  if ( !defender->in_visual_range( client->chr ) )
+  if ( !client->chr->in_visual_range( defender ) )
   {
     client->chr->send_highlight();
     return;
