@@ -151,7 +151,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Testlog-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
-          path: bin-build/coretest/log/pol.log
+          path: bin-build/coretest
 
       - name: Create Artefact
         if: matrix.config.nopch == 0
