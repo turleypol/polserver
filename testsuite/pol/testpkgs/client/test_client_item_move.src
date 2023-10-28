@@ -420,14 +420,14 @@ exported function undo_range_check_1()
   if(item.x != char.x || item.y != char.y)
     DestroyItem(container);
     DestroyItem(item);
-    WriteFile("::config/servspecopt.cfg", originalConf);
+  //  WriteFile("::config/servspecopt.cfg", originalConf);
     ReloadConfiguration();
     return ret_error($"Item should be placed at character feet.");
   endif
 
   DestroyItem(container);
   DestroyItem(item);
-  WriteFile("::config/servspecopt.cfg", originalConf);
+//  WriteFile("::config/servspecopt.cfg", originalConf);
   ReloadConfiguration();
 
   return 1;
@@ -435,7 +435,7 @@ endfunction
 
 // 9. Take item from ground and try to put to container that is too far away.
 // Item should be placed at character feet.
-exported function undo_drop_here_1()
+ function undo_drop_here_1()
   var err;
 
   var originalConf := ReadFile("::config/servspecopt.cfg");
