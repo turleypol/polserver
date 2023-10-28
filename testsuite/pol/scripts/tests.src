@@ -8,7 +8,7 @@ include "testutil";
 program tests()
   var test_count:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
   syslog(
-    $"\n{CONSOLE_COLOR_CYAN}##########################\n"
+    $"\n{CONSOLE_COLOR_CYAN}\uE0B0\x1b[36m       \n"
     + $"{CONSOLE_COLOR_CYAN}#  starting testscripts  #\n"
     + $"{CONSOLE_COLOR_CYAN}#         Run: "+test_count+"         #\n"
     + $"{CONSOLE_COLOR_CYAN}##########################\n",0,CONSOLE_COLOR_CYAN);
