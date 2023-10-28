@@ -436,7 +436,7 @@ endfunction
 
 // 9. Take item from ground and try to put to container that is too far away.
 // Item should be placed at character feet.
- function undo_drop_here_1()
+exported function undo_drop_here_1()
   var err;
 
   var originalConf := ReadFile("::config/servspecopt.cfg");
