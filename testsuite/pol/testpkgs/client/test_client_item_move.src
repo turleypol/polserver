@@ -418,6 +418,7 @@ exported function undo_range_check_1()
     return err;
   endif
   if(item.x != char.x || item.y != char.y)
+  print(item.x);print(item.y);print(item.container);print(item.container.name);
     DestroyItem(container);
     DestroyItem(item);
   //  WriteFile("::config/servspecopt.cfg", originalConf);
