@@ -147,7 +147,7 @@ jobs:
           #env:
           #POLCORE_TEST_FILTER: testitems
       - name: Upload shard test log
-        if: matrix.config.nopch == 0
+        if: matrix.config.nopch == 0 && always()
         uses: actions/upload-artifact@v3
         with:
           name: Testlog-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
