@@ -579,7 +579,7 @@ void BareDistro::distro_files( std::map<fs::path, std::vector<std::string>>& dis
 "# legacy (old) scripts that might rely on the previos",
 "# way Accessible worked.",
 "#",
-"DefaultAccessibleRange=18",
+"DefaultAccessibleRange=2",
 "",
 "# EnableWorldMapPackets - 1/0 (default 0)",
 "#",
