@@ -1290,7 +1290,7 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
     move_components( realm() );
 
     Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-        this, gamestate.update_range.x(),
+        this, Core::gamestate.update_range.x(),
         [&]( Mobile::Character* zonechr )
         {
           Network::Client* client = zonechr->client;
