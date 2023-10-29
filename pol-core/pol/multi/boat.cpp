@@ -1274,7 +1274,7 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
 
     move_multi_in_world( x(), y(), newpos.x(), newpos.y(), this, realm() );
 
-    const Pos4d oldpos = pos();
+    const Core::Pos4d oldpos = pos();
     setposition( newpos );
 
     // NOTE, send_boat_to_inrange pauses those it sends to.
