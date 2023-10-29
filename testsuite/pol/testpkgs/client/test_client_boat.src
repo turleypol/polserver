@@ -29,6 +29,7 @@ program chartests()
 endprogram
 
 exported function move_boat()
+  MoveBoatXY(boat,10,50);
   var h:=getstandingheight(11,50, boat.z, boat.realm);
   MoveObjectToLocation(char, 11,50,h.z);
   while (!waitForClient(0, {EVT_OWNCREATE}))
@@ -94,6 +95,7 @@ endfunction
 
 // move a boat with to many items on it (smooth boat pkt overflows)
 exported function move_boat_overflow()
+  MoveBoatXY(boat,10,50);
   var h:=getstandingheight(11,50, boat.z, boat.realm);
   MoveObjectToLocation(char, 11,50,h.z);
   while (!waitForClient(0, {EVT_OWNCREATE}))
@@ -131,12 +133,13 @@ exported function move_boat_overflow()
 endfunction
 
 exported function boat_update_range()
+  MoveBoatXY(boat,10,50);
   Clear_Event_Queue();
   print(boat.footprint,CONSOLE_COLOR_CYAN);
   print(boat.facing,CONSOLE_COLOR_CYAN);
   MoveBoat(boat,2);
   print(boat.footprint,CONSOLE_COLOR_CYAN);
-  MoveObjectToLocation(char, boat.x+40,boat.y,1,flags:=MOVEOBJECT_FORCELOCATION);
+  MoveObjectToLocation(char, boat.x+30,boat.y,1,flags:=MOVEOBJECT_FORCELOCATION);
   while (!waitForClient(0, {EVT_OWNCREATE}))
   endwhile
   print($"boat {boat.serial}",CONSOLE_COLOR_CYAN);
