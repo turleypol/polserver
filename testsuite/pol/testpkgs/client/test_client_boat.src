@@ -153,7 +153,24 @@ exported function boat_update_range()
     endforeach
     break;
   endwhile
-  return 1;
+  while (1)
+    MoveBoat(boat,2);
+    print(distance(char,boat), CONSOLE_COLOR_CYAN);
+    clientcon.sendevent(struct{todo:="list_objects", id:=0});
+    while (1)
+      var ev:=waitForClient(0, {EVT_LIST_OBJS});
+      if (!ev)
+        return ev;
+      endif
+      foreach it in (ev["objs"])
+        if (it["serial"]==boat.serial)
+          return 1;
+        endif
+      endforeach
+      break;
+    endwhile
+  endwhile
+  return 0;
 endfunction
 
 
