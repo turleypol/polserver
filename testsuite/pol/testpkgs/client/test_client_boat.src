@@ -153,12 +153,10 @@ exported function boat_update_range()
     endforeach
     break;
   endwhile
-  while (1)
-    MoveBoat(boat,2);
+  var i:=30;
+  while (--i>0)
+    print(MoveBoat(boat,2));
     print(distance(char,boat), CONSOLE_COLOR_CYAN);
-    if (distance(char,boat)<20)
-      return ret_error("failed");
-    endif
     clientcon.sendevent(struct{todo:="list_objects", id:=0});
     while (1)
       var ev:=waitForClient(0, {EVT_LIST_OBJS});
@@ -173,7 +171,7 @@ exported function boat_update_range()
       break;
     endwhile
   endwhile
-  return 0;
+      return ret_error("failed");
 endfunction
 
 
