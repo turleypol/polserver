@@ -147,7 +147,7 @@ exported function boat_update_range()
       return ev;
     endif
     foreach it in (ev["objs"])
-      if (it["serial"])==boat.serial)
+      if (it["serial"]==boat.serial)
         return ret_error("boat still in range");
       endif
     endforeach
