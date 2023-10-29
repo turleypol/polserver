@@ -133,6 +133,7 @@ endfunction
 exported function boat_update_range()
   Clear_Event_Queue();
   print(boat.footprint,CONSOLE_COLOR_CYAN);
+  print(boat.facing,CONSOLE_COLOR_CYAN);
   MoveBoat(boat,2);
   print(boat.footprint,CONSOLE_COLOR_CYAN);
   MoveObjectToLocation(char, boat.x+40,boat.y,1,flags:=MOVEOBJECT_FORCELOCATION);
