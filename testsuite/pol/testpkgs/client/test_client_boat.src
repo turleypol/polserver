@@ -143,7 +143,7 @@ exported function boat_update_range()
       return ev;
     endif
     foreach it in (ev["objs"])
-     print($"{it["serial"] {it["pos"]}",CONSOLE_COLOR_CYAN);
+     print($"{it["serial"]} {it["pos"]}",CONSOLE_COLOR_CYAN);
     endforeach
     break;
   endwhile
