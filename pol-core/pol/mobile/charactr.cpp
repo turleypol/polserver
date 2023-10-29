@@ -2753,7 +2753,7 @@ void PropagateMove( /*Client *client,*/ Character* chr )
               msginvul.Send( client );
           }
         }
-        else if ( zonechr->in_visual_range( chr->lastpos ) )
+        else if ( zonechr->in_visual_range( nullptr, chr->lastpos ) )
         {
           msgmove.Send( client );
           if ( chr->poisoned() )

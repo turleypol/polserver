@@ -1004,7 +1004,7 @@ void play_moving_effect2( const Pos3d& src, const Pos3d& dst, u16 effect, u8 spe
       dst.xy(), realm,
       [&]( Character* zonechr )
       {
-        if ( !zonechr->in_visual_range( src.xy() ) )  // send to chrs only in range of dest
+        if ( !zonechr->in_visual_range( nullptr, src.xy() ) )  // send to chrs only in range of dest
           msg.Send( zonechr->client );
       } );
 }
@@ -1084,7 +1084,7 @@ void play_moving_effect2_ex( const Pos3d& src, const Pos3d& dst, Realms::Realm* 
       dst.xy(), realm,
       [&]( Character* zonechr )
       {
-        if ( !zonechr->in_visual_range( src.xy() ) )  // send to chrs only in range of dst
+        if ( !zonechr->in_visual_range( nullptr, src.xy() ) )  // send to chrs only in range of dst
           msg.Send( zonechr->client );
       } );
 }
