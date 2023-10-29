@@ -132,7 +132,10 @@ endfunction
 
 exported function boat_update_range()
   Clear_Event_Queue();
-  MoveObjectToLocation(char, boat.x+50,boat.y,1,flags:=MOVEOBJECT_FORCELOCATION);
+  print(boat.footprint,CONSOLE_COLOR_CYAN);
+  MoveBoat(boat,2);
+  print(boat.footprint,CONSOLE_COLOR_CYAN);
+  MoveObjectToLocation(char, boat.x+40,boat.y,1,flags:=MOVEOBJECT_FORCELOCATION);
   while (!waitForClient(0, {EVT_OWNCREATE}))
   endwhile
   print($"boat {boat.serial}",CONSOLE_COLOR_CYAN);
@@ -143,7 +146,9 @@ exported function boat_update_range()
       return ev;
     endif
     foreach it in (ev["objs"])
-     print($"{it["serial"]} {it["pos"]}",CONSOLE_COLOR_CYAN);
+      if (it["serial"])==boat.serial)
+        return ret_error("boat still in range");
+      endif
     endforeach
     break;
   endwhile
