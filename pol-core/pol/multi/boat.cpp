@@ -1848,9 +1848,13 @@ Bscript::BObjectImp* destroy_boat( UBoat* boat )
   boat->destroy_components();
   boat->unregself();
 
-  Core::WorldIterator<Core::OnlinePlayerFilter>::InVisualRange(
-      boat,
-      [&]( Mobile::Character* zonechr ) { Core::send_remove_object( zonechr->client, boat ); } );
+  Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
+      boat->pos(), Core::gamestate.update_range.x(),
+      [&]( Mobile::Character* zonechr )
+      {
+        if ( zonechr->in_visual_range( boat ) )
+          Core::send_remove_object( zonechr->client, boat );
+      } );
   remove_multi_from_world( boat );
   boat->destroy();
   return new Bscript::BLong( 1 );
