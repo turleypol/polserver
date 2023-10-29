@@ -132,45 +132,42 @@ exported function move_boat_overflow()
   return 1;
 endfunction
 
+/* move boat in direction of char and check at which distance the boat is visible
+*/
 exported function boat_update_range()
   MoveBoatXY(boat,10,50);
   Clear_Event_Queue();
+  //move char out of range
   MoveObjectToLocation(char, boat.x+30,boat.y,1,flags:=MOVEOBJECT_FORCELOCATION);
   while (!waitForClient(0, {EVT_OWNCREATE}))
   endwhile
   clientcon.sendevent(struct{todo:="list_objects", id:=0});
-  while (1)
-    var ev:=waitForClient(0, {EVT_LIST_OBJS});
+  var ev:=waitForClient(0, {EVT_LIST_OBJS});
+  if (!ev)
+    return ev;
+  endif
+  foreach it in (ev["objs"])
+    if (it["serial"]==boat.serial)
+      return ret_error("boat still in range");
+    endif
+  endforeach
+  // now move boat to char
+  var i:=30;
+  while (--i>0)
+    MoveBoat(boat,2);
+    clientcon.sendevent(struct{todo:="list_objects", id:=0});
+    ev:=waitForClient(0, {EVT_LIST_OBJS});
     if (!ev)
       return ev;
     endif
     foreach it in (ev["objs"])
       if (it["serial"]==boat.serial)
-        return ret_error("boat still in range");
+        if (distance(char,boat)!=18) // TODO Pos: this needs to fail later, (18+5)
+          return ret_error($"update distance failed: {distance(char,boat)}");
+        endif
+        return 1;
       endif
     endforeach
-    break;
-  endwhile
-  var i:=30;
-  while (--i>0)
-    MoveBoat(boat,2);
-    print(distance(char,boat), CONSOLE_COLOR_CYAN);
-    clientcon.sendevent(struct{todo:="list_objects", id:=0});
-    while (1)
-      var ev:=waitForClient(0, {EVT_LIST_OBJS});
-      if (!ev)
-        return ev;
-      endif
-      foreach it in (ev["objs"])
-        if (it["serial"]==boat.serial)
-          if (distance(char,boat)!=18) // TODO Pos: this needs to fail later, (18+5)
-            return ret_error($"update distance failed: {distance(char,boat)}");
-          endif
-          return 1;
-        endif
-      endforeach
-      break;
-    endwhile
   endwhile
   return ret_error("failed");
 endfunction
