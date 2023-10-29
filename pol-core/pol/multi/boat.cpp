@@ -1290,10 +1290,12 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
     move_components( realm() );
 
     Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-        x(), y(), realm(), RANGE_VISUAL_LARGE_BUILDINGS,
+        this, gamestate.update_range.x(),
         [&]( Mobile::Character* zonechr )
         {
           Network::Client* client = zonechr->client;
+          if ( !zonechr->in_visual_range( this ) )
+            continue;
 
           if ( client->ClientType & Network::CLIENTTYPE_7090 )
           {
