@@ -130,3 +130,24 @@ exported function move_boat_overflow()
   return 1;
 endfunction
 
+exported function boat_update_range()
+  Clear_Event_Queue();
+  MoveObjectToLocation(char, boat.x+50,boat.y,1,flags:=MOVEOBJECT_FORCELOCATION);
+  while (!waitForClient(0, {EVT_OWNCREATE}))
+  endwhile
+  print($"boat {boat.serial}",CONSOLE_COLOR_CYAN);
+  clientcon.sendevent(struct{todo:="list_objects", id:=0});
+  while (1)
+    var ev:=waitForClient(0, {EVT_LIST_OBJS});
+    if (!ev)
+      return ev;
+    endif
+    foreach it in (ev["objs"])
+     print($"{it["serial"] {it["pos"]}",CONSOLE_COLOR_CYAN);
+    endforeach
+    break;
+  endwhile
+  return 1;
+endfunction
+
+
