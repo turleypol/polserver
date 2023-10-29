@@ -1295,7 +1295,7 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
         {
           Network::Client* client = zonechr->client;
           if ( !zonechr->in_visual_range( this ) )
-            continue;
+            return;
 
           if ( client->ClientType & Network::CLIENTTYPE_7090 )
           {
