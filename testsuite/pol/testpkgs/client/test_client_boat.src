@@ -165,6 +165,7 @@ exported function boat_update_range()
         if (it["serial"]==boat.serial)
           if (distance(char,boat)!=18) // TODO Pos: this needs to fail later, (18+5)
             return ret_error($"update distance failed: {distance(char,boat)}");
+          endif
           return 1;
         endif
       endforeach
