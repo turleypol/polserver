@@ -3966,7 +3966,7 @@ bool Character::CheckPushthrough()
     auto mobs = std::unique_ptr<Bscript::ObjArray>();
 
     Core::WorldIterator<Core::MobileFilter>::InRange(
-        newpos.x(), newpos.y(), newpos.realm(), 0,
+        newpos, 0,
         [&]( Mobile::Character* _chr )
         {
           if ( _chr->z() >= z() - 10 && _chr->z() <= z() + 10 && !_chr->dead() &&
