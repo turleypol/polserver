@@ -4632,7 +4632,7 @@ BObjectImp* UOExecutorModule::mf_ListItemsNearLocationWithFlag(
   int z, flags;
   Realms::Realm* realm;
 
-  if ( getRealmParam( 5, &pos ) && getPos2dParam( 0, 1, &pos, realm ) && getParam( 2, z ) &&
+  if ( getRealmParam( 5, &realm ) && getPos2dParam( 0, 1, &pos, realm ) && getParam( 2, z ) &&
        getParam( 3, range ) && getParam( 4, flags ) )
   {
     std::unique_ptr<ObjArray> newarr( new ObjArray );
