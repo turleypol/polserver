@@ -1472,7 +1472,9 @@ void UBoat::move_components( Realms::Realm* /*oldrealm*/ )
       MoveItemWorldPosition( oldpos, item );
 
       Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-          item[&]( Mobile::Character * zonechr ) {
+          item,
+          [&]( Mobile::Character* zonechr )
+          {
             if ( !zonechr->in_visual_range( item ) )
               return;
             Network::Client* client = zonechr->client;
