@@ -1877,7 +1877,7 @@ void send_create_mobile_to_nearby_cansee( const Character* chr )
       {
         if ( zonechr == chr )
           return;
-        if (->in_visual_range( chr ) && zonechr->is_visible_to_me( chr ) )
+        if ( zonechr->in_visual_range( chr ) && zonechr->is_visible_to_me( chr ) )
           send_owncreate( zonechr->client, chr );
       } );
 }
