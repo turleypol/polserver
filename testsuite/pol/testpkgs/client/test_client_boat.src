@@ -162,7 +162,7 @@ exported function boat_update_range()
     endif
     foreach it in (ev["objs"])
       if (it["serial"]==boat.serial)
-        if (distance(char,boat)!=18) // TODO Pos: this needs to fail later, (18+5)
+        if (distance(char,boat)!=23) // (18 visual range +5 footprint/2)
           return ret_error($"update distance failed: {distance(char,boat)}");
         endif
         return 1;
