@@ -4049,15 +4049,15 @@ Items::Item* Character::search_remote_containers( u32 find_serial, bool* isRemot
 
 bool Character::mightsee( const Items::Item* item ) const
 {
-  item = item->toplevel_owner();
+  const auto* owner = item->toplevel_owner();
   for ( const auto& elem : remote_containers_ )
   {
     Items::Item* additional_item = elem.get();
-    if ( additional_item == item )
+    if ( additional_item == owner )
       return true;
   }
 
-  return in_visual_range( item );
+  return in_visual_range( owner );
 }
 
 bool Character::squelched() const
