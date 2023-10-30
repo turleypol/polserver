@@ -31,6 +31,7 @@
 #include "../plib/uconst.h"
 #include "base/position.h"
 #include "base/range.h"
+#include "globals/uvars.h"
 #include "realms/WorldChangeReasons.h"
 #include "realms/realm.h"
 #include "zone.h"
