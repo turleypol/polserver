@@ -1408,12 +1408,13 @@ BObjectImp* UOExecutorModule::mf_CreateNpcFromTemplate()
 
     // characters.push_back( npc.get() );
     SetCharacterWorldPosition( npc.get(), Realms::WorldChangeReason::NpcCreate );
-    WorldIterator<OnlinePlayerFilter>::InRange( npc->pos(), Core::gamestate.update_range.x(),
-                                                [&]( Character* zonechr )
-                                                {
-                                                  if ( zonechr->in_visual_range( npc.get() ) )
-                                                    send_char_data( zonechr->client, npc.get() );
-                                                } );
+    WorldIterator<OnlinePlayerFilter>::InMaxVisualRange(
+        npc.get(),
+        [&]( Character* zonechr )
+        {
+          if ( zonechr->in_visual_range( npc.get() ) )
+            send_char_data( zonechr->client, npc.get() );
+        } );
     realm->notify_entered( *npc );
     // FIXME: Need to add Walkon checks for multi right here if type is house.
     if ( dummy_multi )

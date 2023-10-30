@@ -440,12 +440,13 @@ void send_remove_object( Client* client, const UObject* object )
 void send_remove_object_to_inrange( const UObject* centerObject )
 {
   Network::RemoveObjectPkt msgremove( centerObject->serial_ext );
-  Core::WorldIterator<OnlinePlayerFilter>::InRange( centerObject->pos(), gamestate.update_range.x(),
-                                                    [&]( Character* chr )
-                                                    {
-                                                      if ( chr->in_visual_range( centerObject ) )
-                                                        msgremove.Send( chr->client );
-                                                    } );
+  Core::WorldIterator<OnlinePlayerFilter>::InMaxVisualRange(
+      centerObject,
+      [&]( Character* chr )
+      {
+        if ( chr->in_visual_range( centerObject ) )
+          msgremove.Send( chr->client );
+      } );
 }
 
 void send_remove_object( Client* client, const UObject* item, RemoveObjectPkt& pkt )

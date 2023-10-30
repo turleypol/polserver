@@ -370,8 +370,8 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
 void UBoat::send_smooth_move_to_inrange( Core::UFACING move_dir, u8 speed, u16 newx, u16 newy,
                                          bool relative )
 {
-  Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-      newx, newy, realm(), RANGE_VISUAL_LARGE_BUILDINGS,
+  Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+      Core::Pos2d( newx, newy ), realm(),
       [&]( Mobile::Character* zonechr )
       {
         Network::Client* client = zonechr->client;
@@ -563,8 +563,8 @@ void UBoat::send_boat_newly_inrange( Network::Client* client )
 
 void UBoat::send_display_boat_to_inrange( u16 oldx, u16 oldy )
 {
-  Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-      pos(), Core::gamestate.update_range.x(),
+  Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+      pos(),
       [&]( Mobile::Character* zonechr )
       {
         Network::Client* client = zonechr->client;
@@ -579,10 +579,13 @@ void UBoat::send_display_boat_to_inrange( u16 oldx, u16 oldy )
           send_boat_old( client );
       } );
 
-  Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-      oldx, oldy, this->realm(), Core::gamestate.update_range.x(),
+  const Core::Pos2d oldpos = Core::Pos2d( oldx, oldy );
+  Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+      oldpos, realm(),
       [&]( Mobile::Character* zonechr )
       {
+        if ( !zonechr->in_visual_range( this, oldpos ) )
+          return;
         if ( !zonechr->in_visual_range( this ) )  // send remove to chrs only seeing the old loc
           send_remove_boat( zonechr->client );
       } );
@@ -868,20 +871,24 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
         MoveItemWorldPosition( oldpos, item );
       }
 
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-          item->x(), item->y(), realm(), RANGE_VISUAL,
+      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+          item,
           [&]( Mobile::Character* zonechr )
           {
+            if ( !zonechr->in_visual_range( item ) )
+              return;
             Network::Client* client = zonechr->client;
 
             if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
               send_item( client, item );
           } );
 
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-          oldpos, RANGE_VISUAL,
+      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+          oldpos,
           [&]( Mobile::Character* zonechr )
           {
+            if ( !zonechr->in_visual_range( item, oldpos ) )
+              return;
             if ( !zonechr->in_visual_range(
                      item ) )  // not in range.  If old loc was in range, send a delete.
               send_remove_object( zonechr->client, item );
@@ -1015,20 +1022,24 @@ void UBoat::turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation )
         item->restart_decay_timer();
       MoveItemWorldPosition( oldpos, item );
 
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-          item->x(), item->y(), realm(), RANGE_VISUAL,
+      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+          item,
           [&]( Mobile::Character* zonechr )
           {
+            if ( !zonechr->in_visual_range( item ) )
+              return;
             Network::Client* client = zonechr->client;
 
             if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
               send_item( client, item );
           } );
 
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-          oldpos, RANGE_VISUAL,
+      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+          oldpos,
           [&]( Mobile::Character* zonechr )
           {
+            if ( !zonechr->in_visual_range( item, oldpos ) )
+              return;
             if ( !zonechr->in_visual_range(
                      item ) )  // not in range.  If old loc was in range, send a delete.
               send_remove_object( zonechr->client, item );
@@ -1282,8 +1293,8 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
     move_travellers( move_dir, bc, x(), y(), realm() );
     move_components( realm() );
 
-    Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-        pos(), Core::gamestate.update_range.x(),
+    Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+        pos(),
         [&]( Mobile::Character* zonechr )
         {
           Network::Client* client = zonechr->client;
@@ -1305,8 +1316,8 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
           }
         } );
 
-    Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-        oldpos, Core::gamestate.update_range.x(),
+    Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+        oldpos,
         [&]( Mobile::Character* zonechr )
         {
           if ( !zonechr->in_visual_range( this ) )  // send remove to chrs only seeing the old loc
@@ -1396,20 +1407,24 @@ void UBoat::transform_components( const BoatShape& old_boatshape, Realms::Realm*
 
       MoveItemWorldPosition( oldpos, item );
 
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-          item->x(), item->y(), realm(), RANGE_VISUAL,
+      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+          item,
           [&]( Mobile::Character* zonechr )
           {
+            if ( !zonechr->in_visual_range( item ) )
+              return;
             Network::Client* client = zonechr->client;
 
             if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
               send_item( client, item );
           } );
 
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-          oldpos, RANGE_VISUAL,
+      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+          oldpos,
           [&]( Mobile::Character* zonechr )
           {
+            if ( !zonechr->in_visual_range( item, oldpos ) )
+              return;
             if ( !zonechr->in_visual_range(
                      item ) )  // not in range.  If old loc was in range, send a delete.
               send_remove_object( zonechr->client, item );
@@ -1456,20 +1471,22 @@ void UBoat::move_components( Realms::Realm* /*oldrealm*/ )
 
       MoveItemWorldPosition( oldpos, item );
 
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-          item->x(), item->y(), realm(), RANGE_VISUAL,
-          [&]( Mobile::Character* zonechr )
-          {
+      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+          item[&]( Mobile::Character * zonechr ) {
+            if ( !zonechr->in_visual_range( item ) )
+              return;
             Network::Client* client = zonechr->client;
 
             if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
               send_item( client, item );
           } );
 
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-          oldpos, RANGE_VISUAL,
+      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+          oldpos,
           [&]( Mobile::Character* zonechr )
           {
+            if ( !zonechr->in_visual_range( item, oldpos ) )
+              return;
             if ( !zonechr->in_visual_range(
                      item ) )  // not in range.  If old loc was in range, send a delete.
               send_remove_object( zonechr->client, item );
@@ -1848,8 +1865,8 @@ Bscript::BObjectImp* destroy_boat( UBoat* boat )
   boat->destroy_components();
   boat->unregself();
 
-  Core::WorldIterator<Core::OnlinePlayerFilter>::InRange(
-      boat->pos(), Core::gamestate.update_range.x(),
+  Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+      boat->pos(),
       [&]( Mobile::Character* zonechr )
       {
         if ( zonechr->in_visual_range( boat ) )

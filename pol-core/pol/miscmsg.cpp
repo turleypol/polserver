@@ -540,7 +540,7 @@ void handle_allnames( Client* client, PKTBI_98_IN* msg )
     return;
   if ( !client->chr->is_visible_to_me( the_mob ) )
     return;
-  if ( !the_mob->in_visual_range( client->chr ) )
+  if ( !client->chr->in_visual_range( the_mob ) )
     return;
 
   PktHelper::PacketOut<PktOut_98> msgOut;
