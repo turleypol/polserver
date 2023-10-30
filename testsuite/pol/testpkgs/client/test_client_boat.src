@@ -132,7 +132,7 @@ exported function move_boat_overflow()
   return 1;
 endfunction
 
-/* move boat in direction of char and check at which distance the boat is visible
+/* move boat in direction of char and check at which distance the boat is visible and then back out of sight
 */
 exported function boat_update_range()
   MoveBoatXY(boat,10,50);
@@ -193,9 +193,8 @@ exported function boat_update_range()
         break;
       endif
     endforeach
-    print(distance(char,boat));
     if (!found)
-      if (distance(char,boat)!=23) // (18 visual range +5 footprint/2)
+      if (distance(char,boat)!=24) // (18 visual range +5 footprint/2 +1)
         return ret_error($"remove distance failed: {distance(char,boat)}");
       else
         return 1;
