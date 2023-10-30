@@ -4274,8 +4274,8 @@ void Character::send_buffs()
 u8 Character::update_range() const
 {
   // TODO Pos activate
-  return (u8)RANGE_VISUAL;
-  //  return client ? client->update_range() : (u8)RANGE_VISUAL;
+  return Plib::RANGE_VISUAL;
+  //  return client ? client->update_range() : Plib::RANGE_VISUAL;
 }
 
 size_t Character::estimatedSize() const
