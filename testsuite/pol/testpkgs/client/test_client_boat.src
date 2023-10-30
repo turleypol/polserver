@@ -139,7 +139,7 @@ exported function boat_update_range()
   Clear_Event_Queue();
   //move char out of range
   MoveObjectToLocation(char, boat.x+30,boat.y,1,flags:=MOVEOBJECT_FORCELOCATION);
-  print($"boat {boat.x},{boat.y}");
+  print($"boat {boat.serial} {boat.x},{boat.y}");
   print($"char {char.x},{char.y}");
   while (!waitForClient(0, {EVT_OWNCREATE}))
   endwhile
@@ -157,7 +157,7 @@ exported function boat_update_range()
   var i:=10;
   while (--i>0)
     MoveBoat(boat,2);
-  print($"boat {boat.x},{boat.y}");
+  print($"boat {boat.serial} {boat.x},{boat.y}");
     sleepms(10);
   endwhile
   while (1)
