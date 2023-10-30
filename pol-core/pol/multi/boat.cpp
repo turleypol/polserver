@@ -1299,12 +1299,8 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
         [&]( Mobile::Character* zonechr )
         {
           Network::Client* client = zonechr->client;
-          POLLOG_INFO << "MOVE " << zonechr->name() << "\n";
-          POLLOG_INFO << (int)update_range() << " vs " << (int)zonechr->update_range() << " "
-                      << pos().pol_distance( zonechr->pos() ) << "\n";
           if ( !zonechr->in_visual_range( this ) )
             return;
-          POLLOG_INFO << "visible\n";
           if ( client->ClientType & Network::CLIENTTYPE_7090 )
           {
             if ( zonechr->in_visual_range( this, oldpos ) )

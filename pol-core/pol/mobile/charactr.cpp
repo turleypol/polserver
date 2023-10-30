@@ -4049,9 +4049,7 @@ Items::Item* Character::search_remote_containers( u32 find_serial, bool* isRemot
 
 bool Character::mightsee( const Items::Item* item ) const
 {
-  while ( item->container != nullptr )
-    item = item->container;
-
+  item = item->toplevel_owner();
   for ( const auto& elem : remote_containers_ )
   {
     Items::Item* additional_item = elem.get();
@@ -4059,9 +4057,7 @@ bool Character::mightsee( const Items::Item* item ) const
       return true;
   }
 
-
-  return ( ( item->realm() == realm() ) && ( abs( x() - item->x() ) <= RANGE_VISUAL ) &&
-           ( abs( y() - item->y() ) <= RANGE_VISUAL ) );
+  return in_visual_range( item );
 }
 
 bool Character::squelched() const

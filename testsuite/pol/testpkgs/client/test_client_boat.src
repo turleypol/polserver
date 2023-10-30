@@ -139,8 +139,6 @@ exported function boat_update_range()
   Clear_Event_Queue();
   //move char out of range
   MoveObjectToLocation(char, boat.x+30,boat.y,1,flags:=MOVEOBJECT_FORCELOCATION);
-  print($"boat {boat.serial} {boat.x},{boat.y}");
-  print($"char {char.x},{char.y}");
   while (!waitForClient(0, {EVT_OWNCREATE}))
   endwhile
   clientcon.sendevent(struct{todo:="list_objects", id:=0});
@@ -157,7 +155,6 @@ exported function boat_update_range()
   var i:=10;
   while (--i>0)
     MoveBoat(boat,2);
-  print($"boat {boat.serial} {boat.x},{boat.y}");
     sleepms(10);
   endwhile
   while (1)
@@ -166,7 +163,6 @@ exported function boat_update_range()
       return ev;
     endif
     if (ev["serial"] == boat.serial)
-  print($"char {char.x},{char.y}");
       var x:=char.x-ev["pos"][1];
       var y:=char.y-ev["pos"][2];
       if (x!=23 ||y!=0) // (18 visual range +5 footprint/2)
@@ -190,7 +186,7 @@ exported function boat_update_range()
     if (ev["serial"] == boat.serial)
       var x:=char.x-ev["oldpos"][1];
       var y:=char.y-ev["oldpos"][2];
-      if (x!=24 ||y!=0) // (18 visual range +5 footprint/2)
+      if (x!=23 ||y!=0) // (18 visual range +5 footprint/2)
         return ret_error($"remove update distance failed: {x}, {y}");
       endif
       break;
