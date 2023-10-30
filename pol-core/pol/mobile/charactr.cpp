@@ -2045,8 +2045,8 @@ void Character::resurrect()
     Core::WorldIterator<Core::MobileFilter>::InRange( pos(), update_range(),
                                                       [&]( Character* zonechr )
                                                       {
-                                                        if ( !client->chr->is_visible_to_me( chr ) )
-                                                          send_remove_character( client, chr );
+                                                        if ( !is_visible_to_me( zonechr ) )
+                                                          send_remove_character( client, zonechr );
                                                       } );
     client->restart();
   }

@@ -168,7 +168,7 @@ void PrivUpdater::on_change_invul( Character* chr, bool enable )
         chr,
         [&]( Character* zonechr )
         {
-          if ( zonechr->in_visual_rang( chr ) )
+          if ( zonechr->in_visual_range( chr ) )
             enable_invul( zonechr, chr );
         } );
   }
