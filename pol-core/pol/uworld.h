@@ -246,19 +246,19 @@ template <class Filter>
 template <typename F>
 void WorldIterator<Filter>::InMaxVisualRange( const UObject* obj, F&& f )
 {
-  InRange( obj->toplevel_pos(), gamestate.update_range.x(), std::forward<F>( f ) );
+  InRange( obj->toplevel_pos(), gamestate.max_update_range, std::forward<F>( f ) );
 }
 template <class Filter>
 template <typename F>
 void WorldIterator<Filter>::InMaxVisualRange( const Pos2d& pos, const Realms::Realm* realm, F&& f )
 {
-  InRange( pos, realm, gamestate.update_range.x(), std::forward<F>( f ) );
+  InRange( pos, realm, gamestate.max_update_range, std::forward<F>( f ) );
 }
 template <class Filter>
 template <typename F>
 void WorldIterator<Filter>::InMaxVisualRange( const Pos4d& pos, F&& f )
 {
-  InRange( pos, gamestate.update_range.x(), std::forward<F>( f ) );
+  InRange( pos, gamestate.max_update_range, std::forward<F>( f ) );
 }
 template <class Filter>
 template <typename F>

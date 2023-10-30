@@ -2372,7 +2372,9 @@ BObjectImp* UOExecutorModule::mf_ListMultisInBox( /* x1, y1, z1, x2, y2, z2, rea
 
   // extend the coords to find the center item
   // but only as parameter for the filter function
-  Range2d boxrange( box.nw() - gamestate.update_range, box.se() + gamestate.update_range, realm );
+  Vec2d urange{ Vec2d::clip( gamestate.max_update_range ),
+                Vec2d::clip( gamestate.max_update_range ) };
+  Range2d boxrange( box.nw() - urange, box.se() + urange, realm );
 
   // search for multis.  this is tricky, since the center might lie outside the box
   WorldIterator<MultiFilter>::InBox(
