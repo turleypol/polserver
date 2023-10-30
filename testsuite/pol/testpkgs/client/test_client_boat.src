@@ -178,7 +178,7 @@ exported function boat_update_range()
     return ret_error("failed boat not visible");
   endif
   // move boat again out of range
-  var i:=5;
+  i:=5;
   while (--i>0)
     MoveBoat(boat,6);
     clientcon.sendevent(struct{todo:="list_objects", id:=0});
