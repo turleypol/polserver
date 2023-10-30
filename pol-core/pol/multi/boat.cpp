@@ -370,13 +370,14 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
 void UBoat::send_smooth_move_to_inrange( Core::UFACING move_dir, u8 speed, u16 newx, u16 newy,
                                          bool relative )
 {
+  const Core::Pos2d newpos = Core::Pos2d( newx, newy );
   Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-      Core::Pos2d( newx, newy ), realm(),
+      newpos, realm(),
       [&]( Mobile::Character* zonechr )
       {
         Network::Client* client = zonechr->client;
 
-        if ( zonechr->in_visual_range( this ) &&
+        if ( zonechr->in_visual_range( this, newpos ) && zonechr->in_visual_range( this ) &&
              client->ClientType & Network::CLIENTTYPE_7090 )  // send this only to those who see the
                                                               // old location aswell
           send_smooth_move( client, move_dir, speed, newx, newy, relative );
@@ -1320,7 +1321,8 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
         oldpos,
         [&]( Mobile::Character* zonechr )
         {
-          if ( !zonechr->in_visual_range( this ) )  // send remove to chrs only seeing the old loc
+          if ( zonechr->in_visual_range( this, oldpos ) &&
+               !zonechr->in_visual_range( this ) )  // send remove to chrs only seeing the old loc
             send_remove_boat( zonechr->client );
         } );
 
