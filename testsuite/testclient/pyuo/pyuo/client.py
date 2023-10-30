@@ -751,10 +751,11 @@ class Client(threading.Thread):
     elif isinstance(pkt, packets.DeleteObjectPacket):
       assert self.lc
       if pkt.serial in self.objects:
-        del self.objects[pkt.serial]
         if not self.disable_item_logging:
+          obj=self.objects[pkt.serial]
           self.log.info("Object 0x%X went out of sight", pkt.serial)
-          self.brain.event(brain.Event(brain.Event.EVT_REMOVED_OBJ, serial=pkt.serial))
+          self.brain.event(brain.Event(brain.Event.EVT_REMOVED_OBJ, serial=pkt.serial, oldpos=[obj.x,obj.y,obj.z]))
+        del self.objects[pkt.serial]
       else:
         self.log.warn("Server requested to delete 0x%X but i don't know it", pkt.serial)
 

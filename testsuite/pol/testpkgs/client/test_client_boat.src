@@ -152,56 +152,45 @@ exported function boat_update_range()
     endif
   endforeach
   // now move boat to char
-  var i:=30;
-  var found:=0;
+  var i:=10;
   while (--i>0)
     MoveBoat(boat,2);
-    clientcon.sendevent(struct{todo:="list_objects", id:=0});
-    ev:=waitForClient(0, {EVT_LIST_OBJS});
+    sleepms(10);
+  endwhile
+  while (1)
+    ev:=waitForClient(0, {EVT_NEW_ITEM});
     if (!ev)
       return ev;
     endif
-    foreach it in (ev["objs"])
-      if (it["serial"]==boat.serial)
-        if (distance(char,boat)!=23) // (18 visual range +5 footprint/2)
-          return ret_error($"update distance failed: {distance(char,boat)}");
-        endif
-        found := 1;
-        break;
+    if (ev["serial"] == boat.serial)
+      var x:=ev["pos"][0]-char.x;
+      var y:=ev["pos"][1]-char.y;
+      if (x!=23 ||y!=0) // (18 visual range +5 footprint/2)
+        return ret_error($"update distance failed: {x}, {y}");
       endif
-    endforeach
-    if (found)
       break;
     endif
   endwhile
-  if (!found)
-    return ret_error("failed boat not visible");
-  endif
+
   // move boat again out of range
-  i:=5;
+  i:=10;
   while (--i>0)
     MoveBoat(boat,6);
-    clientcon.sendevent(struct{todo:="list_objects", id:=0});
-    ev:=waitForClient(0, {EVT_LIST_OBJS});
+    sleepms(10);
+  endwhile
+  while (1)
+    ev:=waitForClient(0, {EVT_REMOVED_OBJ});
     if (!ev)
       return ev;
     endif
-    var found:=0;
-    foreach it in (ev["objs"])
-      if (it["serial"]==boat.serial)
-        found:=1;
-        break;
+    if (ev["serial"] == boat.serial)
+      var x:=ev["oldpos"][0]-char.x;
+      var y:=ev["oldpos"][1]-char.y;
+      if (x!=24 ||y!=0) // (18 visual range +5 footprint/2)
+        return ret_error($"remove update distance failed: {x}, {y}");
       endif
-    endforeach
-    if (!found)
-      if (distance(char,boat)!=24) // (18 visual range +5 footprint/2 +1)
-        return ret_error($"remove distance failed: {distance(char,boat)}");
-      else
-        return 1;
-      endif
+      break;
     endif
   endwhile
-  return ret_error("failed boat still visible");
+  return 1;
 endfunction
-
-
