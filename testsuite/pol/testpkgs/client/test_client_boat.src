@@ -163,8 +163,8 @@ exported function boat_update_range()
       return ev;
     endif
     if (ev["serial"] == boat.serial)
-      var x:=ev["pos"][0]-char.x;
-      var y:=ev["pos"][1]-char.y;
+      var x:=ev["pos"][1]-char.x;
+      var y:=ev["pos"][2]-char.y;
       if (x!=23 ||y!=0) // (18 visual range +5 footprint/2)
         return ret_error($"update distance failed: {x}, {y}");
       endif
@@ -184,8 +184,8 @@ exported function boat_update_range()
       return ev;
     endif
     if (ev["serial"] == boat.serial)
-      var x:=ev["oldpos"][0]-char.x;
-      var y:=ev["oldpos"][1]-char.y;
+      var x:=ev["oldpos"][1]-char.x;
+      var y:=ev["oldpos"][2]-char.y;
       if (x!=24 ||y!=0) // (18 visual range +5 footprint/2)
         return ret_error($"remove update distance failed: {x}, {y}");
       endif
