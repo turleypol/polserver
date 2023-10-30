@@ -949,7 +949,7 @@ class Client(threading.Thread):
       mob = Mobile(self, pkt)
       self.objects[mob.serial] = mob
       self.log.info("New mobile: %s", mob)
-      self.brain.event(brain.Event(brain.Event.EVT_NEW_MOBILE, mobile=mob))
+      self.brain.event(brain.Event(brain.Event.EVT_NEW_MOBILE, mobile=mob, pos=[mob.x,mob.y,mob.z,mob.facing]))
       # Auto single click for new mobiles
       self.singleClick(mob)
 
@@ -967,7 +967,7 @@ class Client(threading.Thread):
         self.log.info("New item: %s", item)
       self.objects[item.serial] = item
       if not self.disable_item_logging:
-        self.brain.event(brain.Event(brain.Event.EVT_NEW_ITEM, item=item))
+        self.brain.event(brain.Event(brain.Event.EVT_NEW_ITEM, item=item, pos=[item.x,item.y,item.z,item.facing]))
 
   @status('game')
   @clientthread
