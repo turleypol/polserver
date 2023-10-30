@@ -96,6 +96,8 @@ struct WorldIterator
   template <typename F>
   static void InRange( const Pos4d& pos, unsigned range, F&& f );
   template <typename F>
+  static void InRange( const UObject* obj, unsigned range, F&& f );
+  template <typename F>
   static void InMaxVisualRange( const UObject* obj, F&& f );
   template <typename F>
   static void InMaxVisualRange( const Pos2d& pos, const Realms::Realm* realm, F&& f );
@@ -246,26 +248,28 @@ void WorldIterator<Filter>::InRange( const Pos4d& pos, unsigned range, F&& f )
   CoordsArea coords( pos, range );
   _forEach( coords, std::forward<F>( f ) );
 }
-
+template <class Filter>
+template <typename F>
+void WorldIterator<Filter>::InRange( const UObject* obj, unsigned range, F&& f )
+{
+  InRange( obj->toplevel_pos(), range, std::forward<F>( f ) );
+}
 template <class Filter>
 template <typename F>
 void WorldIterator<Filter>::InMaxVisualRange( const UObject* obj, F&& f )
 {
-  // TODO RANGE_VISUAL needs to be something dynamic (client viewrange maximum, max multi size)
   InRange( obj->toplevel_owner()->pos(), gamestate.update_range.x(), std::forward<F>( f ) );
 }
 template <class Filter>
 template <typename F>
 void WorldIterator<Filter>::InMaxVisualRange( const Pos2d& pos, const Realms::Realm* realm, F&& f )
 {
-  // TODO RANGE_VISUAL needs to be something dynamic (client viewrange maximum, max multi size)
   InRange( pos, realm, gamestate.update_range.x(), std::forward<F>( f ) );
 }
 template <class Filter>
 template <typename F>
 void WorldIterator<Filter>::InMaxVisualRange( const Pos4d& pos, F&& f )
 {
-  // TODO RANGE_VISUAL needs to be something dynamic (client viewrange maximum, max multi size)
   InRange( pos, gamestate.update_range.x(), std::forward<F>( f ) );
 }
 template <class Filter>
