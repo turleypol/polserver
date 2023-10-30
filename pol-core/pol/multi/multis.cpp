@@ -97,6 +97,8 @@ Core::Range3d UMulti::current_box() const
 u8 UMulti::update_range() const
 {
   const auto& box = current_box();
+  INFO_PRINT << "update " << ( box.nw().pol_distance( box.se() ) / 2 ) << " +" << RANGE_VISUAL
+             << "\n";
   return (u8)RANGE_VISUAL + static_cast<u8>( box.nw().pol_distance( box.se() ) / 2 );
 }
 
