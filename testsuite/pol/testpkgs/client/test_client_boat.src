@@ -153,6 +153,7 @@ exported function boat_update_range()
   endforeach
   // now move boat to char
   var i:=30;
+  var found:=0;
   while (--i>0)
     MoveBoat(boat,2);
     clientcon.sendevent(struct{todo:="list_objects", id:=0});
@@ -165,11 +166,43 @@ exported function boat_update_range()
         if (distance(char,boat)!=23) // (18 visual range +5 footprint/2)
           return ret_error($"update distance failed: {distance(char,boat)}");
         endif
-        return 1;
+        found := 1;
+        break;
       endif
     endforeach
+    if (found)
+      break;
+    endif
   endwhile
-  return ret_error("failed");
+  if (!found)
+    return ret_error("failed boat not visible");
+  endif
+  // move boat again out of range
+  var i:=5;
+  while (--i>0)
+    MoveBoat(boat,6);
+    clientcon.sendevent(struct{todo:="list_objects", id:=0});
+    ev:=waitForClient(0, {EVT_LIST_OBJS});
+    if (!ev)
+      return ev;
+    endif
+    var found:=0;
+    foreach it in (ev["objs"])
+      if (it["serial"]==boat.serial)
+        found:=1;
+        break;
+      endif
+    endforeach
+    print(distance(char,boat));
+    if (!found)
+      if (distance(char,boat)!=23) // (18 visual range +5 footprint/2)
+        return ret_error($"remove distance failed: {distance(char,boat)}");
+      else
+        return 1;
+      endif
+    endif
+  endwhile
+  return ret_error("failed boat still visible");
 endfunction
 
 
