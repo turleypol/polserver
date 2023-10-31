@@ -8,6 +8,7 @@
 #define CLIB_CLIB_H
 
 #include "pol_global_config.h"
+#include <algorithm>
 #include <limits>
 
 #ifndef __STDDEF_H
