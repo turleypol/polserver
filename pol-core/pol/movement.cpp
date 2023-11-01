@@ -44,7 +44,7 @@ void send_item_if_newly_inrange( Items::Item* item, Network::Client* client )
 {
   if ( client->chr->in_visual_range( item ) &&
        !client->chr->lastpos.in_range( item->pos(),
-                                       item->visual_size() + client->chr->los_size() ) )
+                                       item->visible_size() + client->chr->los_size() ) )
   {
     send_item( client, item );
   }
@@ -54,7 +54,7 @@ void send_multi_if_newly_inrange( Multi::UMulti* multi, Network::Client* client 
 {
   if ( client->chr->in_visual_range( multi ) &&
        !client->chr->lastpos.in_range( multi->pos(),
-                                       client->chr->los_size() + multi->visual_size() ) )
+                                       client->chr->los_size() + multi->visible_size() ) )
   {
     send_multi( client, multi );
     Multi::UHouse* house = multi->as_house();

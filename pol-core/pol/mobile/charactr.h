@@ -1018,18 +1018,18 @@ inline VitalValue& Character::vital( unsigned vitalid )
 
 inline bool Character::in_visual_range( const Core::UObject* other ) const
 {
-  return in_range( other, los_size() + other->visual_size() );
+  return in_range( other, los_size() + other->visible_size() );
 }
 inline bool Character::in_visual_range( const Core::UObject* other, const Core::Pos4d& pos ) const
 {
   if ( other )
-    return in_range( pos, los_size() + other->visual_size() );
+    return in_range( pos, los_size() + other->visible_size() );
   return in_range( pos, los_size() );
 }
 inline bool Character::in_visual_range( const Core::UObject* other, const Core::Pos2d& pos ) const
 {
   if ( other )
-    return in_range( pos, los_size() + other->visual_size() );
+    return in_range( pos, los_size() + other->visible_size() );
   return in_range( pos, los_size() );
 }
 
