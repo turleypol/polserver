@@ -20,7 +20,7 @@ program clientconn(con, testscript)
     else
       syslog("      from client: "+ev,0);
       var e:=UnpackJson(ev.value);
-      testscript.sendevent(e);
+      print(testscript.sendevent(e));
     endif
   endwhile
 endprogram
