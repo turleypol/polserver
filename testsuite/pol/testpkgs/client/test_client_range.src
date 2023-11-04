@@ -74,7 +74,7 @@ exported function chr_update_range()
 
   // move char again out of range
   clientcon.sendevent(struct{todo:="move",arg:=6,id:=0});
-  var i:=10;
+  i:=10;
   while (--i>0)
     var ev:=waitForClient(0, {EVT_MOVED, EVT_REMOVED_OBJ});
     if (!ev)
