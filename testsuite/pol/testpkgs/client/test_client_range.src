@@ -94,5 +94,6 @@ exported function chr_update_range()
       endif
       break;
     endif
+  endwhile
   return 1;
 endfunction
