@@ -2696,7 +2696,7 @@ void PropagateMove( /*Client *client,*/ Character* chr )
   PktHelper::PacketOut<PktOut_78> msgcreate;
   MoveChrPkt msgmove( chr );
   build_owncreate( chr, msgcreate.Get() );
-  POLLOG << "PROPAGATE MOVE " << chr->name() << "\n";
+  POLLOG_INFO << "PROPAGATE MOVE " << chr->name() << "\n";
   Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
       chr,
       [&]( Character* zonechr )
