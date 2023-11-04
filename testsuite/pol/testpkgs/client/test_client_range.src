@@ -1,0 +1,98 @@
+use os;
+use uo;
+use boat;
+
+include "testutil";
+include "communication";
+
+var char;
+var char2;
+var boat;
+
+var clientcon := getClientConnection();
+
+program chartests()
+  var a:=FindAccount("testclient0");
+  char:=a.getcharacter(1);
+  if (!char)
+    return ret_error("Could not find char at slot 1");
+  endif
+  a:=FindAccount("testclient1");
+  char2:=a.getcharacter(1);
+  if (!char2)
+    return ret_error("Could not find char2 at slot 1");
+  endif
+  boat:=CreateMultiAtLocation(10,50,-4,0x11000, CRMULTI_FACING_EAST);
+  if (!boat)
+    return ret_error("Failed to create boat "+boat);
+  endif
+endprogram
+
+
+/* move boat in direction of char and check at which distance the boat is visible and then back out of sight
+*/
+exported function chr_update_range()
+ MoveObjectToLocation(char, 100,100,1,flags:=MOVEOBJECT_FORCELOCATION);
+ MoveObjectToLocation(char2, 120,100,1,flags:=MOVEOBJECT_FORCELOCATION);
+  char.facing:=1;
+  while (!waitForClient(0, {EVT_OWNCREATE}))
+  endwhile
+  clientcon.sendevent(struct{todo:="list_objects", id:=0});
+  var ev:=waitForClient(0, {EVT_LIST_OBJS});
+  if (!ev)
+    return ev;
+  endif
+  foreach it in (ev["objs"])
+    if (it["serial"]==char2.serial)
+      return ret_error("char2 still in range");
+    endif
+  endforeach
+  Clear_Event_Queue();
+  clientcon.sendevent(struct{todo:="move",arg:=2,id:=0});
+  var i:=10;
+  while (--i>0)
+    var ev:=waitForClient(0, {EVT_MOVED, EVT_NEW_MOBILE});
+    if (!ev)
+      return ev;
+    endif
+    if (ev.type == EVT_MOVED)
+      if (!ev.ack)
+        return ret_error("failed to move");
+      endif
+      continue;
+    endif
+    if (ev["serial"] == char2.serial)
+      var x:=char.x-ev["pos"][1];
+      var y:=char.y-ev["pos"][2];
+      if (x!=23 ||y!=0) // (18 visual range +5 footprint/2)
+        return ret_error($"update distance failed: {x}, {y}");
+      endif
+      break;
+    endif
+    break;
+  endwhile
+
+  // move char again out of range
+  clientcon.sendevent(struct{todo:="move",arg:=6,id:=0});
+  var i:=10;
+  while (--i>0)
+    var ev:=waitForClient(0, {EVT_MOVED, EVT_REMOVED_OBJ});
+    if (!ev)
+      return ev;
+    endif
+    if (ev.type == EVT_MOVED)
+      if (!ev.ack)
+        return ret_error("failed to move");
+      endif
+      continue;
+    endif
+    if (ev["serial"] == char2.serial)
+      var x:=char.x-ev["oldpos"][1];
+      var y:=char.y-ev["oldpos"][2];
+      if (x!=23 ||y!=0) // (18 visual range +5 footprint/2)
+        return ret_error($"remove update distance failed: {x}, {y}");
+      endif
+      break;
+    endif
+  return 1;
+endfunction
