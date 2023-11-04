@@ -41,7 +41,7 @@ exported function chr_update_range()
   clientcon.sendevent(struct{todo:="move",arg:=2,id:=0});
   var i:=10;
   while (--i>0)
-    var ev:=waitForClient(0, {EVT_MOVED, EVT_REMOVED_OBJ});
+    var ev:=waitForClients({EVT_MOVED, EVT_REMOVED_OBJ});
     if (!ev)
       return ev;
     endif
@@ -52,15 +52,14 @@ exported function chr_update_range()
       clientcon.sendevent(struct{todo:="move",arg:=2,id:=0});
       continue;
     endif
-    if (ev["serial"] == char2.serial)
-      var x:=char.x-ev["oldpos"][1];
-      var y:=char.y-ev["oldpos"][2];
+    if (ev["id"]==1 && ev["serial"] == char.serial)
+      var x:=char2.x-ev["oldpos"][1];
+      var y:=char2.y-ev["oldpos"][2];
       if (x!=23 ||y!=0) // (18 visual range +5 footprint/2)
         return ret_error($"remove update distance failed: {x}, {y}");
       endif
       break;
     endif
-    break;
   endwhile
   if (i==0)
     return ret_error("char was never removed");
@@ -70,7 +69,7 @@ exported function chr_update_range()
   clientcon.sendevent(struct{todo:="move",arg:=6,id:=0});
   i:=10;
   while (--i>0)
-    var ev:=waitForClient(0, {EVT_MOVED, EVT_NEW_MOBILE});
+    var ev:=waitForClients({EVT_MOVED, EVT_NEW_MOBILE});
     if (!ev)
       return ev;
     endif
@@ -81,9 +80,9 @@ exported function chr_update_range()
       clientcon.sendevent(struct{todo:="move",arg:=6,id:=0});
       continue;
     endif
-    if (ev["serial"] == char2.serial)
-      var x:=char.x-ev["pos"][1];
-      var y:=char.y-ev["pos"][2];
+    if (ev["id"] == 1 && ev["serial"] == char.serial)
+      var x:=char2.x-ev["pos"][1];
+      var y:=char2.y-ev["pos"][2];
       if (x!=23 ||y!=0) // (18 visual range +5 footprint/2)
         return ret_error($"update distance failed: {x}, {y}");
       endif
