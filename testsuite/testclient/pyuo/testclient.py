@@ -229,7 +229,7 @@ class PolServer:
     res={}
     res["id"]=ev.clientid
     res["type"]=ev.typestr()
-    if ev.type==Event.EVT_INIT or Event.EVT_EXIT:
+    if ev.type==Event.EVT_INIT or ev.type==Event.EVT_EXIT:
       pass
     elif (ev.type==Event.EVT_HP_CHANGED or
         ev.type==Event.EVT_MANA_CHANGED or

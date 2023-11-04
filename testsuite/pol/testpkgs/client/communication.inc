@@ -70,6 +70,7 @@ function waitForClients(types)
     if (!(ev.type in types))
       continue;
     endif
+    print(cstr(ev)+" found");
     return ev;
   endwhile
 endfunction
