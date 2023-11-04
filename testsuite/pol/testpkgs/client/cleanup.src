@@ -9,7 +9,7 @@ var res:=GetGlobalProperty("#clientcon");
 if (res)
   var clientcon:=GetProcess(res);
   clientcon.sendevent(struct{todo:="exit"});
-  sleepms(200);
+  print(WaitForClients({EVT_EXIT}));
 endif
 var a:=FindAccount("testclient0");
 if (a)
