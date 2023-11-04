@@ -32,8 +32,11 @@ endprogram
 /* move boat in direction of char and check at which distance the boat is visible and then back out of sight
 */
 exported function chr_update_range()
- MoveObjectToLocation(char, 100,100,1,flags:=MOVEOBJECT_FORCELOCATION);
+ MoveObjectToLocation(char, 100,100,1,"britannia2", flags:=MOVEOBJECT_FORCELOCATION);
+  while (!waitForClient(0, {EVT_OWNCREATE}))
+  endwhile
  MoveObjectToLocation(char2, 120,100,1,flags:=MOVEOBJECT_FORCELOCATION);
+ MoveObjectToLocation(char, 100,100,1,"britannia2", flags:=MOVEOBJECT_FORCELOCATION);
   char.facing:=1;
   while (!waitForClient(0, {EVT_OWNCREATE}))
   endwhile
@@ -44,7 +47,7 @@ exported function chr_update_range()
   endif
   foreach it in (ev["objs"])
     if (it["serial"]==char2.serial)
-      return ret_error("char2 still in range");
+      return ret_error("char2 {char2.serial} still in range");
     endif
   endforeach
   Clear_Event_Queue();
