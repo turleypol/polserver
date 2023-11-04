@@ -776,7 +776,7 @@ class Client(threading.Thread):
     elif isinstance(pkt, packets.AddItemToContainerPacket):
       assert self.lc
       assert isinstance(self.objects[pkt.container], Item)
-      if not isinstance(self.objects[pkt.container], Container)
+      if not isinstance(self.objects[pkt.container], Container):
         self.objects[pkt.container].upgradeToContainer()
       self.objects[pkt.container].addItem(pkt)
 
