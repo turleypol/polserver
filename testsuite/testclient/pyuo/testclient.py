@@ -163,7 +163,7 @@ class PolServer:
             b.addTodo({"todo":"disconnect"})
         for t in self.threads:
           t.join()
-        self.sendEvent(brain.Event(brain.Event.EVT_EXIT))
+        self.sendEvent(brain.Event(brain.Event.EVT_EXIT,clientid=0))
         return
       else:
         with self.clientLock:
