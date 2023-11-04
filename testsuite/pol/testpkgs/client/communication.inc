@@ -51,6 +51,7 @@ function waitForClient(id, types, timeout := 10)
     if (!ev)
       return ret_error("no signal received");
     endif
+    print(ev,CONSOLE_COLOR_BLUE);
     if (ev.id != id || !(ev.type in types))
       continue;
     endif
@@ -65,6 +66,7 @@ function waitForClients(types)
     if (!ev)
       return ret_error("no signal received");
     endif
+    print(ev,CONSOLE_COLOR_BLUE);
     if (!(ev.type in types))
       continue;
     endif
