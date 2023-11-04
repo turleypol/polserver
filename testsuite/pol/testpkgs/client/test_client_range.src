@@ -33,7 +33,7 @@ endprogram
 */
 exported function chr_update_range()
  MoveObjectToLocation(char2, 100,100,1,flags:=MOVEOBJECT_FORCELOCATION);
- MoveObjectToLocation(char, 100,100,1, flags:=MOVEOBJECT_FORCELOCATION);
+ MoveObjectToLocation(char, 115,100,1, flags:=MOVEOBJECT_FORCELOCATION);
   while (!waitForClient(0, {EVT_OWNCREATE}))
   endwhile
   char.facing:=1;
