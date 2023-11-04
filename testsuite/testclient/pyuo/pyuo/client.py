@@ -288,6 +288,20 @@ class Mobile(UOBject):
       self.y = pkt['y']
       self.z = pkt['z']
       return
+    if isinstance(pkt, packets.WornItemPacket):
+      if pkt.serial in self.client.objects.keys():
+        item = self.client.objects[pkt.serial]
+      else:
+        item = Item(self.client)
+        item.serial = pkt.serial
+        self.client.objects[item.serial] = item
+        item.graphic = pkt.graphic
+        item.color = pkt.color
+        item.parent = self
+
+      self.equip[pkt.layer] = item
+      return
+
     if not isinstance(pkt, packets.UpdatePlayerPacket) and not isinstance(pkt, packets.DrawObjectPacket):
       raise ValueError("Expecting an UpdatePlayerPacket or DrawObjectPacket")
     self.serial = pkt.serial
@@ -886,6 +900,9 @@ class Client(threading.Thread):
       po.fill(pkt.serial, pkt.gumpid)
       self.queue(po)
       self.brain.event(brain.Event(brain.Event.EVT_GUMP, commands=pkt.commands, texts=pkt.texts))
+    elif isinstance(pkt, packets.WornItemPacket):
+      self.objects[pkt.mobile].update(pkt)
+      self.log.info("wornitem item: %s mobile: %s", self.objects[pkt.serial], self.objects[pkt.mobile])
     else:
       self.log.warn("Unhandled packet {}".format(pkt.__class__))
 

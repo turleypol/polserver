@@ -83,7 +83,7 @@ exported function chr_update_range()
     if (ev["id"] == 1 && ev["serial"] == char.serial)
       var x:=char2.x-ev["pos"][1];
       var y:=char2.y-ev["pos"][2];
-      if (x!=23 ||y!=0) // (18 visual range +5 footprint/2)
+      if (x!=-18 ||y!=0) // (18 visual range)
         return ret_error($"update distance failed: {x}, {y}");
       endif
       break;
