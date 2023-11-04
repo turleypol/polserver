@@ -23,7 +23,7 @@ if (a)
   a.delete();
 endif
 
-res := GetGlobalProperty("#SnoopingNpc");
+var res := GetGlobalProperty("#SnoopingNpc");
 if (res)
   var mob := SystemFindObjectBySerial(res);
   MoveObjectToLocation(mob, 0, 0, 0, flags := MOVEOBJECT_FORCELOCATION);
