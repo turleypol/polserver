@@ -32,18 +32,11 @@ endprogram
 /* move boat in direction of char and check at which distance the boat is visible and then back out of sight
 */
 exported function chr_update_range()
- MoveObjectToLocation(char, 100,100,1,"britannia", flags:=MOVEOBJECT_FORCELOCATION);
-  while (!waitForClient(0, {EVT_OWNCREATE}))
-  endwhile
- MoveObjectToLocation(char2, 100,100,1,flags:=MOVEOBJECT_FORCELOCATION);
- MoveObjectToLocation(char, 100,100,1,"britannia2", flags:=MOVEOBJECT_FORCELOCATION);
+ MoveObjectToLocation(char, 100,100,1, flags:=MOVEOBJECT_FORCELOCATION);
   while (!waitForClient(0, {EVT_OWNCREATE}))
   endwhile
  MoveObjectToLocation(char2, 120,100,1,flags:=MOVEOBJECT_FORCELOCATION);
- MoveObjectToLocation(char, 100,100,1,"britannia", flags:=MOVEOBJECT_FORCELOCATION);
   char.facing:=1;
-  while (!waitForClient(0, {EVT_OWNCREATE}))
-  endwhile
   clientcon.sendevent(struct{todo:="list_objects", id:=0});
   var ev:=waitForClient(0, {EVT_LIST_OBJS});
   if (!ev)
