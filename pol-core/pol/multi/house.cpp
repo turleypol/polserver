@@ -749,17 +749,26 @@ bool objects_exist_in( unsigned short x1, unsigned short y1, unsigned short x2, 
     for ( const auto& chr : realm->getzone_grid( gpos ).characters )
     {
       if ( includes( chr ) )
+      {
+        POLLOG_INFO << "chr " << chr->name() << " " << chr->serial << "\n";
         return true;
+      }
     }
     for ( const auto& chr : realm->getzone_grid( gpos ).npcs )
     {
       if ( includes( chr ) )
+      {
+        POLLOG_INFO << "npc " << chr->name() << " " << chr->serial << "\n";
         return true;
+      }
     }
     for ( const auto& item : realm->getzone_grid( gpos ).items )
     {
       if ( includes( item ) )
+      {
+        POLLOG_INFO << "item " << item->name() << " " << item->serial << "\n";
         return true;
+      }
     }
   }
   return false;
