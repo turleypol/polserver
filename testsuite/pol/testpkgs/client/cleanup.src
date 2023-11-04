@@ -1,5 +1,6 @@
 use uo;
 use os;
+include "testutil";
 include "communication";
 
 foreach multi in (ListMultisInBox(0,0,-200,10000,10000,200))
