@@ -38,6 +38,8 @@ program setup()
     endif
   endwhile
   var clientcon;
+  print("SETUP");
+  print(getpid(),CONSOLE_COLOR_BLUE);
   while (1)
     var res:=GetGlobalProperty("#clientcon");
     if (res)
