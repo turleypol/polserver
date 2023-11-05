@@ -143,7 +143,8 @@ jobs:
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
+          ctest --verbose -R shard_test_1 -C ${{ matrix.config.build-type }}
+          #cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
           #env:
           #POLCORE_TEST_FILTER: testitems
       - name: Upload shard test log
