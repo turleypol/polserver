@@ -218,3 +218,31 @@ add_test(NAME unittest_pol
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coretest
 )
 set_tests_properties( unittest_pol PROPERTIES FIXTURES_REQUIRED "client;shard;uoconvert;ecompile")
+
+
+
+
+set(testdir ${testsuite}/testpkgs)
+file(GLOB children RELATIVE ${testdir} ${testdir}/*)
+foreach(child ${children})
+  if(IS_DIRECTORY ${testdir}/${child})
+    if (${child}=="client")
+      add_test(NAME shard_test_${child}
+        COMMAND ${CMAKE_COMMAND}
+          -Dpol=$<TARGET_FILE:pol>
+          -Dtestdir=${CMAKE_CURRENT_SOURCE_DIR}/testsuite
+          -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/core_tests_start.cmake
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coretest
+      )
+    else()
+      add_test(NAME shard_test_${child}
+        COMMAND pol
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coretest
+      )
+    endif()
+    set_tests_properties( shard_test_${child} PROPERTIES FIXTURES_REQUIRED "client;shard;uoconvert;ecompile")
+    # needed for test_env
+    set_tests_properties( shard_test_${child} PROPERTIES ENVIRONMENT "POLCORE_TEST=1;POLCORE_TEST_RUN=1;POLCORE_TEST_NOACCESS=foo;POLCORE_TESTCLIENT=${Python3_FOUND}")
+    set_tests_properties(shard_test_${child} PROPERTIES FIXTURES_SETUP shard_test)
+  endif()
+endforeach()

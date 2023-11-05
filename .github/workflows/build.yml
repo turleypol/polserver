@@ -143,10 +143,15 @@ jobs:
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          ctest --verbose -R shard_test_1 -FA .* -C ${{ matrix.config.build-type }}
+          ctest --verbose -R shard_test_client -FA .* -C ${{ matrix.config.build-type }}
           #cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
           #env:
           #POLCORE_TEST_FILTER: testitems
+      - name: Test (Shard) 1
+        if: matrix.config.nopch == 0
+        run: |
+          cd bin-build
+          ctest --verbose -R shard_test_house -FA .* -C ${{ matrix.config.build-type }}
       - name: Upload shard test log
         if: matrix.config.nopch == 0
         uses: actions/upload-artifact@v3
