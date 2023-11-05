@@ -226,7 +226,7 @@ set(testdir ${testsuite}/testpkgs)
 file(GLOB children RELATIVE ${testdir} ${testdir}/*)
 foreach(child ${children})
   if(IS_DIRECTORY ${testdir}/${child})
-    if (${child}=="client")
+    if (${child} STREQAL "client")
       add_test(NAME shard_test_${child}
         COMMAND ${CMAKE_COMMAND}
           -Dpol=$<TARGET_FILE:pol>
