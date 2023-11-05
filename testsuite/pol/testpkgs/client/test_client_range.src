@@ -29,7 +29,8 @@ program chartests()
 endprogram
 
 
-/* move boat in direction of char and check at which distance the boat is visible and then back out of sight
+/* move one char out of range of other char and back into it
+   Note: moving char does not receive deleteobj pkt
 */
 exported function chr_update_range()
  MoveObjectToLocation(char2, 100,100,1,flags:=MOVEOBJECT_FORCELOCATION);
@@ -65,7 +66,7 @@ exported function chr_update_range()
     return ret_error("char was never removed");
   endif
 
-  // move char again out of range
+  // move char again into range
   clientcon.sendevent(struct{todo:="move",arg:=6,id:=0});
   i:=10;
   while (--i>0)
@@ -91,6 +92,49 @@ exported function chr_update_range()
   endwhile
   if (i==0)
     return ret_error("char was never readded");
+  endif
+  return 1;
+endfunction
+
+/* move one char out of range of other char and back into it
+   Note: moving char does not receive deleteobj pkt
+*/
+exported function item_update_range()
+  MoveObjectToLocation(char, 100,100,1, flags:=MOVEOBJECT_FORCELOCATION);
+  var item:=CreateItemAtLocation(char.x+20, char.y,char.z, 0xf3f);
+  while (!waitForClient(0, {EVT_OWNCREATE}))
+  endwhile
+  char.facing:=1;
+  Clear_Event_Queue();
+  clientcon.sendevent(struct{todo:="move",arg:=2,id:=0});
+  var i:=10;
+  while (--i>0)
+    var ev:=waitForClient(0,{EVT_MOVED, EVT_NEW_ITEM});
+    if (!ev)
+      DestroyItem(item);
+      return ev;
+    endif
+    if (ev.type == EVT_MOVED)
+      if (!ev.ack)
+        DestroyItem(item);
+        return ret_error("failed to move");
+      endif
+      clientcon.sendevent(struct{todo:="move",arg:=6,id:=0});
+      continue;
+    endif
+    if (ev["serial"] == item.serial)
+      var x:=char.x-ev["pos"][1];
+      var y:=char.y-ev["pos"][2];
+      if (x!=-18 ||y!=0) // (18 visual range)
+        DestroyItem(item);
+        return ret_error($"update distance failed: {x}, {y}");
+      endif
+      break;
+    endif
+  endwhile
+  DestroyItem(item);
+  if (i==0)
+    return ret_error("item was never visible");
   endif
   return 1;
 endfunction
