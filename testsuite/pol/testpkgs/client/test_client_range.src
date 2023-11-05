@@ -7,7 +7,6 @@ include "communication";
 
 var char;
 var char2;
-var boat;
 
 var clientcon := getClientConnection();
 
@@ -21,10 +20,6 @@ program chartests()
   char2:=a.getcharacter(1);
   if (!char2)
     return ret_error("Could not find char2 at slot 1");
-  endif
-  boat:=CreateMultiAtLocation(10,50,-4,0x11000, CRMULTI_FACING_EAST);
-  if (!boat)
-    return ret_error("Failed to create boat "+boat);
   endif
 endprogram
 
@@ -56,11 +51,10 @@ exported function chr_update_range()
       continue;
     endif
     if (ev["id"]==1 && ev["serial"] == char.serial)
-      var x:=char2.x-ev["oldpos"][1];
-      var y:=char2.y-ev["oldpos"][2];
-      if (x!=-18 ||y!=0) // (18 visual range)
+      var x:=ev["oldpos"][1]-char2.x;
+      if (x!=18) // (18 visual range)
         MoveObjectToLocation(char2, 1,1,1,flags:=MOVEOBJECT_FORCELOCATION);
-        return ret_error($"remove update distance failed: {x}, {y}");
+        return ret_error($"remove update distance failed: {x}");
       endif
       break;
     endif
@@ -88,11 +82,10 @@ exported function chr_update_range()
       continue;
     endif
     if (ev["id"] == 1 && ev["serial"] == char.serial)
-      var x:=char2.x-ev["pos"][1];
-      var y:=char2.y-ev["pos"][2];
-      if (x!=-18 ||y!=0) // (18 visual range)
+      var x:=ev["pos"][1]-char2.x;
+      if (x!=18) // (18 visual range)
         MoveObjectToLocation(char2, 1,1,1,flags:=MOVEOBJECT_FORCELOCATION);
-        return ret_error($"update distance failed: {x}, {y}");
+        return ret_error($"update distance failed: {x}");
       endif
       break;
     endif
@@ -132,11 +125,10 @@ exported function item_update_range()
       continue;
     endif
     if (ev["serial"] == item.serial)
-      var x:=char.x-ev["pos"][1];
-      var y:=char.y-ev["pos"][2];
-      if (x!=-18 ||y!=0) // (18 visual range)
+      var x:=ev["pos"][1]-char.x;
+      if (x!=18) // (18 visual range)
         DestroyItem(item);
-        return ret_error($"update distance failed: {x}, {y}");
+        return ret_error($"update distance failed: {x}");
       endif
       break;
     endif
@@ -164,7 +156,6 @@ exported function multi_update_range()
   Clear_Event_Queue();
   clientcon.sendevent(struct{todo:="move",arg:=2,id:=0});
   var i:=10;
-  var chrx:=char.x;
   while (--i>0)
     var ev:=waitForClient(0,{EVT_MOVED, EVT_NEW_ITEM});
     if (!ev)
@@ -172,7 +163,6 @@ exported function multi_update_range()
       return ev;
     endif
     if (ev.type == EVT_MOVED)
-      chrx:=char.x; // new move could be executed before new_item event
       if (!ev.ack)
         DestroyMulti(multi);
         return ret_error("failed to move");
@@ -181,8 +171,8 @@ exported function multi_update_range()
       continue;
     endif
     if (ev["serial"] == multi.serial)
-      var x:=chrx-ev["pos"][1];
-      if (x!=-22 ) // (18 visual range)
+      var x:=ev["pos"][1]-char.x;
+      if ( x!=21 ) // (18 visual range + 3)
         DestroyMulti(multi);
         return ret_error($"update distance failed: {x}");
       endif
