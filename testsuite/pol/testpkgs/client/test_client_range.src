@@ -97,6 +97,8 @@ exported function chr_update_range()
       break;
     endif
   endwhile
+  while (waitForClient(0, {},1))
+  endwhile
  MoveObjectToLocation(char2, 1,1,1,flags:=MOVEOBJECT_FORCELOCATION);
   if (i==0)
     return ret_error("char was never readded");
