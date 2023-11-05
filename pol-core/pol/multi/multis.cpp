@@ -97,7 +97,7 @@ Core::Range3d UMulti::current_box() const
 u8 UMulti::visible_size() const
 {
   const auto& box = current_box();
-  INFO_PRINT "multi: " << box << " " << box.nw().pol_distance( box.se() ) << "\n";
+  INFO_PRINT << "multi: " << box << " " << box.nw().pol_distance( box.se() ) << "\n";
   return static_cast<u8>( box.nw().pol_distance( box.se() ) / 2 );
 }
 
