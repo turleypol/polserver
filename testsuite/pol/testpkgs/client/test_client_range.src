@@ -118,7 +118,7 @@ exported function item_update_range()
         DestroyItem(item);
         return ret_error("failed to move");
       endif
-      clientcon.sendevent(struct{todo:="move",arg:=6,id:=0});
+      clientcon.sendevent(struct{todo:="move",arg:=2,id:=0});
       continue;
     endif
     if (ev["serial"] == item.serial)
@@ -163,7 +163,7 @@ exported function multi_update_range()
         DestroyMulti(multi);
         return ret_error("failed to move");
       endif
-      clientcon.sendevent(struct{todo:="move",arg:=6,id:=0});
+      clientcon.sendevent(struct{todo:="move",arg:=2,id:=0});
       continue;
     endif
     if (ev["serial"] == multi.serial)
