@@ -10,7 +10,7 @@ endforeach
 var clientcon := getClientConnection();
 if (clientcon)
   clientcon.sendevent(struct{todo:="exit"});
-  print(WaitForClients({EVT_EXIT}));
+  WaitForClients({EVT_EXIT},2);
 endif
 var a:=FindAccount("testclient0");
 if (a)

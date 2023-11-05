@@ -43,7 +43,7 @@ program tests()
     if (test_count==2 and pkg[1]!="testrestart")
       continue;
     endif
-    
+
     syslog(pkg[2],0,"\x1B[1;32m");
     var scripts:=listdirectory(":{}:".format(pkg[1]),"ecl");
     scripts.sort();

@@ -2696,7 +2696,7 @@ void PropagateMove( /*Client *client,*/ Character* chr )
   PktHelper::PacketOut<PktOut_78> msgcreate;
   MoveChrPkt msgmove( chr );
   build_owncreate( chr, msgcreate.Get() );
-  POLLOG_INFO << "PROPAGATE MOVE " << chr->name() << "\n";
+
   Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
       chr,
       [&]( Character* zonechr )
@@ -2765,22 +2765,14 @@ void PropagateMove( /*Client *client,*/ Character* chr )
       chr->lastpos,
       [&]( Character* zonechr )
       {
-        POLLOG_INFO << "itr " << zonechr->name() << "\n";
         Client* client = zonechr->client;
         if ( !zonechr->in_visual_range( nullptr, chr->lastpos ) )
-        {
-          POLLOG_INFO << "oldpos not visible\n";
           return;
-        }
         if ( !zonechr->is_visible_to_me( chr ) )
           return;
 
         if ( zonechr->in_visual_range( chr ) )  // already handled
-        {
-          POLLOG_INFO << "still visible\n";
           return;
-        }
-        POLLOG_INFO << "remove\n";
         // if we just walked out of range of this character, send its
         // client a remove object, or else a ghost character will remain.
         send_remove_character( client, chr, msgremove );
