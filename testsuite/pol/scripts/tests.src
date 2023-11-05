@@ -44,7 +44,7 @@ program tests()
       continue;
     endif
     
-    print("::group::"+pkg[2]);
+    print("##[group]"+pkg[2]);
     syslog(pkg[2],0,"\x1B[1;32m");
     var scripts:=listdirectory(":{}:".format(pkg[1]),"ecl");
     scripts.sort();
@@ -52,12 +52,12 @@ program tests()
       syslog("  Calling setup.ecl..",0,CONSOLE_COLOR_GREEN);
       var res:=run_script(":{}:setup.ecl".format(pkg[1]));
       if (res == IGNORE_TEST)
-        print("::endgroup::");
+        print("##[endgroup]");
         continue;
       elseif (res != 1)
         syslog("    failed: "+res.errortext,0,CONSOLE_COLOR_RED);
         exitcode:=1;
-        print("::endgroup::");
+        print("##[endgroup]");
         continue;
       endif
     endif
@@ -90,7 +90,7 @@ program tests()
       syslog("  Calling cleanup.ecl..",0,CONSOLE_COLOR_GREEN);
       run_script(":{}:cleanup.ecl".format(pkg[1]));
     endif
-    print("::endgroup::");
+    print("##[endgroup]");
   endforeach
   
   var result:=$"{CONSOLE_COLOR_GREEN}success";
