@@ -941,6 +941,10 @@ class Client(threading.Thread):
   @status('game')
   @clientthread
   def handleDrawGamePlayerPacket(self, pkt):
+    self.log.info("You are 0x%X and your graphic is 0x%X", self.player.serial, self.player.graphic)
+    self.log.info("Position: %d,%d,%d facing %d", self.player.x, self.player.y, self.player.z, self.player.facing)
+
+    self.log.info("Pkt Position: %d,%d,%d facing %d", pkt.x, pkt.y, pkt.z, pkt.facing)
     assert self.player.serial == pkt.serial
     assert self.player.graphic == pkt.graphic
     assert self.player.x == pkt.x
