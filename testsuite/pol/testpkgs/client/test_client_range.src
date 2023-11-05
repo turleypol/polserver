@@ -181,7 +181,7 @@ exported function multi_update_range()
       continue;
     endif
     if (ev["serial"] == multi.serial)
-      var x:=charx-ev["pos"][1];
+      var x:=chrx-ev["pos"][1];
       if (x!=-22 ) // (18 visual range)
         DestroyMulti(multi);
         return ret_error($"update distance failed: {x}");
