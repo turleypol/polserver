@@ -237,6 +237,8 @@ public:
   void no_drop_exception( bool newvalue );
 
   std::string templatename() const;
+
+  void reload_template();
   // ==========================================================
   // DATA:
   // ==========================================================
