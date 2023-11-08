@@ -1155,7 +1155,7 @@ void NPC::reload_template()
 {
   auto itr = Core::gamestate.npc_templates.find( template_name.get() );
   if ( itr != Core::gamestate.npc_templates.end() )
-    template_ = *( itr->second );
+    template_ = itr->second;
 }
 }  // namespace Mobile
 }  // namespace Pol
