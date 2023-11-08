@@ -158,7 +158,7 @@ std::shared_ptr<NpcTemplate> find_npc_template( const Clib::ConfigElem& elem )
   auto itr = gamestate.npc_templates.find( elem.rest() );
   if ( itr != gamestate.npc_templates.end() )
   {
-    return *( itr->second );
+    return itr->second;
   }
   else
   {
