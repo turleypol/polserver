@@ -37,7 +37,6 @@ bool ObjectHash::Insert( UObject* obj )
           << obj->serial;
     return false;
   }
-  POLLOG_INFO << "INSERT " << obj->serial << "\n";
   hash.insert( hash.end(), std::make_pair( obj->serial, UObjectRef( obj ) ) );
   return true;
 }
