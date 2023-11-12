@@ -37,6 +37,7 @@ bool ObjectHash::Insert( UObject* obj )
           << obj->serial;
     return false;
   }
+  POLLOG_INFO << "INSERT " << obj->serial << "\n";
   hash.insert( hash.end(), std::make_pair( obj->serial, UObjectRef( obj ) ) );
   return true;
 }
@@ -165,7 +166,8 @@ void ObjectHash::Reap()
     // object when it is deleted - hence the ref_counted_count() check.
     if ( obj->orphan() && obj->ref_counted_count() == 1 )
     {
-      POLLOG_INFO << "DESTROY " << obj->serial_ext << " " << cfBEu32( obj->serial_ext ) << "\n";
+      //    POLLOG_INFO << "DESTROY " << obj->serial_ext << " " << cfBEu32( obj->serial_ext ) <<
+      //    "\n";
       dirty_deleted.insert( cfBEu32( obj->serial_ext ) );
       hash.erase( reap_iterator++ );
     }
