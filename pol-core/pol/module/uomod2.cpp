@@ -61,6 +61,7 @@
 #include "../core.h"
 #include "../exscrobj.h"
 #include "../globals/memoryusage.h"
+#include "../globals/object_storage.h"
 #include "../globals/script_internals.h"
 #include "../globals/state.h"
 #include "../globals/uvars.h"
