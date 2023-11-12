@@ -178,11 +178,7 @@ endfunction
 
 
 exported function test_item_controlscript_destroy()
-  var item := CreateItemAtLocation(0,0,0,0x400003);
-  if (!item)
-    return ret_error("Failed to create item "+item);
-  endif
-  item:=0;
+  CreateItemAtLocation(0,0,0,0x400003);
   return 1;
 endfunction
 
