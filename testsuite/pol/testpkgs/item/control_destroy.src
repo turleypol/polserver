@@ -1,4 +1,4 @@
 use uo;
-program (item)
+program control_destroy(item)
   DestroyItem(item);
 endprogram
