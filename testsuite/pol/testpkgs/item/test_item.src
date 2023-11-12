@@ -178,7 +178,8 @@ endfunction
 
 
 exported function test_item_controlscript_destroy()
-  CreateItemAtLocation(0,0,0,0x400003);
+  var item:=CreateItemAtLocation(0,0,0,0x400003);
+  item:=0;
   return 1;
 endfunction
 
