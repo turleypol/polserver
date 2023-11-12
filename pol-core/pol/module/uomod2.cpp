@@ -2020,8 +2020,7 @@ BObjectImp* PolCore::call_polmethod( const char* methodname, UOExecutor& ex )
       }
       else if ( type == 7 )
       {
-        for ( int i = 0; i < 900; ++i )
-          Core::objStorageManager.objecthash.Reap();
+        Core::objStorageManager.objecthash.Clear( false );
       }
       return new BLong( 1 );
     }

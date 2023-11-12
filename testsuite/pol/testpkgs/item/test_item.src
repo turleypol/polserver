@@ -180,6 +180,7 @@ endfunction
 exported function test_item_controlscript_destroy()
   var item:=CreateItemAtLocation(0,0,0,0x400003);
   item:=0;
+  sleepms(100);
   return 1;
 endfunction
 

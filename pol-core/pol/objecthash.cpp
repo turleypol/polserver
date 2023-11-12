@@ -166,8 +166,6 @@ void ObjectHash::Reap()
     // object when it is deleted - hence the ref_counted_count() check.
     if ( obj->orphan() && obj->ref_counted_count() == 1 )
     {
-      //    POLLOG_INFO << "DESTROY " << obj->serial_ext << " " << cfBEu32( obj->serial_ext ) <<
-      //    "\n";
       dirty_deleted.insert( cfBEu32( obj->serial_ext ) );
       hash.erase( reap_iterator++ );
     }
@@ -183,30 +181,29 @@ void ObjectHash::Reap()
   }
 }
 
-void ObjectHash::Clear()
+void ObjectHash::Clear( bool shutdown )
 {
   bool any;
   do
   {
     any = false;
-    unsigned skipped = 0;
     for ( OH_iterator itr = hash.begin(), itrend = hash.end(); itr != itrend; )
     {
-      UObject* obj = ( *itr ).second.get();
+      UObject* obj = itr->second.get();
 
       if ( obj->orphan() && obj->ref_counted_count() == 1 )
       {
-        hash.erase( itr++ );
+        itr = hash.erase( itr );
         any = true;
       }
       else
       {
-        ++skipped;
         ++itr;
       }
     }
   } while ( any );
-  if ( !hash.empty() )
+
+  if ( shutdown && !hash.empty() )
   {
     INFO_PRINT << "Leftover objects in objecthash: " << hash.size() << "\n";
 
@@ -216,7 +213,6 @@ void ObjectHash::Clear()
     INFO_PRINT << "Leaking a copy of the objecthash in order to avoid a crash.\n";
     new hs( hash );
   }
-  //    hash.clear();
 }
 
 
