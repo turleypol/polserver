@@ -2017,6 +2017,11 @@ BObjectImp* PolCore::call_polmethod( const char* methodname, UOExecutor& ex )
         Core::scriptScheduler.logScriptVariables( script->data() );
         return new BLong( 1 );
       }
+      else if ( type == 7 )
+      {
+        for ( int i = 0; i < 61; ++i )
+          Core::objStorageManager.objecthash.Reap();
+      }
       return new BLong( 1 );
     }
     else

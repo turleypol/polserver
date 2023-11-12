@@ -3,5 +3,6 @@ use os;
 program control_destroy(item)
   sleepms(100);
   DestroyItem(item);
+  Polcore().internal(7);
   sleepms(100);
 endprogram
