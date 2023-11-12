@@ -175,3 +175,14 @@ function get_pid_from_control_script(byref err, item, label)
 
   return control_script_pid;
 endfunction
+
+
+exported function test_item_controlscript_destroy()
+  var item := CreateItemAtLocation(0,0,0,0x400003);
+  if (!item)
+    return ret_error("Failed to create item "+item);
+  endif
+  item:=0;
+  return 1;
+endfunction
+

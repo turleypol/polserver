@@ -1,0 +1,4 @@
+use uo;
+program (item)
+  DestroyItem(item);
+endprogram
