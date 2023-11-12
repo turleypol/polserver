@@ -6,5 +6,7 @@ program control_destroy(item)
   DestroyItem(item);
   item:=0;
   Polcore().internal(7);
+  print("REAP");
   sleepms(100);
+  print("Exit");
 endprogram
