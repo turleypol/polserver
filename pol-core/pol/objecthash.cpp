@@ -165,6 +165,7 @@ void ObjectHash::Reap()
     // object when it is deleted - hence the ref_counted_count() check.
     if ( obj->orphan() && obj->ref_counted_count() == 1 )
     {
+      POLLOG_INFO << "DESTROY " << obj->serial_ext << " " << cfBEu32( obj->serial_ext ) << "\n";
       dirty_deleted.insert( cfBEu32( obj->serial_ext ) );
       hash.erase( reap_iterator++ );
     }
@@ -272,5 +273,5 @@ void ObjectHash::RegisterCleanDeletedSerial( u32 serial )
 {
   clean_deleted.insert( serial );
 }
-}
-}
+}  // namespace Core
+}  // namespace Pol

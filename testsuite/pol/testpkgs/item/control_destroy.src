@@ -2,6 +2,7 @@ use uo;
 use os;
 program control_destroy(item)
   sleepms(100);
+  print(item.serial);
   DestroyItem(item);
   item:=0;
   Polcore().internal(7);
