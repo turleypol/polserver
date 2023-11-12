@@ -283,6 +283,8 @@ UOExecutorModule::~UOExecutorModule()
   }
   if ( attached_item_ )
   {
+    POLLOG_INFO << "ATTACHED ITEM " << attached_item_->serial << " "
+                << cfBEu32( attached_item_->serial_ext ) << "\n";
     attached_item_->process( nullptr );
     attached_item_ = nullptr;
   }
