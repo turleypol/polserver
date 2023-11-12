@@ -202,6 +202,7 @@ void ObjectHash::Clear( bool shutdown )
     }
   } while ( any );
 
+  reap_iterator = hash.begin();  // set itr for ::Reap back to the beginning
   if ( shutdown && !hash.empty() )
   {
     INFO_PRINT << "Leftover objects in objecthash: " << hash.size() << "\n";
