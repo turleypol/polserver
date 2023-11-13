@@ -726,6 +726,8 @@ BObjectImp* OSExecutorModule::mf_HTTPRequest()
 {
   Core::UOExecutor& this_uoexec = uoexec();
 
+  INFO_PRINT << "HTTP START\n";
+
   if ( this_uoexec.pChild == nullptr )
   {
     const String *url, *method;
@@ -783,6 +785,7 @@ BObjectImp* OSExecutorModule::mf_HTTPRequest()
         Core::networkManager.auxthreadpool->push(
             [uoexec_w, curl_sp, chunk, flags]()
             {
+              INFO_PRINT << "HTTP thread start\n";
               CURL* curl = curl_sp.get();
               CURLcode res;
               std::string readBuffer;
@@ -802,6 +805,7 @@ BObjectImp* OSExecutorModule::mf_HTTPRequest()
                 curl_slist_free_all( chunk );
               {
                 Core::PolLock lck;
+                INFO_PRINT << "HTTP received\n";
 
                 if ( !uoexec_w.exists() )
                 {
