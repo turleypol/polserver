@@ -585,6 +585,7 @@ bool start_http_script( Clib::Socket& sck, const std::string& page, Plib::Packag
     {
       // Sending of HTTP status line and headers moved to module function
       ex->setDebugLevel( Bscript::Executor::NONE );
+      INFO_PRINT << "SCHEDULE EXECUTOR\n";
       schedule_executor( ex );
     }
   }
