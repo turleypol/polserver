@@ -34,4 +34,5 @@ program HTMLPage()
     if (testPid)
         GetProcess(CInt(testPid)).SendEvent(scriptResponse);
     endif
+    print("request done");
 endprogram
