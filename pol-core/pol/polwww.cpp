@@ -212,7 +212,7 @@ std::string reasonPhrase( int code )
 {
   switch ( code )
   {
-  //####### 1xx - Informational #######
+  // ####### 1xx - Informational #######
   case 100:
     return "Continue";
   case 101:
@@ -222,7 +222,7 @@ std::string reasonPhrase( int code )
   case 103:
     return "Early Hints";
 
-  //####### 2xx - Successful #######
+  // ####### 2xx - Successful #######
   case 200:
     return "OK";
   case 201:
@@ -244,7 +244,7 @@ std::string reasonPhrase( int code )
   case 226:
     return "IM Used";
 
-  //####### 3xx - Redirection #######
+  // ####### 3xx - Redirection #######
   case 300:
     return "Multiple Choices";
   case 301:
@@ -262,7 +262,7 @@ std::string reasonPhrase( int code )
   case 308:
     return "Permanent Redirect";
 
-  //####### 4xx - Client Error #######
+  // ####### 4xx - Client Error #######
   case 400:
     return "Bad Request";
   case 401:
@@ -322,7 +322,7 @@ std::string reasonPhrase( int code )
   case 451:
     return "Unavailable For Legal Reasons";
 
-  //####### 5xx - Server Error #######
+  // ####### 5xx - Server Error #######
   case 500:
     return "Internal Server Error";
   case 501:
@@ -459,7 +459,7 @@ bool legal_pagename( const std::string& page )
   for ( const char* t = page.c_str(); *t; ++t )
   {
     char ch = *t;
-    if ( isalnum( ch ) || ( ch == '/' ) || ( ch == '_' ) || (ch == '-') )
+    if ( isalnum( ch ) || ( ch == '/' ) || ( ch == '_' ) || ( ch == '-' ) )
     {
       continue;
     }
@@ -764,8 +764,8 @@ void http_func( SOCKET client_socket )
   Tools::HighPerfTimer requestTimer;
   while ( sck.connected() && lineReader.read( tmpstr, &timed_out ) )
   {
-    if ( Plib::systemstate.config.web_server_debug )
-      INFO_PRINT << "http(" << sck.handle() << "): '" << tmpstr << "'\n";
+    // if ( Plib::systemstate.config.web_server_debug )
+    INFO_PRINT << "http(" << sck.handle() << "): '" << tmpstr << "'\n";
     if ( tmpstr.empty() )
       break;
     if ( strncmp( tmpstr.c_str(), "GET", 3 ) == 0 )
@@ -785,7 +785,7 @@ void http_func( SOCKET client_socket )
   if ( !sck.connected() )
     return;
 
-  if ( Plib::systemstate.config.web_server_debug )
+  //  if ( Plib::systemstate.config.web_server_debug )
   {
     INFO_PRINT << "[" << double( requestTimer.ellapsed().count() / 1000.0 )
                << " msec] finished reading header\n";
@@ -882,8 +882,8 @@ void http_func( SOCKET client_socket )
     return;
   }
 
-  if ( Plib::systemstate.config.web_server_debug )
-    INFO_PRINT << "Page type: " << pagetype << "\n";
+  // if ( Plib::systemstate.config.web_server_debug )
+  INFO_PRINT << "Page type: " << pagetype << "\n";
 
   if ( pagetype == "ecl" )
   {

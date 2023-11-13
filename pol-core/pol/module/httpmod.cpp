@@ -34,6 +34,7 @@ HttpExecutorModule::HttpExecutorModule( Bscript::Executor& exec, Clib::Socket&& 
 
 HttpExecutorModule::~HttpExecutorModule()
 {
+  INFO_PRINT << "DECON\n";
   if ( sck_.connected() )
   {
     unsigned nsent;
@@ -62,6 +63,7 @@ HttpExecutorModule::~HttpExecutorModule()
       }
     }
   }
+  INFO_PRINT << "DECON2\n";
 }
 
 BObjectImp* HttpExecutorModule::mf_WriteStatus()
