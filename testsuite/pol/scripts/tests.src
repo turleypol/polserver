@@ -44,7 +44,8 @@ program tests()
       continue;
     endif
 
-    syslog(pkg[2],0,"\x1B[1;32m");
+    var pkgstartms:=ReadMillisecondClock();
+    syslog(pkg[2],0,CONSOLE_COLOR_MAGENTA);
     var scripts:=listdirectory(":{}:".format(pkg[1]),"ecl");
     scripts.sort();
     if ("setup.ecl" in scripts)
@@ -62,6 +63,7 @@ program tests()
       if (file.find("test") != 1)
         continue;
       endif
+      var scriptstartms:=ReadMillisecondClock();
       syslog("  Calling {}..".format(file),0,CONSOLE_COLOR_GREEN);
       var script:=LoadExportedScript(":{}:{}".format(pkg[1], file));
       if (!script[2])
@@ -84,11 +86,13 @@ program tests()
         endif
         syslog("    ..{}ms".format(ReadMillisecondClock()-startms),0,CONSOLE_COLOR_GREEN);
       endforeach
+      syslog("  ..{}ms".format(ReadMillisecondClock()-scriptstartms),0,CONSOLE_COLOR_GREEN);
     endforeach
     if ("cleanup.ecl" in scripts)
       syslog("  Calling cleanup.ecl..",0,CONSOLE_COLOR_GREEN);
       run_script(":{}:cleanup.ecl".format(pkg[1]));
     endif
+    syslog("..{}ms".format(ReadMillisecondClock()-pkgstartms),0,CONSOLE_COLOR_MAGENTA);
   endforeach
   
   var result:=$"{CONSOLE_COLOR_GREEN}success";
