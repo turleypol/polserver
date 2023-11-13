@@ -50,6 +50,7 @@ program tests()
     scripts.sort();
     if ("setup.ecl" in scripts)
       syslog("  Calling setup.ecl..",0,CONSOLE_COLOR_GREEN);
+      var startms:=ReadMillisecondClock();
       var res:=run_script(":{}:setup.ecl".format(pkg[1]));
       if (res == IGNORE_TEST)
         continue;
@@ -58,6 +59,7 @@ program tests()
         exitcode:=1;
         continue;
       endif
+      syslog("  ..{}ms".format(ReadMillisecondClock()-startms),0,CONSOLE_COLOR_GREEN);
     endif
     foreach file in scripts
       if (file.find("test") != 1)
@@ -90,7 +92,9 @@ program tests()
     endforeach
     if ("cleanup.ecl" in scripts)
       syslog("  Calling cleanup.ecl..",0,CONSOLE_COLOR_GREEN);
+      var startms:=ReadMillisecondClock();
       run_script(":{}:cleanup.ecl".format(pkg[1]));
+      syslog("  ..{}ms".format(ReadMillisecondClock()-startms),0,CONSOLE_COLOR_GREEN);
     endif
     syslog("..{}ms".format(ReadMillisecondClock()-pkgstartms),0,CONSOLE_COLOR_MAGENTA);
   endforeach
