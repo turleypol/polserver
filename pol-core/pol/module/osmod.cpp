@@ -800,7 +800,9 @@ BObjectImp* OSExecutorModule::mf_HTTPRequest()
               curl_easy_setopt( curl, CURLOPT_WRITEDATA, &readBuffer );
 
               /* Perform the request, res will get the return code */
+              INFO_PRINT << "HTTP 1received\n";
               res = curl_easy_perform( curl );
+              INFO_PRINT << "HTTP 2received\n";
               if ( chunk != nullptr )
                 curl_slist_free_all( chunk );
               {
