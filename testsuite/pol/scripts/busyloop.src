@@ -1,0 +1,6 @@
+use os;
+
+print("LOOP");
+while (1)
+  sleepms(1);
+endwhile
