@@ -613,15 +613,15 @@ void scripts_thread( void )
     {
       ++stateManager.profilevars.script_passes_noactivity;
     }
+    /*
+        if ( sleeptime )
+        {
+          THREAD_CHECKPOINT( scripts, 54 );
 
-    if ( sleeptime )
-    {
-      THREAD_CHECKPOINT( scripts, 54 );
+          wait_for_pulse( static_cast<u32>( polclock_t_to_ms( sleeptime ) ) );
 
-      wait_for_pulse( static_cast<u32>( polclock_t_to_ms( sleeptime ) ) );
-
-      THREAD_CHECKPOINT( scripts, 55 );
-    }
+          THREAD_CHECKPOINT( scripts, 55 );
+        }*/
   }
 }
 
