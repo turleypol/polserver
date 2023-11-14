@@ -708,7 +708,7 @@ function lift_item_succeeded(byref err, serial)
     endif
     break;
   endwhile
-  return 1;
+//  return 1;
 
   ev:=waitForClient(0, {EVT_MOVE_ITEM_REJECTED}, 1);
   if (ev)
