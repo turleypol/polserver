@@ -255,7 +255,7 @@ void Client::transmit( const void* data, int len )
     if ( handled )
     {
       Core::PolLock lock;
-      std::lock_guard<std::recursive_mutex> guard( _SocketMutex );
+      //      std::lock_guard<std::recursive_mutex> guard( _SocketMutex );
       CallOutgoingPacketExportedFunction( this, data, len, p, phd, handled );
     }
   }
