@@ -380,7 +380,7 @@ inline void ThreadedClient::forceDisconnect()
 // Checks whether the client is disconnected, and not only marked for disconnection
 inline bool ThreadedClient::isReallyConnected() const
 {
-  std::lock_guard<std::mutex> lock( _SocketMutex );
+  //  std::lock_guard<std::mutex> lock( _SocketMutex );
   return !this->disconnect && this->csocket != INVALID_SOCKET;
 }
 
