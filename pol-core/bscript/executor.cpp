@@ -3094,7 +3094,7 @@ void Executor::execInstr()
 
     seterror( true );
     POLLOG_ERROR << tmp.str();
-
+    force_backtrace( true );
     show_context( onPC );
   }
 #ifdef __unix__
