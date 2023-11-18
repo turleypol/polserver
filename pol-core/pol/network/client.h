@@ -182,7 +182,7 @@ public:
   std::atomic<Core::polclock_t> last_activity_at;
   std::atomic<Core::polclock_t> last_packet_at;
 
-  mutable std::mutex _SocketMutex;
+  mutable std::recursive_mutex _SocketMutex;
 
   enum e_recv_states
   {
@@ -380,7 +380,7 @@ inline void ThreadedClient::forceDisconnect()
 // Checks whether the client is disconnected, and not only marked for disconnection
 inline bool ThreadedClient::isReallyConnected() const
 {
-  //  std::lock_guard<std::mutex> lock( _SocketMutex );
+  std::lock_guard<std::recursive_mutex> lock( _SocketMutex );
   return !this->disconnect && this->csocket != INVALID_SOCKET;
 }
 

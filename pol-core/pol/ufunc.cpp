@@ -1196,9 +1196,7 @@ void send_sysmessage( Network::Client* client, const char* text, unsigned short 
   u16 len = msg->offset;
   msg->offset = 1;
   msg->WriteFlipped<u16>( len );
-  POLLOG_ERROR << "SENDSYSMESSAGE\n";
 
-  Pol::Clib::ExceptionParser::logAllStackTraces();
   msg.Send( client, len );
 }
 

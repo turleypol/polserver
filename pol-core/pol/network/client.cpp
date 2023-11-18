@@ -19,6 +19,7 @@
 #include "client.h"
 
 #include <errno.h>
+#include <mutex>
 #include <stdlib.h>
 #include <time.h>
 
@@ -521,7 +522,7 @@ void ThreadedClient::xmit( const void* data, unsigned short datalen )
 
 void ThreadedClient::send_queued_data()
 {
-  std::lock_guard<std::mutex> lock( _SocketMutex );
+  std::lock_guard<std::recursive_mutex> lock( _SocketMutex );
   Core::XmitBuffer* xbuffer;
   // hand off data to the sockets layer until it won't take any more.
   // note if a buffer is sent in full, we try to send the next one, ad infinitum
@@ -718,7 +719,7 @@ size_t Client::estimatedSize() const
 
 void ThreadedClient::closeConnection()
 {
-  std::lock_guard<std::mutex> lock( _SocketMutex );
+  std::lock_guard<std::recursive_mutex> lock( _SocketMutex );
   if ( csocket != INVALID_SOCKET )
   {
 #ifdef _WIN32
