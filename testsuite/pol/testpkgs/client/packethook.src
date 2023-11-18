@@ -1,0 +1,9 @@
+use uo;
+program p()
+return 1;
+endprogram
+
+exported function UpdatePlayer_0x77(who, byref packet)
+print("HOOOOOOK");
+sendsysmessage(who,"hello");
+endfunction
