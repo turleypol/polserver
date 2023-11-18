@@ -17,6 +17,7 @@
 
 #include "../clib/clib.h"
 #include "../clib/logfacility.h"
+#include "../clib/mdumpimp.h"
 #include "../clib/passert.h"
 #include "../clib/stlutil.h"
 #include "../clib/strutil.h"
@@ -3079,6 +3080,7 @@ void Executor::execInstr()
   }
   catch ( std::exception& ex )
   {
+    Clib::HiddenMiniDumper::print_backtrace();
     fmt::Writer tmp;
     tmp << "Exception in: " << prog_->name.get() << " PC=" << onPC << ": " << ex.what() << "\n";
     if ( !run_ok_ )
