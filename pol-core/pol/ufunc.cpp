@@ -48,6 +48,7 @@
 #include <string>
 
 #include "../bscript/impstr.h"
+#include "../clib/Debugging/ExceptionParser.h"
 #include "../clib/clib_endian.h"
 #include "../clib/logfacility.h"
 #include "../clib/passert.h"
@@ -1195,6 +1196,9 @@ void send_sysmessage( Network::Client* client, const char* text, unsigned short 
   u16 len = msg->offset;
   msg->offset = 1;
   msg->WriteFlipped<u16>( len );
+  POLLOG_ERROR << "SENDSYSMESSAGE\n";
+
+  Pol::Clib::ExceptionParser::logAllStackTraces();
   msg.Send( client, len );
 }
 
