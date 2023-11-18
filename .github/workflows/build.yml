@@ -154,7 +154,7 @@ jobs:
           path: bin-build/coretest/log/pol.log
 
       - name: Create Artefact
-        if: matrix.config.nopch == 0
+        if: matrix.config.nopch == 0 && always()
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target package
@@ -162,7 +162,7 @@ jobs:
           mkdir release
           mv *.zip release
       - name: Create Artefact (dbg)
-        if: matrix.config.os == 'ubuntu-latest' && matrix.config.nopch == 0
+        if: matrix.config.os == 'ubuntu-latest' && matrix.config.nopch == 0 && always()
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target create_dbg_zip
@@ -170,7 +170,7 @@ jobs:
           mv *.zip release
 
       - name: Upload Artefact
-        if: matrix.config.nopch == 0
+        if: matrix.config.nopch == 0 && always()
         uses: actions/upload-artifact@v3
         with:
           name: Nightly-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
