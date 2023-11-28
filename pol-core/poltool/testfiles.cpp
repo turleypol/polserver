@@ -250,9 +250,9 @@ void FileGenerator::generateMap()
     for ( int y = 0; y < _height / 8; ++y )
     {
       writeFile( file, header );
-      for ( int bx = 0; bx < 8; ++bx )
+      for ( int by = 0; by < 8; ++by )
       {
-        for ( int by = 0; by < 8; ++by )
+        for ( int bx = 0; bx < 8; ++bx )
         {
           writeFile( file, map[y * 8 + by][x * 8 + bx] );
         }
