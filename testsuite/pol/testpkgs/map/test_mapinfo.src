@@ -16,7 +16,18 @@ exported function mapinfo()
 //       || (y>23 && y<33) || (y>(192-34) && y<(192-23)))
 //        continue; // border is a bit weird bug or feature?
 //      endif
-      if (x<30 || x>(192-30) || y<30 || y>(192-30))
+      if (x>=30 && x<=191-30 && y>=30 && y<=191-30)
+        if (info.landtile != 0x3 || info.z != 0)
+          errortext+="Wrong mapinfo {},{}: expected {},{} got {},{}\n".format(x,y,0x3,0,info.landtile,info.z);
+        endif
+      elseif(x<28 || y<28 || x>191-28 || y>191-28  )
+        if (info.landtile != 0xa8 || info.z != -5)
+          errortext+="Wrong mapinfo {},{}: expected {},{} got {},{}\n".format(x,y,0xa8,-5,info.landtile,info.z);
+        endif
+      endif
+
+
+/*      if (x<30 || x>(192-30) || y<30 || y>(192-30))
         if (info.landtile != 0xa8 || info.z != -5)
           errortext+="Wrong mapinfo {},{}: expected {},{} got {},{}\n".format(x,y,0xa8,-5,info.landtile,info.z);
         endif
@@ -24,7 +35,7 @@ exported function mapinfo()
         if (info.landtile != 0x3 || info.z != 0)
           errortext+="Wrong mapinfo {},{}: expected {},{} got {},{}\n".format(x,y,0x3,0,info.landtile,info.z);
         endif
-      endif
+      endif*/
     endfor
   endfor
   if (len(errortext))
