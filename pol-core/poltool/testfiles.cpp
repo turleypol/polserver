@@ -273,7 +273,7 @@ void FileGenerator::modifyMap( std::vector<std::vector<Plib::USTRUCT_MAPINFO>>& 
         line.begin(), line.end(),
         [&]( const auto& )
         {
-          if ( x < border || x > _width - border || y < border || y > _width - border )
+          if ( x < border || x > _width - border || y < border || y > _height - border )
           {
             ++x;
             return true;
