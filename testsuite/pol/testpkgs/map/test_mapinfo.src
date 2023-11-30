@@ -17,7 +17,7 @@ exported function mapinfo()
           errortext+="Wrong mapinfo {},{}: expected {},{} got {},{}\n".format(x,y,0xa8,-5,info.landtile,info.z);
         endif
       elseif (y==28)
-        if (info.landtile != 0x17 || info.z != -3)
+        if (info.landtile != 0x17 || info.z != -2)
           errortext+="Wrong mapinfo {},{}: expected {},{} got {},{}\n".format(x,y,0x17,-3,info.landtile,info.z);
         endif
       elseif (y==29)
@@ -29,8 +29,6 @@ exported function mapinfo()
           errortext+="Wrong mapinfo {},{}: expected {},{} got {},{}\n".format(x,y,0x3,0,info.landtile,info.z);
         endif
       endif
-
-
     endfor
   endfor
   if (len(errortext))
