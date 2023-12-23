@@ -141,19 +141,13 @@ const char* NPC::classname() const
   return "NPC";
 }
 
-
-// 8-25-05 Austin
-// Moved unsigned short pol_distance( unsigned short x1, unsigned short y1,
-//                  unsigned short x2, unsigned short y2 )
-// to ufunc.cpp
-
 bool NPC::anchor_allows_move( Core::UFACING fdir ) const
 {
   auto newpos = pos().move( fdir );
 
   if ( anchor.enabled && !warmode() )
   {
-    unsigned short curdist = pos2d().pol_distance( anchor.pos );
+    unsigned short curdist = distance_to( anchor.pos );
     unsigned short newdist = newpos.xy().pol_distance( anchor.pos );
     if ( newdist > curdist )  // if we're moving further away, see if we can
     {

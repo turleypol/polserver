@@ -3207,7 +3207,7 @@ BObjectImp* UOExecutorModule::mf_Distance()
   UObject* obj1;
   UObject* obj2;
   if ( getUObjectParam( 0, obj1 ) && getUObjectParam( 1, obj2 ) )
-    return new BLong( obj1->toplevel_pos().pol_distance( obj2->toplevel_pos() ) );
+    return new BLong( obj1->distance_to( obj2->toplevel_pos() ) );
   return new BError( "Invalid parameter type" );
 }
 
@@ -4416,7 +4416,7 @@ BObjectImp* UOExecutorModule::mf_GetStandingLayers( /* x, y, flags, realm, inclu
     realm->getmapshapes( mlist, x, y, flags );
     if ( includeitems )
     {
-      realm->readdynamics( mlist, Core::Pos2d(x, y), ivec, false, flags );
+      realm->readdynamics( mlist, Core::Pos2d( x, y ), ivec, false, flags );
     }
 
     for ( unsigned i = 0; i < mlist.size(); ++i )
@@ -4451,12 +4451,8 @@ UOExecutorModule::mf_GetStandingCoordinates() /* x, y, radius, minz, maxz, realm
   if ( !getRealmParam( 5, &realm ) )
     return new BError( "Realm not found" );
 
-  if ( !( getPos2dParam( 0, 1, &pos ) &&
-          getParam( 2, r ) &&
-          getParam( 3, minz ) &&
-          getParam( 4, maxz ) &&
-          getStringParam( 6, movemodename ) &&
-          getParam( 7, doors_block ) ) )
+  if ( !( getPos2dParam( 0, 1, &pos ) && getParam( 2, r ) && getParam( 3, minz ) &&
+          getParam( 4, maxz ) && getStringParam( 6, movemodename ) && getParam( 7, doors_block ) ) )
   {
     return new BError( "Invalid parameter type" );
   }
