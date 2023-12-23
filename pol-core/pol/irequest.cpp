@@ -48,10 +48,7 @@ void statrequest( Network::Client* client, u32 serial )
     if ( chr != nullptr )
     {
       if ( client->chr->is_visible_to_me( chr ) )
-      {
-        if ( client->chr->in_visual_range( chr ) )
-          send_short_statmsg( client, chr );
-      }
+        send_short_statmsg( client, chr );
     }
   }
 }
@@ -155,11 +152,7 @@ void srequest( Network::Client* client, PKTIN_34* msg )
       Mobile::Character* bob = find_character( serial );
       if ( bob == nullptr )
         return;
-      if ( !client->chr->is_concealed_from_me( bob ) && client->chr->is_visible_to_me( bob ) )
-      {
-        if ( client->chr->in_visual_range( bob ) )
-          statrequest( client, serial );
-      }
+      statrequest( client, serial );
       if ( client->chr->has_party() )
         client->chr->party()->send_stat_to( client->chr, bob );
     }
