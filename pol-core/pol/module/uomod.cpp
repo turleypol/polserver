@@ -4465,7 +4465,7 @@ UOExecutorModule::mf_GetStandingCoordinates() /* x, y, radius, minz, maxz, realm
   // Iterate through all tiles in range and populate the return array with valid standing locations
   Core::Vec2d radius( r, r );
   Core::Pos2d tl = pos - radius;
-  Core::Pos2d br = pos - radius;
+  Core::Pos2d br = pos + radius;
   Core::Range2d range( tl, br, realm );
   for ( const auto& tile : range )
   {
