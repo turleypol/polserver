@@ -103,6 +103,8 @@ jobs:
         run: |
           cd bin-build
           cmake .. -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
+          dir ../lib/antlr/install
+          dir ../lib/antlr/install/lib
       - name: Build (Ninja)
         if: matrix.config.ninja == 1
         run: |
