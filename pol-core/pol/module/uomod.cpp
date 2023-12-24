@@ -4443,7 +4443,8 @@ BObjectImp*
 UOExecutorModule::mf_GetStandingCoordinates() /* x, y, radius, minz, maxz, realm := _DEFAULT_REALM,
                                                  movemode := "L", doors_block = 0 */
 {
-  int r, minz, maxz, doors_block;
+  s16 r, minz, maxz;
+  int doors_block;
   const String* movemodename;
   Core::Pos2d pos;
   Realms::Realm* realm;
@@ -4451,26 +4452,23 @@ UOExecutorModule::mf_GetStandingCoordinates() /* x, y, radius, minz, maxz, realm
   if ( !getRealmParam( 5, &realm ) )
     return new BError( "Realm not found" );
 
-  if ( !( getPos2dParam( 0, 1, &pos ) && getParam( 2, r ) && getParam( 3, minz ) &&
+  if ( !( getPos2dParam( 0, 1, &pos, realm ) && getParam( 2, r ) && getParam( 3, minz ) &&
           getParam( 4, maxz ) && getStringParam( 6, movemodename ) && getParam( 7, doors_block ) ) )
   {
     return new BError( "Invalid parameter type" );
   }
-
-  if ( !realm->valid( pos ) )
-    return new BError( "Invalid Coordinates for Realm" );
 
   Plib::MOVEMODE movemode = Character::decode_movemode( movemodename->value() );
 
   std::unique_ptr<ObjArray> result( new ObjArray );
 
   // Iterate through all tiles in range and populate the return array with valid standing locations
-  Core::Pos2d tl( pos.x() - r, pos.y() - r );
-  Core::Pos2d br( pos.x() + r, pos.y() + r );
+  Core::Vec2d radius( r, r );
+  Core::Pos2d tl = pos - radius;
+  Core::Pos2d br = pos - radius;
   Core::Range2d range( tl, br, realm );
-  for ( auto it = range.begin(); it != range.end(); ++it )
+  for ( const auto& tile : range )
   {
-    auto tile = *it;
     auto layers = realm->get_walkheights( tile, minz, maxz, movemode, doors_block );
     for ( const auto& layer : layers )
     {

@@ -66,8 +66,8 @@ void ServSpecOpt::read_servspecopt()
       elem.remove_bool( "RefreshDecayAfterBoatMoves", true );
   settingsManager.ssopt.default_doubleclick_range =
       elem.remove_ushort( "DefaultDoubleclickRange", 2 );
-  settingsManager.ssopt.default_accessible_range =
-      elem.remove_int( "DefaultAccessibleRange", settingsManager.ssopt.default_doubleclick_range );
+  settingsManager.ssopt.default_accessible_range = elem.remove_ushort(
+      "DefaultAccessibleRange", settingsManager.ssopt.default_doubleclick_range );
   settingsManager.ssopt.default_light_level = elem.remove_ushort( "DefaultLightLevel", 10 );
   settingsManager.ssopt.event_visibility_core_checks =
       elem.remove_bool( "EventVisibilityCoreChecks", false );
