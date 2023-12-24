@@ -1762,7 +1762,7 @@ std::string format_description( unsigned int polflags, const std::string& descde
   if ( amount != 1 )
   {
     char s[15];
-    sprintf( s, "%hu ", amount );
+    snprintf( s, 15, "%hu ", amount );
     desc = s;
   }
   else if ( settingsManager.ssopt.use_tile_flag_prefix )

@@ -193,13 +193,13 @@ void ServSpecOpt::ssopt_parse_totalstats( Clib::ConfigElem& elem )
       if ( *valend != '\0' || valend == valmax || statmax < statmin )
         break;  // invalid second value
       if ( statmax == statmin )
-        sprintf( tmp, "%lu", static_cast<unsigned long>( statmin ) );
+        snprintf( tmp, 100, "%lu", static_cast<unsigned long>( statmin ) );
       else
-        sprintf( tmp, "%lu-%lu", static_cast<unsigned long>( statmin ),
-                 static_cast<unsigned long>( statmax ) );
+        snprintf( tmp, 100, "%lu-%lu", static_cast<unsigned long>( statmin ),
+                  static_cast<unsigned long>( statmax ) );
     }
     else
-      sprintf( tmp, "%lu", static_cast<unsigned long>( statmin ) );
+      snprintf( tmp, 100, "%lu", static_cast<unsigned long>( statmin ) );
     settingsManager.ssopt.total_stats_at_creation.push_back( tmp );
     valok = true;
     token = strtok( nullptr, "," );
