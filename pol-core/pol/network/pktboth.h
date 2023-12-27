@@ -466,9 +466,9 @@ struct PKTBI_B8_IN_UPDATE
   u32 serial;
   u16 cmdtype;
   u16 textlen;
-  u16 wtext[SPEECH_MAX_LEN];
+  u16 wtext[SPEECH_MAX_LEN + 1];
 };
-static_assert( sizeof( PKTBI_B8_IN_UPDATE ) == SPEECH_MAX_LEN + 8, "size missmatch" );
+static_assert( sizeof( PKTBI_B8_IN_UPDATE ) == SPEECH_MAX_LEN + 2 + 8, "size missmatch" );
 
 struct PKTBI_B8_IN
 {
@@ -565,16 +565,16 @@ struct PKTBI_BF_06_02_IN
 
 struct PKTBI_BF_06_03
 {
-  u32 memberid;               //(of target, from client, of source, from server)
-  u16 wtext[SPEECH_MAX_LEN];  // wide-character, double-null terminated
+  u32 memberid;                   //(of target, from client, of source, from server)
+  u16 wtext[SPEECH_MAX_LEN + 1];  // wide-character, double-null terminated
 };
-static_assert( sizeof( PKTBI_BF_06_03 ) == SPEECH_MAX_LEN * 2 + 4, "size missmatch" );
+static_assert( sizeof( PKTBI_BF_06_03 ) == SPEECH_MAX_LEN * 2 + 2 + 4, "size missmatch" );
 
 struct PKTBI_BF_06_04_IN
 {
-  u16 wtext[SPEECH_MAX_LEN];  // wide-character, double-null terminated
+  u16 wtext[SPEECH_MAX_LEN + 1];  // wide-character, double-null terminated
 };
-static_assert( sizeof( PKTBI_BF_06_04_IN ) == SPEECH_MAX_LEN * 2, "size missmatch" );
+static_assert( sizeof( PKTBI_BF_06_04_IN ) == SPEECH_MAX_LEN * 2 + 2, "size missmatch" );
 
 // struct PKTBI_BF_06_04_OUT
 //{
@@ -927,16 +927,16 @@ struct PKTBI_C2
   u32 serial;
   u32 msg_id;
   // When a server-sent message, these next 10+ bytes must all be 0x00.
-  u32 unk;                    // unknown -- always 0 0 0 1 (from client)
-  char lang[4];               // "enu" - US english
-  u16 wtext[SPEECH_MAX_LEN];  // wide-character, double-null terminated
+  u32 unk;                        // unknown -- always 0 0 0 1 (from client)
+  char lang[4];                   // "enu" - US english
+  u16 wtext[SPEECH_MAX_LEN + 1];  // wide-character, double-null terminated
 
   enum
   {
     SERVER_MSGLEN = 0x15
   };
 };
-static_assert( sizeof( PKTBI_C2 ) == SPEECH_MAX_LEN * 2 + 19, "size missmatch" );
+static_assert( sizeof( PKTBI_C2 ) == SPEECH_MAX_LEN * 2 + 2 + 19, "size missmatch" );
 
 struct PKTBI_C8
 {
