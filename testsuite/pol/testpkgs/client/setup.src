@@ -27,7 +27,7 @@ program setup()
   // start auxiliary script for client communication
   var i:=1;
   while (1)
-    var res := OpenConnection("127.0.0.1",50000,"clientconnection",GetProcess(),1,1);
+    var res := OpenConnection("127.0.0.1",50000,"clientconnection",GetProcess(),1,0);
     if (res)
       break;
     endif
