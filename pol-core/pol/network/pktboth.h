@@ -468,7 +468,7 @@ struct PKTBI_B8_IN_UPDATE
   u16 textlen;
   u16 wtext[SPEECH_MAX_LEN + 1];
 };
-static_assert( sizeof( PKTBI_B8_IN_UPDATE ) == SPEECH_MAX_LEN + 2 + 8, "size missmatch" );
+static_assert( sizeof( PKTBI_B8_IN_UPDATE ) == SPEECH_MAX_LEN * 2 + 2 + 8, "size missmatch" );
 
 struct PKTBI_B8_IN
 {
