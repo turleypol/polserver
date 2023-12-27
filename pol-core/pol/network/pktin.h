@@ -347,9 +347,10 @@ struct PKTIN_9F
   {
     u32 serial;
     u16 amount;
-  } items[1];
+  } items[( MAXBUFFER - 9 ) / 6];
 };
-static_assert( sizeof( PKTIN_9F ) == 15, "size missmatch" );
+static_assert( sizeof( PKTIN_9F ) == 2559, "size missmatch" );
+static_assert( offsetof( PKTIN_9F, items[0] ) == 9, "offset missmatch" );
 
 struct PKTIN_A0
 {
@@ -573,7 +574,7 @@ static_assert( sizeof( PKTIN_FA ) == 1, "size missmatch" );
 struct PKTIN_FB
 {
   u8 msgtype;  // Byte 0
-  u8 show;  // Bytes 1
+  u8 show;     // Bytes 1
 };
 static_assert( sizeof( PKTIN_FB ) == 2, "size missmatch" );
 
