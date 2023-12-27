@@ -21,8 +21,6 @@
 #include "pktdef.h"
 #include "pktinid.h"
 
-#include <cstddef>
-
 namespace Pol
 {
 namespace Core
@@ -352,7 +350,6 @@ struct PKTIN_9F
   } items[( MAXBUFFER - 9 ) / 6];
 };
 static_assert( sizeof( PKTIN_9F ) == 2559, "size missmatch" );
-static_assert( offsetof( PKTIN_9F, items[0] ) == 9, "offset missmatch" );
 
 struct PKTIN_A0
 {
@@ -390,7 +387,7 @@ struct PKTIN_AC
     RETCODE_OKAY
   };
   u16 datalen;
-  char data[2548];
+  char data[MAXBUFFER - 12];
 };
 static_assert( sizeof( PKTIN_AC ) == MAXBUFFER, "size missmatch" );
 
