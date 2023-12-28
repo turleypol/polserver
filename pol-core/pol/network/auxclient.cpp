@@ -9,6 +9,7 @@
 
 #include "auxclient.h"
 
+#include <chrono>
 #include <iosfwd>
 
 #include "../../bscript/berror.h"
@@ -251,6 +252,10 @@ void AuxClientThread::transmit( const Bscript::BObjectImp* value )
 
 void AuxClientThread::transmit( const std::string& msg )
 {
+  // wait for all other transmits to finish
+  // sending in parallel is nothing what we want
+  while ( _transmit_counter > 1 )
+    std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
   if ( _sck.connected() )
   {
     POLLOG_INFO << "SENDING " << msg << "\n";
