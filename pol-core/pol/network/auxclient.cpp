@@ -253,10 +253,14 @@ void AuxClientThread::transmit( const std::string& msg )
 {
   if ( _sck.connected() )
   {
+    POLLOG_INFO << "SENDING " << msg << "\n";
     if ( _ignore_line_breaks )
       _sck.write( msg );
     else
+    {
       writeline( _sck, msg );
+      POLLOG_INFO << "newline\n";
+    }
   }
   --_transmit_counter;
 }
