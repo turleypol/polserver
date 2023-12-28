@@ -317,6 +317,8 @@ if __name__ == '__main__':
   serv = PolServer()
   try:
     serv.run()
+  except Exception as e:
+    self.log.exception(e)
   finally: # wake up the server and let it close first
     serv.send("{}")
     time.sleep(1)
