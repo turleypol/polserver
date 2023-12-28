@@ -105,7 +105,8 @@ AuxClientThread::AuxClientThread( AuxService* auxsvc, Clib::Socket&& sock )
       _assume_string( false ),
       _transmit_counter( 0 ),
       _keep_alive( false ),
-      _ignore_line_breaks( false )
+      _ignore_line_breaks( false ),
+      _transmit_mutex()
 {
 }
 AuxClientThread::AuxClientThread( Core::ScriptDef scriptdef, Clib::Socket&& sock,
@@ -120,7 +121,8 @@ AuxClientThread::AuxClientThread( Core::ScriptDef scriptdef, Clib::Socket&& sock
       _assume_string( assume_string ),
       _transmit_counter( 0 ),
       _keep_alive( keep_alive ),
-      _ignore_line_breaks( ignore_line_breaks )
+      _ignore_line_breaks( ignore_line_breaks ),
+      _transmit_mutex()
 {
 }
 
@@ -254,8 +256,7 @@ void AuxClientThread::transmit( const std::string& msg )
 {
   // wait for all other transmits to finish
   // sending in parallel is nothing what we want
-  while ( _transmit_counter > 1 )
-    std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
+  std::unique_lock<std::mutex> lock( _transmit_mutex );
   if ( _sck.connected() )
   {
     POLLOG_INFO << "SENDING " << msg << "\n";

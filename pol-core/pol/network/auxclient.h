@@ -14,6 +14,7 @@
 #endif
 
 #include <atomic>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -122,6 +123,7 @@ private:
   std::atomic<int> _transmit_counter;
   bool _keep_alive;
   bool _ignore_line_breaks;
+  std::mutex _transmit_mutex;
 };
 }  // namespace Network
 }  // namespace Pol
