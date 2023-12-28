@@ -199,7 +199,7 @@ void AuxClientThread::run()
   {
     reader = std::make_unique<Clib::SocketLineReader>( _sck, 5, 0, !_keep_alive );
   }
-
+  POLLOG_INFO << "AUX " << _ignore_line_breaks << "\n";
   for ( ;; )
   {
     result = reader->read( tmp, &timeout_exit );
@@ -301,10 +301,12 @@ void AuxService::run()
     {
       Core::PolLock lock;
       AuxClientThread* client( new AuxClientThread( this, std::move( sock ) ) );
-      Core::networkManager.auxthreadpool->push( [client]() {
-        std::unique_ptr<AuxClientThread> _clientptr( client );
-        _clientptr->run();
-      } );
+      Core::networkManager.auxthreadpool->push(
+          [client]()
+          {
+            std::unique_ptr<AuxClientThread> _clientptr( client );
+            _clientptr->run();
+          } );
     }
   }
 }
