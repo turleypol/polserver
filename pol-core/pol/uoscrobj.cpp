@@ -2418,7 +2418,7 @@ BObjectImp* Character::get_script_member_id( const int id ) const
       info->addMember( "title_cliloc", new BLong( buf.cl_name ) );
       info->addMember( "desc_cliloc", new BLong( buf.cl_descr ) );
       info->addMember( "end_time", new BLong( buf.end ) );
-      info->addMember( "title_args", new String( buf.title_args ) );
+      info->addMember( "title_args", new String( buf.title_arguments ) );
       info->addMember( "desc_args", new String( buf.arguments ) );
       buffs->addMember( new BLong( icon ), info.release() );
     }
