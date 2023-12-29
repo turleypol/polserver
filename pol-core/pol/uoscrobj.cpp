@@ -3323,19 +3323,30 @@ BObjectImp* Character::script_method_id( const int id, Core::UOExecutor& ex )
     u32 cl_name;
     u32 cl_descr;
     const String* text;
+    std::string title_args;
 
     if ( !ex.hasParams( 5 ) )
       return new BError( "Not enough parameters" );
     if ( ex.getParam( 0, icon ) && ex.getParam( 1, duration ) && ex.getParam( 2, cl_name ) &&
          ex.getParam( 3, cl_descr ) && ex.getUnicodeStringParam( 4, text ) )
     {
+      if ( ex.hasParams( 6 ) )
+      {
+        const String* title_text;
+        if ( !ex.getUnicodeStringParam( 5, title_text ) )
+          break;
+        if ( title_text->length() > SPEECH_MAX_LEN )
+          return new BError( "Title text exceeds maximum size." );
+        title_args = title_text->value();
+      }
+
       if ( !( icon && cl_name && cl_descr ) )
         return new BError( "Invalid parameters" );
 
       if ( text->length() > SPEECH_MAX_LEN )
         return new BError( "Text exceeds maximum size." );
 
-      addBuff( icon, duration, cl_name, cl_descr, text->value() );
+      addBuff( icon, duration, cl_name, title_text, cl_descr, text->value() );
       return new BLong( 1 );
     }
     break;

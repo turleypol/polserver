@@ -4207,17 +4207,17 @@ unsigned int Character::guildid() const
  * Sends packets to the client accordingly
  * @author Bodom
  */
-void Character::addBuff( u16 icon, u16 duration, u32 cl_name, u32 cl_descr,
-                         const std::string& arguments )
+void Character::addBuff( u16 icon, u16 duration, u32 cl_name, const std::string& title_arguments,
+                         u32 cl_descr, const std::string& arguments )
 {
   // Icon is already present, must send a remove packet first or client will not update
   delBuff( icon );
 
   Core::gameclock_t end = Core::read_gameclock() + duration;
-  buffs_[icon] = { end, cl_name, cl_descr, arguments };
+  buffs_[icon] = { end, cl_name, cl_descr, title_arguments, arguments };
 
   if ( client != nullptr )
-    send_buff_message( this, icon, true, duration, cl_name, cl_descr, arguments );
+    send_buff_message( this, icon, true, duration, cl_name, title_arguments, cl_descr, arguments );
 }
 
 /**
@@ -4246,11 +4246,11 @@ bool Character::delBuff( u16 icon )
  */
 void Character::clearBuffs()
 {
-  for ( auto it = buffs_.begin(); it != buffs_.end(); ++it )
+  if ( client != nullptr )
   {
-    if ( client != nullptr )
+    for ( const auto& buf : buffs_ )
     {
-      send_buff_message( this, it->first, false );
+      send_buff_message( this, buf.first, false );
     }
   }
   buffs_.clear();
@@ -4265,16 +4265,16 @@ void Character::send_buffs()
   if ( client == nullptr )
     return;
 
-  for ( auto it = buffs_.begin(); it != buffs_.end(); ++it )
+  for ( const auto& buf : buffs_ )
   {
-    int duration = it->second.end - Core::read_gameclock();
+    int duration = buf.second.end - Core::read_gameclock();
     if ( duration < 0 )
       duration = 0;
     else if ( duration > 0xFFFF )
       duration = 0xFFFF;
 
-    send_buff_message( this, it->first, true, static_cast<u16>( duration ), it->second.cl_name,
-                       it->second.cl_descr, it->second.arguments );
+    send_buff_message( this, buf.first, true, static_cast<u16>( duration ), buf.second.cl_name,
+                       buf.second.cl_descr, buf.second.arguments, buf.second.title_arguments );
   }
 }
 
