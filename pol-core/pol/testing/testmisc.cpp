@@ -28,12 +28,16 @@ void dummy()
 {
   using namespace Network;
   using namespace Network::PktHelper;
-  auto debug = []( const PacketOut<PktOut_DF>& p )
+  auto debug = []( const PacketOut<PktOut_DF>& p, size_t size )
   {
     fmt::Writer w;
+    u16 s = 0;
     for ( auto& c : p->buffer )
     {
       w << fmt::hex( c ) << " ";
+      ++s;
+      if ( s >= size )
+        break;
     }
     INFO_PRINT << w.str() << "\n";
   };
@@ -72,6 +76,7 @@ void dummy()
     u16 len = msg->offset;
     msg->offset = 1;
     msg->WriteFlipped<u16>( len );
+    INFO_PRINT << "OLDPKT\n";
     debug( msg );
   }
   {
@@ -103,6 +108,7 @@ void dummy()
     u16 len = msg->offset;
     msg->offset = 1;
     msg->WriteFlipped<u16>( len );
+    INFO_PRINT << "NEWPKT\n";
     debug( msg );
   }
 }
