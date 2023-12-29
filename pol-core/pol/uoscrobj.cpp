@@ -51,6 +51,7 @@
 
 #include "uoscrobj.h"
 
+#include <memory>
 #include <string>
 
 #include "../bscript/berror.h"
@@ -2408,6 +2409,21 @@ BObjectImp* Character::get_script_member_id( const int id ) const
     return new BLong( casting_spell() );
   case MBR_LAST_TEXTCOLOR:
     return new BLong( last_textcolor() );
+  case MBR_BUFFS:
+  {
+    auto buffs = std::make_unique<BDictionary>();
+    for ( const auto& [icon, buf] : buffs_ )
+    {
+      auto info = std::make_unique<BStruct>();
+      info->addMember( "title_cliloc", new BLong( buf.cl_name ) );
+      info->addMember( "desc_cliloc", new BLong( buf.cl_descr ) );
+      info->addMember( "end_time", new BLong( buf.end ) );
+      info->addMember( "title_args", new String( buf.title_args ) );
+      info->addMember( "desc_args", new String( buf.arguments ) );
+      buffs->addMember( new BLong( icon ), info.release() );
+    }
+    return buffs.release();
+  }
   }
   // if all else fails, returns nullptr
   return nullptr;
