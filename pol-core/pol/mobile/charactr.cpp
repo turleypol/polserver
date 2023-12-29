@@ -4274,7 +4274,7 @@ void Character::send_buffs()
       duration = 0xFFFF;
 
     send_buff_message( this, buf.first, true, static_cast<u16>( duration ), buf.second.cl_name,
-                       buf.second.cl_descr, buf.second.arguments, buf.second.title_arguments );
+                       buf.second.title_arguments, buf.second.cl_descr, buf.second.arguments );
   }
 }
 
