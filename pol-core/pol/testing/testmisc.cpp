@@ -34,7 +34,7 @@ void dummy()
     u16 s = 0;
     for ( auto& c : p->buffer )
     {
-      w.Format( "{:02x} " ) << (unsigned)c;
+      w.Format( "{:02x} " ) << (u8)c;
       ++s;
       if ( s >= size )
         break;
