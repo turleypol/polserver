@@ -4265,16 +4265,12 @@ void Character::send_buffs()
   if ( client == nullptr )
     return;
 
-  for ( const auto& buf : buffs_ )
+  for ( const auto& [icon, buf] : buffs_ )
   {
-    int duration = buf.second.end - Core::read_gameclock();
-    if ( duration < 0 )
-      duration = 0;
-    else if ( duration > 0xFFFF )
-      duration = 0xFFFF;
+    u16 duration = Clib::clamp_convert<u16>( buf.end - Core::read_gameclock() );
 
-    send_buff_message( this, buf.first, true, static_cast<u16>( duration ), buf.second.cl_name,
-                       buf.second.title_arguments, buf.second.cl_descr, buf.second.arguments );
+    send_buff_message( this, icon, true, duration, buf.cl_name, buf.title_arguments, buf.cl_descr,
+                       buf.arguments );
   }
 }
 
