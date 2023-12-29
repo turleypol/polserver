@@ -2176,13 +2176,13 @@ void send_buff_message( Character* chr, u16 icon, bool show, u16 duration, u32 c
   msg->offset += 2;  // length will be written later
   msg->Write<u32>( chr->serial_ext );
   msg->WriteFlipped<u16>( icon );
-  msg->Write<u16>( show ? 1u : 0u );
+  msg->WriteFlipped<u16>( show ? 1u : 0u );
   if ( show )
   {
     msg->Write<u32>( 0u );  // unknown, always 0
     msg->WriteFlipped<u16>( icon );
-    msg->Write<u16>( 1u );  // unknown, always 1
-    msg->Write<u32>( 0u );  // unknown, always 0
+    msg->WriteFlipped<u16>( 1u );  // unknown, always 1
+    msg->Write<u32>( 0u );         // unknown, always 0
     msg->WriteFlipped<u16>( duration );
     msg->Write<u16>( 0u );  // unknown, always 0
     msg->Write<u8>( 0u );   // unknown, always 0
@@ -2190,10 +2190,10 @@ void send_buff_message( Character* chr, u16 icon, bool show, u16 duration, u32 c
     msg->WriteFlipped<u32>( cl_descr );
     msg->Write<u32>( 0u );  // 3rd cliloc?
     auto titleargs = Bscript::String::toUTF16( title_arguments );
-    msg->Write<u16>( titleargs.size() + 1 );
+    msg->WriteFlipped<u16>( titleargs.size() + 1 );
     msg->Write( titleargs );
     auto args = Bscript::String::toUTF16( arguments );
-    msg->Write<u16>( args.size() + 1 );
+    msg->WriteFlipped<u16>( args.size() + 1 );
     msg->Write( args );
     msg->Write<u16>( 1u );  // 3rd arg length?
     msg->Write<u16>( 0u );
