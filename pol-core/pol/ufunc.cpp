@@ -2191,11 +2191,11 @@ void send_buff_message( Character* chr, u16 icon, bool show, u16 duration, u32 c
     msg->Write<u32>( 0u );  // 3rd cliloc?
     auto nameargs = Bscript::String::toUTF16( name_arguments );
     msg->WriteFlipped<u16>( nameargs.size() + 1 );
-    msg->Write( nameargs );
+    msg->WriteFlipped( nameargs );
     auto descargs = Bscript::String::toUTF16( desc_arguments );
     msg->WriteFlipped<u16>( descargs.size() + 1 );
-    msg->Write( descargs );
-    msg->Write<u16>( 1u );  // 3rd arg length?
+    msg->WriteFlipped( descargs );
+    msg->WriteFlipped<u16>( 1u );  // 3rd arg length?
     msg->Write<u16>( 0u );
   }
 
