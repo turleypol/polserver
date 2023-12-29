@@ -8,6 +8,7 @@
 #include <cstring>
 #include <string>
 
+#include "../../bscript/str.h"
 #include "../../clib/logfacility.h"
 #include "../../clib/rawtypes.h"
 #include "../../plib/maptile.h"
@@ -37,7 +38,7 @@ void dummy()
     INFO_PRINT << w.str() << "\n";
   };
   bool show = true;
-  u32 serial = 0x1111;
+  u32 serial_ext = 0x1111;
   u16 icon = 0x1234;
   u16 duration = 0x77;
   u32 cl_name = 0x5678;
