@@ -170,8 +170,8 @@ public:
   static const u8 ID = _id;
   static const u16 SUB = _sub;
   static const u16 SIZE = _size;
-  char buffer[SIZE];
-  virtual char* getBuffer() override { return &buffer[offset]; };
+  u8 buffer[SIZE];
+  virtual u8* getBuffer() override { return &buffer[offset]; };
   virtual inline u8 getID() const override { return ID; };
   virtual inline u16 getSize() const override { return SIZE; };
   virtual size_t estimateSize() const override { return SIZE + sizeof( PacketInterface ); };
@@ -327,13 +327,13 @@ public:
   static const u8 SUB = 0;
   static const u16 SIZE = _size;
   EmptyBufferTemplate() { ReSetBuffer(); };
-  char buffer[SIZE];
+  u8 buffer[SIZE];
   virtual void ReSetBuffer() override
   {
     memset( buffer, 0, SIZE );
     offset = 0;
   };
-  virtual char* getBuffer() override { return &buffer[offset]; };
+  virtual u8* getBuffer() override { return &buffer[offset]; };
   virtual inline u8 getID() const override { return ID; };
   virtual inline u16 getSize() const override { return SIZE; };
   virtual size_t estimateSize() const override { return SIZE + sizeof( PacketInterface ); };
