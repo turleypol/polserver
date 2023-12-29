@@ -17,7 +17,7 @@ public:
   virtual ~PacketInterface() = default;
   u16 offset;
   virtual void ReSetBuffer(){};
-  virtual char* getBuffer() { return nullptr; };
+  virtual u8* getBuffer() { return nullptr; };
   virtual inline u8 getID() const { return 0; };
   virtual inline u16 getSize() const { return 0; };
   virtual inline u16 getSubID() const { return 0; };
