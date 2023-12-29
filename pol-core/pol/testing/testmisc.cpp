@@ -44,6 +44,7 @@ void dummy()
   u32 cl_name = 0x5678;
   u32 cl_descr = 0x9876;
   std::string arguments = "Worko\tAll tradeskills";
+  std::string argumentstitle = "Title";
   {
     PacketOut<PktOut_DF> msg;
     msg->offset += 2;  // length will be written later
@@ -67,6 +68,37 @@ void dummy()
     msg->Write<u16>( 20u );  // a space character
     msg->Write<u16>( 20u );  // a space character
     msg->Write( Bscript::String::toUTF16( arguments ) );
+
+    u16 len = msg->offset;
+    msg->offset = 1;
+    msg->WriteFlipped<u16>( len );
+    debug( msg );
+  }
+  {
+    PacketOut<PktOut_DF> msg;
+    msg->offset += 2;  // length will be written later
+    msg->Write<u32>( serial_ext );
+    msg->WriteFlipped<u16>( icon );
+    msg->Write<u8>( 0u );  // unknown, always 0
+    msg->Write<u8>( show ? 1u : 0u );
+    msg->Write<u32>( 0u );  // unknown, always 0
+    msg->WriteFlipped<u16>( icon );
+    msg->Write<u8>( 0u );   // unknown, always 0
+    msg->Write<u8>( 1u );   // unknown, always 1
+    msg->Write<u32>( 0u );  // unknown, always 0
+    msg->WriteFlipped<u16>( duration );
+    msg->Write<u16>( 0u );  // unknown, always 0
+    msg->Write<u8>( 0u );   // unknown, always 0
+    msg->WriteFlipped<u32>( cl_name );
+    msg->WriteFlipped<u32>( cl_descr );
+    msg->Write<u32>( 0u );  // 3rd cliloc?
+    msg->Write<u16>( 1u );  // title arg length
+    msg->Write( Bscript::String::toUTF16( "" ) );
+    auto args = Bscript::String::toUTF16( arguments );
+    msg->Write<u16>( args.size() );  // second arg length
+    msg->Write( arg );
+    msg->Write<u16>( 1u );  // title arg length
+    msg->Write( Bscript::String::toUTF16( "" ) );
 
     u16 len = msg->offset;
     msg->offset = 1;
