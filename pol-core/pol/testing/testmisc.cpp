@@ -77,7 +77,7 @@ void dummy()
     msg->offset = 1;
     msg->WriteFlipped<u16>( len );
     INFO_PRINT << "OLDPKT\n";
-    debug( msg );
+    debug( msg, len );
   }
   {
     PacketOut<PktOut_DF> msg;
@@ -109,7 +109,7 @@ void dummy()
     msg->offset = 1;
     msg->WriteFlipped<u16>( len );
     INFO_PRINT << "NEWPKT\n";
-    debug( msg );
+    debug( msg, len );
   }
 }
 
