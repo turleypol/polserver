@@ -85,23 +85,23 @@ void dummy()
     msg->offset += 2;  // length will be written later
     msg->Write<u32>( serial_ext );
     msg->WriteFlipped<u16>( icon );
-    msg->Write<u16>( show ? 1u : 0u );
+    msg->WriteFlipped<u16>( show ? 1u : 0u );
     msg->Write<u32>( 0u );  // unknown, always 0
     msg->WriteFlipped<u16>( icon );
-    msg->Write<u16>( 1u );  // unknown, always 1
-    msg->Write<u32>( 0u );  // unknown, always 0
+    msg->WriteFlipped<u16>( 1u );  // unknown, always 1
+    msg->Write<u32>( 0u );         // unknown, always 0
     msg->WriteFlipped<u16>( duration );
     msg->Write<u16>( 0u );  // unknown, always 0
     msg->Write<u8>( 0u );   // unknown, always 0
     msg->WriteFlipped<u32>( cl_name );
     msg->WriteFlipped<u32>( cl_descr );
-    msg->Write<u32>( 0u );  // 3rd cliloc?
-    msg->Write<u16>( 1u );  // title arg length
+    msg->Write<u32>( 0u );         // 3rd cliloc?
+    msg->WriteFlipped<u16>( 1u );  // title arg length
     msg->Write( Bscript::String::toUTF16( "" ) );
     auto args = Bscript::String::toUTF16( arguments );
-    msg->Write<u16>( args.size() + 1 );  // second arg length
-    msg->Write( args );
-    msg->Write<u16>( 1u );  // 3rd arg length?
+    msg->WriteFlipped<u16>( args.size() + 1 );  // second arg length
+    msg->WriteFlipped( args );
+    msg->WriteFlipped<u16>( 1u );  // 3rd arg length?
     msg->Write<u16>( 0u );
 
     u16 len = msg->offset;
