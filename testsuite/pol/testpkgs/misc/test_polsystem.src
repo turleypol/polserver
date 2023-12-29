@@ -15,3 +15,43 @@ exported function test_md5()
   endif
   return 1;
 endfunction
+
+exported function test_buff()
+
+var packet := CreatePacket( 0xDF, MSGLEN_VARIABLE );
+		packet.SetInt32( 3, 0x1111 );
+		packet.SetInt16( 7, 0x1234 );
+		packet.SetInt16( 9, 0x1 );
+
+		packet.SetInt16( 11, 0 ); // Source Type
+		packet.SetInt16( 13, 0 ); // Filler
+
+		packet.SetInt16( 15, 0x1234 );
+		packet.SetInt16( 17, 0x1 );
+		packet.SetInt32( 19, 0x0 ); // Filler
+		packet.SetInt16( 23, 0x77 );
+
+	// byte[3]	0x00
+		packet.SetInt8( 25, 0x0 ); // Filler
+		packet.SetInt16( 26, 0x0 ); // Filler
+
+// Clilocs
+		packet.SetInt32( 28, 0x5668 );
+		packet.SetInt32( 32, 0x9876 );
+
+
+
+			packet.SetInt16( 40, "Title".Length()+1 );
+			packet.SetUnicodeStringFlipped( 42, CAscZ( "Title" ), 1 );
+
+// Secondary Argument
+			packet.SetInt16( packet.GetSize(), "Worko\tAll tradeskills".Length()+1 );
+			packet.SetUnicodeStringFlipped( packet.GetSize(), CAscZ( "Worko\tAll tradeskills" ), 1 );
+
+		packet.SetInt16( packet.GetSize(), 0x1 );
+
+// Let's set the size of the packet...
+		packet.SetInt16( 1, packet.GetSize() );
+print(packet);
+
+endfunction
