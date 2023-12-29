@@ -8,7 +8,7 @@
 #include <cstring>
 #include <string>
 
-#include "../../bscript/str.h"
+#include "../../bscript/impstr.h"
 #include "../../clib/logfacility.h"
 #include "../../clib/rawtypes.h"
 #include "../../plib/maptile.h"
