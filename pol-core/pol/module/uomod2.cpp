@@ -810,7 +810,7 @@ void oldSellHandler( Client* client, PKTIN_9F* msg )
 
   unsigned int cost = 0;
   int num_items = cfBEu16( msg->num_items );
-  Clib::sanitize_upperlimit( &num_items, ( 0xFFFF - 9 ) / 6 );
+  Clib::sanitize_upperlimit( &num_items, Clib::arsize( msg->items ) );
 
   for ( int i = 0; i < num_items; ++i )
   {
@@ -924,7 +924,7 @@ void sellhandler( Client* client, PKTIN_9F* msg )
 
   int num_items = cfBEu16( msg->num_items );
   std::unique_ptr<ObjArray> items_sold( new ObjArray );
-  Clib::sanitize_upperlimit( &num_items, ( 0xFFFF - 9 ) / 6 );
+  Clib::sanitize_upperlimit( &num_items, Clib::arsize( msg->items ) );
   for ( int i = 0; i < num_items; ++i )
   {
     u32 serial = cfBEu32( msg->items[i].serial );
