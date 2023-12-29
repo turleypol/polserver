@@ -50,6 +50,7 @@
 #include "../../clib/passert.h"
 #include "../../clib/rawtypes.h"
 #include "../../clib/refptr.h"
+#include "../../clib/stlutil.h"
 #include "../../plib/pkg.h"
 #include "../../plib/staticblock.h"
 #include "../../plib/systemstate.h"
