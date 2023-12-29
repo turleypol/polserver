@@ -96,8 +96,8 @@ void dummy()
     msg->Write( Bscript::String::toUTF16( "" ) );
     auto args = Bscript::String::toUTF16( arguments );
     msg->Write<u16>( args.size() + 1 );  // second arg length
-    msg->Write( arg );
-    msg->Write<u16>( 1u );  // title arg length
+    msg->Write( args );
+    msg->Write<u16>( 1u );  // 3rd arg length?
     msg->Write( Bscript::String::toUTF16( "" ) );
 
     u16 len = msg->offset;
