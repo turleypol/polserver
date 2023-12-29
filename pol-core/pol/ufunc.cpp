@@ -2169,8 +2169,8 @@ void sendCharProfile( Character* chr, Character* of_who, const std::string& titl
  * @param arguments arguments for cl_descr as string, separated by spaces
  */
 void send_buff_message( Character* chr, u16 icon, bool show, u16 duration, u32 cl_name,
-                        const std::string& title_arguments, u32 cl_descr,
-                        const std::string& arguments )
+                        const std::string& name_arguments, u32 cl_descr,
+                        const std::string& desc_arguments )
 {
   PktHelper::PacketOut<PktOut_DF> msg;
   msg->offset += 2;  // length will be written later
@@ -2189,12 +2189,12 @@ void send_buff_message( Character* chr, u16 icon, bool show, u16 duration, u32 c
     msg->WriteFlipped<u32>( cl_name );
     msg->WriteFlipped<u32>( cl_descr );
     msg->Write<u32>( 0u );  // 3rd cliloc?
-    auto titleargs = Bscript::String::toUTF16( title_arguments );
-    msg->WriteFlipped<u16>( titleargs.size() + 1 );
-    msg->Write( titleargs );
-    auto args = Bscript::String::toUTF16( arguments );
-    msg->WriteFlipped<u16>( args.size() + 1 );
-    msg->Write( args );
+    auto nameargs = Bscript::String::toUTF16( name_arguments );
+    msg->WriteFlipped<u16>( nameargs.size() + 1 );
+    msg->Write( nameargs );
+    auto descargs = Bscript::String::toUTF16( desc_arguments );
+    msg->WriteFlipped<u16>( descargs.size() + 1 );
+    msg->Write( descargs );
     msg->Write<u16>( 1u );  // 3rd arg length?
     msg->Write<u16>( 0u );
   }

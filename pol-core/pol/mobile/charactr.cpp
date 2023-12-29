@@ -4207,17 +4207,18 @@ unsigned int Character::guildid() const
  * Sends packets to the client accordingly
  * @author Bodom
  */
-void Character::addBuff( u16 icon, u16 duration, u32 cl_name, const std::string& title_arguments,
-                         u32 cl_descr, const std::string& arguments )
+void Character::addBuff( u16 icon, u16 duration, u32 cl_name, const std::string& name_arguments,
+                         u32 cl_descr, const std::string& desc_arguments )
 {
   // Icon is already present, must send a remove packet first or client will not update
   delBuff( icon );
 
   Core::gameclock_t end = Core::read_gameclock() + duration;
-  buffs_[icon] = { end, cl_name, cl_descr, title_arguments, arguments };
+  buffs_[icon] = { end, cl_name, cl_descr, name_arguments, desc_arguments };
 
   if ( client != nullptr )
-    send_buff_message( this, icon, true, duration, cl_name, title_arguments, cl_descr, arguments );
+    send_buff_message( this, icon, true, duration, cl_name, name_arguments, cl_descr,
+                       desc_arguments );
 }
 
 /**
@@ -4269,8 +4270,8 @@ void Character::send_buffs()
   {
     u16 duration = Clib::clamp_convert<u16>( buf.end - Core::read_gameclock() );
 
-    send_buff_message( this, icon, true, duration, buf.cl_name, buf.title_arguments, buf.cl_descr,
-                       buf.arguments );
+    send_buff_message( this, icon, true, duration, buf.cl_name, buf.name_arguments, buf.cl_descr,
+                       buf.desc_arguments );
   }
 }
 

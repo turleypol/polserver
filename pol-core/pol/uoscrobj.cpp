@@ -2415,11 +2415,11 @@ BObjectImp* Character::get_script_member_id( const int id ) const
     for ( const auto& [icon, buf] : buffs_ )
     {
       auto info = std::make_unique<BStruct>();
-      info->addMember( "title_cliloc", new BLong( buf.cl_name ) );
+      info->addMember( "name_cliloc", new BLong( buf.cl_name ) );
       info->addMember( "desc_cliloc", new BLong( buf.cl_descr ) );
       info->addMember( "end_time", new BLong( buf.end ) );
-      info->addMember( "title_args", new String( buf.title_arguments ) );
-      info->addMember( "desc_args", new String( buf.arguments ) );
+      info->addMember( "name_args", new String( buf.name_arguments ) );
+      info->addMember( "desc_args", new String( buf.desc_arguments ) );
       buffs->addMember( new BLong( icon ), info.release() );
     }
     return buffs.release();
@@ -3338,31 +3338,31 @@ BObjectImp* Character::script_method_id( const int id, Core::UOExecutor& ex )
     u16 duration;
     u32 cl_name;
     u32 cl_descr;
-    const String* text;
-    std::string title_args;
+    const String* desc_text;
+    std::string name_args;
 
     if ( !ex.hasParams( 5 ) )
       return new BError( "Not enough parameters" );
     if ( ex.getParam( 0, icon ) && ex.getParam( 1, duration ) && ex.getParam( 2, cl_name ) &&
-         ex.getParam( 3, cl_descr ) && ex.getUnicodeStringParam( 4, text ) )
+         ex.getParam( 3, cl_descr ) && ex.getUnicodeStringParam( 4, desc_text ) )
     {
       if ( ex.hasParams( 6 ) )
       {
-        const String* title_text;
-        if ( !ex.getUnicodeStringParam( 5, title_text ) )
+        const String* name_text;
+        if ( !ex.getUnicodeStringParam( 5, name_text ) )
           break;
-        if ( title_text->length() > SPEECH_MAX_LEN )
+        if ( name_text->length() > SPEECH_MAX_LEN )
           return new BError( "Title text exceeds maximum size." );
-        title_args = title_text->value();
+        name_args = name_text->value();
       }
 
       if ( !( icon && cl_name && cl_descr ) )
         return new BError( "Invalid parameters" );
 
-      if ( text->length() > SPEECH_MAX_LEN )
+      if ( desc_text->length() > SPEECH_MAX_LEN )
         return new BError( "Text exceeds maximum size." );
 
-      addBuff( icon, duration, cl_name, title_args, cl_descr, text->value() );
+      addBuff( icon, duration, cl_name, name_args, cl_descr, desc_text->value() );
       return new BLong( 1 );
     }
     break;
