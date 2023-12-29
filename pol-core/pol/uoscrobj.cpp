@@ -3346,7 +3346,7 @@ BObjectImp* Character::script_method_id( const int id, Core::UOExecutor& ex )
       if ( text->length() > SPEECH_MAX_LEN )
         return new BError( "Text exceeds maximum size." );
 
-      addBuff( icon, duration, cl_name, title_text, cl_descr, text->value() );
+      addBuff( icon, duration, cl_name, title_args, cl_descr, text->value() );
       return new BLong( 1 );
     }
     break;
