@@ -23,7 +23,56 @@ namespace Pol
 {
 namespace Testing
 {
-void dummy() {}
+void dummy()
+{
+  using namespace Network;
+  using namespace Network::PktHelper;
+  auto debug = []( const PacketOut<PktOut_DF>& p )
+  {
+    fmt::Writer w;
+    for ( auto& c : p->buffer )
+    {
+      w << fmt::hex( c ) << " ";
+    }
+    INFO_PRINT << w.str() << "\n";
+  };
+  bool show = true;
+  u32 serial = 0x1111;
+  u16 icon = 0x1234;
+  u16 duration = 0x77;
+  u32 cl_name = 0x5678;
+  u32 cl_descr = 0x9876;
+  std::string arguments = "Worko\tAll tradeskills";
+  {
+    PacketOut<PktOut_DF> msg;
+    msg->offset += 2;  // length will be written later
+    msg->Write<u32>( serial_ext );
+    msg->WriteFlipped<u16>( icon );
+    msg->Write<u8>( 0u );  // unknown, always 0
+    msg->Write<u8>( show ? 1u : 0u );
+    msg->Write<u32>( 0u );  // unknown, always 0
+    msg->WriteFlipped<u16>( icon );
+    msg->Write<u8>( 0u );   // unknown, always 0
+    msg->Write<u8>( 1u );   // unknown, always 1
+    msg->Write<u32>( 0u );  // unknown, always 0
+    msg->WriteFlipped<u16>( duration );
+    msg->Write<u16>( 0u );  // unknown, always 0
+    msg->Write<u8>( 0u );   // unknown, always 0
+    msg->WriteFlipped<u32>( cl_name );
+    msg->WriteFlipped<u32>( cl_descr );
+    msg->Write<u32>( 0u );   // unknown, always 0
+    msg->Write<u8>( 0u );    // unknown, always 0
+    msg->Write<u8>( 1u );    // unknown, always 1
+    msg->Write<u16>( 20u );  // a space character
+    msg->Write<u16>( 20u );  // a space character
+    msg->Write( Bscript::String::toUTF16( arguments ) );
+
+    u16 len = msg->offset;
+    msg->offset = 1;
+    msg->WriteFlipped<u16>( len );
+    debug( msg );
+  }
+}
 
 void map_test()
 {

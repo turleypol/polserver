@@ -51,7 +51,7 @@ bool run_pol_tests()
   RUNTEST( range3d_test )
 
   RUNTEST( test_curlfeatures )
-  //  RUNTEST( dummy )
+  RUNTEST( dummy )
 
   UnitTest::display_test_results();
   return UnitTest::result();
