@@ -4,40 +4,60 @@ set(kaitai_sources
   ${POL_EXT_LIB_DIR}/kaitai-runtime/kaitai/kaitaistream.h
   ${POL_EXT_LIB_DIR}/kaitai-runtime/kaitai/kaitaistruct.h
 )
+
+
+set(KAITAI_SOURCE_DIR "${POL_EXT_LIB_DIR}/antlr")
+set(KAITAI_INSTALL_DIR "${KAITAI_SOURCE_DIR}/lib")
+ExternalProject_Add(kaitai
+  SOURCE_DIR  ${KAITAI_SOURCE_DIR}
+    PREFIX kaitai
+    LIST_SEPARATOR |
+    CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${KAITAI_INSTALL_DIR} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DKS_STR_ENCODING_NONE=1 -DKS_ZLIB=1 -DBUILD_SHARED_LIBS=Off -DBUILD_TESTS=Off
+    BINARY_DIR ${KAITAI_SOURCE_DIR}/build
+    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
+    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
  
-set(lib_name kaitai)
-
-add_library(${lib_name} STATIC
-  ${${lib_name}_sources}
-)
-set_compile_flags(${lib_name} 0)
-
-target_include_directories(${lib_name}  PRIVATE
-  "${POL_EXT_LIB_DIR}/kaitai-runtime"
-)
-
-use_zlib(${lib_name})
-warning_suppression(${lib_name})
-
-target_compile_definitions(${lib_name} PRIVATE
-  KS_STR_ENCODING_NONE
-)
-target_compile_definitions(${lib_name} PUBLIC
-  KS_ZLIB
-)
-if(${linux})
-  target_compile_options(${lib_name} PRIVATE
-    -Wno-sign-compare
-    -Wno-unused-parameter
-    -fno-strict-aliasing
+    #BUILD_BYPRODUCTS ${ANTLR_LIB}
+    LOG_DOWNLOAD 1
+    LOG_CONFIGURE 1
+    LOG_BUILD 1
+    LOG_INSTALL 1
+    LOG_OUTPUT_ON_FAILURE 1
   )
-endif()
-if (${windows})
- target_compile_options(${lib_name} PRIVATE
-   /wd4458 #var name hides
-   /wd4456 #var name hides
-   /wd4267 #convert types
-  )
-endif()
+
+  #set(lib_name kaitai)
+
+  #add_library(${lib_name} STATIC
+  #  ${${lib_name}_sources}
+  #)
+  #set_compile_flags(${lib_name} 0)
+
+  #target_include_directories(${lib_name}  PRIVATE
+  #  "${POL_EXT_LIB_DIR}/kaitai-runtime"
+  #)
+
+  #use_zlib(${lib_name})
+  #warning_suppression(${lib_name})
+
+  #target_compile_definitions(${lib_name} PRIVATE
+  #  KS_STR_ENCODING_NONE
+  #)
+  #target_compile_definitions(${lib_name} PUBLIC
+  #  KS_ZLIB
+  #)
+  #if(${linux})
+  #  target_compile_options(${lib_name} PRIVATE
+  #    -Wno-sign-compare
+  #    -Wno-unused-parameter
+  # -fno-strict-aliasing
+  #  )
+  #endif()
+  #if (${windows})
+  # target_compile_options(${lib_name} PRIVATE
+  #   /wd4458 #var name hides
+  #   /wd4456 #var name hides
+  #   /wd4267 #convert types
+  #  )
+  #endif()
 
 set_target_properties (${lib_name} PROPERTIES FOLDER 3rdParty)
