@@ -8,7 +8,7 @@ set(kaitai_sources
 
 set(KAITAI_SOURCE_DIR "${POL_EXT_LIB_DIR}/antlr")
 set(KAITAI_INSTALL_DIR "${KAITAI_SOURCE_DIR}/lib")
-ExternalProject_Add(kaitai
+ExternalProject_Add(kaitai_Ext
   SOURCE_DIR  ${KAITAI_SOURCE_DIR}
     PREFIX kaitai
     LIST_SEPARATOR |
@@ -24,7 +24,9 @@ ExternalProject_Add(kaitai
     LOG_INSTALL 1
     LOG_OUTPUT_ON_FAILURE 1
   )
-
+add_library(kaitai SHARED IMPORTED)
+set_target_properties(kaitai PROPERTIES IMPORTED_LOCATION ${KAITAI_INSTALL_DIR})
+add_dependencies(kaktai kaitai_Ext)
   #set(lib_name kaitai)
 
   #add_library(${lib_name} STATIC
