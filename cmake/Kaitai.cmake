@@ -29,8 +29,9 @@ ExternalProject_Add(kaitai_Ext
     LOG_INSTALL 1
     LOG_OUTPUT_ON_FAILURE 1
   )
-add_library(kaitai SHARED IMPORTED)
+  add_library(kaitai STATIC IMPORTED)
 set_target_properties(kaitai PROPERTIES IMPORTED_LOCATION ${KAITAI_LIB})
+set_target_properties(kaitai PROPERTIES IMPORTED_IMPLIB ${KAITAI_LIB})
 #add_dependencies(kaktai kaitai_Ext)
   #set(lib_name kaitai)
 
