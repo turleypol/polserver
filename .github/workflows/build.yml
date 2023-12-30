@@ -124,7 +124,7 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
 
-      - name: lst:
+      - name: lst
         if: failure()
         run : |
           ls ../lib/kaitai-runtime
