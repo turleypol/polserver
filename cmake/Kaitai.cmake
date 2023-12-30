@@ -26,7 +26,7 @@ ExternalProject_Add(kaitai_Ext
   )
 add_library(kaitai SHARED IMPORTED)
 set_target_properties(kaitai PROPERTIES IMPORTED_LOCATION ${KAITAI_INSTALL_DIR})
-add_dependencies(kaktai kaitai_Ext)
+#add_dependencies(kaktai kaitai_Ext)
   #set(lib_name kaitai)
 
   #add_library(${lib_name} STATIC
@@ -62,4 +62,4 @@ add_dependencies(kaktai kaitai_Ext)
   #  )
   #endif()
 
-set_target_properties (${lib_name} PROPERTIES FOLDER 3rdParty)
+  #set_target_properties (${lib_name} PROPERTIES FOLDER 3rdParty)

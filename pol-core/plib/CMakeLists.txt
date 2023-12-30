@@ -10,6 +10,7 @@ set_compile_flags(${lib_name} 0)
 warning_suppression(${lib_name})
 enable_pch(${lib_name})
 
+add_dependencies(${lib_name} kaitai_Ext)
 target_link_libraries(${lib_name} PUBLIC
   kaitai
   clib
