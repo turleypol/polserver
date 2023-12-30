@@ -124,6 +124,12 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
 
+      - name: lst:
+        if: failure()
+        run : |
+          ls ../lib/kaitai-runtime
+          ls ../lib/kaitai-runtime/lib
+
       - name: Test (EScript)
         if: matrix.config.nopch == 0
         run: |

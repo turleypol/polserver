@@ -8,7 +8,11 @@ set(kaitai_sources
 
 set(KAITAI_SOURCE_DIR "${POL_EXT_LIB_DIR}/kaitai-runtime")
 set(KAITAI_INSTALL_DIR "${KAITAI_SOURCE_DIR}/lib")
+if (${linux})
 set(KAITAI_LIB "${KAITAI_INSTALL_DIR}/kaitai_struct_cpp_stl_runtime.a")
+else()
+  set(KAITAI_LIB "${KAITAI_INSTALL_DIR}/kaitai_struct_cpp_stl_runtime.lib")
+endif()
 ExternalProject_Add(kaitai_Ext
   SOURCE_DIR  ${KAITAI_SOURCE_DIR}
     PREFIX kaitai
