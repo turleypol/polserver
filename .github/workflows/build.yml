@@ -127,8 +127,8 @@ jobs:
       - name: lst
         if: failure()
         run : |
-          ls ../lib/kaitai-runtime
-          ls ../lib/kaitai-runtime/lib
+          ls lib/kaitai-runtime
+          ls lib/kaitai-runtime/lib
 
       - name: Test (EScript)
         if: matrix.config.nopch == 0
