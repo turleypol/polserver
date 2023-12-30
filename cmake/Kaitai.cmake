@@ -6,7 +6,7 @@ set(kaitai_sources
 )
 
 
-set(KAITAI_SOURCE_DIR "${POL_EXT_LIB_DIR}/antlr")
+set(KAITAI_SOURCE_DIR "${POL_EXT_LIB_DIR}/kaitai-runtime")
 set(KAITAI_INSTALL_DIR "${KAITAI_SOURCE_DIR}/lib")
 ExternalProject_Add(kaitai_Ext
   SOURCE_DIR  ${KAITAI_SOURCE_DIR}
