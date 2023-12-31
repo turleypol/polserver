@@ -8,8 +8,9 @@ set(KAITAI_ARGS -DCMAKE_BUILD_TYPE=Release
    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
    -DSTRING_ENCODING_TYPE=NONE
    -DBUILD_SHARED_LIBS=Off
-   -DBUILD_TESTS=Off)
-
+   -DBUILD_TESTS=Off
+   -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake
+ )
 if (${linux})
 set(KAITAI_LIB "${KAITAI_INSTALL_DIR}/lib/kaitai_struct_cpp_stl_runtime.a")
 else()
