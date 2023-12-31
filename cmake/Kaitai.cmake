@@ -10,6 +10,7 @@ set(KAITAI_ARGS -DCMAKE_BUILD_TYPE=Release
    -DBUILD_SHARED_LIBS=Off
    -DBUILD_TESTS=Off
    -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake
+   -DCMAKE_VERBOSE_MAKEFILE=ON
  )
 if (${linux})
 set(KAITAI_LIB "${KAITAI_INSTALL_DIR}/lib/libkaitai_struct_cpp_stl_runtime.a")
