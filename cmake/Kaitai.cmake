@@ -49,6 +49,8 @@ endif()
 add_library(kaitai STATIC IMPORTED)
 set_target_properties(kaitai PROPERTIES IMPORTED_LOCATION ${KAITAI_LIB})
 set_target_properties(kaitai PROPERTIES IMPORTED_IMPLIB ${KAITAI_LIB})
+
+file(MAKE_DIRECTORY ${KAITAI_INSTALL_DIR}/include)
 set_target_properties(kaitai PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${KAITAI_INSTALL_DIR}/include)
 if (${windows})
   set_target_properties(kaitai PROPERTIES INTERFACE_LINK_LIBRARIES ${ZLIB_LIB})
