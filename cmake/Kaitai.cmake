@@ -15,7 +15,7 @@ if (${linux})
 set(KAITAI_LIB "${KAITAI_INSTALL_DIR}/lib/libkaitai_struct_cpp_stl_runtime.a")
 else()
   set(KAITAI_LIB "${KAITAI_INSTALL_DIR}/lib/kaitai_struct_cpp_stl_runtime.lib")
-  set(KAITAI_ARGS ${KAITAI_ARGS} -DZLIB_ROOT="${ZLIB_INSTALL_DIR}")
+  set(KAITAI_ARGS ${KAITAI_ARGS} -DZLIB_ROOT=${ZLIB_INSTALL_DIR})
 endif()
 message("args ${KAITAI_ARGS}")
 ExternalProject_Add(kaitai_Ext
@@ -24,7 +24,7 @@ ExternalProject_Add(kaitai_Ext
     LIST_SEPARATOR |
     CMAKE_ARGS ${KAITAI_ARGS}
     BINARY_DIR ${KAITAI_SOURCE_DIR}/build
-    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
+    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release --verbose
     INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
  
     BUILD_BYPRODUCTS ${KAITAI_LIB}
