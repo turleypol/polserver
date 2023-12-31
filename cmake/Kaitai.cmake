@@ -1,10 +1,4 @@
-set(kaitai_sources 
-  ${POL_EXT_LIB_DIR}/kaitai-runtime/kaitai/custom_decoder.h
-  ${POL_EXT_LIB_DIR}/kaitai-runtime/kaitai/kaitaistream.cpp
-  ${POL_EXT_LIB_DIR}/kaitai-runtime/kaitai/kaitaistream.h
-  ${POL_EXT_LIB_DIR}/kaitai-runtime/kaitai/kaitaistruct.h
-)
-
+message("* kaitai")
 
 set(KAITAI_SOURCE_DIR "${POL_EXT_LIB_DIR}/kaitai-runtime")
 set(KAITAI_INSTALL_DIR "${KAITAI_SOURCE_DIR}/lib")
@@ -22,6 +16,7 @@ else()
   set(KAITAI_LIB "${KAITAI_INSTALL_DIR}/lib/kaitai_struct_cpp_stl_runtime.lib")
   set(KAITAI_ARGS ${KAITAI_ARGS} -DZLIB_ROOT="${ZLIB_INSTALL_DIR}")
 endif()
+message("args ${KAITAI_ARGS}")
 ExternalProject_Add(kaitai_Ext
   SOURCE_DIR  ${KAITAI_SOURCE_DIR}
     PREFIX kaitai
