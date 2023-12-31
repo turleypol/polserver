@@ -23,11 +23,11 @@ ExternalProject_Add(kaitai_Ext
     INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
  
     BUILD_BYPRODUCTS ${KAITAI_LIB}
-    LOG_DOWNLOAD 1
-    LOG_CONFIGURE 1
-    LOG_BUILD 1
-    LOG_INSTALL 1
-    LOG_OUTPUT_ON_FAILURE 1
+    #    LOG_DOWNLOAD 1
+    # LOG_CONFIGURE 1
+    # LOG_BUILD 1
+    # LOG_INSTALL 1
+    #LOG_OUTPUT_ON_FAILURE 1
   )
   add_library(kaitai STATIC IMPORTED)
 set_target_properties(kaitai PROPERTIES IMPORTED_LOCATION ${KAITAI_LIB})
