@@ -12,7 +12,7 @@ set(KAITAI_ARGS -DCMAKE_BUILD_TYPE=Release
    -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake
  )
 if (${linux})
-set(KAITAI_LIB "${KAITAI_INSTALL_DIR}/lib/kaitai_struct_cpp_stl_runtime.a")
+set(KAITAI_LIB "${KAITAI_INSTALL_DIR}/lib/libkaitai_struct_cpp_stl_runtime.a")
 else()
   set(KAITAI_LIB "${KAITAI_INSTALL_DIR}/lib/kaitai_struct_cpp_stl_runtime.lib")
   set(KAITAI_ARGS ${KAITAI_ARGS} -DZLIB_ROOT="${ZLIB_INSTALL_DIR}")
