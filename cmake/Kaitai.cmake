@@ -5,7 +5,6 @@ set(KAITAI_INSTALL_DIR "${KAITAI_SOURCE_DIR}/install")
 set(KAITAI_ARGS -DCMAKE_BUILD_TYPE=Release 
    -DCMAKE_INSTALL_PREFIX=${KAITAI_INSTALL_DIR}
    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
    -DSTRING_ENCODING_TYPE=NONE
    -DBUILD_SHARED_LIBS=Off
    -DBUILD_TESTS=Off
@@ -46,11 +45,13 @@ if (${windows})
   endif()
 endif()
 
+# imported target to add include/lib dir and additional dependencies
+# dependency to the external project needs to be explicit done in the linking library
 add_library(kaitai STATIC IMPORTED)
 set_target_properties(kaitai PROPERTIES IMPORTED_LOCATION ${KAITAI_LIB})
 set_target_properties(kaitai PROPERTIES IMPORTED_IMPLIB ${KAITAI_LIB})
 
-file(MAKE_DIRECTORY ${KAITAI_INSTALL_DIR}/include) #directory has to exists during configure
+file(MAKE_DIRECTORY ${KAITAI_INSTALL_DIR}/include) #directory has to exist during configure
 set_target_properties(kaitai PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${KAITAI_INSTALL_DIR}/include)
 
 if (${windows})
@@ -58,5 +59,5 @@ if (${windows})
 else()
   set_target_properties(kaitai PROPERTIES INTERFACE_LINK_LIBRARIES z)
 endif()
-
+add_dependencies(kaitai kaitai_Ext)
 set_target_properties (kaitai PROPERTIES FOLDER 3rdParty)
