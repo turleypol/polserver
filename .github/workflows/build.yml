@@ -129,7 +129,7 @@ jobs:
         run : |
           ls lib/kaitai-runtime/lib/lib
       - name: Upload kaitai
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: kaitai-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
