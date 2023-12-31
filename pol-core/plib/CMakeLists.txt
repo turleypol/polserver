@@ -15,6 +15,7 @@ target_link_libraries(${lib_name} PUBLIC
   kaitai
   clib
 )
+use_zlib(${lib_name})
 if(${linux})
   set_source_files_properties(uopreader/uop.cpp PROPERTIES COMPILE_FLAGS -Wno-unused-parameter)
 endif()
