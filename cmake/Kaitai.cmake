@@ -34,7 +34,9 @@ ExternalProject_Add(kaitai_Ext
      LOG_INSTALL 1
     LOG_OUTPUT_ON_FAILURE 1
   )
+if (${windows})
   ExternalProject_Add_StepDependencies(kaitai_Ext configure libz)
+endif()
   add_library(kaitai STATIC IMPORTED)
 set_target_properties(kaitai PROPERTIES IMPORTED_LOCATION ${KAITAI_LIB})
 set_target_properties(kaitai PROPERTIES IMPORTED_IMPLIB ${KAITAI_LIB})
