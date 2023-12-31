@@ -127,8 +127,13 @@ jobs:
       - name: lst
         if: failure()
         run : |
-          ls lib/kaitai-runtime
-          ls lib/kaitai-runtime/lib
+          ls lib/kaitai-runtime/lib/lib
+      - name: Upload kaitai
+        if: failure
+        uses: actions/upload-artifact@v3
+        with:
+          name: kaitai-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
+          path: bin-build/kaitai
 
       - name: Test (EScript)
         if: matrix.config.nopch == 0
