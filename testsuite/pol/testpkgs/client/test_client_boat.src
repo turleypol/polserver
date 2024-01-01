@@ -30,7 +30,7 @@ program chartests()
     return ret_error("Failed to create boat "+boat);
   endif
   print(boat.serial);
-  print(hex(boat.serial);
+  print(hex(boat.serial));
 endprogram
 
 exported function move_boat()
