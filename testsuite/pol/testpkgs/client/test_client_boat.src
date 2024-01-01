@@ -29,6 +29,8 @@ program chartests()
   if (!boat)
     return ret_error("Failed to create boat "+boat);
   endif
+  print(boat.serial);
+  print(hex(boat.serial);
 endprogram
 
 exported function move_boat()
@@ -323,6 +325,8 @@ exported function boat_update_range()
   endif
   foreach it in (ev["objs"])
     if (it["serial"]==boat.serial)
+      print(it);
+      print($"{char.x},{char.y}");
       return ret_error("boat still in range");
     endif
   endforeach
