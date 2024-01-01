@@ -124,16 +124,18 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
 
-      - name: lst
-        if: failure()
-        run : |
-          ls lib/kaitai-runtime/lib/lib
-      - name: Upload kaitai
+      - name: Upload tinyxml
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: kaitai-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
-          path: bin-build/kaitai
+          name: tiny-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
+          path: bin-build/tinyxml
+      - name: Upload tinyxml2
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: tiny2-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
+          path: lib/tinyxml2-10.0.0
 
       - name: Test (EScript)
         if: matrix.config.nopch == 0
