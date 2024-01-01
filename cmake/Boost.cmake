@@ -63,7 +63,8 @@ if(NOT EXISTS ${BOOST_REGEX_LIB} OR NOT EXISTS ${BOOST_SYSTEM_LIB} OR NOT EXISTS
   if (NOT EXISTS "${BOOST_SOURCE_DIR}/boost")
     message("  - will extract")
     ExternalProject_Add(boost_extract
-            URL "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.bz2"
+            URL "https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.gz"
+            #"https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.bz2"
             SOURCE_DIR "${BOOST_SOURCE_DIR}"
             CONFIGURE_COMMAND ${BOOST_CONFIGURE_COMMAND} --with-toolset=${BOOST_TOOLSET}
             BUILD_COMMAND ""
