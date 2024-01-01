@@ -145,8 +145,12 @@ void remove_objects_inrange( Network::Client* client )
   WorldIterator<MultiFilter>::InMaxVisualRange( chr,
                                                 [&]( Multi::UMulti* multi )
                                                 {
+                                                  POLLOG_INFO << "TEST " << multi.serial << "\n";
                                                   if ( chr->in_visual_range( multi ) )
+                                                  {
+                                                    POLLOG_INFO << "REMOVE\n";
                                                     send_remove_object( client, multi, msgremove );
+                                                  }
                                                 } );
 }
 
