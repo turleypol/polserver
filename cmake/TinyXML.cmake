@@ -13,9 +13,9 @@ set(TINYXML_ARGS -DCMAKE_BUILD_TYPE=Release
    -DCMAKE_OSX_ARCHITECTURES=${PIPED_OSX_ARCHITECTURES}
  )
 if (${linux})
-  set(TINYXML_LIB "${TINYXML_INSTALL_DIR}/lib/libkaitai_struct_cpp_stl_runtime.a")
+  set(TINYXML_LIB "${TINYXML_INSTALL_DIR}/lib/libtinyxml2.a")
 else()
-  set(TINYXML_LIB "${TINYXML_INSTALL_DIR}/lib/kaitai_struct_cpp_stl_runtime.lib")
+  set(TINYXML_LIB "${TINYXML_INSTALL_DIR}/lib/tinyxml2.lib")
 endif()
 
 ExternalProject_Add(tinyxml_Ext

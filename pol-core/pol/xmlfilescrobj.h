@@ -12,7 +12,7 @@
 #endif
 
 #include <string>
-#include <tinyxml/tinyxml.h>
+#include <tinyxml/tinyxml2.h>
 
 #include "../bscript/contiter.h"
 #include "../clib/rawtypes.h"
