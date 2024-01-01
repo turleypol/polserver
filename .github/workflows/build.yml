@@ -124,6 +124,12 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
 
+      - name: Upload boost
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: boost-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
+          path: boost_extract-prefix
       - name: Test (EScript)
         if: matrix.config.nopch == 0
         run: |
