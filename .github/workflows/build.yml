@@ -136,6 +136,12 @@ jobs:
         with:
           name: tiny2-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: lib/tinyxml2-10.0.0
+      - name: Upload kaitai
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: kaitai-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
+          path: lib/kaitai-runtime
 
       - name: Test (EScript)
         if: matrix.config.nopch == 0
