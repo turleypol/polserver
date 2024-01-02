@@ -180,7 +180,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
-          path: bin-build
+          path: bin-build/fmt
 
   release:
     needs: build
