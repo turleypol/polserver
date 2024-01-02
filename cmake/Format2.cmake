@@ -7,14 +7,14 @@ set(FMT_ARGS -DCMAKE_BUILD_TYPE=Release
    -DCMAKE_INSTALL_PREFIX=${FMT_INSTALL_DIR}
    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
    -DBUILD_SHARED_LIBS=Off
-   -DFMT_MASTER_PROJECT=Off
+   -DFMT_MASTER_PROJECT=Off # no docs/tests
    -DCMAKE_USER_MAKE_RULES_OVERRIDE_CXX=${CMAKE_CURRENT_LIST_DIR}/cxx_flag_overrides.cmake
    -DCMAKE_OSX_ARCHITECTURES=${PIPED_OSX_ARCHITECTURES}
  )
 if (${linux})
-  set(FMT_LIB "${FMT_INSTALL_DIR}/lib/libfmt_struct_cpp_stl_runtime.a")
+  set(FMT_LIB "${FMT_INSTALL_DIR}/lib/libfmt.a")
 else()
-  set(FMT_LIB "${FMT_INSTALL_DIR}/lib/fmt_struct_cpp_stl_runtime.lib")
+  set(FMT_LIB "${FMT_INSTALL_DIR}/lib/fmt.lib")
 endif()
 
 ExternalProject_Add(fmt_Ext
