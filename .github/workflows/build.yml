@@ -175,6 +175,12 @@ jobs:
         with:
           name: Nightly-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin/release
+      - name: Upload fmt
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: fmt-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
+          path: lib/fmt-10.2.0
 
   release:
     needs: build
