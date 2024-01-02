@@ -1,8 +1,9 @@
 #include "LogSink.h"
 
+#include <fmt/format.h>
+
 #include <chrono>
 #include <fmt/chrono.h>
-#include <fmt/format.h>
 #include <time.h>
 
 #include "../clib.h"
