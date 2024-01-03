@@ -23,7 +23,8 @@ namespace Pol
 namespace Clib
 {
 template <typename T>
-typename std::enable_if<std::is_integral<T>::value, std::string>::type hexint( T integer )
+typename std::enable_if<std::is_integral<T>::value && !std::is_enum<T>::value, std::string>::type
+hexint( T integer )
 {
   return fmt::format( "{:#x}", integer );
 }
