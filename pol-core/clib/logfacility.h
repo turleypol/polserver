@@ -39,8 +39,8 @@ public:
   virtual ~LogSinkGenericFile();
   void open_log_file( bool open_timestamp );
   void setBehaviour( const LogFileBehaviour* behaviour, std::string filename );
-  virtual void addMessage( std::string msg ) override;
-  virtual void addMessage( std::string msg, const std::string& id ) override;
+  virtual void addMessage( const std::string& msg ) override;
+  virtual void addMessage( const std::string& msg, const std::string& id ) override;
 
 protected:
   friend class LogFacility;
@@ -65,8 +65,8 @@ class LogSink_cout final : public LogSink
 public:
   LogSink_cout();
   virtual ~LogSink_cout() = default;
-  virtual void addMessage( std::string msg ) override;
-  virtual void addMessage( std::string msg, const std::string& id ) override;
+  virtual void addMessage( const std::string& msg ) override;
+  virtual void addMessage( const std::string& msg, const std::string& id ) override;
 };
 
 // std::cerr sink
@@ -75,8 +75,8 @@ class LogSink_cerr final : public LogSink
 public:
   LogSink_cerr();
   virtual ~LogSink_cerr() = default;
-  virtual void addMessage( std::string msg ) override;
-  virtual void addMessage( std::string msg, const std::string& id ) override;
+  virtual void addMessage( const std::string& msg ) override;
+  virtual void addMessage( const std::string& msg, const std::string& id ) override;
 };
 
 // pol.log (and start.log) file sink
@@ -102,8 +102,8 @@ class LogSink_debuglog final : public LogSinkGenericFile
 public:
   LogSink_debuglog();
   virtual ~LogSink_debuglog() = default;
-  virtual void addMessage( std::string msg ) override;
-  virtual void addMessage( std::string msg, const std::string& id ) override;
+  virtual void addMessage( const std::string& msg ) override;
+  virtual void addMessage( const std::string& msg, const std::string& id ) override;
   void disable();
   static bool Disabled;
 };
@@ -122,8 +122,8 @@ public:
   LogSink_flexlog();
   virtual ~LogSink_flexlog() = default;
   std::string create( std::string logfilename, bool open_timestamp );
-  virtual void addMessage( std::string msg ) override;
-  virtual void addMessage( std::string msg, const std::string& id ) override;
+  virtual void addMessage( const std::string& msg ) override;
+  virtual void addMessage( const std::string& msg, const std::string& id ) override;
   void close( const std::string& id );
 
 private:
@@ -136,8 +136,8 @@ class LogSink_dual final : public LogSink
 public:
   LogSink_dual();
   virtual ~LogSink_dual() = default;
-  virtual void addMessage( std::string msg ) override;
-  virtual void addMessage( std::string msg, const std::string& id ) override;
+  virtual void addMessage( const std::string& msg ) override;
+  virtual void addMessage( const std::string& msg, const std::string& id ) override;
 };
 
 // main class which starts the logging

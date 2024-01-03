@@ -330,7 +330,7 @@ void LogSinkGenericFile::open_log_file( bool open_timestamp )
 }
 
 // print given msg into filestream
-void LogSinkGenericFile::addMessage( std::string msg )
+void LogSinkGenericFile::addMessage( const std::string& msg )
 {
   if ( _disabled )
   {
@@ -362,9 +362,9 @@ void LogSinkGenericFile::addMessage( std::string msg )
   _filestream << msg;
   _filestream.flush();
 }
-void LogSinkGenericFile::addMessage( std::string msg, const std::string& )
+void LogSinkGenericFile::addMessage( const std::string& msg, const std::string& )
 {
-  addMessage( std::move( msg ) );
+  addMessage( msg );
 }
 
 // check if a rollover is needed (new day)
@@ -396,7 +396,7 @@ bool LogSinkGenericFile::test_for_rollover(
 
 LogSink_cout::LogSink_cout() : LogSink() {}
 // print given msg into std::cout
-void LogSink_cout::addMessage( std::string msg )
+void LogSink_cout::addMessage( const std::string& msg )
 {
   std::cout << msg;
   std::cout.flush();
@@ -405,14 +405,14 @@ void LogSink_cout::addMessage( std::string msg )
     OutputDebugString( msg.c_str() );
 #endif
 }
-void LogSink_cout::addMessage( std::string msg, const std::string& )
+void LogSink_cout::addMessage( const std::string& msg, const std::string& )
 {
-  addMessage( std::move( msg ) );
+  addMessage( msg );
 }
 
 LogSink_cerr::LogSink_cerr() : LogSink() {}
 // print given msg into std::cerr
-void LogSink_cerr::addMessage( std::string msg )
+void LogSink_cerr::addMessage( const std::string& msg )
 {
   std::cerr << msg;
   std::cerr.flush();
@@ -421,9 +421,9 @@ void LogSink_cerr::addMessage( std::string msg )
     OutputDebugString( msg.c_str() );
 #endif
 }
-void LogSink_cerr::addMessage( std::string msg, const std::string& )
+void LogSink_cerr::addMessage( const std::string& msg, const std::string& )
 {
-  addMessage( std::move( msg ) );
+  addMessage( msg );
 }
 
 // on construction this opens not pol.log instead start.log
@@ -456,14 +456,14 @@ void LogSink_debuglog::disable()
   Disabled = true;
 }
 // only print the msg if not Disabled
-void LogSink_debuglog::addMessage( std::string msg )
+void LogSink_debuglog::addMessage( const std::string& msg )
 {
   if ( !Disabled )
     LogSinkGenericFile::addMessage( msg );
 }
-void LogSink_debuglog::addMessage( std::string msg, const std::string& )
+void LogSink_debuglog::addMessage( const std::string& msg, const std::string& )
 {
-  addMessage( std::move( msg ) );
+  addMessage( msg );
 }
 
 // on construction opens leak.log
@@ -485,15 +485,15 @@ std::string LogSink_flexlog::create( std::string logfilename, bool open_timestam
 }
 
 // sink msg into sink of given id
-void LogSink_flexlog::addMessage( std::string msg, const std::string& id )
+void LogSink_flexlog::addMessage( const std::string& msg, const std::string& id )
 {
   auto itr = _logfiles.find( id );
   if ( itr != _logfiles.end() )
   {
-    itr->second->addMessage( std::move( msg ) );
+    itr->second->addMessage( msg );
   }
 }
-void LogSink_flexlog::addMessage( std::string /*msg*/ )
+void LogSink_flexlog::addMessage( const std::string& /*msg*/ )
 {
   // empty
 }
@@ -512,13 +512,13 @@ LogSink_dual<log1, log2>::LogSink_dual() : LogSink()
 }
 // performs the sink with given msg for both sinks
 template <typename log1, typename log2>
-void LogSink_dual<log1, log2>::addMessage( std::string msg )
+void LogSink_dual<log1, log2>::addMessage( const std::string& msg )
 {
   getSink<log1>()->addMessage( msg );
   getSink<log2>()->addMessage( msg );
 }
 template <typename log1, typename log2>
-void LogSink_dual<log1, log2>::addMessage( std::string msg, const std::string& )
+void LogSink_dual<log1, log2>::addMessage( const std::string& msg, const std::string& )
 {
   addMessage( msg );
 }
@@ -535,7 +535,7 @@ bool Clib::Logging::LogSink_debuglog::Disabled = false;
   template class Pol::Clib::Logging::Message<Pol::Clib::Logging::sink>;                       \
   template Pol::Clib::Logging::sink* Pol::Clib::Logging::getSink<Pol::Clib::Logging::sink>(); \
   template void Pol::Clib::Logging::LogFacility::save<Pol::Clib::Logging::sink>(              \
-      std::string message, const std::string& id );
+      const std::string& message, const std::string& id );
 
 #define SINK_TEMPLATE_DEFINES_DUAL( sink1, sink2 )                                                 \
   template class Pol::Clib::Logging::Message<                                                      \
@@ -545,7 +545,7 @@ bool Clib::Logging::LogSink_debuglog::Disabled = false;
       Pol::Clib::Logging::LogSink_dual<Pol::Clib::Logging::sink1, Pol::Clib::Logging::sink2>>();   \
   template void Pol::Clib::Logging::LogFacility::save<                                             \
       Pol::Clib::Logging::LogSink_dual<Pol::Clib::Logging::sink1, Pol::Clib::Logging::sink2>>(     \
-      std::string message, const std::string& id );
+      const std::string& message, const std::string& id );
 
 
 SINK_TEMPLATE_DEFINES( LogSink_cout )
