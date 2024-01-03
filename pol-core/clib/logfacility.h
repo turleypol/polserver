@@ -175,7 +175,7 @@ public:
   template <typename... T>
   Message( std::string_view format, T&&... args )
   {
-    _msg = fmt::format( format, args );
+    _msg = fmt::format( format, args... );
   }
   Message( const std::string& id );
   Message(
