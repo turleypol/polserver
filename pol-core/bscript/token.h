@@ -91,10 +91,6 @@ public:
 
 std::ostream& operator<<( std::ostream&, const Token& );
 fmt::Writer& operator<<( fmt::Writer&, const Token& );
-template <>
-struct fmt::formatter<Token> : ostream_formatter
-{
-};
 }  // namespace Bscript
 namespace Clib
 {
@@ -102,4 +98,8 @@ template <>
 std::string tostring<Bscript::Token>( const Bscript::Token& v );
 }
 }  // namespace Pol
+template <>
+struct fmt::formatter<Token> : fmt::ostream_formatter
+{
+};
 #endif
