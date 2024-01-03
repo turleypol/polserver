@@ -40,7 +40,7 @@ typedef int socklen_t;
 #endif
 
 #ifndef SCK_WATCH
-#define SCK_WATCH 1
+#define SCK_WATCH 0
 #endif
 namespace Pol
 {
