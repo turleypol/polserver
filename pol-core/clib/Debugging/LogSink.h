@@ -26,8 +26,8 @@ public:
   LogSink( const LogSink& ) = delete;
   LogSink& operator=( const LogSink& ) = delete;
 
-  virtual void addMessage( fmt::Writer* msg ) = 0;
-  virtual void addMessage( fmt::Writer* msg, const std::string& id ) = 0;
+  virtual void addMessage( std::string msg ) = 0;
+  virtual void addMessage( std::string msg, const std::string& id ) = 0;
 
   /**
    * Helper function to print timestamp into stream
