@@ -228,6 +228,10 @@ void initLogging( LogFacility* logger );  // initalize the logging
       Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>( \
       LOG_PRINT_CALLER_INFO )                                                                   \
       .message()
+#define POLLOG_INFO2      \
+  Clib::Logging::Message< \
+      Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>
+
 // log into pol.log
 #define POLLOG \
   Clib::Logging::Message<Clib::Logging::LogSink_pollog>( LOG_PRINT_CALLER_INFO ).message()

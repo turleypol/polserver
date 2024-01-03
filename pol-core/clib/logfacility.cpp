@@ -535,7 +535,7 @@ bool Clib::Logging::LogSink_debuglog::Disabled = false;
   template class Pol::Clib::Logging::Message<Pol::Clib::Logging::sink>;                       \
   template Pol::Clib::Logging::sink* Pol::Clib::Logging::getSink<Pol::Clib::Logging::sink>(); \
   template void Pol::Clib::Logging::LogFacility::save<Pol::Clib::Logging::sink>(              \
-      const std::string& message, const std::string& id );
+      std::string message, const std::string& id );
 
 #define SINK_TEMPLATE_DEFINES_DUAL( sink1, sink2 )                                                 \
   template class Pol::Clib::Logging::Message<                                                      \
@@ -545,7 +545,7 @@ bool Clib::Logging::LogSink_debuglog::Disabled = false;
       Pol::Clib::Logging::LogSink_dual<Pol::Clib::Logging::sink1, Pol::Clib::Logging::sink2>>();   \
   template void Pol::Clib::Logging::LogFacility::save<                                             \
       Pol::Clib::Logging::LogSink_dual<Pol::Clib::Logging::sink1, Pol::Clib::Logging::sink2>>(     \
-      const std::string& message, const std::string& id );
+      std::string message, const std::string& id );
 
 
 SINK_TEMPLATE_DEFINES( LogSink_cout )
