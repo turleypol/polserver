@@ -432,7 +432,7 @@ void textcmd_heapcheck( Network::Client* /*client*/ )
 
 void textcmd_threads( Network::Client* client )
 {
-  std::string s = "Child threads: " + Clib::tostring( threadhelp::child_threads );
+  std::string s = "Child threads: " + Clib::tostring( threadhelp::child_threads.load() );
   send_sysmessage( client, s );
 }
 
