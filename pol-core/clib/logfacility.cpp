@@ -250,7 +250,7 @@ Message<Sink>::~Message()
 
 
 template <typename Sink>
-Message2<Sink>::send( std::string msg )
+void Message2<Sink>::send( std::string msg )
 {
   if ( global_logger == nullptr )
     printf( "%s", msg.c_str() );
