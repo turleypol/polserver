@@ -239,13 +239,6 @@ Message<Sink>::~Message()
     else
       global_logger->save<Sink>( _formater->str(), std::move( _id ) );
   }
-  if ( !_msg.empty() )
-  {
-    if ( global_logger == nullptr )
-      printf( "%s", _msg.c_str() );
-    else
-      global_logger->save<Sink>( std::move( _msg ), std::move( _id ) );
-  }
 }
 
 

@@ -177,16 +177,6 @@ class Message
 {
 public:
   Message();
-  Message( std::string msg )
-  {
-    _msg = std::move( msg );
-    _msg += '\n';
-  };
-  template <typename... T>
-  Message( std::string_view format, T&&... args )
-  {
-    _msg = fmt::format( format, args... ) + '\n';
-  }
   Message( LogWithIDTag, const std::string& id );
   ~Message();  // auto flush
 
@@ -195,7 +185,6 @@ public:
 private:
   std::unique_ptr<fmt::Writer> _formater;
   std::string _id = {};
-  std::string _msg = {};
 };
 
 
