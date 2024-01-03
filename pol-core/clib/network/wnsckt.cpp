@@ -398,7 +398,7 @@ bool Socket::recvbyte( unsigned char* ch, unsigned int waitms )
   if ( res == 1 )
   {
 #if SCK_WATCH
-    INFO_PRINT2( "{{{:#X}}}", ch );
+    INFO_PRINT2( "{{{:#X}}}", *ch );
 #endif
     return true;
   }
