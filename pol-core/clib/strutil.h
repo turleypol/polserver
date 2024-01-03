@@ -12,6 +12,7 @@
 #define CLIB_STRUTIL_H
 
 #include "rawtypes.h"
+#include <fmt/format.h>
 #include <format/format.h>
 #include <string>
 #include <type_traits>
@@ -24,13 +25,13 @@ template <typename T>
 typename std::enable_if<std::is_integral<T>::value || std::is_enum<T>::value, std::string>::type
 hexint( T integer )
 {
-  return fmt::str( fmt::Writer() << "0x" << fmt::hex( integer ) );
+  return fmt::format( "{:#x}", integer );
 }
 
 template <typename T>
 std::string tostring( const T& value )
 {
-  return fmt::str( fmt::Writer() << value );
+  return fmt::to_string( value );
 }
 
 void splitnamevalue( const std::string& istr, std::string& propname, std::string& propvalue );
@@ -65,10 +66,10 @@ uint8_t unicodeToCp1252( uint32_t codepoint );
 uint32_t cp1252ToUnicode( uint8_t codepoint );
 
 // Converts a UTF-8 encoded string to CP-1252
-std::string strUtf8ToCp1252( const std::string &utf8string );
+std::string strUtf8ToCp1252( const std::string& utf8string );
 
 // Takes a CP-1252 encoded string and returns the same string encoded in UTF-8
-std::string strCp1252ToUtf8( const std::string &cp1252string );
+std::string strCp1252ToUtf8( const std::string& cp1252string );
 
 }  // namespace Clib
 }  // namespace Pol
