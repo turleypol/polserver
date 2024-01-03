@@ -171,6 +171,9 @@ template <typename Sink>
 class Message
 {
 public:
+  static struct LogWithID
+  {
+  } logWithID;
   Message();
   Message( std::string msg ) { _msg = std::move( msg ); };
   template <typename... T>
@@ -178,7 +181,7 @@ public:
   {
     _msg = fmt::format( format, args... );
   }
-  Message( bool unique_contructor, const std::string& id );
+  Message( LogWithID, const std::string& id );
   ~Message();  // auto flush
 
   fmt::Writer& message() { return *( _formater.get() ); }
@@ -235,7 +238,10 @@ void initLogging( LogFacility* logger );  // initalize the logging
 #define LEAKLOG Clib::Logging::Message<Clib::Logging::LogSink_leaklog>().message()
 
 // log into sink id need a call of OPEN_LOG before
-#define FLEXLOG( id ) Clib::Logging::Message<Clib::Logging::LogSink_flexlog>( true, id ).message()
+#define FLEXLOG( id )                                                         \
+  Clib::Logging::Message<Clib::Logging::LogSink_flexlog>(                     \
+      Clib::Logging::Message<Clib::Logging::LogSink_flexlog>::logWithID, id ) \
+      .message()
 // open logfile of given filename, returns unique unsigned int for usage of logging/closing
 #define OPEN_FLEXLOG( filename, open_timestamp ) \
   Clib::Logging::global_logger->registerFlexLogger( filename, open_timestamp )

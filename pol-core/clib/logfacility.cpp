@@ -223,7 +223,8 @@ Message<Sink>::Message() : _formater( new fmt::Writer() ), _id( "" )
 }
 
 template <typename Sink>
-Message<Sink>::Message( bool, const std::string& id ) : _formater( new fmt::Writer() ), _id( id )
+Message<Sink>::Message( LogWithID, const std::string& id )
+    : _formater( new fmt::Writer() ), _id( id )
 {
 }
 // on deconstruction transfer the formater to the facility
