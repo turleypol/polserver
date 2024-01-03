@@ -359,7 +359,7 @@ void Socket::HandleError()
   {
     sprintf( ErrorBuffer, "Unknown error code 0x%08x", ErrVal );
   }
-  INFO_PRINT2( ErrorBuffer );
+  INFO_PRINT2( std::string( ErrorBuffer ) );
 #endif
 #else
   close();
