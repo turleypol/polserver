@@ -23,8 +23,7 @@ namespace Pol
 namespace Clib
 {
 template <typename T>
-typename std::enable_if<std::is_integral<T>::value && !std::is_enum<T>::value, std::string>::type
-hexint( T integer )
+typename std::enable_if<std::is_integral<T>::value, std::string>::type hexint( T integer )
 {
   return fmt::format( "{:#x}", integer );
 }
@@ -35,9 +34,14 @@ typename std::enable_if<std::is_enum<T>::value, std::string>::type hexint( T int
 }
 
 template <typename T>
-std::string tostring( const T& value )
+typename std::enable_if<!std::is_enum<T>::value, std::string>::type tostring( const T& value )
 {
   return fmt::to_string( value );
+}
+template <typename T>
+typename std::enable_if<std::is_enum<T>::value, std::string>::type tostring( const T& value )
+{
+  return fmt::to_string( fmt::underlying( value ) );
 }
 
 void splitnamevalue( const std::string& istr, std::string& propname, std::string& propvalue );
