@@ -99,7 +99,7 @@ std::string tostring<Bscript::Token>( const Bscript::Token& v );
 }
 }  // namespace Pol
 template <>
-struct fmt::formatter<Token> : fmt::ostream_formatter
+struct fmt::formatter<Pol::Bscript::Token> : fmt::ostream_formatter
 {
 };
 #endif
