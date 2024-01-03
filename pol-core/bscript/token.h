@@ -18,6 +18,7 @@
 #include <set>
 
 #include "options.h"
+#include <fmt/ostream.h>
 #include <format/format.h>
 
 namespace Pol
