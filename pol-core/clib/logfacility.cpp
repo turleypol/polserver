@@ -14,7 +14,7 @@ POLLOG.Format("hello {}") << "world";
 #include "logfacility.h"
 
 #include <chrono>
-#include <fmt/chrono>
+#include <fmt/chrono.h>
 #include <fstream>
 #include <functional>
 #include <iostream>
