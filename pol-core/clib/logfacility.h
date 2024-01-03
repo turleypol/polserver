@@ -149,7 +149,7 @@ public:
   LogFacility( const LogFacility& ) = delete;
   LogFacility& operator=( const LogFacility& ) = delete;
   template <typename Sink>
-  void save( std::string message, const std::string& id );
+  void save( std::string message, std::string id );
   void registerSink( LogSink* sink );
   void disableDebugLog();
   void disableFileLog();
