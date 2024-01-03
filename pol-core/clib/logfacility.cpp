@@ -245,7 +245,7 @@ Message<Sink>::Message( const std::string& id, const std::string& file, const in
 template <typename Sink>
 Message<Sink>::~Message()
 {
-  if ( _formater->size() > 0 )
+  if ( _formater && _formater->size() > 0 )
   {
     if ( global_logger == nullptr )
       printf( "%s", _formater->c_str() );
