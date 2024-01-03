@@ -172,6 +172,7 @@ class Message
 {
 public:
   Message();
+  Message( std::string msg ) { _msg = std::move( msg ); };
   template <typename... T>
   Message( std::string_view format, T&&... args )
   {
@@ -184,7 +185,7 @@ public:
 
 private:
   std::unique_ptr<fmt::Writer> _formater;
-  std::string _id;
+  std::string _id = {};
   std::string _msg = {};
 };
 
