@@ -144,11 +144,11 @@ template <typename Sink>
 void LogFacility::save( std::string message, const std::string& id )
 {
   _worker->send(
-      [std::move( message ), id]()
+      [msg = std::move( message ), id]()
       {
         try
         {
-          getSink<Sink>()->addMessage( std::move( msg ), id );
+          getSink<Sink>()->addMessage( msg, id );
         }
         catch ( std::exception& msg )
         {
@@ -255,7 +255,7 @@ Message<Sink>::~Message()
   if ( !_msg.empty() )
   {
     if ( global_logger == nullptr )
-      printf( "%s", _msg->c_str() );
+      printf( "%s", _msg.c_str() );
     else
       global_logger->save<Sink>( std::move( _msg ), _id );
   }
@@ -316,7 +316,7 @@ void LogSinkGenericFile::open_log_file( bool open_timestamp )
   {
     fmt::Writer tmp;
     tmp << "failed to open logfile " << _log_filename << "\n";
-    getSink<LogSink_cerr>()->addMessage( &tmp );
+    getSink<LogSink_cerr>()->addMessage( tmp.str() );
     return;
   }
   if ( open_timestamp )
@@ -359,7 +359,7 @@ void LogSinkGenericFile::addMessage( std::string msg )
       addTimeStamp( _filestream );
   }
   _active_line = ( msg.data()[msg.size() - 1] != '\n' );  // is the last character a newline?
-  _filestream << msg.str();
+  _filestream << msg;
   _filestream.flush();
 }
 void LogSinkGenericFile::addMessage( std::string msg, const std::string& )
