@@ -17,8 +17,8 @@
 #include <iosfwd>
 #include <set>
 
-#include <format/format.h>
 #include "options.h"
+#include <format/format.h>
 
 namespace Pol
 {
@@ -39,13 +39,15 @@ public:
   BTokenId id;
   BTokenType type;
   double dval;
-  union {
+  union
+  {
     int precedence;
     int sourceFile;
   };
   int dbg_filenum;
   int dbg_linenum;
-  union {
+  union
+  {
     int lval;
     const unsigned char* dataptr;
   };
@@ -88,10 +90,15 @@ public:
 
 std::ostream& operator<<( std::ostream&, const Token& );
 fmt::Writer& operator<<( fmt::Writer&, const Token& );
-}
-namespace Clib{
+template <>
+struct fmt::formatter<Token> : ostream_formatter
+{
+};
+}  // namespace Bscript
+namespace Clib
+{
 template <>
 std::string tostring<Bscript::Token>( const Bscript::Token& v );
 }
-}
+}  // namespace Pol
 #endif
