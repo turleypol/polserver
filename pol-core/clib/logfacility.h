@@ -165,12 +165,9 @@ private:
   std::unique_ptr<LogWorker> _worker;
   std::vector<LogSink*> _registered_sinks;
 };
-namespace
-{
 static struct LogWithID
 {
 } logWithID;
-}  // namespace
 // construct a message for given sink, on deconstruction sends the msg to the facility
 template <typename Sink>
 class Message
@@ -240,7 +237,7 @@ using POLLOG_INFO2 = Clib::Logging::Message<
 
 // log into sink id need a call of OPEN_LOG before
 #define FLEXLOG( id ) \
-  Clib::Logging::Message<Clib::Logging::LogSink_flexlog>( logWithID, id ).message()
+  Clib::Logging::Message<Clib::Logging::LogSink_flexlog>( Clib::Logging::logWithID, id ).message()
 // open logfile of given filename, returns unique unsigned int for usage of logging/closing
 #define OPEN_FLEXLOG( filename, open_timestamp ) \
   Clib::Logging::global_logger->registerFlexLogger( filename, open_timestamp )
