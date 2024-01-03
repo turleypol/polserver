@@ -253,9 +253,9 @@ template <typename Sink>
 void Message2<Sink>::send( std::string msg )
 {
   if ( global_logger == nullptr )
-    printf( "%s", msg.c_str() );
+    printf( "%s\n", msg.c_str() );
   else
-    global_logger->save<Sink>( std::move( msg ), "" );
+    global_logger->save<Sink>( std::move( msg + '\n' ), "" );
 }
 // create and get a sink
 template <typename Sink>
