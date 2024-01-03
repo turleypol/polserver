@@ -206,7 +206,7 @@ struct Message2
   static void log( std::string_view format, T&&... args )
   {
     if constexpr ( sizeof...( args ) == 0 )
-      send( format );
+      send( std::string( format ) );
     else
       send( fmt::format( format, args... ) );
   };

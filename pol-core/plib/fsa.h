@@ -186,7 +186,7 @@ public:  // methods
       tmp += fmt::format( "{:#x}!{:#x} ", p->pPrev, p->pNext );
       p = p->pNext;
     }
-    INFO_PRINT2{ tmp };
+    INFO_PRINT2( tmp );
 
     INFO_PRINT2( "used list" );
     tmp.clear();
@@ -197,7 +197,7 @@ public:  // methods
       tmp += fmt::format( "{:#x}!{:#x} ", p->pPrev, p->pNext );
       p = p->pNext;
     }
-    INFO_PRINT2{ tmp };
+    INFO_PRINT2( tmp );
   }
 
   // Iterators
