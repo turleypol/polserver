@@ -165,20 +165,27 @@ private:
   std::unique_ptr<LogWorker> _worker;
   std::vector<LogSink*> _registered_sinks;
 };
+
+// constructor tag for id constructor
 static struct LogWithIDTag
 {
 } logWithID;
+
 // construct a message for given sink, on deconstruction sends the msg to the facility
 template <typename Sink>
 class Message
 {
 public:
   Message();
-  Message( std::string msg ) { _msg = std::move( msg ); };
+  Message( std::string msg )
+  {
+    _msg = std::move( msg );
+    _msg += '\n';
+  };
   template <typename... T>
   Message( std::string_view format, T&&... args )
   {
-    _msg = fmt::format( format, args... );
+    _msg = fmt::format( format, args... ) + '\n';
   }
   Message( LogWithIDTag, const std::string& id );
   ~Message();  // auto flush
