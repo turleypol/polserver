@@ -199,6 +199,20 @@ private:
 };
 
 
+template <typename Sink>
+struct Message2
+{
+  static void msg( std::string msg ) { send( std::move( msg ) ); }
+  template <typename... T>
+  static void msg( std::string_view format, T&&... args )
+  {
+    send( fmt::format( format, args... ) );
+  };
+
+private:
+  static send( std::string msg );
+}
+
 extern LogFacility* global_logger;        // pointer to the instance of the main class
 void initLogging( LogFacility* logger );  // initalize the logging
 }  // namespace Logging
@@ -217,15 +231,15 @@ void initLogging( LogFacility* logger );  // initalize the logging
   Clib::Logging::Message<                                                                        \
       Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>() \
       .message()
-using POLLOG_INFO2 = Clib::Logging::Message<
-    Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>;
+using POLLOG_INFO2 = Clib::Logging::Message2<
+    Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>::msg;
 
 // log into pol.log
 #define POLLOG Clib::Logging::Message<Clib::Logging::LogSink_pollog>().message()
 
 // log only into std::cout
 #define INFO_PRINT Clib::Logging::Message<Clib::Logging::LogSink_cout>().message()
-using INFO_PRINT2 = Clib::Logging::Message<Clib::Logging::LogSink_cout>;
+using INFO_PRINT2 = Clib::Logging::Message2<Clib::Logging::LogSink_cout>::msg;
 // log only into std::cout if level is equal or higher
 #define INFO_PRINT_TRACE( n )                      \
   if ( Plib::systemstate.config.debug_level >= n ) \

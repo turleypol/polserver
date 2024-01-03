@@ -249,6 +249,14 @@ Message<Sink>::~Message()
 }
 
 
+template <typename Sink>
+Message2<Sink>::send( std::string msg )
+{
+  if ( global_logger == nullptr )
+    printf( "%s", msg.c_str() );
+  else
+    global_logger->save<Sink>( std::move( msg ), "" );
+}
 // create and get a sink
 template <typename Sink>
 Sink* getSink()
@@ -516,12 +524,15 @@ bool Clib::Logging::LogSink_debuglog::Disabled = false;
 // could reduce the compilation time a bit
 
 #define SINK_TEMPLATE_DEFINES( sink )                                                         \
+  template class Pol::Clib::Logging::Message2<Pol::Clib::Logging::sink>;                      \
   template class Pol::Clib::Logging::Message<Pol::Clib::Logging::sink>;                       \
   template Pol::Clib::Logging::sink* Pol::Clib::Logging::getSink<Pol::Clib::Logging::sink>(); \
   template void Pol::Clib::Logging::LogFacility::save<Pol::Clib::Logging::sink>(              \
       std::string message, std::string id );
 
 #define SINK_TEMPLATE_DEFINES_DUAL( sink1, sink2 )                                                 \
+  template class Pol::Clib::Logging::Message2<                                                     \
+      Pol::Clib::Logging::LogSink_dual<Pol::Clib::Logging::sink1, Pol::Clib::Logging::sink2>>;     \
   template class Pol::Clib::Logging::Message<                                                      \
       Pol::Clib::Logging::LogSink_dual<Pol::Clib::Logging::sink1, Pol::Clib::Logging::sink2>>;     \
   template Pol::Clib::Logging::LogSink_dual<Pol::Clib::Logging::sink1, Pol::Clib::Logging::sink2>* \
