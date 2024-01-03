@@ -211,7 +211,7 @@ struct Message2
 
 private:
   static void send( std::string msg );
-}
+};
 
 extern LogFacility* global_logger;        // pointer to the instance of the main class
 void initLogging( LogFacility* logger );  // initalize the logging
