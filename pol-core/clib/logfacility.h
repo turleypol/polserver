@@ -202,11 +202,13 @@ private:
 template <typename Sink>
 struct Message2
 {
-  static void msg( std::string msg ) { send( std::move( msg ) ); }
   template <typename... T>
   static void msg( std::string_view format, T&&... args )
   {
-    send( fmt::format( format, args... ) );
+    if constexpr ( sizeof...( args ) == 0 )
+      send( std::move( msg ) );
+    else
+      send( fmt::format( format, args... ) );
   };
 
 private:
