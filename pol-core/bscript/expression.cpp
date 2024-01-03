@@ -705,7 +705,7 @@ void Expression::remove_non_emitting_tokens()
 
 void Expression::dump_tokens() const
 {
-  INFO_PRINT2( "Expression with {} tokens:", tokens.size );
+  INFO_PRINT2( "Expression with {} tokens:", tokens.size() );
   for ( unsigned i = 0; i < tokens.size(); ++i )
   {
     Token* tk = tokens[i];
