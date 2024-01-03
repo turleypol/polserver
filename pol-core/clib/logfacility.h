@@ -177,14 +177,8 @@ public:
   {
     _msg = fmt::format( format, args... );
   }
-  Message( const std::string& id );
-  Message(
-      const std::string& file, const int line,
-      const std::string& function );  // for internal stuff with __FILE__, __LINE__, __FUNCTION__
-  Message(
-      const std::string& id, const std::string& file, const int line,
-      const std::string& function );  // for internal stuff with __FILE__, __LINE__, __FUNCTION__
-  ~Message();                         // auto flush
+  Message( bool unique_contructor, const std::string& id );
+  ~Message();  // auto flush
 
   fmt::Writer& message() { return *( _formater.get() ); }
 
@@ -202,66 +196,45 @@ void initLogging( LogFacility* logger );  // initalize the logging
 
 
 // several helper defines
-// #define DEBUG_LOG_PRINTS
-#ifdef DEBUG_LOG_PRINTS
-#ifdef WINDOWS
-#define __FILENAME__ ( strrchr( __FILE__, '\\' ) ? strrchr( __FILE__, '\\' ) + 1 : __FILE__ )
-#else
-#define __FILENAME__ ( strrchr( __FILE__, '/' ) ? strrchr( __FILE__, '/' ) + 1 : __FILE__ )
-#endif
-#define LOG_PRINT_CALLER_INFO __FILENAME__, __LINE__, __FUNCTION__
-#define LOG_PRINT_CALLER_INFO2 , __FILENAME__, __LINE__, __FUNCTION__
-#else
-#define LOG_PRINT_CALLER_INFO
-#define LOG_PRINT_CALLER_INFO2
-#endif
 
 // log into pol.log and std::cerr
-#define POLLOG_ERROR                                                                            \
-  Clib::Logging::Message<                                                                       \
-      Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cerr, Clib::Logging::LogSink_pollog>>( \
-      LOG_PRINT_CALLER_INFO )                                                                   \
+#define POLLOG_ERROR                                                                             \
+  Clib::Logging::Message<                                                                        \
+      Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cerr, Clib::Logging::LogSink_pollog>>() \
       .message()
 // log into pol.log and std::cout
-#define POLLOG_INFO                                                                             \
-  Clib::Logging::Message<                                                                       \
-      Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>( \
-      LOG_PRINT_CALLER_INFO )                                                                   \
+#define POLLOG_INFO                                                                              \
+  Clib::Logging::Message<                                                                        \
+      Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>() \
       .message()
 #define POLLOG_INFO2      \
   Clib::Logging::Message< \
       Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>
 
 // log into pol.log
-#define POLLOG \
-  Clib::Logging::Message<Clib::Logging::LogSink_pollog>( LOG_PRINT_CALLER_INFO ).message()
+#define POLLOG Clib::Logging::Message<Clib::Logging::LogSink_pollog>().message()
 
 // log only into std::cout
-#define INFO_PRINT \
-  Clib::Logging::Message<Clib::Logging::LogSink_cout>( LOG_PRINT_CALLER_INFO ).message()
+#define INFO_PRINT Clib::Logging::Message<Clib::Logging::LogSink_cout>().message()
 #define INFO_PRINT2 Clib::Logging::Message<Clib::Logging::LogSink_cout>
 // log only into std::cout if level is equal or higher
 #define INFO_PRINT_TRACE( n )                      \
   if ( Plib::systemstate.config.debug_level >= n ) \
   INFO_PRINT
 // log only into std::cerr
-#define ERROR_PRINT \
-  Clib::Logging::Message<Clib::Logging::LogSink_cerr>( LOG_PRINT_CALLER_INFO ).message()
+#define ERROR_PRINT Clib::Logging::Message<Clib::Logging::LogSink_cerr>().message()
 
 // log into script.log
-#define SCRIPTLOG \
-  Clib::Logging::Message<Clib::Logging::LogSink_scriptlog>( LOG_PRINT_CALLER_INFO ).message()
+#define SCRIPTLOG Clib::Logging::Message<Clib::Logging::LogSink_scriptlog>().message()
 // log into debug.log (if enabled)
 #define DEBUGLOG                                    \
   if ( !Clib::Logging::LogSink_debuglog::Disabled ) \
-  Clib::Logging::Message<Clib::Logging::LogSink_debuglog>( LOG_PRINT_CALLER_INFO ).message()
+  Clib::Logging::Message<Clib::Logging::LogSink_debuglog>().message()
 // log into leak.log
-#define LEAKLOG \
-  Clib::Logging::Message<Clib::Logging::LogSink_leaklog>( LOG_PRINT_CALLER_INFO ).message()
+#define LEAKLOG Clib::Logging::Message<Clib::Logging::LogSink_leaklog>().message()
 
 // log into sink id need a call of OPEN_LOG before
-#define FLEXLOG( id ) \
-  Clib::Logging::Message<Clib::Logging::LogSink_flexlog>( id LOG_PRINT_CALLER_INFO2 ).message()
+#define FLEXLOG( id ) Clib::Logging::Message<Clib::Logging::LogSink_flexlog>( true, id ).message()
 // open logfile of given filename, returns unique unsigned int for usage of logging/closing
 #define OPEN_FLEXLOG( filename, open_timestamp ) \
   Clib::Logging::global_logger->registerFlexLogger( filename, open_timestamp )

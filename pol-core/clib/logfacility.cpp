@@ -223,23 +223,8 @@ Message<Sink>::Message() : _formater( new fmt::Writer() ), _id( "" )
 }
 
 template <typename Sink>
-Message<Sink>::Message( const std::string& id ) : _formater( new fmt::Writer() ), _id( id )
+Message<Sink>::Message( bool, const std::string& id ) : _formater( new fmt::Writer() ), _id( id )
 {
-}
-// directly fill on construction the formater with file, line and function
-template <typename Sink>
-Message<Sink>::Message( const std::string& file, const int line, const std::string& function )
-    : _formater( new fmt::Writer() ), _id( "" )
-{
-  *_formater << file << "[" << line << "] " << function << " : ";
-}
-// directly fill on construction the formater with file, line and function
-template <typename Sink>
-Message<Sink>::Message( const std::string& id, const std::string& file, const int line,
-                        const std::string& function )
-    : _formater( new fmt::Writer() ), _id( id )
-{
-  *_formater << file << "[" << line << "] " << function << " : ";
 }
 // on deconstruction transfer the formater to the facility
 template <typename Sink>
