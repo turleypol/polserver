@@ -203,10 +203,10 @@ template <typename Sink>
 struct Message2
 {
   template <typename... T>
-  static void msg( std::string_view format, T&&... args )
+  static void log( std::string_view format, T&&... args )
   {
     if constexpr ( sizeof...( args ) == 0 )
-      send( msg );
+      send( format );
     else
       send( fmt::format( format, args... ) );
   };
@@ -235,14 +235,14 @@ void initLogging( LogFacility* logger );  // initalize the logging
       .message()
 #define POLLOG_INFO2                                                               \
   Clib::Logging::Message2<Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, \
-                                                      Clib::Logging::LogSink_pollog>>::msg
+                                                      Clib::Logging::LogSink_pollog>>::log
 
 // log into pol.log
 #define POLLOG Clib::Logging::Message<Clib::Logging::LogSink_pollog>().message()
 
 // log only into std::cout
 #define INFO_PRINT Clib::Logging::Message<Clib::Logging::LogSink_cout>().message()
-#define INFO_PRINT2 Clib::Logging::Message2<Clib::Logging::LogSink_cout>::msg
+#define INFO_PRINT2 Clib::Logging::Message2<Clib::Logging::LogSink_cout>::log
 // log only into std::cout if level is equal or higher
 #define INFO_PRINT_TRACE( n )                      \
   if ( Plib::systemstate.config.debug_level >= n ) \
