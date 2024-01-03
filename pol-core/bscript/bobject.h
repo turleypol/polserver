@@ -21,6 +21,7 @@
 #define INLINE_BOBJECTIMP_CTOR 1
 #endif
 
+#include <fmt/ostream.h>
 #include <format/format.h>
 
 #include "../clib/fixalloc.h"
