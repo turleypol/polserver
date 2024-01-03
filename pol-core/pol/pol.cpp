@@ -1006,7 +1006,7 @@ int xmain_inner( bool testing )
                 Clib::ProgramConfig::build_target(), Clib::ProgramConfig::build_datetime(),
                 POL_COPYRIGHT );
   if ( testing )
-    POLLOG_INFO << "TESTING MODE\n\n";
+    POLLOG_INFO2( "TESTING MODE\n\n" );
 
 #ifndef NDEBUG
   POLLOG_INFO << "Sizes: \n"
