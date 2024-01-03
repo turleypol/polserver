@@ -223,7 +223,7 @@ Message<Sink>::Message() : _formater( new fmt::Writer() ), _id( "" )
 }
 
 template <typename Sink>
-Message<Sink>::Message( LogWithID, const std::string& id )
+Message<Sink>::Message( LogWithIDTag, const std::string& id )
     : _formater( new fmt::Writer() ), _id( id )
 {
 }
@@ -300,9 +300,8 @@ void LogSinkGenericFile::open_log_file( bool open_timestamp )
   _filestream.open( _log_filename, _behaviour->openmode );
   if ( !_filestream.is_open() )
   {
-    fmt::Writer tmp;
-    tmp << "failed to open logfile " << _log_filename << "\n";
-    getSink<LogSink_cerr>()->addMessage( tmp.str() );
+    getSink<LogSink_cerr>()->addMessage(
+        fmt::format( "failed to open logfile {}\n", _log_filename ) );
     return;
   }
   if ( open_timestamp )
@@ -344,7 +343,7 @@ void LogSinkGenericFile::addMessage( const std::string& msg )
     else if ( _behaviour->timestamps && Clib::LogfileTimestampEveryLine )
       addTimeStamp( _filestream );
   }
-  _active_line = ( msg.data()[msg.size() - 1] != '\n' );  // is the last character a newline?
+  _active_line = ( msg.back() != '\n' );  // is the last character a newline?
   _filestream << msg;
   _filestream.flush();
 }
@@ -362,9 +361,7 @@ bool LogSinkGenericFile::test_for_rollover(
        ( tm_now.tm_mday != _opened.tm_mday || tm_now.tm_mon != _opened.tm_mon ) )
   {
     // roll the log file over
-    char buffer[30];
-    strftime( buffer, sizeof buffer, "%Y-%m-%d", &_opened );
-    std::string archive_name = _behaviour->basename + "-" + buffer + ".log";
+    std::string archive_name = fmt::format( "{}-{:%Y-%m-%d}.log", _behaviour->basename, _opened );
     _filestream.flush();
     _filestream.close();
 

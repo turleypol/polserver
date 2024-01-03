@@ -165,7 +165,7 @@ private:
   std::unique_ptr<LogWorker> _worker;
   std::vector<LogSink*> _registered_sinks;
 };
-static struct LogWithID
+static struct LogWithIDTag
 {
 } logWithID;
 // construct a message for given sink, on deconstruction sends the msg to the facility
@@ -180,7 +180,7 @@ public:
   {
     _msg = fmt::format( format, args... );
   }
-  Message( LogWithID, const std::string& id );
+  Message( LogWithIDTag, const std::string& id );
   ~Message();  // auto flush
 
   fmt::Writer& message() { return *( _formater.get() ); }
@@ -218,7 +218,7 @@ using POLLOG_INFO2 = Clib::Logging::Message<
 
 // log only into std::cout
 #define INFO_PRINT Clib::Logging::Message<Clib::Logging::LogSink_cout>().message()
-#define INFO_PRINT2 Clib::Logging::Message<Clib::Logging::LogSink_cout>
+using INFO_PRINT2 = Clib::Logging::Message<Clib::Logging::LogSink_cout>;
 // log only into std::cout if level is equal or higher
 #define INFO_PRINT_TRACE( n )                      \
   if ( Plib::systemstate.config.debug_level >= n ) \
