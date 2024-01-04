@@ -191,23 +191,40 @@ private:
 template <typename Sink>
 struct Message2
 {
-  template <typename... T>
-  static void log( std::string_view format, T&&... args )
+  template <typename Str, typename... Args>
+  void log( Str const& format, Args&&... args )
   {
     if constexpr ( sizeof...( args ) == 0 )
       send( std::string( format ) + '\n' );
     else
-      send( fmt::format( format, args... ) + '\n' );
+      send( fmt::vformat( format, fmt::make_args_checked<Args...>( format, args... ) ) + '\n' );
   };
-  template <typename... T>
-  static void lognonewline( std::string_view format, T&&... args )
+
+  /*  template <typename... T>
+    static void log( std::string_view format, T&&... args )
+    {
+      if constexpr ( sizeof...( args ) == 0 )
+        send( std::string( format ) + '\n' );
+      else
+        send( fmt::format( format, args... ) + '\n' );
+    };*/
+  template <typename Str, typename... Args>
+  void lognonewline( Str const& format, Args&&... args )
   {
     if constexpr ( sizeof...( args ) == 0 )
       send( std::string( format ) );
     else
-      send( fmt::format( format, args... ) );
+      send( fmt::vformat( format, fmt::make_args_checked<Args...>( format, args... ) ) );
   };
-
+  /*  template <typename... T>
+    static void lognonewline( std::string_view format, T&&... args )
+    {
+      if constexpr ( sizeof...( args ) == 0 )
+        send( std::string( format ) );
+      else
+        send( fmt::format( format, args... ) );
+    };
+  */
 private:
   static void send( std::string msg );
 };
