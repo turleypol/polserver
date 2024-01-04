@@ -187,7 +187,9 @@ private:
   std::string _id = {};
 };
 
-strVuct LogNewLine_Tag{};
+struct LogNewLine_Tag
+{
+};
 struct LogNoNewLine_Tag
 {
 };
