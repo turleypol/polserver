@@ -6,6 +6,7 @@ Remove the include in all StdAfx.h files or live with the consequences :)
 
 #pragma once
 
+#include <fmt/compile.h>
 #include <fmt/format.h>
 #include <format/format.h>
 #include <fstream>
