@@ -197,7 +197,7 @@ struct LogNoNewLine_Tag
 template <typename Sink>
 struct Message2
 {
-  template <typename Tag, typename Str, typename... Args>
+  template <typename Str, typename... Args>
   static void log( Str const& format, Args&&... args )
   {
     if constexpr ( sizeof...( args ) == 0 )
