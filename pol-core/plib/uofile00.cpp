@@ -114,7 +114,7 @@ bool open_uopmap_file( const int mapid, size_t* out_file_size = nullptr )
   std::string filename = systemstate.config.uo_datafile_root + filepart;
   if ( !Clib::FileExists( filename ) )
   {
-    INFO_PRINT2( "{} not found in {} filepart. Searching for old map[N].mul files.",
+    INFO_PRINT2( "{} not found in {}. Searching for old map[N].mul files.", filepart,
                  systemstate.config.uo_datafile_root );
     return false;
   }
