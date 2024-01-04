@@ -12,6 +12,6 @@
 namespace Pol::Clib
 {
 void fdump( fmt::Writer& writer, const void* data, int len );
-void fdump( std::back_insert_iterator<std::string>& buffer, const void* data, int len );
+void fdump( std::back_insert_iterator<std::string> buffer, const void* data, int len );
 }  // namespace Pol::Clib
 

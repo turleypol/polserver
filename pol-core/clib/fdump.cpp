@@ -51,7 +51,7 @@ void fdump( fmt::Writer& writer, const void* data, int len )
   }
 }
 
-void dump16( std::back_insert_iterator<std::string>& buffer, const unsigned char* s, int len )
+void dump16( std::back_insert_iterator<std::string> buffer, const unsigned char* s, int len )
 {
   int i;
   for ( i = 0; i < 16; i++ )
@@ -78,7 +78,7 @@ void dump16( std::back_insert_iterator<std::string>& buffer, const unsigned char
   buffer = '\n';
 }
 
-void fdump( std::back_insert_iterator<std::string>& buffer, const void* data, int len )
+void fdump( std::back_insert_iterator<std::string> buffer, const void* data, int len )
 {
   int i;
   const unsigned char* s = (const unsigned char*)data;
