@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <iosfwd>
+#include <iterator>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -427,18 +428,16 @@ static int rawdump( int argc, char** argv )
       fclose( fp );
       return 1;
     }
-    fmt::Writer tmp;
-    tmp << "Header:\n";
-    Clib::fdump( tmp, buffer, hdrlen );
-    INFO_PRINT2( tmp.str() );
+    std::string tmp = "Header:\n";
+    Clib::fdump( std::back_inserter( tmp ), buffer, hdrlen );
+    INFO_PRINT2( tmp );
   }
 
   while ( fread( buffer, reclen, 1, fp ) == 1 )
   {
-    fmt::Writer tmp;
-    tmp.Format( "Record {} (0x{:X}):\n" ) << recnum << recnum;
-    Clib::fdump( tmp, buffer, reclen );
-    INFO_PRINT2( tmp.str() );
+    std::string tmp = fmt::format( "Record {} ({:#0X}):\n" ) << recnum << recnum;
+    Clib::fdump( std::back_inserter( tmp ), buffer, reclen );
+    INFO_PRINT2( tmp );
 
     ++recnum;
   }

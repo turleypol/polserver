@@ -59,9 +59,9 @@ void dump16( std::back_insert_iterator<std::string>& buffer, const unsigned char
     if ( i < len )
       fmt::format_to( buffer, "{:02x} ", (int)s[i] );
     else
-      buffer = "   ";
+      std::fill_n( buffer, 3, ' ' );
     if ( i == 7 )
-      buffer = " ";
+      buffer = ' ';
   }
   buffer = "  ";
 
