@@ -59,23 +59,23 @@ void dump16( std::back_insert_iterator<std::string>& buffer, const unsigned char
     if ( i < len )
       fmt::format_to( buffer, "{:02x} ", (int)s[i] );
     else
-      buffer.push_back( "   " );
+      buffer = "   ";
     if ( i == 7 )
-      buffer.push_back( " " );
+      buffer = " ";
   }
-  buffer.push_back( "  " );
+  buffer = "  ";
 
   for ( i = 0; i < 16; i++ )
   {
     if ( i >= len || !isprint( s[i] ) )
-      buffer.push_back( '.' );
+      buffer = '.';
     else
-      fmt::format( "{}", s[i] );
+      fmt::format_to( buffer, "{}", s[i] );
 
     if ( i == 7 )
-      buffer.push_back( ' ' );
+      buffer = ' ';
   }
-  buffer.push_back( '\n' );
+  buffer = '\n';
 }
 
 void fdump( std::back_insert_iterator<std::string>& buffer, const void* data, int len )
