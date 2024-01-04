@@ -81,7 +81,7 @@ size_t uop_equivalent_mul_size( std::ifstream& ifs )
   } while ( currentblock != nullptr && nreadfiles < uopfile.header()->nfiles() );
 
   if ( uopfile.header()->nfiles() != nreadfiles )
-    INFO_PRINT2( "Warning: not all chunks read ({}/{})", nreadfiles, , uopfile.header()->nfiles() );
+    INFO_PRINT2( "Warning: not all chunks read ({}/{})", nreadfiles, uopfile.header()->nfiles() );
 
   for ( size_t i = 0; i < fileSizes.size(); i++ )
   {
