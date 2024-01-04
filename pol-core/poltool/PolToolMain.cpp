@@ -221,7 +221,7 @@ int PolToolMain::unpackCompressedGump()
   if ( res < 0 )
     return 1;
   std::string layout2( uncompressed2.get(), uncompressed2.get() + datalen );
-  msg = '\n\n';
+  msg = "\n\n";
   size_t j = 0;
   for ( size_t i = 0; i < linecount; ++i )
   {

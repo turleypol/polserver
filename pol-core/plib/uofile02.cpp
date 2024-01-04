@@ -116,7 +116,8 @@ void rawstaticfullread()
 
 
         if ( srec_count > cfg_warning_statics_per_block )
-          INFO_PRINT2(" Warning: {} items found in area {} {} {} {}",srec_count,x,y,( x + 7 ),( y + 7 ));
+          INFO_PRINT2( " Warning: {} items found in area {} {} {} {}", srec_count, x, y, ( x + 7 ),
+                       ( y + 7 ) );
 
         buf.count = srec_count;
       }
@@ -166,7 +167,8 @@ void rawstaticfullread()
         }
 
         if ( srec_count > cfg_warning_statics_per_block )
-          INFO_PRINT2(" Warning: {} items found in dif-area {} {} {} {}",srec_count,x,y,( x + 7 ),( y + 7 ));
+          INFO_PRINT2( " Warning: {} items found in dif-area {} {} {} {}", srec_count, x, y,
+                       ( x + 7 ), ( y + 7 ) );
 
         buf.count = srec_count;
       }

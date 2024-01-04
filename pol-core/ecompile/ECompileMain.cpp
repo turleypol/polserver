@@ -748,56 +748,66 @@ bool run( int argc, char** argv, int* res )
 
   if ( any && compilercfg.DisplaySummary && !quiet )
   {
-    fmt::Writer tmp;
-    tmp << "Compilation Summary:\n";
+    std::string tmp = "Compilation Summary:\n";
     if ( summary.ThreadCount )
-      tmp << "    Used " << summary.ThreadCount << " threads\n";
+      tmp += std::format( "    Used {} threads\n", summary.ThreadCount );
     if ( summary.CompiledScripts )
-      tmp << "    Compiled " << summary.CompiledScripts << " script"
-          << ( summary.CompiledScripts == 1 ? "" : "s" ) << " in " << timer.ellapsed() << " ms.\n";
+      tmp += std::format( "    Compiled {} script{} in {} ms.\n", summary.CompiledScripts,
+                          ( summary.CompiledScripts == 1 ? "" : "s" ), timer.ellapsed() );
 
     if ( summary.ScriptsWithCompileErrors )
-      tmp << "    " << summary.ScriptsWithCompileErrors << " of those script"
-          << ( summary.ScriptsWithCompileErrors == 1 ? "" : "s" ) << " had errors.\n";
+      tmp +=
+          std::format( "    {} of those script{} had errors.\n", summary.ScriptsWithCompileErrors,
+                       ( summary.ScriptsWithCompileErrors == 1 ? "" : "s" ) );
 
     if ( summary.UpToDateScripts )
-      tmp << "    " << summary.UpToDateScripts << " script"
-          << ( summary.UpToDateScripts == 1 ? " was" : "s were" ) << " already up-to-date.\n";
+      tmp += std::format( "    {} script{} already up-to-date.\n", summary.UpToDateScripts,
+                          ( summary.UpToDateScripts == 1 ? " was" : "s were" ) );
 
     if ( show_timing_details )
     {
-      tmp << "    build workspace: " << (long long)summary.profile.build_workspace_micros / 1000
-          << "\n";
-      tmp << "        - load *.em:   " << (long long)summary.profile.load_em_micros / 1000 << "\n";
-      tmp << "       - parse *.em:   " << (long long)summary.profile.parse_em_micros / 1000 << " ("
-          << (long)summary.profile.parse_em_count << ")\n";
-      tmp << "         - ast *.em:   " << (long long)summary.profile.ast_em_micros / 1000 << "\n";
-      tmp << "      - parse *.inc:   " << (long long)summary.profile.parse_inc_micros / 1000 << " ("
-          << (long)summary.profile.parse_inc_count << ")\n";
-      tmp << "        - ast *.inc:   " << (long long)summary.profile.ast_inc_micros / 1000 << "\n";
-      tmp << "      - parse *.src:   " << (long long)summary.profile.parse_src_micros / 1000 << " ("
-          << (long)summary.profile.parse_src_count << ")\n";
-      tmp << "        - ast *.src:   " << (long long)summary.profile.ast_src_micros / 1000 << "\n";
-      tmp << "  resolve functions:   "
-          << (long long)summary.profile.ast_resolve_functions_micros / 1000 << "\n";
-      tmp << " register constants: "
-          << (long long)summary.profile.register_const_declarations_micros / 1000 << "\n";
-      tmp << "            analyze: " << (long long)summary.profile.analyze_micros / 1000 << "\n";
-      tmp << "           optimize: " << (long long)summary.profile.optimize_micros / 1000 << "\n";
-      tmp << "       disambiguate: " << (long long)summary.profile.disambiguate_micros / 1000
-          << "\n";
-      tmp << "      generate code: " << (long long)summary.profile.codegen_micros / 1000 << "\n";
-      tmp << "  prune cache (sel): " << (long long)summary.profile.prune_cache_select_micros / 1000
-          << "\n";
-      tmp << "  prune cache (del): " << (long long)summary.profile.prune_cache_delete_micros / 1000
-          << "\n";
-      tmp << "\n";
-      tmp << "      - ambiguities: " << (long)summary.profile.ambiguities << "\n";
-      tmp << "       - cache hits: " << (long)summary.profile.cache_hits << "\n";
-      tmp << "     - cache misses: " << (long)summary.profile.cache_misses << "\n";
+      tmp += std::format( "    build workspace: {}\n",
+                          (long long)summary.profile.build_workspace_micros / 1000 );
+      tmp += std::format( "        - load *.em:   {}\n",
+                          (long long)summary.profile.load_em_micros / 1000 );
+      tmp += std::format( "       - parse *.em:   {} ({})\n",
+                          (long long)summary.profile.parse_em_micros / 1000,
+                          (long)summary.profile.parse_em_count );
+      tmp += std::format( "         - ast *.em:   {}\n",
+                          (long long)summary.profile.ast_em_micros / 1000 );
+      tmp += std::format( "      - parse *.inc:   {} ({})\n",
+                          (long long)summary.profile.parse_inc_micros / 1000,
+                          (long)summary.profile.parse_inc_count );
+      tmp += std::format( "        - ast *.inc:   {}\n",
+                          (long long)summary.profile.ast_inc_micros / 1000 );
+      tmp += std::format( "      - parse *.src:   {} ({})\n",
+                          (long long)summary.profile.parse_src_micros / 1000,
+                          (long)summary.profile.parse_src_count );
+      tmp += std::format( "        - ast *.src:   {}\n",
+                          (long long)summary.profile.ast_src_micros / 1000 );
+      tmp += std::format( "  resolve functions:   {}\n",
+                          (long long)summary.profile.ast_resolve_functions_micros / 1000 );
+      tmp += std::format( " register constants: {}\n",
+                          (long long)summary.profile.register_const_declarations_micros / 1000 );
+      tmp += std::format( "            analyze: {}\n",
+                          (long long)summary.profile.analyze_micros / 1000 );
+      tmp += std::format( "           optimize: {}\n",
+                          (long long)summary.profile.optimize_micros / 1000 );
+      tmp += std::format( "       disambiguate: {}\n",
+                          (long long)summary.profile.disambiguate_micros / 1000 );
+      tmp += std::format( "      generate code: {}\n",
+                          (long long)summary.profile.codegen_micros / 1000 );
+      tmp += std::format( "  prune cache (sel): {}\n",
+                          (long long)summary.profile.prune_cache_select_micros / 1000 );
+      tmp += std::format( "  prune cache (del): {}\n",
+                          (long long)summary.profile.prune_cache_delete_micros / 1000 );
+      tmp += "\n";
+      tmp += std::format( "      - ambiguities: {}\n", (long)summary.profile.ambiguities );
+      tmp += std::format( "       - cache hits: {}\n", (long)summary.profile.cache_hits );
+      tmp += std::format( "     - cache misses: {}\n", (long)summary.profile.cache_misses );
     }
 
-    INFO_PRINT2( "{}", tmp.str() );
+    INFO_PRINT2( tmp );
   }
 
   if ( summary.ScriptsWithCompileErrors )

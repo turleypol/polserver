@@ -195,6 +195,14 @@ struct Message2
   static void log( std::string_view format, T&&... args )
   {
     if constexpr ( sizeof...( args ) == 0 )
+      send( std::string( format ) + '\n' );
+    else
+      send( fmt::format( format, args... ) + '\n' );
+  };
+  template <typename... T>
+  static void lognonewline( std::string_view format, T&&... args )
+  {
+    if constexpr ( sizeof...( args ) == 0 )
       send( std::string( format ) );
     else
       send( fmt::format( format, args... ) );
@@ -226,6 +234,9 @@ void initLogging( LogFacility* logger );  // initalize the logging
   Clib::Logging::Message2<Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, \
                                                       Clib::Logging::LogSink_pollog>>::log
 
+#define POLLOG_INFO_N2                                 \
+  Clib::Logging::Message2<Clib::Logging::LogSink_dual< \
+      Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>::lognonewline
 // log into pol.log
 #define POLLOG Clib::Logging::Message<Clib::Logging::LogSink_pollog>().message()
 
