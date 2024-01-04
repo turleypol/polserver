@@ -187,12 +187,16 @@ private:
   std::string _id = {};
 };
 
+strVuct LogNewLine_Tag{};
+struct LogNoNewLine_Tag
+{
+};
 
 template <typename Sink>
 struct Message2
 {
-  template <typename Str, typename... Args>
-  void log( Str const& format, Args&&... args )
+  template <typename Tag, typename Str, typename... Args>
+  static void log( Str const& format, Args&&... args )
   {
     if constexpr ( sizeof...( args ) == 0 )
       send( std::string( format ) + '\n' );
@@ -209,7 +213,7 @@ struct Message2
         send( fmt::format( format, args... ) + '\n' );
     };*/
   template <typename Str, typename... Args>
-  void lognonewline( Str const& format, Args&&... args )
+  static void lognonewline( Str const& format, Args&&... args )
   {
     if constexpr ( sizeof...( args ) == 0 )
       send( std::string( format ) );
