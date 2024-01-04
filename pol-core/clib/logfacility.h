@@ -197,7 +197,7 @@ struct Message2
     if constexpr ( sizeof...( args ) == 0 )
       send( std::string( format ) + '\n' );
     else
-      send( fmt::vformat( format, fmt::make_args_checked<Args...>( format, args... ) ) + '\n' );
+      send( fmt::format( format, args... ) + '\n' );
   };
 
   /*  template <typename... T>
@@ -214,7 +214,7 @@ struct Message2
     if constexpr ( sizeof...( args ) == 0 )
       send( std::string( format ) );
     else
-      send( fmt::vformat( format, fmt::make_args_checked<Args...>( format, args... ) ) );
+      send( fmt::format( format, args... ) );
   };
   /*  template <typename... T>
     static void lognonewline( std::string_view format, T&&... args )
