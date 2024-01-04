@@ -53,51 +53,51 @@ ECompileMain::~ECompileMain() {}
 
 void ECompileMain::showHelp()
 {
-  INFO_PRINT << "Usage:\n"
-             << "    \n"
-             << "  ECOMPILE [options] filespec [filespec ...]\n"
-             << "    \n"
-             << "  Output is : filespec.ecl\n"
-             << "  Options:\n"
-             << "   Options: \n"
-             << "       -a           compile *.asp pages also\n"
-             << "       -A           automatically compile scripts in main and enabled packages\n"
-             << "       -Au          (as '-A' but only compile updated files)\n"
-             << "       -b           keep building other scripts after errors\n"
-             << "       -c           treat wrong capitalization in include directives as error\n"
-             << "       -C cfgpath   path to configuration (replaces ecompile.cfg)\n"
-             << "       -d           display confusing compiler parse information\n"
-             << "       -D           write dependency information\n"
-             << "       -e           report error on successful compilation (used for testing)\n"
+  INFO_PRINT2(
+      "Usage:\n"
+      "    \n"
+      "  ECOMPILE [options] filespec [filespec ...]\n"
+      "    \n"
+      "  Output is : filespec.ecl\n"
+      "  Options:\n"
+      "   Options: \n"
+      "       -a           compile *.asp pages also\n"
+      "       -A           automatically compile scripts in main and enabled packages\n"
+      "       -Au          (as '-A' but only compile updated files)\n"
+      "       -b           keep building other scripts after errors\n"
+      "       -c           treat wrong capitalization in include directives as error\n"
+      "       -C cfgpath   path to configuration (replaces ecompile.cfg)\n"
+      "       -d           display confusing compiler parse information\n"
+      "       -D           write dependency information\n"
+      "       -e           report error on successful compilation (used for testing)\n"
 #ifdef WIN32
-             << "       -Ecfgpath    set or change the ECOMPILE_CFG_PATH evironment variable\n"
+      "       -Ecfgpath    set or change the ECOMPILE_CFG_PATH evironment variable\n"
 #endif
 
-             << "       -i           include intrusive debug info in .ecl file\n"
-             << "       -l           generate listfile\n"
-             << "       -m           don't optimize object members\n"
+      "       -i           include intrusive debug info in .ecl file\n"
+      "       -l           generate listfile\n"
+      "       -m           don't optimize object members\n"
 #ifdef WIN32
-             << "       -Pdir        set or change the EM and INC files Environment Variables\n"
+      "       -Pdir        set or change the EM and INC files Environment Variables\n"
 #endif
-             << "       -q           quiet mode (suppress normal output)\n"
-             << "       -r [dir]     recurse folder [from 'dir'] (defaults to current folder)\n"
-             << "       -ri [dir]    (as '-r' but only compile .inc files)\n"
-             << "       -t[v]        show timing/profiling information [override quiet mode]\n"
-             << "       -u           compile only updated scripts (.src newer than .ecl)\n"
-             << "       -f           force compile even if up-to-date\n"
-             << "       -s           display summary if -q is not set\n"
-             << "       -T[N]        use threaded compilation, force N threads to run\n"
-             << "       -vN          verbosity level\n"
-             << "       -w           display warnings\n"
-             << "       -y           treat warnings as errors\n"
-             << "       -x           write external .dbg file\n"
-             << "       -xt          write external .dbg.txt info file\n"
-             << "\n"
-             << " NOTE:\n"
-             << "   If <filespec> are required after an empty -r[i] option, you MUST specify\n"
-             << "   a literal [dir] of '.' (no quotes) or options will not parse correctly.\n";
+      "       -q           quiet mode (suppress normal output)\n"
+      "       -r [dir]     recurse folder [from 'dir'] (defaults to current folder)\n"
+      "       -ri [dir]    (as '-r' but only compile .inc files)\n"
+      "       -t[v]        show timing/profiling information [override quiet mode]\n"
+      "       -u           compile only updated scripts (.src newer than .ecl)\n"
+      "       -f           force compile even if up-to-date\n"
+      "       -s           display summary if -q is not set\n"
+      "       -T[N]        use threaded compilation, force N threads to run\n"
+      "       -vN          verbosity level\n"
+      "       -w           display warnings\n"
+      "       -y           treat warnings as errors\n"
+      "       -x           write external .dbg file\n"
+      "       -xt          write external .dbg.txt info file\n"
+      "\n"
+      " NOTE:\n"
+      "   If <filespec> are required after an empty -r[i] option, you MUST specify\n"
+      "   a literal [dir] of '.' (no quotes) or options will not parse correctly." );
 }
-
 static int s_argc;
 static char** s_argv;
 
@@ -145,7 +145,7 @@ std::unique_ptr<Compiler::Compiler> create_compiler()
 void compile_inc( const char* path )
 {
   if ( !quiet )
-    INFO_PRINT << "Compiling: " << path << "\n";
+    INFO_PRINT2( "Compiling: {}", path );
 
   std::unique_ptr<Compiler::Compiler> compiler = create_compiler();
 
@@ -223,7 +223,7 @@ bool compile_file( const char* path )
     if ( Clib::GetFileTimestamp( filename_src.c_str() ) >= ecl_timestamp )
     {
       if ( compilercfg.VerbosityLevel > 0 )
-        INFO_PRINT << filename_src << " is newer than " << filename_ecl << "\n";
+        INFO_PRINT2( "{} is newer than {}", filename_src, filename_ecl );
       all_old = false;
     }
 
@@ -239,7 +239,7 @@ bool compile_file( const char* path )
           if ( Clib::GetFileTimestamp( depname.c_str() ) >= ecl_timestamp )
           {
             if ( compilercfg.VerbosityLevel > 0 )
-              INFO_PRINT << depname << " is newer than " << filename_ecl << "\n";
+              INFO_PRINT2( "{} is newer than {}", depname, filename_ecl );
             all_old = false;
             break;
           }
@@ -248,16 +248,14 @@ bool compile_file( const char* path )
       else
       {
         if ( compilercfg.VerbosityLevel > 0 )
-          INFO_PRINT << filename_dep << " does not exist."
-                     << "\n";
+          INFO_PRINT2( "{} does not exist.", filename_dep );
         all_old = false;
       }
     }
     if ( all_old )
     {
       if ( !quiet && compilercfg.DisplayUpToDateScripts )
-        INFO_PRINT << filename_ecl << " is up-to-date."
-                   << "\n";
+        INFO_PRINT2( "{} is up-to-date.", filename_ecl );
       return false;
     }
   }
@@ -265,7 +263,7 @@ bool compile_file( const char* path )
 
   {
     if ( !quiet )
-      INFO_PRINT << "Compiling: " << path << "\n";
+      INFO_PRINT2( "Compiling: {}", path );
 
     std::unique_ptr<Compiler::Compiler> compiler = create_compiler();
 
@@ -279,8 +277,7 @@ bool compile_file( const char* path )
       if ( !success )  // good, it failed
       {
         if ( !quiet )
-          INFO_PRINT << "Compilation failed as expected."
-                     << "\n";
+          INFO_PRINT2( "Compilation failed as expected." );
         return true;
       }
       else
@@ -294,7 +291,7 @@ bool compile_file( const char* path )
 
 
     if ( !quiet )
-      INFO_PRINT << "Writing:   " << filename_ecl << "\n";
+      INFO_PRINT2( "Writing:   {}", filename_ecl );
 
     if ( !compiler->write_ecl( filename_ecl ) )
     {
@@ -304,13 +301,13 @@ bool compile_file( const char* path )
     if ( compilercfg.GenerateListing )
     {
       if ( !quiet )
-        INFO_PRINT << "Writing:   " << filename_lst << "\n";
+        INFO_PRINT2( "Writing:   {}", filename_lst );
       compiler->write_listing( filename_lst );
     }
     else if ( Clib::FileExists( filename_lst.c_str() ) )
     {
       if ( !quiet )
-        INFO_PRINT << "Deleting:  " << filename_lst << "\n";
+        INFO_PRINT2( "Deleting:  {}", filename_lst );
       Clib::RemoveFile( filename_lst );
     }
 
@@ -318,30 +315,29 @@ bool compile_file( const char* path )
     {
       if ( !quiet )
       {
-        INFO_PRINT << "Writing:   " << filename_dbg << "\n";
+        INFO_PRINT2( "Writing:   {}", filename_dbg );
         if ( compilercfg.GenerateDebugTextInfo )
-          INFO_PRINT << "Writing:   " << filename_dbg << ".txt"
-                     << "\n";
+          INFO_PRINT2( "Writing:   {}.txt", filename_dbg );
       }
       compiler->write_dbg( filename_dbg, compilercfg.GenerateDebugTextInfo );
     }
     else if ( Clib::FileExists( filename_dbg.c_str() ) )
     {
       if ( !quiet )
-        INFO_PRINT << "Deleting:  " << filename_dbg << "\n";
+        INFO_PRINT2( "Deleting:  {}", filename_dbg );
       Clib::RemoveFile( filename_dbg );
     }
 
     if ( compilercfg.GenerateDependencyInfo )
     {
       if ( !quiet )
-        INFO_PRINT << "Writing:   " << filename_dep << "\n";
+        INFO_PRINT2( "Writing:   {}", filename_dep );
       compiler->write_included_filenames( filename_dep );
     }
     else if ( Clib::FileExists( filename_dep.c_str() ) )
     {
       if ( !quiet )
-        INFO_PRINT << "Deleting:  " << filename_dep << "\n";
+        INFO_PRINT2( "Deleting:  {}", filename_dep );
       Clib::RemoveFile( filename_dep );
     }
   }
@@ -433,7 +429,7 @@ int readargs( int argc, char** argv )
         auto value = setting_value( arg );
         if ( !value )
         {
-          INFO_PRINT << "The OG Compiler has been removed.\n";
+          INFO_PRINT2( "The OG Compiler has been removed." );
           unknown_opt = true;
         }
         break;
@@ -801,7 +797,7 @@ bool run( int argc, char** argv, int* res )
       tmp << "     - cache misses: " << (long)summary.profile.cache_misses << "\n";
     }
 
-    INFO_PRINT << tmp.str();
+    INFO_PRINT2( "{}", tmp.str() );
   }
 
   if ( summary.ScriptsWithCompileErrors )
@@ -895,7 +891,7 @@ int ECompileMain::main()
   {
     // vX.YY
     double vernum = (double)1 + (double)( ESCRIPT_FILE_VER_CURRENT / 100.0f );
-    INFO_PRINT << "EScript Compiler v" << vernum << "\n" << POL_COPYRIGHT << "\n\n";
+    INFO_PRINT2( "EScript Compiler v{}\n{}\n", vernum, POL_COPYRIGHT );
   }
 
   int prog_res = 1;
