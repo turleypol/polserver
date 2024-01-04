@@ -63,7 +63,7 @@ void dump16( std::back_insert_iterator<std::string>& buffer, const unsigned char
     if ( i == 7 )
       buffer = ' ';
   }
-  buffer = "  ";
+  std::fill_n( buffer, 2, ' ' );
 
   for ( i = 0; i < 16; i++ )
   {
