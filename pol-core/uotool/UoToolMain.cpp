@@ -435,7 +435,7 @@ static int rawdump( int argc, char** argv )
 
   while ( fread( buffer, reclen, 1, fp ) == 1 )
   {
-    std::string tmp = fmt::format( "Record {} ({:#0X}):\n", recnum, recnum );
+    std::string tmp = fmt::format( "Record {} ({:#X}):\n", recnum, recnum );
     Clib::fdump( std::back_inserter( tmp ), buffer, reclen );
     INFO_PRINT2( tmp );
 
