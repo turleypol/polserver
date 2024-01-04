@@ -197,7 +197,7 @@ struct Message2
     if constexpr ( sizeof...( args ) == 0 )
       send( std::string( format ) );
     else
-      send( fmt::format( format, args... ) );
+      send( fmt::format( FMT_COMPILE( format ), args... ) );
   };
 
 private:
