@@ -197,46 +197,53 @@ struct LogNoNewLine_Tag
 template <typename Sink>
 struct Message2
 {
-  template <typename Str, typename... Args>
+  template <bool newline, typename Str, typename... Args>
   static void log( Str const& format, Args&&... args )
   {
     if constexpr ( sizeof...( args ) == 0 )
-      send( std::string( format ) + '\n' );
-    else
-      send( fmt::format( format, args... ) + '\n' );
-  };
-
-  /*  template <typename... T>
-    static void log( std::string_view format, T&&... args )
-    {
-      if constexpr ( sizeof...( args ) == 0 )
+      if constexpr ( newline )
         send( std::string( format ) + '\n' );
       else
-        send( fmt::format( format, args... ) + '\n' );
-    };*/
-  template <typename Str, typename... Args>
-  static void lognonewline( Str const& format, Args&&... args )
-  {
-    if constexpr ( sizeof...( args ) == 0 )
-      send( std::string( format ) );
+        send( std::string( format ) );
     else
-      send( fmt::format( format, args... ) );
-  };
-  /*  template <typename... T>
-    static void lognonewline( std::string_view format, T&&... args )
+    {
+      if constexpr ( newline )
+        send( fmt::format( format, args... ) + '\n' );
+      else
+        send( fmt::format( format, args... ) );
+    };
+
+    /*  template <typename... T>
+      static void log( std::string_view format, T&&... args )
+      {
+        if constexpr ( sizeof...( args ) == 0 )
+          send( std::string( format ) + '\n' );
+        else
+          send( fmt::format( format, args... ) + '\n' );
+      };*/
+    template <typename Str, typename... Args>
+    static void lognonewline( Str const& format, Args&&... args )
     {
       if constexpr ( sizeof...( args ) == 0 )
         send( std::string( format ) );
       else
         send( fmt::format( format, args... ) );
     };
-  */
-private:
-  static void send( std::string msg );
-};
+    /*  template <typename... T>
+      static void lognonewline( std::string_view format, T&&... args )
+      {
+        if constexpr ( sizeof...( args ) == 0 )
+          send( std::string( format ) );
+        else
+          send( fmt::format( format, args... ) );
+      };
+    */
+  private:
+    static void send( std::string msg );
+  };
 
-extern LogFacility* global_logger;        // pointer to the instance of the main class
-void initLogging( LogFacility* logger );  // initalize the logging
+  extern LogFacility* global_logger;        // pointer to the instance of the main class
+  void initLogging( LogFacility* logger );  // initalize the logging
 }  // namespace Logging
 }  // namespace Clib
 
@@ -253,17 +260,18 @@ void initLogging( LogFacility* logger );  // initalize the logging
   Clib::Logging::Message<                                                                        \
       Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>() \
       .message()
-#define POLLOG_INFO2                                                               \
-  Clib::Logging::Message2<Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, \
-                                                      Clib::Logging::LogSink_pollog>>::log
+#define POLLOG_INFO2                                                                          \
+  Clib::Logging::Message2<Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout,            \
+                                                      Clib::Logging::LogSink_pollog>>::<true> \
+      log
 
 // log into pol.log
 #define POLLOG Clib::Logging::Message<Clib::Logging::LogSink_pollog>().message()
 
 // log only into std::cout
 #define INFO_PRINT Clib::Logging::Message<Clib::Logging::LogSink_cout>().message()
-#define INFO_PRINT2 Clib::Logging::Message2<Clib::Logging::LogSink_cout>::log
-#define INFO_PRINT_N2 Clib::Logging::Message2<Clib::Logging::LogSink_cout>::lognonewline
+#define INFO_PRINT2 Clib::Logging::Message2<Clib::Logging::LogSink_cout>::<true>log
+#define INFO_PRINT_N2 Clib::Logging::Message2<Clib::Logging::LogSink_cout>::<false>log
 // log only into std::cout if level is equal or higher
 #define INFO_PRINT_TRACE( n )                      \
   if ( Plib::systemstate.config.debug_level >= n ) \
