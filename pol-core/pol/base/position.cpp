@@ -446,5 +446,3 @@ auto fmt::formatter<Pol::Core::Pos4d>::format( const Pol::Core::Pos4d& p,
   return fmt::format_to( ctx.out(), "({}, {}, {}, {})", p.x(), p.y(), p.z(),
                          p.realm() ? p.realm()->name() : "null" );
 }
-}
-;
