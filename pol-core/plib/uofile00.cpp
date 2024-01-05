@@ -201,8 +201,8 @@ void open_tiledata( void )
   }
 
   INFO_PRINT2(
-      "Using auto-detected parameters:"
-      "\tUseNewHSAFormat = {}"
+      "Using auto-detected parameters:\n"
+      "\tUseNewHSAFormat = {}\n"
       "\tMaxTileID = {:#x}",
       Plib::cfg_use_new_hsa_format, Plib::systemstate.config.max_tile_id );
 }
