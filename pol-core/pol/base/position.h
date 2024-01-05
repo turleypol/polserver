@@ -33,6 +33,10 @@ enum UFACING : u8
   FACING_W = 6,
   FACING_NW = 7
 };
+auto format_as( UFACING f )
+{
+  return fmt::underlying( f );
+}
 
 class Pos2d
 {
@@ -365,9 +369,5 @@ template <>
 struct fmt::formatter<Pol::Core::Pos4d> : fmt::ostream_formatter
 {
 };
-auto format_as( Pol::Core::UFACING f )
-{
-  return fmt::underlying( f );
-}
 
 #endif
