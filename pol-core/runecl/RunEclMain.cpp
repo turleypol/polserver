@@ -155,8 +155,8 @@ int RunEclMain::runeclScript( std::string fileName )
 
   if ( m_profile )
   {
-    fmt::memory_buffer tmp;
-    fmt::format_to( tmp,
+    fmt::memory_buffer buffer;
+    fmt::format_to( buffer,
                     "Profiling information: \n"
                     "\tEObjectImp constructions: {}\n",
                     eobject_imp_constructions );
@@ -196,7 +196,7 @@ int RunEclMain::runeclScript( std::string fileName )
                       itr->second.sum / ( 1.0 * itr->second.count ) );
     }
 #endif
-    INFO_PRINT2( fmt::to_string( tmp ) );
+    INFO_PRINT2( fmt::to_string( buffer ) );
   }
   // deinit
   Core::configurationbuffer.deinitialize();
