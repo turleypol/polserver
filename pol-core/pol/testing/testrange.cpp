@@ -96,7 +96,7 @@ void range2d_test()
       },
       true, "itr" );
 
-  UnitTest( [&]() { return fmt::format( "{:->50}", Range2d( p1, p2, r ) ); },
+  UnitTest( [&]() { return fmt::format( "{:->25}", Range2d( p1, p2, r ) ); },
             "--( ( 1, 2 ) - ( 3, 4 ) )", "format padding" );
 
   UnitTest( [&]() { return Range2d( Pos4d( 2, 2, 0, r ), 1 ); },
@@ -179,7 +179,7 @@ void range3d_test()
       },
       false, "intersect(4,3,0,4,4,4)" );
 
-  UnitTest( [&]() { return fmt::format( "{:->50}", Range3d( p1, p2, r ) ); },
+  UnitTest( [&]() { return fmt::format( "{:->32}", Range3d( p1, p2, r ) ); },
             "--( ( 1, 2, -5 ) - ( 3, 4, 5 ) )", "format padding" );
 }
 }  // namespace Testing
