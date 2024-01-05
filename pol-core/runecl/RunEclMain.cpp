@@ -190,12 +190,11 @@ int RunEclMain::runeclScript( std::string fileName )
 #ifdef ESCRIPT_PROFILE
     fmt::format_to( std::back_inserter( buffer ), "FuncName,Count,Min,Max,Sum,Avarage\n" );
     ;
-    for ( escript_profile_map::iterator itr = EscriptProfileMap.begin();
-          itr != EscriptProfileMap.end(); ++itr )
+    for ( const auto& [name, profile] : EscriptProfileMap )
     {
-      fmt::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{}\n", itr->first,
-                      itr->second.count, itr->second.min, itr->second.max, itr->second.sum,
-                      itr->second.sum / ( 1.0 * itr->second.count ) );
+      fmt::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{}\n", name, profile.count,
+                      profile.min, profile.max, profile.sum,
+                      profile.sum / ( 1.0 * profile.count ) );
     }
 #endif
     INFO_PRINT2( fmt::to_string( buffer ) );
