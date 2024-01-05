@@ -116,7 +116,7 @@ function (testwithcompiler)
           message(SEND_ERROR "${scriptname}.src did not compile")
           message(${ecompile_out})
         endif()
-        execute_process( COMMAND ${runecl} -q "${scriptname}.ecl"
+        execute_process( COMMAND ${runecl} -p "${scriptname}.ecl"
           OUTPUT_FILE "${scriptname}.tst"
           RESULT_VARIABLE runecl_res
           ERROR_VARIABLE runecl_out)
