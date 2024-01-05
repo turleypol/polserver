@@ -365,4 +365,9 @@ template <>
 struct fmt::formatter<Pol::Core::Pos4d> : fmt::ostream_formatter
 {
 };
+auto format_as( Pol::Core::UFACING f )
+{
+  return fmt::underlying( f );
+}
+}
 #endif
