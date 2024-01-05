@@ -155,7 +155,7 @@ int RunEclMain::runeclScript( std::string fileName )
 
   if ( m_profile )
   {
-    fmt::MemoryBuffer tmp;
+    fmt::memory_buffer tmp;
     fmt::format_to( tmp,
                     "Profiling information: \n"
                     "\tEObjectImp constructions: {}\n",
