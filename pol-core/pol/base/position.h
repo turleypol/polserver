@@ -375,11 +375,11 @@ struct fmt::formatter<Pol::Core::Pos3d> : fmt::formatter<int>
 template <>
 struct fmt::formatter<Pol::Core::Pos4d> : fmt::formatter<int>
 {
-  auto format( const Pol::Core::Pos4d& p, fmt::format_context& ctx ) const
-  {
-    return fmt::format_to( ctx.out(), "({}, {}, {}, {})", p.x(), p.y(), p.z(),
-                           p.realm() ? p.realm()->name() : "null" );
-  }
+  auto format( const Pol::Core::Pos4d& p, fmt::format_context& ctx ) const;
+  /*  {
+      return fmt::format_to( ctx.out(), "({}, {}, {}, {})", p.x(), p.y(), p.z(),
+                             p.realm() ? p.realm()->name() : "null" );
+    }*/
 };
 
 #endif
