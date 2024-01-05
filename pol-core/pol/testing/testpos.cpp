@@ -293,7 +293,7 @@ void pos4d_test()
       },
       Pos4d( 0, 1, 0, r ), "0,0,0.move_to(S)" );
 
-  UnitTest( []() { return fmt::format( "{:->24}", Pos4d( 0, 0, 0, r ) ); },
+  UnitTest( [&]() { return fmt::format( "{:->24}", Pos4d( 0, 0, 0, r ) ); },
             "--( 0, 0, 0, britannia )", "format padding" );
 }
 }  // namespace Testing
