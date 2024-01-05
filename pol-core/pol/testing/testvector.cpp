@@ -39,7 +39,13 @@ void vector2d_test()
       },
       Vec2d( 0x7fff, -0x8000 ), "+= clip" );
 
-  UnitTest( []() { fmt::format( "{}", Vec2d( 0, 0 ); return true; }, true, "" );
+  UnitTest(
+      []()
+      {
+        fmt::to_string( Vec2d( 0, 0 ) );
+        return true;
+      },
+      true, "" );
 }
 
 void vector3d_test()

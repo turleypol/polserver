@@ -114,8 +114,7 @@ void pos2d_test()
   UnitTest(
       []()
       {
-        fmt::Writer tmp;
-        tmp << Pos2d( 0, 0 );
+        fmt::to_string( Pos2d( 0, 0 ) );
         return true;
       },
       true, "" );
