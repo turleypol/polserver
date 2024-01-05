@@ -30,7 +30,7 @@ public:
   UnitTest( F f, T res, const std::string& msg )
   {
     INFO_PRINT_N2( "    {}", msg );
-    T r = f();
+    auto r = f();
     if ( r == res )
     {
       UnitTest::inc_successes();

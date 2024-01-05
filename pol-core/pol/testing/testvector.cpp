@@ -96,7 +96,7 @@ void vector3d_test()
   UnitTest( []() { return Vec3d( 1, 1, 1 ) != Vec2d( 1, 1 ); }, false, "1,1,1!=1,1" );
 
   UnitTest( []() { return fmt::format( "{:>13}", Vec3d( 0, 0, 0 ) ); }, "**( 0, 0, 0,)",
-            "**( 0, 0, 0 )" );
+            "format padding" );
 }
 }  // namespace Testing
 }  // namespace Pol
