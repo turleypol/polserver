@@ -34,7 +34,6 @@ public:
     if ( r == res )
     {
       UnitTest::inc_successes();
-      INFO_PRINT_N2( ": {} != {}", r, res );
     }
     else
     {
