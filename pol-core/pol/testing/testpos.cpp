@@ -114,6 +114,7 @@ void pos2d_test()
   UnitTest(
       []()
       {
+        INFO_PRINT2( "{:*>20}", Pos2d( 1, 2 ) );
         fmt::to_string( Pos2d( 0, 0 ) );
         return true;
       },
