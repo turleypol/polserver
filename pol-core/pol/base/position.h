@@ -33,7 +33,7 @@ enum UFACING : u8
   FACING_W = 6,
   FACING_NW = 7
 };
-auto format_as( UFACING f )
+inline auto format_as( UFACING f )
 {
   return fmt::underlying( f );
 }
