@@ -142,4 +142,12 @@ inline const Range2d& Range3d::range() const
 }  // namespace Core
 }  // namespace Pol
 
+template <>
+struct fmt::formatter<Pol::Core::Range2d> : fmt::ostream_formatter
+{
+};
+template <>
+struct fmt::formatter<Pol::Core::Range3d> : fmt::ostream_formatter
+{
+};
 #endif
