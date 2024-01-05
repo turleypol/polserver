@@ -441,7 +441,7 @@ std::ostream& operator<<( std::ostream& os, const Pos4d& v )
 }  // namespace Core
 }  // namespace Pol
 
-fmt::format_context::iterator fmt::formatter<Pol::Core::Pos4d>::format(
+fmt::format_context::iterator fmt::formatter<Pol::Core::Pos2d>::format(
     const Pol::Core::Pos2d& p, fmt::format_context& ctx ) const
 {
   return fmt::formatter<std::string>::format( fmt::format( "( {}, {} )", p.x(), p.y() ), ctx );

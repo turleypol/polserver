@@ -149,12 +149,15 @@ inline Vec3d& Vec3d::xy( Vec2d xy )
 }
 }  // namespace Core
 }  // namespace Pol
+// derive from std::string formatter to support eg padding
 template <>
-struct fmt::formatter<Pol::Core::Vec2d> : fmt::ostream_formatter
+struct fmt::formatter<Pol::Core::Vec2d> : fmt::formatter<std::string>
 {
+  fmt::format_context::iterator format( const Pol::Core::Vec2d& p, fmt::format_context& ctx ) const;
 };
 template <>
-struct fmt::formatter<Pol::Core::Vec3d> : fmt::ostream_formatter
+struct fmt::formatter<Pol::Core::Vec3d> : fmt::formatter<std::string>
 {
+  fmt::format_context::iterator format( const Pol::Core::Vec3d& p, fmt::format_context& ctx ) const;
 };
 #endif
