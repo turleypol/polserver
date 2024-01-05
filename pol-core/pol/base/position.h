@@ -350,11 +350,18 @@ inline Pos4d& Pos4d::xyz( Pos3d xyz )
 }  // namespace Core
 }  // namespace Pol
 template <>
-struct fmt::formatter<Pol::Core::Pos2d> : fmt::formatter<int>
+struct fmt::formatter<Pol::Core::Pos2d> : fmt::formatter<std::string>
 {
+  /*  constexpr auto parse( format_parse_context& ctx )
+    {
+      auto i = ctx.begin();
+      if ( i != ctx.end() && *i != '}' )
+        throw format_error( "invalid format" );
+      return i;
+    }*/
   auto format( const Pol::Core::Pos2d& p, fmt::format_context& ctx ) const
   {
-    return fmt::format_to( ctx.out(), "({}, {})", p.x(), p.y() );
+    return formatter<std::string>::format( fmt::format( "( {}, {} )", p.x(), p.y() ), ctx );
   }
 };
 template <>
