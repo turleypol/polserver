@@ -357,17 +357,22 @@ struct fmt::formatter<Pol::Core::Pos2d> : fmt::formatter<int>
     return fmt::format_to( ctx.out(), "({}, {})", p.x(), p.y() );
   }
 };
-/*template <>
-struct fmt::formatter<Pol::Core::Pos2d> : fmt::ostream_formatter
-{
-};*/
 template <>
-struct fmt::formatter<Pol::Core::Pos3d> : fmt::ostream_formatter
+struct fmt::formatter<Pol::Core::Pos3d> : fmt::formatter<int>
 {
+  auto format( const Pol::Core::Pos3d& p, fmt::format_context& ctx ) const
+  {
+    return fmt::format_to( ctx.out(), "({}, {}, {})", p.x(), p.y(), p.z() );
+  }
 };
 template <>
-struct fmt::formatter<Pol::Core::Pos4d> : fmt::ostream_formatter
+struct fmt::formatter<Pol::Core::Pos4d> : fmt::formatter<int>
 {
+  auto format( const Pol::Core::Pos4d& p, fmt::format_context& ctx ) const
+  {
+    return fmt::format_to( ctx.out(), "({}, {}, {}, {})", p.x(), p.y(), p.z(),
+                           p.realm() ? p.realm()->name() : "null" );
+  }
 };
 
 #endif
