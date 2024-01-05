@@ -357,7 +357,7 @@ struct fmt::formatter<Pol::Core::Pos2d> : fmt::formatter<std::string>
   fmt::format_context::iterator format( const Pol::Core::Pos2d& p, fmt::format_context& ctx ) const;
 };
 template <>
-struct fmt::formatter<Pol::Core::Pos3d> : fmt::formatter<string>
+struct fmt::formatter<Pol::Core::Pos3d> : fmt::formatter<std::string>
 {
   fmt::format_context::iterator format( const Pol::Core::Pos3d& p, fmt::format_context& ctx ) const;
 };
