@@ -251,7 +251,7 @@ set_target_properties(test_pol PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD TRUE)
 set_target_properties(test_pol PROPERTIES FOLDER !BuildTargets)
 message("  test_pol_fixture")
 add_custom_target(test_pol_fixture
-  COMMAND ${CMAKE_CTEST_COMMAND}
+  COMMAND ${CMAKE_CTEST_COMMAND} --verbose
     -j2 --output-on-failure -E "(escript_|shard_test_|unittest_)" -C ${CMAKE_BUILD_TYPE}
   COMMENT "Run pol fixture tests"
   VERBATIM
