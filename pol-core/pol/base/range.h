@@ -142,12 +142,17 @@ inline const Range2d& Range3d::range() const
 }  // namespace Core
 }  // namespace Pol
 
+// derive from std::string formatter to support eg padding
 template <>
-struct fmt::formatter<Pol::Core::Range2d> : fmt::ostream_formatter
+struct fmt::formatter<Pol::Core::Range2d> : fmt::formatter<std::string>
 {
+  fmt::format_context::iterator format( const Pol::Core::Range2d& r,
+                                        fmt::format_context& ctx ) const;
 };
 template <>
-struct fmt::formatter<Pol::Core::Range3d> : fmt::ostream_formatter
+struct fmt::formatter<Pol::Core::Range3d> : fmt::formatter<std::string>
 {
+  fmt::format_context::iterator format( const Pol::Core::Range3d& r,
+                                        fmt::format_context& ctx ) const;
 };
 #endif
