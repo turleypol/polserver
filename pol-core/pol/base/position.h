@@ -349,18 +349,20 @@ inline Pos4d& Pos4d::xyz( Pos3d xyz )
 }
 }  // namespace Core
 }  // namespace Pol
+
+// derive from std::string formatter to support eg padding
 template <>
 struct fmt::formatter<Pol::Core::Pos2d> : fmt::formatter<std::string>
 {
   fmt::format_context::iterator format( const Pol::Core::Pos2d& p, fmt::format_context& ctx ) const;
 };
 template <>
-struct fmt::formatter<Pol::Core::Pos3d> : fmt::formatter<int>
+struct fmt::formatter<Pol::Core::Pos3d> : fmt::formatter<string>
 {
   fmt::format_context::iterator format( const Pol::Core::Pos3d& p, fmt::format_context& ctx ) const;
 };
 template <>
-struct fmt::formatter<Pol::Core::Pos4d> : fmt::formatter<std::sting>
+struct fmt::formatter<Pol::Core::Pos4d> : fmt::formatter<std::string>
 {
   fmt::format_context::iterator format( const Pol::Core::Pos4d& p, fmt::format_context& ctx ) const;
 };
