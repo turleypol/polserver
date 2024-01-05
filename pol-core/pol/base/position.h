@@ -1,5 +1,4 @@
-#ifndef POL_BASE_POSITION_H
-#define POL_BASE_POSITION_H
+#pragma once
 
 #include "clib/rawtypes.h"
 #include "plib/uconst.h"
@@ -366,5 +365,3 @@ struct fmt::formatter<Pol::Core::Pos4d> : fmt::formatter<std::string>
 {
   fmt::format_context::iterator format( const Pol::Core::Pos4d& p, fmt::format_context& ctx ) const;
 };
-
-#endif
