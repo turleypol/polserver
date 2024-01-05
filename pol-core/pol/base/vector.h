@@ -2,6 +2,7 @@
 #define POL_BASE_VECTOR_H
 
 #include "clib/rawtypes.h"
+#include <fmt/ostream.h>
 #include <format/format.h>
 #include <utility>
 
@@ -147,5 +148,13 @@ inline Vec3d& Vec3d::xy( Vec2d xy )
   return *this;
 }
 }  // namespace Core
+template <>
+struct fmt::formatter<Core::Vec2d> : fmt::ostream_formatter
+{
+};
+template <>
+struct fmt::formatter<Core::Vec3d> : fmt::ostream_formatter
+{
+};
 }  // namespace Pol
 #endif

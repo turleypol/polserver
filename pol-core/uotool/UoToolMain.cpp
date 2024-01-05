@@ -98,8 +98,8 @@ static int print_ctable()
         valout |= 1;
       inmask <<= 1;
     }
-    tmp += fmt::format( "    {{ {:>2}, 0x{:04X}, 0x{:04X}}},\n" )
-           << ( keyid[i] & 0x0F ) << ( keyid[i] >> 4 ) << valout;
+    tmp += fmt::format( "    {{ {:>2}, 0x{:04X}, 0x{:04X}}},\n", keyid[i] & 0x0F, keyid[i] >> 4,
+                        valout );
   }
   tmp += "};\n";
   INFO_PRINT2( tmp );
