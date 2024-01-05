@@ -201,49 +201,35 @@ struct Message2
   static void log( Str const& format, Args&&... args )
   {
     if constexpr ( sizeof...( args ) == 0 )
+    {
       if constexpr ( newline )
         send( std::string( format ) + '\n' );
       else
         send( std::string( format ) );
+    }
     else
     {
       if constexpr ( newline )
         send( fmt::format( format, args... ) + '\n' );
       else
         send( fmt::format( format, args... ) );
-    };
-
-    /*  template <typename... T>
-      static void log( std::string_view format, T&&... args )
-      {
-        if constexpr ( sizeof...( args ) == 0 )
-          send( std::string( format ) + '\n' );
-        else
-          send( fmt::format( format, args... ) + '\n' );
-      };*/
-    template <typename Str, typename... Args>
-    static void lognonewline( Str const& format, Args&&... args )
-    {
-      if constexpr ( sizeof...( args ) == 0 )
-        send( std::string( format ) );
-      else
-        send( fmt::format( format, args... ) );
-    };
-    /*  template <typename... T>
-      static void lognonewline( std::string_view format, T&&... args )
-      {
-        if constexpr ( sizeof...( args ) == 0 )
-          send( std::string( format ) );
-        else
-          send( fmt::format( format, args... ) );
-      };
-    */
-  private:
-    static void send( std::string msg );
+    }
+  }
+  template <typename Str, typename... Args>
+  static void lognonewline( Str const& format, Args&&... args )
+  {
+    if constexpr ( sizeof...( args ) == 0 )
+      send( std::string( format ) );
+    else
+      send( fmt::format( format, args... ) );
   };
 
-  extern LogFacility* global_logger;        // pointer to the instance of the main class
-  void initLogging( LogFacility* logger );  // initalize the logging
+private:
+  static void send( std::string msg );
+};
+
+extern LogFacility* global_logger;        // pointer to the instance of the main class
+void initLogging( LogFacility* logger );  // initalize the logging
 }  // namespace Logging
 }  // namespace Clib
 
