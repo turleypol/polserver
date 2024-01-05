@@ -344,18 +344,17 @@ inline Pos4d& Pos4d::xyz( Pos3d xyz )
   return *this;
 }
 }  // namespace Core
-
-template <>
-struct fmt::formatter<Core::Pos2d> : fmt::ostream_formatter
-{
-};
-template <>
-struct fmt::formatter<Core::Pos3d> : fmt::ostream_formatter
-{
-};
-template <>
-struct fmt::formatter<Core::Pos4d> : fmt::ostream_formatter
-{
-};
 }  // namespace Pol
+template <>
+struct fmt::formatter<Pol::Core::Pos2d> : fmt::ostream_formatter
+{
+};
+template <>
+struct fmt::formatter<Pol::Core::Pos3d> : fmt::ostream_formatter
+{
+};
+template <>
+struct fmt::formatter<Pol::Core::Pos4d> : fmt::ostream_formatter
+{
+};
 #endif

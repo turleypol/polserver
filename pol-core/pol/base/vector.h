@@ -148,13 +148,13 @@ inline Vec3d& Vec3d::xy( Vec2d xy )
   return *this;
 }
 }  // namespace Core
-template <>
-struct fmt::formatter<Core::Vec2d> : fmt::ostream_formatter
-{
-};
-template <>
-struct fmt::formatter<Core::Vec3d> : fmt::ostream_formatter
-{
-};
 }  // namespace Pol
+template <>
+struct fmt::formatter<Pol::Core::Vec2d> : fmt::ostream_formatter
+{
+};
+template <>
+struct fmt::formatter<Pol::Core::Vec3d> : fmt::ostream_formatter
+{
+};
 #endif
