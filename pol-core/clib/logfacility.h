@@ -238,8 +238,9 @@ void initLogging( LogFacility* logger );  // initalize the logging
 // log into pol.log
 #define POLLOG Clib::Logging::Message<Clib::Logging::LogSink_pollog>().message()
 
-// log only into std::cout
+// log only into std::cout with \n addition
 #define INFO_PRINTLN Clib::Logging::Message2<Clib::Logging::LogSink_cout>::logmsg<true>
+// log only into std::cout without \n addition
 #define INFO_PRINT Clib::Logging::Message2<Clib::Logging::LogSink_cout>::logmsg<false>
 // log only into std::cout if level is equal or higher
 #define INFO_PRINTLN_TRACE( n )                    \
