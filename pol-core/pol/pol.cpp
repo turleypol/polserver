@@ -1008,6 +1008,7 @@ int xmain_inner( bool testing )
                 POL_COPYRIGHT );
   if ( testing )
     POLLOG_INFO2( "TESTING MODE\n" );
+  INFO_PRINT2( "iDEBUGLVL {}", Plib::systemstate.config.debug_level );
   INFO_PRINT_TRACE2( 10 )( "HALLO10" );
   INFO_PRINT_TRACE2( 5 )( "HALLO5" );
   INFO_PRINT_TRACE2( 5 )( "{}", "HALLO5-1" );
