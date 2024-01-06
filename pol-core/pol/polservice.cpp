@@ -302,7 +302,7 @@ void ShutdownSystemTrayHandling()
     if ( !rc )
     {
       DWORD err = GetLastError();
-      INFO_PRINT2( "Unable to shutdown systray: {}", err );
+      INFO_PRINTLN( "Unable to shutdown systray: {}", err );
     }
   }
 }

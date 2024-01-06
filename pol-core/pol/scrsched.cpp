@@ -292,18 +292,18 @@ bool run_script_to_completion_worker( UOExecutor& ex, Bscript::EScriptProgram* p
   Clib::scripts_thread_script = ex.scriptname();
 
   if ( Plib::systemstate.config.report_rtc_scripts )
-    INFO_PRINT_N2( "Script {} running..", ex.scriptname() );
+    INFO_PRINT( "Script {} running..", ex.scriptname() );
 
   while ( ex.runnable() )
   {
-    INFO_PRINT_N2( "." );
+    INFO_PRINT( "." );
     for ( int i = 0; ( i < 1000 ) && ex.runnable(); i++ )
     {
       Clib::scripts_thread_scriptPC = ex.PC;
       ex.execInstr();
     }
   }
-  INFO_PRINT2( "" );
+  INFO_PRINTLN( "" );
   return ( ex.error_ == false );
 }
 
@@ -370,13 +370,13 @@ Bscript::BObjectImp* run_executor_to_completion( UOExecutor& ex, const ScriptDef
     {
       if ( reported )
       {
-        INFO_PRINT_N2( "..{}", ex.PC );
+        INFO_PRINT( "..{}", ex.PC );
       }
       else
       {
         if ( Plib::systemstate.config.report_rtc_scripts )
         {
-          INFO_PRINT_N2( "Script {} running..{}", script.name(), ex.PC );
+          INFO_PRINT( "Script {} running..{}", script.name(), ex.PC );
           reported = true;
         }
       }
@@ -384,7 +384,7 @@ Bscript::BObjectImp* run_executor_to_completion( UOExecutor& ex, const ScriptDef
     }
   }
   if ( reported )
-    INFO_PRINT2( "" );
+    INFO_PRINTLN( "" );
   if ( ex.error_ )
     return new Bscript::BError( "Script exited with an error condition" );
 
@@ -705,12 +705,12 @@ void list_script( UOExecutor* uoexec )
     tmp += fmt::format( " UL={}", uoexec->upperLocals2.size() );
   if ( !uoexec->ControlStack.empty() )
     tmp += fmt::format( " CS={}", uoexec->ControlStack.size() );
-  INFO_PRINT2( tmp );
+  INFO_PRINTLN( tmp );
 }
 
 void list_scripts( const char* desc, const ExecList& ls )
 {
-  INFO_PRINT2( "{} scripts:", desc );
+  INFO_PRINTLN( "{} scripts:", desc );
   for ( auto& exec : ls )
   {
     list_script( exec );
@@ -731,7 +731,7 @@ void list_crit_script( UOExecutor* uoexec )
 }
 void list_crit_scripts( const char* desc, const ExecList& ls )
 {
-  INFO_PRINT2( "{} scripts:", desc );
+  INFO_PRINTLN( "{} scripts:", desc );
   for ( auto& exec : ls )
   {
     list_crit_script( exec );

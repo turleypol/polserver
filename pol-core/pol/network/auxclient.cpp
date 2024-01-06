@@ -299,7 +299,7 @@ AuxService::AuxService( const Plib::Package* pkg, Clib::ConfigElem& elem )
 
 void AuxService::run()
 {
-  INFO_PRINT2( "Starting Aux Listener ({}, port {})", _scriptdef.relativename(), _port );
+  INFO_PRINTLN( "Starting Aux Listener ({}, port {})", _scriptdef.relativename(), _port );
 
   Clib::SocketListener listener( _port );
   while ( !Clib::exit_signalled )

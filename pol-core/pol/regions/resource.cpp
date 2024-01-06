@@ -344,7 +344,7 @@ void load_resource_cfg()
   if ( !Clib::FileExists( "regions/resource.cfg" ) )
   {
     if ( Plib::systemstate.config.loglevel > 1 )
-      INFO_PRINT2( "File regions/resource.cfg not found, skipping." );
+      INFO_PRINTLN( "File regions/resource.cfg not found, skipping." );
     return;
   }
 

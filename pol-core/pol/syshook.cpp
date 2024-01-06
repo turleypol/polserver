@@ -237,13 +237,13 @@ void hook( ExportScript* shs, const std::string& hookname, const std::string& ex
   }
   else
   {
-    INFO_PRINT2( "Unknown SystemHook {}", hookname );
+    INFO_PRINTLN( "Unknown SystemHook {}", hookname );
     return;
   }
 
   if ( *pphook != nullptr )
   {
-    INFO_PRINT2(
+    INFO_PRINTLN(
         "SystemHook {} multiply defined\n"
         "  Already found in: {}\n"
         "  Also defined in:  {}",
@@ -254,7 +254,7 @@ void hook( ExportScript* shs, const std::string& hookname, const std::string& ex
   unsigned PC;
   if ( !shs->FindExportedFunction( exfuncname, nargs, PC ) )
   {
-    INFO_PRINT2( "Exported Function {} not found in {}", exfuncname, shs->scriptname() );
+    INFO_PRINTLN( "Exported Function {} not found in {}", exfuncname, shs->scriptname() );
     return;
   }
 

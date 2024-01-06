@@ -459,7 +459,7 @@ bool UWeapon::consume_projectile( Core::UContainer* cont ) const
 bool UWeapon::in_range( const Mobile::Character* wielder, const Mobile::Character* target ) const
 {
   unsigned short dist = wielder->distance_to( target->toplevel_pos() );
-  INFO_PRINT_TRACE2( 22 )
+  INFO_PRINTLN_TRACE( 22 )
   ( "in_range({:#x},{:#x}):\n"
     "dist:   {}\n"
     "minrange: {}\n"

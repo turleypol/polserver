@@ -123,14 +123,14 @@ void insert_deferred_items()
   unsigned int nobjects = 0;
   Tools::Timer<> timer;
 
-  INFO_PRINT_N2( "  deferred inserts:" );
+  INFO_PRINT( "  deferred inserts:" );
 
   for ( DeferList::iterator itr = objStorageManager.deferred_insertions.begin();
         itr != objStorageManager.deferred_insertions.end(); ++itr )
   {
     if ( --num_until_dot == 0 )
     {
-      INFO_PRINT_N2( "." );
+      INFO_PRINT( "." );
       num_until_dot = 1000;
     }
 
@@ -191,7 +191,7 @@ void insert_deferred_items()
     ++nobjects;
   }
   timer.stop();
-  INFO_PRINT2( " {} elements in {} ms.", nobjects, timer.ellapsed() );
+  INFO_PRINTLN( " {} elements in {} ms.", nobjects, timer.ellapsed() );
 
   objStorageManager.deferred_insertions.clear();
 }
@@ -304,7 +304,7 @@ void add_loaded_item( Items::Item* cont_item, Items::Item* item )
   }
   else
   {
-    INFO_PRINT2( "Container type {:#x} contains items, but is not a container class",
+    INFO_PRINTLN( "Container type {:#x} contains items, but is not a container class",
                  cont_item->objtype_ );
     throw std::runtime_error( "Config file error" );
   }

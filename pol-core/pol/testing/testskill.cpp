@@ -19,25 +19,25 @@ namespace
 {
 void test_skilladv( unsigned int raw, unsigned short base )
 {
-  INFO_PRINT_N2("Raw {}, base {}: ",raw,base);
+  INFO_PRINT("Raw {}, base {}: ",raw,base);
   if ( Core::raw_to_base( raw ) != base )
   {
-    INFO_PRINT2("raw_to_base failed!");
+    INFO_PRINTLN("raw_to_base failed!");
     UnitTest::inc_failures();
   }
   if ( Core::base_to_raw( base ) != raw )
   {
-    INFO_PRINT2("base_to_raw failed!");
+    INFO_PRINTLN("base_to_raw failed!");
     UnitTest::inc_failures();
   }
-  INFO_PRINT2("Passed");
+  INFO_PRINTLN("Passed");
   UnitTest::inc_successes();
 }
 }  // namespace
 
 void skilladv_test()
 {
-  INFO_PRINT2("Skill advancement tests:");
+  INFO_PRINTLN("Skill advancement tests:");
   test_skilladv( 20, 1 );
   test_skilladv( 512, 25 );
   test_skilladv( 1024, 50 );
@@ -67,36 +67,36 @@ void skilladv_test()
 
   for ( unsigned short base = 0; base < 2000; ++base )
   {
-    INFO_PRINT_N2("Base {}: Raw=",base);
+    INFO_PRINT("Base {}: Raw=",base);
     unsigned int raw = Core::base_to_raw( base );
-    INFO_PRINT_N2("{}: ",raw);
+    INFO_PRINT("{}: ",raw);
     unsigned short calcbase = Core::raw_to_base( raw );
     if ( calcbase != base )
     {
-      INFO_PRINT2("Failed ({})",calcbase);
+      INFO_PRINTLN("Failed ({})",calcbase);
       UnitTest::inc_failures();
     }
     else
     {
-      INFO_PRINT2("Passed");
+      INFO_PRINTLN("Passed");
       UnitTest::inc_successes();
     }
   }
 
   for ( unsigned int raw = 0; raw < 2500; ++raw )
   {
-    INFO_PRINT_N2("Raw {}: Base=",raw);
+    INFO_PRINT("Raw {}: Base=",raw);
     unsigned short base = Core::raw_to_base( raw );
-    INFO_PRINT_N2("{}: ",base);
+    INFO_PRINT("{}: ",base);
     unsigned int calcraw = Core::base_to_raw( base );
     if ( calcraw != raw )
     {
-      INFO_PRINT2("Failed ({})",calcraw);
+      INFO_PRINTLN("Failed ({})",calcraw);
       UnitTest::inc_failures();
     }
     else
     {
-      INFO_PRINT2("Passed");
+      INFO_PRINTLN("Passed");
       UnitTest::inc_successes();
     }
   }

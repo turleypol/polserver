@@ -736,7 +736,7 @@ void threadstatus_thread( void )
       --timeouts_remaining;
       if ( timeouts_remaining == 0 )
       {
-        INFO_PRINT2( "Waiting for {} child threads to exit", threadhelp::child_threads );
+        INFO_PRINTLN( "Waiting for {} child threads to exit", threadhelp::child_threads );
         timeouts_remaining = 5;
       }
     }
@@ -764,10 +764,10 @@ void console_thread( void )
     if ( stateManager.polsig.reload_configuration_signalled )
     {
       PolLock lck;
-      INFO_PRINT_N2( "Reloading configuration..." );
+      INFO_PRINT( "Reloading configuration..." );
       stateManager.polsig.reload_configuration_signalled = false;
       reload_configuration();
-      INFO_PRINT2( "Done." );
+      INFO_PRINTLN( "Done." );
     }
 #endif
   }
@@ -868,12 +868,12 @@ void display_leftover_objects()
     tmp += fmt::format( "Remaining Executors: {}\n", Bscript::executor_count );
   if ( Bscript::eobject_imp_count )
     tmp += fmt::format( "Remaining script objectimps: {}\n", Bscript::eobject_imp_count );
-  INFO_PRINT_N2( tmp );
+  INFO_PRINT( tmp );
 }
 
 void run_start_scripts()
 {
-  INFO_PRINT2( "Running startup script." );
+  INFO_PRINTLN( "Running startup script." );
   run_script_to_completion( "start" );
   for ( const auto& pkg : Plib::systemstate.packages )
   {
@@ -885,7 +885,7 @@ void run_start_scripts()
       Bscript::BObject obj( run_script_to_completion( script ) );
     }
   }
-  INFO_PRINT2( "Startup script complete." );
+  INFO_PRINTLN( "Startup script complete." );
 }
 
 #ifdef _WIN32
@@ -984,7 +984,7 @@ int xmain_inner( bool testing )
   if ( polpid.is_open() )
     polpid << Clib::tostring( getpid() );
   else
-    INFO_PRINT2( "Cannot create pid file in {}", Plib::systemstate.config.pidfile_path );
+    INFO_PRINTLN( "Cannot create pid file in {}", Plib::systemstate.config.pidfile_path );
 
   polpid.close();
 #endif

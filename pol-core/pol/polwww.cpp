@@ -765,7 +765,7 @@ void http_func( SOCKET client_socket )
   while ( sck.connected() && lineReader.read( tmpstr, &timed_out ) )
   {
     if ( Plib::systemstate.config.web_server_debug )
-      INFO_PRINT2( "http({}): '{}'", sck.handle(), tmpstr );
+      INFO_PRINTLN( "http({}): '{}'", sck.handle(), tmpstr );
     if ( tmpstr.empty() )
       break;
     if ( strncmp( tmpstr.c_str(), "GET", 3 ) == 0 )
@@ -778,7 +778,7 @@ void http_func( SOCKET client_socket )
 
   if ( timed_out )
   {
-    INFO_PRINT2( "HTTP connection {} timed out", sck.getpeername() );
+    INFO_PRINTLN( "HTTP connection {} timed out", sck.getpeername() );
     sck.close();
   }
 
@@ -787,7 +787,7 @@ void http_func( SOCKET client_socket )
 
   if ( Plib::systemstate.config.web_server_debug )
   {
-    INFO_PRINT2( "[{} msec] finished reading header",
+    INFO_PRINTLN( "[{} msec] finished reading header",
                  double( requestTimer.ellapsed().count() / 1000.0 ) );
   }
 
@@ -803,7 +803,7 @@ void http_func( SOCKET client_socket )
 
   if ( Plib::systemstate.config.web_server_debug )
   {
-    INFO_PRINT2(
+    INFO_PRINTLN(
         "http-cmd:   '{}'\n"
         "http-host:  '{}'\n"
         "http-url:   '{}'\n"
@@ -830,7 +830,7 @@ void http_func( SOCKET client_socket )
 
   if ( Plib::systemstate.config.web_server_debug )
   {
-    INFO_PRINT2(
+    INFO_PRINTLN(
         "http-page:   '{}'\n"
         "http-params: '{}'\n"
         "http-decode: '{}'",
@@ -847,7 +847,7 @@ void http_func( SOCKET client_socket )
       unpw = decode_base64( coded_unpw );
       if ( Plib::systemstate.config.web_server_debug )
       {
-        INFO_PRINT2(
+        INFO_PRINTLN(
             "http-pw: '{}'\n"
             "http-pw-decoded: '{}'",
             coded_unpw, unpw );
@@ -889,7 +889,7 @@ void http_func( SOCKET client_socket )
   }
 
   if ( Plib::systemstate.config.web_server_debug )
-    INFO_PRINT2( "Page type: {}", pagetype );
+    INFO_PRINTLN( "Page type: {}", pagetype );
 
   if ( pagetype == "ecl" )
   {
@@ -980,7 +980,7 @@ void http_thread( void )
   init_http_thread_support();
 
   // if (1)
-  INFO_PRINT2( "Listening for HTTP requests on port {}", Plib::systemstate.config.web_server_port );
+  INFO_PRINTLN( "Listening for HTTP requests on port {}", Plib::systemstate.config.web_server_port );
 
   SOCKET http_socket = Network::open_listen_socket( Plib::systemstate.config.web_server_port );
   if ( http_socket == INVALID_SOCKET )
@@ -1019,7 +1019,7 @@ void http_thread( void )
     if ( FD_ISSET( http_socket, &listen_fd ) )
     {
       if ( Plib::systemstate.config.web_server_debug )
-        INFO_PRINT2( "Accepting connection.." );
+        INFO_PRINTLN( "Accepting connection.." );
 
       struct sockaddr client_addr;  // inet_addr
       socklen_t addrlen = sizeof client_addr;
@@ -1030,7 +1030,7 @@ void http_thread( void )
       Network::apply_socket_options( client_socket );
 
       std::string addrstr = Network::AddressToString( &client_addr );
-      INFO_PRINT2( "HTTP client connected from {}", addrstr );
+      INFO_PRINTLN( "HTTP client connected from {}", addrstr );
 
       worker_threads.push(
           [=]() { http_func( client_socket ); } );  // copy socket into queue to keep it valid

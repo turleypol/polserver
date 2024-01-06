@@ -46,7 +46,7 @@ void handle_menu_selection( Network::Client* client, PKTIN_7D* msg )
   u16 menu_id = cfBEu16( msg->menu_id );
   if ( active_menu->menu_id != menu_id )
   {
-    INFO_PRINT2("Client tried to use a menu he wasn't entitled to");
+    INFO_PRINTLN("Client tried to use a menu he wasn't entitled to");
     // LOGME illegal menu selection
     client->chr->cancel_menu();
     return;
@@ -63,7 +63,7 @@ void handle_menu_selection( Network::Client* client, PKTIN_7D* msg )
   u16 choice = cfBEu16( msg->choice );
   if ( choice == 0 || choice > active_menu->menuitems_.size() )
   {
-    INFO_PRINT2("Client menu choice out of range");
+    INFO_PRINTLN("Client menu choice out of range");
     client->chr->cancel_menu();
     return;
   }

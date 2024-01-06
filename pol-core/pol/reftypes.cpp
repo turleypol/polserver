@@ -30,7 +30,7 @@ void display_reftypes()
   {
     tmp += fmt::format( "cref {}={:#x}\n", itr->first, itr->second->get()->serial );
   }
-  INFO_PRINT_N2( tmp );
+  INFO_PRINT( tmp );
 #endif
 }
 #if REFTYPE_DEBUG

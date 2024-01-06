@@ -345,7 +345,7 @@ void check_character_integrity()
     {
       Core::Pos2d wpos = zone_convert( chr->pos() );
       if ( wpos != p )
-        INFO_PRINT2( "Character {:#x} in a zone, but elsewhere", chr->serial );
+        INFO_PRINTLN( "Character {:#x} in a zone, but elsewhere", chr->serial );
     };
 
     for ( const auto& p : realm->gridarea() )

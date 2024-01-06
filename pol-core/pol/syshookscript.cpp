@@ -54,7 +54,7 @@ bool ExportScript::FindExportedFunction( const std::string& name, unsigned args,
     {
       if ( args != exportedfunc->nargs )
       {
-        INFO_PRINT2( "Exported function {} in script {} takes {} parameters, expected {}", name,
+        INFO_PRINTLN( "Exported function {} in script {} takes {} parameters, expected {}", name,
                      scriptname(), exportedfunc->nargs, args );
         return false;
       }
@@ -75,7 +75,7 @@ bool ExportScript::FindExportedFunction( const char* name, unsigned args, unsign
     {
       if ( args != exportedfunc->nargs )
       {
-        INFO_PRINT2( "Exported function {} in script {} takes {} parameters, expected {}", name,
+        INFO_PRINTLN( "Exported function {} in script {} takes {} parameters, expected {}", name,
                      scriptname(), exportedfunc->nargs, args );
         return false;
       }

@@ -149,7 +149,7 @@ void ConsoleCommand::exec_console_cmd( char ch )
       tmp += fmt::format( "{}{}: {}\n", sc.size() == 1 ? "  " : " ", sc, cmd.description );
     }
     tmp += "  ?: Help (This list)";
-    INFO_PRINT2( tmp );
+    INFO_PRINTLN( tmp );
     return;
   }
 
@@ -157,28 +157,28 @@ void ConsoleCommand::exec_console_cmd( char ch )
   ConsoleCommand* cmd = find_console_command( ch );
   if ( !cmd )
   {
-    INFO_PRINT2( "Unknown console command: '{}'", getcmdstr( ch ) );
+    INFO_PRINTLN( "Unknown console command: '{}'", getcmdstr( ch ) );
     return;
   }
   if ( cmd->script == "[lock]" )
   {
     ConsoleCommand::console_locked = true;
-    INFO_PRINT2( "Console is now locked." );
+    INFO_PRINTLN( "Console is now locked." );
     return;
   }
   if ( cmd->script == "[unlock]" )
   {
     ConsoleCommand::console_locked = true;
-    INFO_PRINT2( "Console is now unlocked." );
+    INFO_PRINTLN( "Console is now unlocked." );
     return;
   }
   if ( cmd->script == "[lock/unlock]" )
   {
     ConsoleCommand::console_locked = !ConsoleCommand::console_locked;
     if ( ConsoleCommand::console_locked )
-      INFO_PRINT2( "Console is now locked." );
+      INFO_PRINTLN( "Console is now locked." );
     else
-      INFO_PRINT2( "Console is now unlocked." );
+      INFO_PRINTLN( "Console is now unlocked." );
     return;
   }
   if ( cmd->script == "[threadstatus]" )
@@ -195,7 +195,7 @@ void ConsoleCommand::exec_console_cmd( char ch )
 
   if ( ConsoleCommand::console_locked )
   {
-    INFO_PRINT2( "Console is locked.  Press '{}' to unlock.", ConsoleCommand::unlock_char );
+    INFO_PRINTLN( "Console is locked.  Press '{}' to unlock.", ConsoleCommand::unlock_char );
     return;
   }
 

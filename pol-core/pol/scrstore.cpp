@@ -123,7 +123,7 @@ int unload_script( const std::string& name_in )
     {
       std::string nm = cur->first;
       const char* nm_cstr = nm.c_str();
-      INFO_PRINT2( "Unloading {}", nm_cstr );
+      INFO_PRINTLN( "Unloading {}", nm_cstr );
       scriptScheduler.scrstore.erase( cur );
       ++n;
 

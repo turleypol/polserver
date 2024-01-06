@@ -105,7 +105,7 @@ void uo_client_listener_thread( void* arg )
 
 void UoClientListener::run()
 {
-  INFO_PRINT2( "Listening for UO clients on port {} (encryption: {},{:#x},{:#x})", port,
+  INFO_PRINTLN( "Listening for UO clients on port {} (encryption: {},{:#x},{:#x})", port,
                encryption.eType, encryption.uiKey1, encryption.uiKey2 );
 
   Clib::SocketListener SL(

@@ -29,7 +29,7 @@ void test_drop( unsigned short chrx, unsigned short chry, short chrz, unsigned s
   if ( exp_result != result )
   {
     tmp += "Failure!";
-    INFO_PRINT2( tmp );
+    INFO_PRINTLN( tmp );
     UnitTest::inc_failures();
     return;
   }
@@ -38,19 +38,19 @@ void test_drop( unsigned short chrx, unsigned short chry, short chrz, unsigned s
     if ( newz != exp_z )
     {
       tmp += "Failure!";
-      INFO_PRINT2( tmp );
+      INFO_PRINTLN( tmp );
       UnitTest::inc_failures();
       return;
     }
   }
   UnitTest::inc_successes();
-  INFO_PRINT2( "{}Ok!", tmp );
+  INFO_PRINTLN( "{}Ok!", tmp );
 }
 }  // namespace
 
 void drop_test()
 {
-  INFO_PRINT2( "POL datafile drop tests:" );
+  INFO_PRINTLN( "POL datafile drop tests:" );
   // first things first.  Gotta be able to drop stuff by the brit bank.
   test_drop( 1432, 1696, 0, 1433, 1696, 0, true, 0 );
   // in the bank, on the floor

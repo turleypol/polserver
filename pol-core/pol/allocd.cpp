@@ -72,7 +72,7 @@ void PrintAllocationData()
     tmp += "ERROR - bad node in heap\n";
     break;
   }
-  INFO_PRINT2( tmp );
+  INFO_PRINTLN( tmp );
 #endif
 }
 }  // namespace Core

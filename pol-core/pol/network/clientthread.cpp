@@ -315,7 +315,7 @@ bool process_data( Network::ThreadedClient* session )
     unsigned char msgtype = session->buffer[0];
     session->last_msgtype = msgtype;  // CNXBUG
     if ( Plib::systemstate.config.verbose )
-      INFO_PRINT2( "Incoming msg type: {:#X}", (int)msgtype );
+      INFO_PRINTLN( "Incoming msg type: {:#X}", (int)msgtype );
 
     if ( !Network::PacketRegistry::is_defined( msgtype ) )
     {
@@ -386,7 +386,7 @@ bool process_data( Network::ThreadedClient* session )
       }
 
       if ( Plib::systemstate.config.verbose )
-        INFO_PRINT2( "Message Received: Type {:#X}, Length {} bytes", (int)msgtype,
+        INFO_PRINTLN( "Message Received: Type {:#X}, Length {} bytes", (int)msgtype,
                      session->message_length );
 
       PolLock lck;  // multithread
@@ -442,7 +442,7 @@ bool process_data( Network::ThreadedClient* session )
       {
         if ( Plib::systemstate.config.verbose )
         {
-          INFO_PRINT2( "UOKR Seed Message Received: Type {:#X}", (int)cstype );
+          INFO_PRINTLN( "UOKR Seed Message Received: Type {:#X}", (int)cstype );
         }
         session->myClient.send_KR_encryption_response();
         session->myClient.setClientType( Network::CLIENTTYPE_UOKR );  // UO:KR logging in
@@ -453,7 +453,7 @@ bool process_data( Network::ThreadedClient* session )
         // new seed since 6.0.5.0 (0xef should never appear in normal ipseed)
         if ( Plib::systemstate.config.verbose )
         {
-          INFO_PRINT2( "6.0.5.0+ Crypt Seed Message Received: Type {:#X}", (int)cstype );
+          INFO_PRINTLN( "6.0.5.0+ Crypt Seed Message Received: Type {:#X}", (int)cstype );
         }
         session->recv_state = Network::ThreadedClient::RECV_STATE_CLIENTVERSION_WAIT;
       }
@@ -523,7 +523,7 @@ void report_weird_packet( Network::ThreadedClient* session, const std::string& w
   }
   else
   {
-    INFO_PRINT_N2( tmp );
+    INFO_PRINT( tmp );
     Clib::fdump( std::back_inserter( tmp ), session->buffer, session->bytes_received );
     POLLOG << tmp << "\n";
   }
@@ -542,7 +542,7 @@ void handle_unknown_packet( Network::ThreadedClient* session )
 void handle_undefined_packet( Network::ThreadedClient* session )
 {
   int msgtype = (int)session->buffer[0];
-  INFO_PRINT2( "Undefined message type {:#X}", msgtype );
+  INFO_PRINTLN( "Undefined message type {:#X}", msgtype );
 
   // Tries to read as much of it out as possible
   session->recv_remaining( sizeof session->buffer / 2 );
@@ -574,7 +574,7 @@ namespace Pol::Network
 int Client::on_close()
 {
   unregister();
-  INFO_PRINT2( "Client disconnected from {} ({}/{} connections)", ipaddrAsString(),
+  INFO_PRINTLN( "Client disconnected from {} ({}/{} connections)", ipaddrAsString(),
                Core::networkManager.clients.size(),
                Core::networkManager.getNumberOfLoginClients() );
 
@@ -646,7 +646,7 @@ void Client::handle_msg( unsigned char* pktbuffer, int pktlen )
   const unsigned char msgtype = pktbuffer[0];
   try
   {
-    INFO_PRINT_TRACE2( 10 )( "Client#{}: message {:#x}", instance_, msgtype );
+    INFO_PRINTLN_TRACE( 10 )( "Client#{}: message {:#x}", instance_, msgtype );
 
     // TODO: use PacketRegistry::handle_msg(...) ?
     MSG_HANDLER packetHandler = Network::PacketRegistry::find_handler( msgtype, this );

@@ -54,7 +54,7 @@ BObjectImp* SQLExecutorModule::background_connect( weak_ptr<Core::UOExecutor> uo
     {
       Core::PolLock lck;
       if ( !uoexec.exists() )
-        INFO_PRINT2( "Script has been destroyed" );
+        INFO_PRINTLN( "Script has been destroyed" );
       else
       {
         uoexec.get_weakptr()->ValueStack.back().set(
@@ -66,7 +66,7 @@ BObjectImp* SQLExecutorModule::background_connect( weak_ptr<Core::UOExecutor> uo
     {
       Core::PolLock lck;
       if ( !uoexec.exists() )
-        INFO_PRINT2( "Script has been destroyed" );
+        INFO_PRINTLN( "Script has been destroyed" );
       else
       {
         uoexec.get_weakptr()->ValueStack.back().set(
@@ -78,7 +78,7 @@ BObjectImp* SQLExecutorModule::background_connect( weak_ptr<Core::UOExecutor> uo
     {
       Core::PolLock lck;
       if ( !uoexec.exists() )
-        INFO_PRINT2( "Script has been destroyed" );
+        INFO_PRINTLN( "Script has been destroyed" );
       else
       {
         uoexec.get_weakptr()->ValueStack.back().set( new BObject( sql.release() ) );
@@ -110,7 +110,7 @@ Bscript::BObjectImp* SQLExecutorModule::background_select( weak_ptr<Core::UOExec
     {
       Core::PolLock lck;
       if ( !uoexec.exists() )
-        INFO_PRINT2( "Script has been destroyed" );
+        INFO_PRINTLN( "Script has been destroyed" );
       else
       {
         uoexec.get_weakptr()->ValueStack.back().set(
@@ -122,7 +122,7 @@ Bscript::BObjectImp* SQLExecutorModule::background_select( weak_ptr<Core::UOExec
     {
       Core::PolLock lck;
       if ( !uoexec.exists() )
-        INFO_PRINT2( "Script has been destroyed" );
+        INFO_PRINTLN( "Script has been destroyed" );
       else
       {
         uoexec.get_weakptr()->ValueStack.back().set(
@@ -134,7 +134,7 @@ Bscript::BObjectImp* SQLExecutorModule::background_select( weak_ptr<Core::UOExec
     {
       Core::PolLock lck;
       if ( !uoexec.exists() )
-        INFO_PRINT2( "Script has been destroyed" );
+        INFO_PRINTLN( "Script has been destroyed" );
       else
       {
         uoexec.get_weakptr()->ValueStack.back().set( new BObject( new BLong( 1 ) ) );
@@ -182,7 +182,7 @@ Bscript::BObjectImp* SQLExecutorModule::background_query( weak_ptr<Core::UOExecu
     {
       Core::PolLock lck;
       if ( !uoexec.exists() )
-        INFO_PRINT2( "Script has been destroyed" );
+        INFO_PRINTLN( "Script has been destroyed" );
       else
       {
         uoexec.get_weakptr()->ValueStack.back().set(
@@ -194,7 +194,7 @@ Bscript::BObjectImp* SQLExecutorModule::background_query( weak_ptr<Core::UOExecu
     {
       Core::PolLock lck;
       if ( !uoexec.exists() )
-        INFO_PRINT2( "Script has been destroyed" );
+        INFO_PRINTLN( "Script has been destroyed" );
       else
       {
         uoexec.get_weakptr()->ValueStack.back().set(
@@ -206,7 +206,7 @@ Bscript::BObjectImp* SQLExecutorModule::background_query( weak_ptr<Core::UOExecu
     {
       Core::PolLock lck;
       if ( !uoexec.exists() )
-        INFO_PRINT2( "Script has been destroyed" );
+        INFO_PRINTLN( "Script has been destroyed" );
       else
       {
         uoexec.get_weakptr()->ValueStack.back().set( new BObject( sqlRef->getResultSet() ) );
