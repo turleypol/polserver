@@ -3,7 +3,7 @@
 #include "clib/rawtypes.h"
 #include "plib/uconst.h"
 #include "vector.h"
-#include <fmt/ostream.h>
+#include <fmt/format.h>
 #include <format/format.h>
 #include <utility>
 

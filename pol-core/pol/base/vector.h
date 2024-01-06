@@ -1,7 +1,7 @@
 #pragma once
 
 #include "clib/rawtypes.h"
-#include <fmt/ostream.h>
+#include <fmt/format.h>
 #include <format/format.h>
 #include <utility>
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "position.h"
+#include <fmt/format.h>
 #include <format/format.h>
 #include <iterator>
 
