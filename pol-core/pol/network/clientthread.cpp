@@ -646,8 +646,7 @@ void Client::handle_msg( unsigned char* pktbuffer, int pktlen )
   const unsigned char msgtype = pktbuffer[0];
   try
   {
-    INFO_PRINT_TRACE( 10 ) << "Client#" << instance_ << ": message 0x" << fmt::hexu( msgtype )
-                           << "\n";
+    INFO_PRINT_TRACE2( 10 )( "Client#{}: message {:#x}", instance_, msgtype );
 
     // TODO: use PacketRegistry::handle_msg(...) ?
     MSG_HANDLER packetHandler = Network::PacketRegistry::find_handler( msgtype, this );
