@@ -239,13 +239,9 @@ void initLogging( LogFacility* logger );  // initalize the logging
 #define POLLOG Clib::Logging::Message<Clib::Logging::LogSink_pollog>().message()
 
 // log only into std::cout
-#define INFO_PRINT Clib::Logging::Message<Clib::Logging::LogSink_cout>().message()
 #define INFO_PRINT2 Clib::Logging::Message2<Clib::Logging::LogSink_cout>::logmsg<true>
 #define INFO_PRINT_N2 Clib::Logging::Message2<Clib::Logging::LogSink_cout>::logmsg<false>
 // log only into std::cout if level is equal or higher
-#define INFO_PRINT_TRACE( n )                      \
-  if ( Plib::systemstate.config.debug_level >= n ) \
-  INFO_PRINT
 #define INFO_PRINT_TRACE2( n )                     \
   if ( Plib::systemstate.config.debug_level >= n ) \
   INFO_PRINT2
