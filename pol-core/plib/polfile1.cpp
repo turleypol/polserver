@@ -80,7 +80,7 @@ int write_pol_static_files( const std::string& realm )
     int progress = y * 100L / descriptor.height;
     if ( progress != lastprogress )
     {
-      INFO_PRINT2( "\rCreating POL statics files: {}%", progress );
+      INFO_PRINT_N2( "\rCreating POL statics files: {}%", progress );
       lastprogress = progress;
     }
     for ( u16 x = 0; x < descriptor.width; x += STATICBLOCK_CHUNK )

@@ -203,8 +203,12 @@ static int verlandtile()
     readlandtile( objtype, &landtile );
     if ( landtile.flags || landtile.unk || landtile.name[0] )
     {
-      INFO_PRINT2( "Land Tile: {:#x}\n\tflags: {:#x}\n\t  unk: {:#x}\n\t name: {}", objtype,
-                   landtile.flags, landtile.unk, landtile.name );
+      INFO_PRINT2(
+          "Land Tile: {:#x}\n"
+          "\tflags: {:#x}\n"
+          "\t  unk: {:#x}\n"
+          "\t name: {}",
+          objtype, landtile.flags, landtile.unk, landtile.name );
     }
   }
   clear_tiledata();
@@ -290,8 +294,12 @@ static int landtileflagsearch( int argc, char** argv )
     readlandtile( objtype, &landtile );
     if ( ( landtile.flags & flags ) == flags && ( ~landtile.flags & notflags ) == notflags )
     {
-      INFO_PRINT2( "Land Tile: {:#x}\n\tflags: {:#x}\n\t  unk: {:#x}\n\t name: {}", objtype,
-                   landtile.flags, landtile.unk, landtile.name );
+      INFO_PRINT2(
+          "Land Tile: {:#x}\n"
+          "\tflags: {:#x}\n"
+          "\t  unk: {:#x}\n"
+          "\t name: {}",
+          objtype, landtile.flags, landtile.unk, landtile.name );
     }
   }
   clear_tiledata();
@@ -629,7 +637,7 @@ static int write_polmap( const char* filename, unsigned short xbegin, unsigned s
   for ( u16 xs = xbegin; xs < xend; xs += 8 )
   {
     int percent = ( xs - xbegin ) * 100 / num;
-    INFO_PRINT2( "\r{}%", percent );
+    INFO_PRINT_N2( "\r{}%", percent );
     for ( u16 ys = 0; ys < 4096; ys += 8 )
     {
       short z;

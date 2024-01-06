@@ -187,13 +187,6 @@ private:
   std::string _id = {};
 };
 
-struct LogNewLine_Tag
-{
-};
-struct LogNoNewLine_Tag
-{
-};
-
 template <typename Sink>
 struct Message2
 {
@@ -215,14 +208,6 @@ struct Message2
         send( fmt::format( format, args... ) );
     }
   }
-  template <typename Str, typename... Args>
-  static void lognonewline( Str const& format, Args&&... args )
-  {
-    if constexpr ( sizeof...( args ) == 0 )
-      send( std::string( format ) );
-    else
-      send( fmt::format( format, args... ) );
-  };
 
 private:
   static void send( std::string msg );

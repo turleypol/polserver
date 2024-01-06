@@ -122,7 +122,11 @@ void UoConvertMain::create_maptile( const std::string& realmname )
   uo_map_width = static_cast<unsigned short>( descriptor.width );
 
   INFO_PRINT2(
-      "Creating maptile file.\n  Realm: {}\n  Map ID: {}\n  Use Dif files: {}\n  Size: {}x{}",
+      "Creating maptile file.\n"
+      "  Realm: {}\n"
+      "  Map ID: {}\n"
+      "  Use Dif files: {}\n"
+      "  Size: {}x{}",
       realmname, descriptor.uomapid, ( descriptor.uodif ? "Yes" : "No" ), uo_map_width,
       uo_map_height );
 
