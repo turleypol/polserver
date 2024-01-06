@@ -248,7 +248,8 @@ void initLogging( LogFacility* logger );  // initalize the logging
   INFO_PRINTLN
 // log only into std::cerr
 #define ERROR_PRINT Clib::Logging::Message<Clib::Logging::LogSink_cerr>().message()
-
+// log only into std::cerr with \n addition
+#define INFO_PRINTLN Clib::Logging::Message2<Clib::Logging::LogSink_cerr>::logmsg<true>
 // log into script.log
 #define SCRIPTLOG Clib::Logging::Message<Clib::Logging::LogSink_scriptlog>().message()
 // log into debug.log (if enabled)
