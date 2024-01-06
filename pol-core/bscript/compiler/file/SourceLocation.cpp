@@ -4,6 +4,7 @@
 
 #include "bscript/compiler/file/SourceFileIdentifier.h"
 #include "clib/logfacility.h"
+#include <iterator>
 
 namespace Pol::Bscript::Compiler
 {
@@ -58,3 +59,12 @@ fmt::Writer& operator<<( fmt::Writer& w, const SourceLocation& location )
 }
 
 }  // namespace Pol::Bscript::Compiler
+
+fmt::format_context::iterator fmt::formatter<Pol::Bscript::Compiler::SourceLocation>::format(
+    const Pol::Bscript::Compiler::SourceLocation& l, fmt::format_context& ctx ) const
+{
+  std::string tmp = l.source_file_identifier->pathname;
+  if ( l.line_number || l.character_column )
+    fmt::format_to( std::back_inserter( tmp ), ":{}:{}", l.line_number, l.character_column );
+  return fmt::formatter<std::string>::format( tmp, ctx );
+}
