@@ -243,11 +243,12 @@ void initLogging( LogFacility* logger );  // initalize the logging
 #define INFO_PRINT2 Clib::Logging::Message2<Clib::Logging::LogSink_cout>::logmsg<true>
 #define INFO_PRINT_N2 Clib::Logging::Message2<Clib::Logging::LogSink_cout>::logmsg<false>
 // log only into std::cout if level is equal or higher
-#define TRACE_LEVEL_ ( n, ... ) __VA_ARGS__
-
-#define INFO_PRINT_TRACE( TRACE_LEVEL_ )           \
+#define INFO_PRINT_TRACE( n )                      \
   if ( Plib::systemstate.config.debug_level >= n ) \
-  INFO_PRINT __VA_ARGS__
+  INFO_PRINT
+#define INFO_PRINT_TRACE2( n )                     \
+  if ( Plib::systemstate.config.debug_level >= n ) \
+  INFO_PRINT2
 // log only into std::cerr
 #define ERROR_PRINT Clib::Logging::Message<Clib::Logging::LogSink_cerr>().message()
 
