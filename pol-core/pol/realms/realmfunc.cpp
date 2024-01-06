@@ -91,7 +91,7 @@ void Realm::standheight( Plib::MOVEMODE movemode, Plib::MapShapeList& shapes, sh
     if ( static_debug_on )
     {
       INFO_PRINTLN( "static: graphic={:#x}, z={}, ht={}", srec.graphic, int( srec.z ),
-                   int( srec.height ) );
+                    int( srec.height ) );
     }
 #endif
 
@@ -152,8 +152,8 @@ void Realm::standheight( Plib::MOVEMODE movemode, Plib::MapShapeList& shapes, sh
 #if ENABLE_POLTEST_OUTPUT
           if ( static_debug_on )
           {
-            INFO_PRINTLN( "static: objtype={:#x}, z={}, ht={} blocks movement to z={}", srec.graphic,
-                         int( srec.z ), int( srec.height ), int( newz ) );
+            INFO_PRINTLN( "static: objtype={:#x}, z={}, ht={} blocks movement to z={}",
+                          srec.graphic, int( srec.z ), int( srec.height ), int( newz ) );
           }
 #endif
 
@@ -283,7 +283,7 @@ void Realm::lowest_standheight( Plib::MOVEMODE movemode, Plib::MapShapeList& sha
     if ( static_debug_on )
     {
       INFO_PRINTLN( "static: graphic={:#x}, z={}, ht={}", srec.graphic, int( srec.z ),
-                   int( srec.height ) );
+                    int( srec.height ) );
     }
 #endif
 
@@ -328,7 +328,7 @@ void Realm::lowest_standheight( Plib::MOVEMODE movemode, Plib::MapShapeList& sha
             if ( static_debug_on )
             {
               INFO_PRINTLN( "static: objtype={:#x}, z={}, ht={} blocks movement to z={}",
-                           srec.graphic, int( srec.z ), int( srec.height ), int( newz ) );
+                            srec.graphic, int( srec.z ), int( srec.height ), int( newz ) );
             }
 #endif
             valid = false;
@@ -664,7 +664,7 @@ bool Realm::dropheight( Plib::MapShapeList& shapes, short dropz, short chrz, sho
     if ( static_debug_on )
     {
       INFO_PRINTLN( "static: graphic={:#x}, z={}, ht={}", srec.graphic, int( srec.z ),
-                   int( Plib::tileheight( srec.graphic ) ) );
+                    int( Plib::tileheight( srec.graphic ) ) );
     }
 #endif
 
@@ -702,8 +702,9 @@ bool Realm::dropheight( Plib::MapShapeList& shapes, short dropz, short chrz, sho
 #if ENABLE_POLTEST_OUTPUT
           if ( static_debug_on )
           {
-            INFO_PRINTLN( "static: objtype={:#x}, z={}, ht={} blocks movement to z={}", srec.graphic,
-                         int( srec.z ), int( Plib::tileheight( srec.graphic ) ), int( z ) );
+            INFO_PRINTLN( "static: objtype={:#x}, z={}, ht={} blocks movement to z={}",
+                          srec.graphic, int( srec.z ), int( Plib::tileheight( srec.graphic ) ),
+                          int( z ) );
           }
 #endif
           result = false;

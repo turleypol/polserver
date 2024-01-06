@@ -235,8 +235,8 @@ void update_rpm( void )
   stateManager.profilevars.sysload_nprocs = 0;
   if ( Plib::systemstate.config.watch_sysload )
     INFO_PRINTLN( "sysload={} ({}) cputime={}", stateManager.profilevars.last_sysload,
-                 stateManager.profilevars.last_sysload_nprocs,
-                 stateManager.profilevars.last_cputime );
+                  stateManager.profilevars.last_sysload_nprocs,
+                  stateManager.profilevars.last_cputime );
   if ( Plib::systemstate.config.log_sysload )
     POLLOG.Format( "sysload={} ({}) cputime={}\n" )
         << stateManager.profilevars.last_sysload << stateManager.profilevars.last_sysload_nprocs
@@ -247,8 +247,9 @@ void update_rpm( void )
     // cout << "container_removes:" << GET_PROFILEVAR_PER_MIN( container_removes ) << endl;
 
 #ifndef NDEBUG
-  INFO_PRINTLN( "activity: {}  noactivity: {}", stateManager.profilevars.last_script_passes_activity,
-               stateManager.profilevars.last_script_passes_noactivity );
+  INFO_PRINTLN( "activity: {}  noactivity: {}",
+                stateManager.profilevars.last_script_passes_activity,
+                stateManager.profilevars.last_script_passes_noactivity );
 #endif
   stateManager.profilevars.last_mapcache_hits = stateManager.profilevars.mapcache_hits;
   stateManager.profilevars.last_mapcache_misses = stateManager.profilevars.mapcache_misses;
@@ -272,10 +273,11 @@ void update_rpm( void )
 
   if ( Plib::systemstate.config.watch_rpm )
     INFO_PRINTLN( "scpt: {}  task: {}({})  scin: {}  scsl: {}  MOB: {}  TLI: {}",
-                 stateManager.profilevars.last_sppm, ( GET_PROFILEVAR_PER_MIN( scheduler_passes ) ),
-                 ( GET_PROFILEVAR_PER_MIN( noactivity_scheduler_passes ) ),
-                 stateManager.profilevars.last_sipm, stateManager.profilevars.last_scpm,
-                 get_mobile_count(), get_toplevel_item_count() );
+                  stateManager.profilevars.last_sppm,
+                  ( GET_PROFILEVAR_PER_MIN( scheduler_passes ) ),
+                  ( GET_PROFILEVAR_PER_MIN( noactivity_scheduler_passes ) ),
+                  stateManager.profilevars.last_sipm, stateManager.profilevars.last_scpm,
+                  get_mobile_count(), get_toplevel_item_count() );
 
   if ( Plib::systemstate.config.show_realm_info )
   {
@@ -283,8 +285,8 @@ void update_rpm( void )
     for ( auto realm : gamestate.Realms )
     {
       INFO_PRINTLN( "    - {} (mob: {}, off: {}, tli: {}, mlt: {})", realm->name(),
-                   realm->mobile_count(), realm->offline_mobile_count(),
-                   realm->toplevel_item_count(), realm->multi_count() );
+                    realm->mobile_count(), realm->offline_mobile_count(),
+                    realm->toplevel_item_count(), realm->multi_count() );
     }
   }
   THREAD_CHECKPOINT( tasks, 399 );

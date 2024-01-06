@@ -788,7 +788,7 @@ void http_func( SOCKET client_socket )
   if ( Plib::systemstate.config.web_server_debug )
   {
     INFO_PRINTLN( "[{} msec] finished reading header",
-                 double( requestTimer.ellapsed().count() / 1000.0 ) );
+                  double( requestTimer.ellapsed().count() / 1000.0 ) );
   }
 
   ISTRINGSTREAM is( get );
@@ -980,7 +980,8 @@ void http_thread( void )
   init_http_thread_support();
 
   // if (1)
-  INFO_PRINTLN( "Listening for HTTP requests on port {}", Plib::systemstate.config.web_server_port );
+  INFO_PRINTLN( "Listening for HTTP requests on port {}",
+                Plib::systemstate.config.web_server_port );
 
   SOCKET http_socket = Network::open_listen_socket( Plib::systemstate.config.web_server_port );
   if ( http_socket == INVALID_SOCKET )
