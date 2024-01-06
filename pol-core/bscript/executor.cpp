@@ -137,8 +137,7 @@ bool Executor::AttachFunctionalityModules()
     execmodules.push_back( em );
     if ( em == nullptr )
     {
-      ERROR_PRINT << "WARNING: " << scriptname() << ": Unable to find module "
-                  << fm->modulename.get() << "\n";
+      ERROR_PRINTLN( "WARNING: {}: Unable to find module {}", scriptname(), fm->modulename.get() );
       return false;
     }
 
@@ -158,8 +157,7 @@ bool Executor::AttachFunctionalityModules()
           func->funcidx = em->functionIndex( func->name.get() );
           if ( func->funcidx == -1 )
           {
-            ERROR_PRINT << "Unable to find " << fm->modulename.get() << "::" << func->name.get()
-                        << "\n";
+            ERROR_PRINTLN( "Unable to find {}::{}", fm->modulename.get(), func->name.get() );
             return false;
           }
         }
@@ -888,7 +886,7 @@ void Executor::ins_declareArray( const Instruction& /*ins*/ )
   if ( !objref->isa( BObjectImp::OTUninit ) )
   {
     // FIXME: weak error message
-    ERROR_PRINT << "variable is already initialized..\n";
+    ERROR_PRINTLN( "variable is already initialized.." );
     seterror( true );
     return;
   }
@@ -2572,7 +2570,7 @@ void Executor::ins_return( const Instruction& /*ins*/ )
 {
   if ( ControlStack.empty() )
   {
-    ERROR_PRINT << "Return without GOSUB! (PC=" << PC << ", " << scriptname() << ")\n";
+    ERROR_PRINTLN( "Return without GOSUB! (PC={}, {})", PC, scriptname() );
 
     seterror( true );
     return;
