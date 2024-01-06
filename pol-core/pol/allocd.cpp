@@ -44,11 +44,11 @@ void PrintAllocationData()
     }
   }
   std::string tmp;
-  tmp += fmt::format( "Heap:  Used {} blocks, {} bytes, Free {} blocks, {} bytes\n" )
-         << blocks_used << bytes_used << blocks_free << bytes_free;
-  tmp += fmt::format( "Delta: Used {} blocks, {} bytes, Free {} blocks, {} bytes\n" )
-         << ( blocks_used - last_blocks_used ) << ( bytes_used - last_bytes_used )
-         << ( blocks_free - last_blocks_free ) << ( bytes_free - last_bytes_free );
+  tmp += fmt::format( "Heap:  Used {} blocks, {} bytes, Free {} blocks, {} bytes\n", blocks_used,
+                      bytes_used, blocks_free, bytes_free );
+  tmp += fmt::format( "Delta: Used {} blocks, {} bytes, Free {} blocks, {} bytes\n",
+                      blocks_used - last_blocks_used, bytes_used - last_bytes_used,
+                      blocks_free - last_blocks_free, bytes_free - last_bytes_free );
   last_blocks_used = blocks_used;
   last_bytes_used = bytes_used;
   last_blocks_free = blocks_free;

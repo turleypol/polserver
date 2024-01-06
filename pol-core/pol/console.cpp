@@ -146,7 +146,7 @@ void ConsoleCommand::exec_console_cmd( char ch )
     {
       ConsoleCommand& cmd = gamestate.console_commands[i];
       std::string sc = getcmdstr( cmd.ch );
-      tmp += fmt::format( "{} {}: {}\n", sc.size() == 1 ? ' ' : '', sc, cmd.description );
+      tmp += fmt::format( "{}{}: {}\n", sc.size() == 1 ? "  " : " ", sc, cmd.description );
     }
     tmp += "  ?: Help (This list)";
     INFO_PRINT2( tmp );
