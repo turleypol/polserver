@@ -216,7 +216,7 @@ void load_armor_zones()
   if ( !Clib::FileExists( "config/armrzone.cfg" ) )
   {
     if ( Plib::systemstate.config.loglevel > 1 )
-      INFO_PRINT << "File config/armrzone.cfg not found, skipping.\n";
+      INFO_PRINT2( "File config/armrzone.cfg not found, skipping." );
     return;
   }
   Clib::ConfigFile cf( "config/armrzone.cfg" );
@@ -1618,9 +1618,7 @@ void Character::set_vitals_to_maximum()  // throw()
 
 bool Character::setgraphic( u16 newgraphic )
 {
-  if ( newgraphic < 1 ||
-       newgraphic >
-           Plib::systemstate.config.max_anim_id )
+  if ( newgraphic < 1 || newgraphic > Plib::systemstate.config.max_anim_id )
     return false;
 
   set_dirty();
@@ -1826,7 +1824,7 @@ double Character::apply_damage( double damage, Character* source, bool userepsys
 {
   damage = armor_absorb_damage( damage );
   if ( Core::settingsManager.watch.combat )
-    INFO_PRINT << "Final damage: " << damage << "\n";
+    INFO_PRINT2( "Final damage: {}", damage );
   do_imhit_effects();
   apply_raw_damage_hundredths( static_cast<unsigned int>( damage * 100 ), source, userepsys,
                                send_damage_packet );
@@ -3254,7 +3252,7 @@ void Character::attack( Character* opponent )
   }
 
   if ( Core::settingsManager.watch.combat )
-    INFO_PRINT << name() << " attacks " << opponent->name() << "\n";
+    INFO_PRINT2( "{} attacks {}", name(), opponent->name() );
 
   if ( weapon->is_projectile() )
   {
@@ -3323,18 +3321,18 @@ void Character::attack( Character* opponent )
   hit_chance += hitchance_mod() * 0.001f;
   hit_chance -= opponent->evasionchance_mod() * 0.001f;
   if ( Core::settingsManager.watch.combat )
-    INFO_PRINT << "Chance to hit: " << hit_chance << ": ";
+    INFO_PRINT_N2( "Chance to hit: {}: ", hit_chance );
   if ( Clib::random_double( 1.0 ) < hit_chance )
   {
     if ( Core::settingsManager.watch.combat )
-      INFO_PRINT << "Hit!\n";
+      INFO_PRINT2( "Hit!" );
     do_hit_success_effects();
 
     double damage = random_weapon_damage();
     damage_weapon();
 
     if ( Core::settingsManager.watch.combat )
-      INFO_PRINT << "Base damage: " << damage << "\n";
+      INFO_PRINT2( "Base damage: {}", damage );
 
     double damage_multiplier = attribute( Core::gamestate.pAttrTactics->attrid ).effective() + 50;
     damage_multiplier += strength() * 0.20f;
@@ -3343,8 +3341,8 @@ void Character::attack( Character* opponent )
     damage *= damage_multiplier;
 
     if ( Core::settingsManager.watch.combat )
-      INFO_PRINT << "Damage multiplier due to tactics/STR: " << damage_multiplier
-                 << " Result: " << damage << "\n";
+      INFO_PRINT2( "Damage multiplier due to tactics/STR: {} Result: {}", damage_multiplier,
+                   damage );
 
     if ( opponent->shield != nullptr )
     {
@@ -3360,11 +3358,11 @@ void Character::attack( Character* opponent )
           opponent->attribute( Core::gamestate.pAttrParry->attrid ).effective() / 200.0;
       parry_chance += opponent->parrychance_mod() * 0.001f;
       if ( Core::settingsManager.watch.combat )
-        INFO_PRINT << "Parry Chance: " << parry_chance << ": ";
+        INFO_PRINT_N2( "Parry Chance: {}: ", parry_chance );
       if ( Clib::random_double( 1.0 ) < parry_chance )
       {
         if ( Core::settingsManager.watch.combat )
-          INFO_PRINT << opponent->shield->ar() << " hits deflected\n";
+          INFO_PRINT2( "{} hits deflected", opponent->shield->ar() );
         if ( Core::settingsManager.combat_config.display_parry_success_messages &&
              opponent->client )
           Core::send_sysmessage( opponent->client, "You successfully parried the attack!" );
@@ -3376,7 +3374,7 @@ void Character::attack( Character* opponent )
       else
       {
         if ( Core::settingsManager.watch.combat )
-          INFO_PRINT << "failed.\n";
+          INFO_PRINT2( "failed." );
       }
     }
     if ( weapon->hit_script().empty() )
@@ -3392,7 +3390,7 @@ void Character::attack( Character* opponent )
   else
   {
     if ( Core::settingsManager.watch.combat )
-      INFO_PRINT << "Miss!\n";
+      INFO_PRINT2( "Miss!" );
     opponent->on_swing_failure( this );
     do_hit_failure_effects();
     if ( Core::gamestate.system_hooks.hitmiss_hook )
