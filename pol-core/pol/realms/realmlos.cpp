@@ -15,7 +15,6 @@
 #include "uworld.h"
 
 
-#define ENABLE_POLTEST_OUTPUT 1
 namespace Pol
 {
 namespace Realms

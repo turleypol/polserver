@@ -46,7 +46,6 @@
 #include "realms/realm.h"
 #include "uworld.h"
 
-#define ENABLE_POLTEST_OUTPUT 1
 #define HULL_HEIGHT_BUFFER 2
 namespace Pol
 {
