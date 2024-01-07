@@ -218,7 +218,11 @@ void initLogging( LogFacility* logger );  // initalize the logging
 }  // namespace Logging
 }  // namespace Clib
 
-
+template <typename Str, typename... Args>
+inline void info_println( Str const& format, Args&&... args )
+{
+  Clib::Logging::Message2<Clib::Logging::LogSink_cout>::logmsg<true>( format, args... );
+}
 // several helper defines
 
 // log into pol.log and std::cerr
