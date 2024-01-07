@@ -123,6 +123,8 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
+          ls .
+          ls ../lib/fmt-10.2.0
 
       - name: Test (EScript)
         if: matrix.config.nopch == 0
