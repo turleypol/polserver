@@ -14,7 +14,6 @@
 #include <string>
 
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <format/format.h>
 
 namespace Pol
@@ -37,8 +36,6 @@ public:
 
   void printOn( std::ostream& os ) const;
   void printOn( fmt::Writer& writer ) const;
-  void printOnShort( std::ostream& os ) const;
-  void printOnShort( fmt::Writer& writer ) const;
 
   void skipws();
   int skipcomments();
@@ -96,7 +93,9 @@ inline void compiler_error( Str const& format, Args&&... args )
 }  // namespace Bscript
 }  // namespace Pol
 template <>
-struct fmt::formatter<Pol::Bscript::CompilerContext> : fmt::ostream_formatter
+struct fmt::formatter<Pol::Bscript::CompilerContext> : fmt::formatter<std::string>
 {
+  fmt::format_context::iterator format( const Pol::Bscript::CompilerContext& c,
+                                        fmt::format_context& ctx ) const;
 };
 #endif
