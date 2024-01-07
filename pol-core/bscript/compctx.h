@@ -10,8 +10,10 @@
 #include "compilercfg.h"
 
 #include <iosfwd>
+#include <iterator>
 #include <string>
 
+#include <fmt/format.h>
 #include <format/format.h>
 
 namespace Pol
@@ -67,6 +69,40 @@ inline fmt::Writer& operator<<( fmt::Writer& writer, const CompilerContext& ctx 
   return writer;
 }
 
+namespace
+{
+inline void rec_write( fmt::Writer& /*w*/ ) {}
+template <typename T, typename... Targs>
+inline void rec_write( fmt::Writer& w, T&& value, Targs&&... Fargs )
+{
+  w << value;
+  rec_write( w, std::forward<Targs>( Fargs )... );
+}
+}  // namespace
+
+template <typename Str, typename... Args>
+inline void compiler_warning( CompilerContext* ctx, Str const& format, Args&&... args )
+{
+  if ( compilercfg.DisplayWarnings || compilercfg.ErrorOnWarning )
+  {
+    std::string out = fmt::format( format, args... );
+
+    if ( compilercfg.ErrorOnWarning )
+      throw std::runtime_error( out );
+    else
+    {
+      if ( ctx != nullptr )
+        fmt::format_to( std::back_inserter( out ), "{}", *ctx );
+      ERROR_PRINTLN( out );
+    }
+  }
+}
+
+template <typename Str, typename... Args>
+inline void compiler_error( Str const& format, Args&&... args )
+{
+  ERROR_PRINTLN( format, args... );
+}
 }  // namespace Bscript
 }  // namespace Pol
 #endif
