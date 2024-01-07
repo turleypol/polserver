@@ -546,7 +546,7 @@ int readargs( int argc, char** argv )
 
     if ( unknown_opt )
     {
-      ERROR_PRINT << "Unknown option: " << argv[i] << "\n";
+      ERROR_PRINTLN( "Unknown option: {}", argv[i] );
       return 1;
     }
   }
@@ -856,7 +856,7 @@ void read_config_file( int argc, char* argv[] )
   }
   else
   {
-    ERROR_PRINT << "Could not find " << cfgpath << "; using defaults.\n";
+    ERROR_PRINTLN( "Could not find {}; using defaults.", cfgpath );
     compilercfg.SetDefaults();
   }
 }
