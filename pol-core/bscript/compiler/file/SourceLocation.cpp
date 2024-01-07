@@ -4,6 +4,7 @@
 
 #include "bscript/compiler/file/SourceFileIdentifier.h"
 #include "clib/logfacility.h"
+#include <format/format.h>
 #include <iterator>
 
 namespace Pol::Bscript::Compiler
