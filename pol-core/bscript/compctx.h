@@ -14,6 +14,7 @@
 #include <string>
 
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <format/format.h>
 
 namespace Pol
@@ -69,17 +70,6 @@ inline fmt::Writer& operator<<( fmt::Writer& writer, const CompilerContext& ctx 
   return writer;
 }
 
-namespace
-{
-inline void rec_write( fmt::Writer& /*w*/ ) {}
-template <typename T, typename... Targs>
-inline void rec_write( fmt::Writer& w, T&& value, Targs&&... Fargs )
-{
-  w << value;
-  rec_write( w, std::forward<Targs>( Fargs )... );
-}
-}  // namespace
-
 template <typename Str, typename... Args>
 inline void compiler_warning( CompilerContext* ctx, Str const& format, Args&&... args )
 {
@@ -105,4 +95,8 @@ inline void compiler_error( Str const& format, Args&&... args )
 }
 }  // namespace Bscript
 }  // namespace Pol
+template <>
+struct fmt::formatter<Pol::Bscript::CompilerContext> : fmt::ostream_formatter
+{
+};
 #endif
