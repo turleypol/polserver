@@ -218,11 +218,7 @@ void initLogging( LogFacility* logger );  // initalize the logging
 }  // namespace Logging
 }  // namespace Clib
 
-template <typename Str, typename... Args>
-inline void info_println( Str const& format, Args&&... args )
-{
-  Clib::Logging::Message2<Clib::Logging::LogSink_cout>::logmsg<true>( format, args... );
-}
+
 // several helper defines
 
 // log into pol.log and std::cerr
@@ -256,6 +252,7 @@ inline void info_println( Str const& format, Args&&... args )
 #define ERROR_PRINTLN Clib::Logging::Message2<Clib::Logging::LogSink_cerr>::logmsg<true>
 // log only into std::cerr without \n addition
 #define ERROR_PRINT_N2 Clib::Logging::Message2<Clib::Logging::LogSink_cerr>::logmsg<false>
+
 // log into script.log
 #define SCRIPTLOG Clib::Logging::Message<Clib::Logging::LogSink_scriptlog>().message()
 // log into debug.log (if enabled)
