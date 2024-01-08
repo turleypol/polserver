@@ -29,7 +29,7 @@ std::string Node::describe() const
 
 std::string Node::to_string_tree() const
 {
-  return fmt::format(, "{}", *this );
+  return fmt::to_string( *this );
 }
 
 void Node::debug( const std::string& msg ) const
@@ -50,7 +50,7 @@ std::string Node::describe_tree_to_indented( const Node& node, unsigned indent )
   for ( const auto& child : node.children )
   {
     if ( child )
-      describe_tree_to_indented( w, *child, indent + 1 );
+      w += describe_tree_to_indented( *child, indent + 1 );
     else
       w += std::string( ( indent + 1 ) * 2, ' ' ) + "- [deleted]\n";
   }
