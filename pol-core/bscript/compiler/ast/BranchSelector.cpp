@@ -30,7 +30,7 @@ void BranchSelector::accept( NodeVisitor& visitor )
 
 void BranchSelector::describe_to( std::string& w ) const
 {
-  fmt::format_to( std::back_inserter( w ), "branch-selector({})", branch_type );
+  fmt::format_to( std::back_inserter( w ), "branch-selector({})", fmt::underlying( branch_type ) );
 }
 
 Expression* BranchSelector::predicate()
