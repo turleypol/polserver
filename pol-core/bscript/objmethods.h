@@ -20,6 +20,9 @@
 
 #ifndef OBJMETHODS_H
 #define OBJMETHODS_H
+
+#include <fmt/format.h>
+
 namespace Pol
 {
 namespace Bscript
@@ -181,8 +184,13 @@ enum MethodID
   MTH_CALL,
   MTH_SORTEDINSERT,
   MTH_SETUTF8STRING,
-  MTH_SETPILOT, // 155
+  MTH_SETPILOT,  // 155
 };
+
+inline auto format_as( MethodID id )
+{
+  return fmt::underlying( id );
+}
 
 
 typedef struct
@@ -197,6 +205,6 @@ extern int n_objmethods;
 
 ObjMethod* getKnownObjMethod( const char* token );
 ObjMethod* getObjMethod( int id );
-}
-}
+}  // namespace Bscript
+}  // namespace Pol
 #endif
