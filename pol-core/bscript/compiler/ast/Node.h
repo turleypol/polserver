@@ -83,7 +83,7 @@ protected:
 }  // namespace Pol::Bscript::Compiler
 template <typename T>
 struct fmt::formatter<
-    T, std::enable_if_t<std::is_convertible<T*, Pol::BScript::Compiler::Node*>::value>>
+    T, std::enable_if_t<std::is_convertible<T*, Pol::Bscript::Compiler::Node*>::value>>
     : fmt::formatter<std::string>
 {
   fmt::format_context::iterator format( const T& n, fmt::format_context& ctx ) const
