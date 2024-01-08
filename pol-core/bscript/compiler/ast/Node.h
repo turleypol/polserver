@@ -1,6 +1,7 @@
 #ifndef POLSERVER_NODE_H
 #define POLSERVER_NODE_H
 
+#include <fmt/format.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,10 +16,10 @@ class Node;
 class NodeVisitor;
 typedef std::vector<std::unique_ptr<Node>> NodeVector;
 
-template<typename TO, typename FROM>
-std::unique_ptr<TO> static_unique_pointer_cast(std::unique_ptr<FROM> old)
+template <typename TO, typename FROM>
+std::unique_ptr<TO> static_unique_pointer_cast( std::unique_ptr<FROM> old )
 {
-  return std::unique_ptr<TO>{static_cast<TO*>(old.release())};
+  return std::unique_ptr<TO>{ static_cast<TO*>( old.release() ) };
 }
 
 class Node
@@ -44,7 +45,7 @@ public:
   virtual ~Node() = default;
 
   virtual void accept( NodeVisitor& visitor ) = 0;
-  virtual void describe_to( fmt::Writer& ) const = 0;
+  virtual void describe_to( std::string& ) const = 0;
 
   [[nodiscard]] std::string describe() const;
   [[nodiscard]] std::string to_string_tree() const;
@@ -74,12 +75,17 @@ public:
   [[noreturn]] void internal_error( const std::string& msg ) const;
 
 private:
-  friend fmt::Writer& operator<<( fmt::Writer&, const Node& );
-  static void describe_tree_to_indented( fmt::Writer&, const Node&, unsigned indent );
+  friend struct fmt::formatter<Pol::Bscript::Compiler::Node>;
+  static std::string describe_tree_to_indented( const Node&, unsigned indent );
 };
 
-fmt::Writer& operator<<( fmt::Writer&, const Node& );
 
 }  // namespace Pol::Bscript::Compiler
+template <>
+struct fmt::formatter<Pol::Bscript::Compiler::Node> : fmt::formatter<std::string>
+{
+  fmt::format_context::iterator format( const Pol::Bscript::Compiler::Node& n,
+                                        fmt::format_context& ctx ) const;
+};
 
 #endif  // POLSERVER_NODE_H
