@@ -59,8 +59,8 @@ std::string Node::describe_tree_to_indented( const Node& node, unsigned indent )
 
 }  // namespace Pol::Bscript::Compiler
 
-fmt::format_context::iterator fmt::formatter<Pol::Bscript::Compiler::Node>::format(
+/*fmt::format_context::iterator fmt::formatter<Pol::Bscript::Compiler::Node>::format(
     const Pol::Bscript::Compiler::Node& n, fmt::format_context& ctx ) const
 {
   return fmt::formatter<std::string>::format( n.describe_tree_to_indented( n, 0 ), ctx );
-}
+}*/

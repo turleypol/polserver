@@ -74,18 +74,22 @@ public:
   void debug( const std::string& msg ) const;
   [[noreturn]] void internal_error( const std::string& msg ) const;
 
-private:
+protected:
   friend struct fmt::formatter<Pol::Bscript::Compiler::Node>;
   static std::string describe_tree_to_indented( const Node&, unsigned indent );
 };
 
 
 }  // namespace Pol::Bscript::Compiler
-template <>
-struct fmt::formatter<Pol::Bscript::Compiler::Node> : fmt::formatter<std::string>
+template <typename T>
+struct fmt::formatter<
+    T, std::enable_if_t<std::is_convertible<T*, Pol::BScript::Compiler::Node*>::value>>
+    : fmt::formatter<std::string>
 {
-  fmt::format_context::iterator format( const Pol::Bscript::Compiler::Node& n,
-                                        fmt::format_context& ctx ) const;
+  fmt::format_context::iterator format( const T& n, fmt::format_context& ctx ) const
+  {
+    return fmt::formatter<std::string>::format( n.describe_tree_to_indented( n, 0 ), ctx );
+  }
 };
 
 #endif  // POLSERVER_NODE_H
