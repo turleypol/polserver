@@ -15,7 +15,7 @@ void Report::report_error( const SourceLocation& source_location, const char* ms
   ++errors;
   try
   {
-    ERROR_PRINT_N2( "{}: error: {}", source_location, msg );
+    ERROR_PRINTLN( "{}: error: {}", source_location, msg );
   }
   catch ( ... )
   {

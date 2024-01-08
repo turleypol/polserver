@@ -45,7 +45,7 @@ void SourceFile::propagate_errors_to( Report& report, const SourceFileIdentifier
   error_listener.propagate_errors_to( report, ident );
 }
 
-#if defined(_WIN32) || defined(__APPLE__)
+#if defined( _WIN32 ) || defined( __APPLE__ )
 bool SourceFile::enforced_case_sensitivity_mismatch( const SourceLocation& referencing_location,
                                                      const std::string& pathname, Report& report )
 {
@@ -55,8 +55,11 @@ bool SourceFile::enforced_case_sensitivity_mismatch( const SourceLocation& refer
   {
     if ( compilercfg.ErrorOnFileCaseMissmatch )
     {
-      report.error( referencing_location, "Case mismatch: \n", "  Specified:  ", filepart, "\n",
-                    "  Filesystem: ", truename, "\n" );
+      report.error( referencing_location,
+                    "Case mismatch: \n"
+                    "  Specified:  {}\n"
+                    "  Filesystem: {}",
+                    filepart, truename );
       return true;
     }
 
@@ -93,7 +96,7 @@ std::shared_ptr<SourceFile> SourceFile::load( const SourceFileIdentifier& ident,
   }
   catch ( ... )
   {
-    report.error( ident, "Unable to read file '", pathname, "'.\n" );
+    report.error( ident, "Unable to read file '{}'.", pathname );
     return {};
   }
 }

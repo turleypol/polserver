@@ -140,7 +140,7 @@ void SourceFileProcessor::handle_include_declaration( EscriptParser::IncludeDecl
   if ( !maybe_canonical_include_pathname )
   {
     report.error( source_location,
-                  "Unable to include file '" + include_name + "': failed to locate.\n" );
+                  "Unable to include file '" + include_name + "': failed to locate." );
     return;
   }
 
@@ -155,8 +155,8 @@ void SourceFileProcessor::handle_include_declaration( EscriptParser::IncludeDecl
     auto sf = workspace.inc_cache.load( *ident, report );
     if ( !sf )
     {
-      report.error( source_location, "Unable to include file '", canonical_include_pathname,
-                    "': failed to load.\n" );
+      report.error( source_location, "Unable to include file '{}': failed to load.",
+                    canonical_include_pathname );
       return;
     }
 
@@ -309,9 +309,10 @@ antlrcpp::Any SourceFileProcessor::visitProgramDeclaration(
 {
   if ( workspace.compiler_workspace.program )
   {
-    report.error( location_for( *ctx ), "Multiple program statements.\n",
-                  "  Other declaration: ", workspace.compiler_workspace.program->source_location,
-                  "\n" );
+    report.error( location_for( *ctx ),
+                  "Multiple program statements.\n"
+                  "  Other declaration: {}",
+                  workspace.compiler_workspace.program->source_location );
   }
   else
   {

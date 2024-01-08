@@ -16,28 +16,24 @@ public:
   Report( const Report& ) = delete;
   Report& operator=( const Report& ) = delete;
 
-  // Always put a newline at the end of the message.
-  template <typename... Args>
-  inline void error( const SourceLocation& source_location, Args&&... args )
+  template <typename Str, typename... Args>
+  inline void error( const SourceLocation& source_location, Str const& format, Args&&... args )
   {
-    fmt::Writer w;
-    rec_write( w, std::forward<Args>( args )... );
-    report_error( source_location, w.c_str() );
+    auto msg = fmt::format( format, args... );
+    report_error( source_location, msg.c_str() );
   }
 
-  // Always put a newline at the end of the message.
-  template <typename... Args>
-  inline void error( const SourceFileIdentifier& ident, Args&&... args )
+  template <typename Str, typename... Args>
+  inline void error( const SourceFileIdentifier& ident, Str const& format, Args&&... args )
   {
     SourceLocation loc( &ident, 0, 0 );
-    error( loc, args... );
+    error( loc, format, args... );
   }
 
-  // Always put a newline at the end of the message.
-  template <typename... Args>
-  inline void error( const Node& node, Args&&... args )
+  template <typename Str, typename... Args>
+  inline void error( const Node& node, Str const& format, Args&&... args )
   {
-    error( node.source_location, args... );
+    error( node.source_location, format, args... );
   }
 
   // Report.fatal: use this when it's not possible to continue after a user-facing error.
@@ -85,7 +81,8 @@ private:
     try
     {
       w << value;
-    } catch(...)
+    }
+    catch ( ... )
     {
     }
     rec_write( w, std::forward<Targs>( Fargs )... );

@@ -12,8 +12,9 @@ std::shared_ptr<Variable> Variables::create( const std::string& name, BlockDepth
                                              WarnOn warn_on, const SourceLocation& source_location )
 {
   auto index = names_by_index.size();
-  if ( index > std::numeric_limits<VariableIndex>::max() ) {
-    report.error(source_location, "Too many variables");
+  if ( index > std::numeric_limits<VariableIndex>::max() )
+  {
+    report.error( source_location, "Too many variables" );
   }
   auto variable = std::make_shared<Variable>(
       scope, name, block_depth, static_cast<VariableIndex>( index ), warn_on, source_location );
