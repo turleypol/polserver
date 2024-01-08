@@ -4,6 +4,7 @@
 #include <fmt/format.h>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "clib/formatfwd.h"
@@ -82,11 +83,12 @@ protected:
 
 }  // namespace Pol::Bscript::Compiler
 template <typename T>
-struct fmt::formatter<
-    T, std::enable_if_t<std::is_convertible<T*, Pol::Bscript::Compiler::Node*>::value>>
+struct fmt::formatter<std::remove_cv_t<T>,
+                      std::enable_if_t<std::is_convertible<std::remove_cv_t<T>*,
+                                                           Pol::Bscript::Compiler::Node*>::value>>
     : fmt::formatter<std::string>
 {
-  fmt::format_context::iterator format( const T& n, fmt::format_context& ctx ) const
+  inline fmt::format_context::iterator format( const T& n, fmt::format_context& ctx ) const
   {
     return fmt::formatter<std::string>::format( n.describe_tree_to_indented( n, 0 ), ctx );
   }
