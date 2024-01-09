@@ -50,7 +50,7 @@ void Node::describe_tree_to_indented( const Node& node, std::string& w, unsigned
   for ( const auto& child : node.children )
   {
     if ( child )
-      w += describe_tree_to_indented( *child, indent + 1 );
+      describe_tree_to_indented( *child, w, indent + 1 );
     else
       w += std::string( ( indent + 1 ) * 2, ' ' ) + "- [deleted]\n";
   }
