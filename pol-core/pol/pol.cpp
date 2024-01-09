@@ -693,29 +693,26 @@ void threadstatus_thread( void )
       if ( Plib::systemstate.config.log_traces_when_stuck )
         Pol::Clib::ExceptionParser::logAllStackTraces();
 
-      fmt::format( std::back_inserter( tmp ),
-                   "Scripts Thread Checkpoint: {}\n"
-                   "Last Script: {} PC: {}\n"
-                   "Escript Instruction Cycles: {}\n"
-                   "Tasks Thread Checkpoint: {}\n"
-                   "Active Client Thread Checkpoint: {}\n"
-                   "Number of clients: {}\n",
-                   stateManager.polsig.scripts_thread_checkpoint, Clib::scripts_thread_script,
-                   Clib::scripts_thread_scriptPC, Bscript::escript_instr_cycles,
-                   stateManager.polsig.tasks_thread_checkpoint,
-                   stateManager.polsig.active_client_thread_checkpoint,
-                   Core::networkManager.clients.size() );
+      fmt::format_to( std::back_inserter( tmp ),
+                      "Scripts Thread Checkpoint: {}\n"
+                      "Last Script: {} PC: {}\n"
+                      "Escript Instruction Cycles: {}\n"
+                      "Tasks Thread Checkpoint: {}\n"
+                      "Active Client Thread Checkpoint: {}\n"
+                      "Number of clients: {}\n",
+                      stateManager.polsig.scripts_thread_checkpoint, Clib::scripts_thread_script,
+                      Clib::scripts_thread_scriptPC, Bscript::escript_instr_cycles,
+                      stateManager.polsig.tasks_thread_checkpoint,
+                      stateManager.polsig.active_client_thread_checkpoint,
+                      Core::networkManager.clients.size() );
       for ( const auto& client : Core::networkManager.clients )
-        fmt::format(
-            std::back_inserter( tmp ), " {} {} {}\n", client->ipaddrAsString(),
-            client->acct == nullptr ? "prelogin " : client->acct->name(),
-            client->session()->checkpoint ) if ( stateManager.polsig
-                                                     .check_attack_after_move_function_checkpoint );
-
-      fmt::format( std::back_inserter( tmp ),
-                   "check_attack_after_move() Checkpoint: {}\n"
-                   "Current Threads:\n",
-                   stateManager.polsig.check_attack_after_move_function_checkpoint );
+        fmt::format_to( std::back_inserter( tmp ), " {} {} {}\n", client->ipaddrAsString(),
+                        client->acct == nullptr ? "prelogin " : client->acct->name(),
+                        client->session()->checkpoint );
+      if ( stateManager.polsig.check_attack_after_move_function_checkpoint )
+        fmt::format_to( std::back_inserter( tmp ), "check_attack_after_move() Checkpoint: {}\n",
+                        stateManager.polsig.check_attack_after_move_function_checkpoint );
+      tmp += "Current Threads:\n";
       ThreadMap::Contents contents;
       threadmap.CopyContents( contents );
       for ( ThreadMap::Contents::const_iterator citr = contents.begin(); citr != contents.end();
@@ -723,10 +720,10 @@ void threadstatus_thread( void )
       {
         fmt::format( std::back_inserter( tmp ), "{} - {}\n", ( *citr ).first, ( *citr ).second );
       }
-      fmt::format( std::back_inserter( tmp ),
-                   "Child threads (child_threads): {}\n"
-                   "Registered threads (ThreadMap): {}" threadhelp::child_threads,
-                   contents.size() );
+      fmt::format_to( std::back_inserter( tmp ),
+                      "Child threads (child_threads): {}\n"
+                      "Registered threads (ThreadMap): {}" threadhelp::child_threads,
+                      contents.size() );
       stateManager.polsig.report_status_signalled = false;
       ERROR_PRINTLN( tmp );
     }
