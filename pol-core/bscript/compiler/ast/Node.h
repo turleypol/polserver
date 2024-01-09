@@ -75,7 +75,7 @@ public:
   void debug( const std::string& msg ) const;
   [[noreturn]] void internal_error( const std::string& msg ) const;
 
-  static std::string describe_tree_to_indented( const Node&, unsigned indent );
+  static void describe_tree_to_indented( const Node&, std::string& w, unsigned indent );
 };
 
 
@@ -88,7 +88,9 @@ struct fmt::formatter<
   inline fmt::format_context::iterator format( const Pol::Bscript::Compiler::Node& n,
                                                fmt::format_context& ctx ) const
   {
-    return fmt::formatter<std::string>::format( n.describe_tree_to_indented( n, 0 ), ctx );
+    std::string w;
+    n.describe_tree_to_indented( n, w, 0 );
+    return fmt::formatter<std::string>::format( w, ctx );
   }
 };
 

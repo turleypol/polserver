@@ -42,9 +42,9 @@ void Node::internal_error( const std::string& msg ) const
   source_location.internal_error( msg );
 }
 
-std::string Node::describe_tree_to_indented( const Node& node, unsigned indent )
+void Node::describe_tree_to_indented( const Node& node, std::string& w, unsigned indent )
 {
-  std::string w = std::string( indent * 2, ' ' ) + "- ";
+  w += = std::string( indent * 2, ' ' ) + "- ";
   node.describe_to( w );
   w += "\n";
   for ( const auto& child : node.children )
@@ -54,13 +54,6 @@ std::string Node::describe_tree_to_indented( const Node& node, unsigned indent )
     else
       w += std::string( ( indent + 1 ) * 2, ' ' ) + "- [deleted]\n";
   }
-  return w;
 }
 
 }  // namespace Pol::Bscript::Compiler
-
-/*fmt::format_context::iterator fmt::formatter<Pol::Bscript::Compiler::Node>::format(
-    const Pol::Bscript::Compiler::Node& n, fmt::format_context& ctx ) const
-{
-  return fmt::formatter<std::string>::format( n.describe_tree_to_indented( n, 0 ), ctx );
-}*/
