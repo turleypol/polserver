@@ -718,7 +718,7 @@ void threadstatus_thread( void )
       for ( ThreadMap::Contents::const_iterator citr = contents.begin(); citr != contents.end();
             ++citr )
       {
-        fmt::format( std::back_inserter( tmp ), "{} - {}\n", ( *citr ).first, ( *citr ).second );
+        fmt::format_to( std::back_inserter( tmp ), "{} - {}\n", ( *citr ).first, ( *citr ).second );
       }
       fmt::format_to( std::back_inserter( tmp ),
                       "Child threads (child_threads): {}\n"
@@ -1160,7 +1160,7 @@ int xmain_inner( bool testing )
 
   POLLOG_INFO << "Initialization complete.  POL is active.  Ctrl-C to stop.\n\n";
   ERROR_PRINTLN( "Create Character: Stats sum to {}.\nValid values/ranges are: {}", 99,
-                 settingsManager.ssopt.total_stats_at_creation );
+                 Core::settingsManager.ssopt.total_stats_at_creation );
 
   DEINIT_STARTLOG();
   POLLOG.Format( "{0:s} ({1:s}) compiled on {2:s} running.\n" )
