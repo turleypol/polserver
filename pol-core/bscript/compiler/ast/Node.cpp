@@ -44,7 +44,7 @@ void Node::internal_error( const std::string& msg ) const
 
 void Node::describe_tree_to_indented( const Node& node, std::string& w, unsigned indent )
 {
-  w += = std::string( indent * 2, ' ' ) + "- ";
+  w += std::string( indent * 2, ' ' ) + "- ";
   node.describe_to( w );
   w += "\n";
   for ( const auto& child : node.children )
