@@ -722,8 +722,8 @@ void threadstatus_thread( void )
       }
       fmt::format_to( std::back_inserter( tmp ),
                       "Child threads (child_threads): {}\n"
-                      "Registered threads (ThreadMap): {}" threadhelp::child_threads,
-                      contents.size() );
+                      "Registered threads (ThreadMap): {}",
+                      threadhelp::child_threads, contents.size() );
       stateManager.polsig.report_status_signalled = false;
       ERROR_PRINTLN( tmp );
     }
@@ -1159,7 +1159,7 @@ int xmain_inner( bool testing )
   Core::start_uo_client_listeners();
 
   POLLOG_INFO << "Initialization complete.  POL is active.  Ctrl-C to stop.\n\n";
-  ERROR_PRINTLN( "Create Character: Stats sum to {}.\nValid values/ranges are: {}", stat_total,
+  ERROR_PRINTLN( "Create Character: Stats sum to {}.\nValid values/ranges are: {}", 99,
                  settingsManager.ssopt.total_stats_at_creation );
 
   DEINIT_STARTLOG();
