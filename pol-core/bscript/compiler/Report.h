@@ -47,23 +47,20 @@ public:
     throw std::runtime_error( msg.c_str() );
   }
 
-  // Always put a newline at the end of the message.
-  template <typename... Args>
-  inline void warning( const SourceLocation& source_location, Args&&... args )
+  template <typename Str, typename... Args>
+  inline void warning( const SourceLocation& source_location, Str const& format, Args&&... args )
   {
     if ( display_warnings )
     {
-      fmt::Writer w;
-      rec_write( w, std::forward<Args>( args )... );
-      report_warning( source_location, w.c_str() );
+      auto msg = fmt::format( format, args... );
+      report_warning( source_location, msg.c_str() );
     }
   }
 
-  // Always put a newline at the end of the message.
-  template <typename... Args>
-  inline void warning( const Node& node, Args&&... args )
+  template <typename Str, typename... Args>
+  inline void warning( const Node& node, Str const& format, Args&&... args )
   {
-    warning( node.source_location, args... );
+    warning( node.source_location, format, args... );
   }
 
   [[nodiscard]] unsigned error_count() const;
@@ -72,20 +69,6 @@ public:
 private:
   void report_error( const SourceLocation&, const char* msg );
   void report_warning( const SourceLocation&, const char* msg );
-
-  inline void rec_write( fmt::Writer& /*w*/ ) {}
-  template <typename T, typename... Targs>
-  inline void rec_write( fmt::Writer& w, T&& value, Targs&&... Fargs )
-  {
-    try
-    {
-      w << value;
-    }
-    catch ( ... )
-    {
-    }
-    rec_write( w, std::forward<Targs>( Fargs )... );
-  }
 
   const bool display_warnings;
   unsigned errors;

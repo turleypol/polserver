@@ -63,8 +63,11 @@ bool SourceFile::enforced_case_sensitivity_mismatch( const SourceLocation& refer
       return true;
     }
 
-    report.warning( referencing_location, "Case mismatch: \n", "  Specified:  ", filepart, "\n",
-                    "  Filesystem: ", truename, "\n" );
+    report.warning( referencing_location,
+                    "Case mismatch: \n"
+                    "  Specified:  {}\n"
+                    "  Filesystem: {}",
+                    filepart, truename );
   }
   return false;
 }

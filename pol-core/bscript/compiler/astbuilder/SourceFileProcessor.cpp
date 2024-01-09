@@ -208,8 +208,8 @@ std::optional<std::string> SourceFileProcessor::locate_include_file(
             INFO_PRINTLN( "Found {}", filename_full );
 
           if ( Clib::FileExists( try_filename_full.c_str() ) )
-            report.warning( source_location, "Found '", filename_full, "' and '", try_filename_full,
-                            "'! Will use first file!\n" );
+            report.warning( source_location, "Found '{}' and '{}'! Will use first file!",
+                            filename_full, try_filename_full );
         }
       }
       else

@@ -565,8 +565,8 @@ void SemanticAnalyzer::visit_variable_assignment_statement( VariableAssignmentSt
         {
           // we have something like
           //      a := a := expr;
-          report.warning( node, "Double-assignment to the same variable '", node.identifier().name,
-                          "'.\n" );
+          report.warning( node, "Double-assignment to the same variable '{}'.",
+                          node.identifier().name );
         }
       }
     }

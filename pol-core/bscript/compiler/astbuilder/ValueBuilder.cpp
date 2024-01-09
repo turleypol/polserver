@@ -141,7 +141,7 @@ std::string ValueBuilder::unquote( antlr4::tree::TerminalNode* string_literal, b
   if ( !Clib::isValidUnicode( lit ) )
   {
     report.warning( location_for( *string_literal ),
-                    "Warning: invalid unicode character detected. Assuming ISO8859.\n" );
+                    "Warning: invalid unicode character detected. Assuming ISO8859." );
 
     Clib::sanitizeUnicodeWithIso( &lit );
   }
