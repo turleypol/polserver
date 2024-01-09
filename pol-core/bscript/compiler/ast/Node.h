@@ -75,8 +75,6 @@ public:
   void debug( const std::string& msg ) const;
   [[noreturn]] void internal_error( const std::string& msg ) const;
 
-protected:
-  friend struct fmt::formatter<Pol::Bscript::Compiler::Node>;
   static std::string describe_tree_to_indented( const Node&, unsigned indent );
 };
 
