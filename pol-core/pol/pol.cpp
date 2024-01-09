@@ -675,8 +675,9 @@ void threadstatus_thread( void )
       polclock_t now = polclock();
       if ( now >= stateManager.checkin_clock_times_out_at )
       {
-        ERROR_PRINT << "########################################################\n";
-        ERROR_PRINT << "No clock movement in 30 seconds.  Dumping thread status.\n";
+        ERROR_PRINTLN(
+            "########################################################\n"
+            "No clock movement in 30 seconds.  Dumping thread status." );
         stateManager.polsig.report_status_signalled = true;
         stateManager.checkin_clock_times_out_at = now + 30 * POLCLOCKS_PER_SEC;
       }
@@ -718,7 +719,7 @@ void threadstatus_thread( void )
       tmp << "Child threads (child_threads): " << threadhelp::child_threads << "\n";
       tmp << "Registered threads (ThreadMap): " << contents.size() << "\n";
       stateManager.polsig.report_status_signalled = false;
-      ERROR_PRINT << tmp.str();
+      ERROR_PRINT_N2( "{}", tmp.str() );
     }
     if ( Clib::exit_signalled )
     {
@@ -1152,6 +1153,8 @@ int xmain_inner( bool testing )
   Core::start_uo_client_listeners();
 
   POLLOG_INFO << "Initialization complete.  POL is active.  Ctrl-C to stop.\n\n";
+  ERROR_PRINTLN( "Create Character: Stats sum to {}.\nValid values/ranges are: {}", stat_total,
+                 settingsManager.ssopt.total_stats_at_creation );
 
   DEINIT_STARTLOG();
   POLLOG.Format( "{0:s} ({1:s}) compiled on {2:s} running.\n" )
