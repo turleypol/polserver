@@ -38,14 +38,13 @@ public:
 
   // Report.fatal: use this when it's not possible to continue after a user-facing error.
   //
-  // Always put a newline at the end of the message.
-  template <typename... Args>
-  [[noreturn]] inline void fatal( const SourceLocation& source_location, Args&&... args )
+  template <typename Str, typename... Args>
+  [[noreturn]] inline void fatal( const SourceLocation& source_location, Str const& format,
+                                  Args&&... args )
   {
-    fmt::Writer w;
-    rec_write( w, std::forward<Args>( args )... );
-    report_error( source_location, w.c_str() );
-    throw std::runtime_error( w.c_str() );
+    auto msg = fmt::format( format, args... );
+    report_error( source_location, msg.c_str() );
+    throw std::runtime_error( msg.c_str() );
   }
 
   // Always put a newline at the end of the message.

@@ -60,7 +60,7 @@ void SourceFileProcessor::use_module( const std::string& module_name,
   {
     // This is fatal because if we keep going, we'll likely report a bunch of errors
     // that would just be noise, like missing module function declarations or constants.
-    report.fatal( including_location, "Unable to use module '", module_name, "'.\n" );
+    report.fatal( including_location, "Unable to use module '{}.", module_name );
   }
   workspace.source_files[pathname] = sf;
 
@@ -228,7 +228,7 @@ std::optional<std::string> SourceFileProcessor::locate_include_file(
     {
       // This is fatal because if we keep going, we'll likely report a bunch of errors
       // that would just be noise, like missing functions or constants.
-      report.fatal( source_location, "Unable to read include file '" + include_name + "'\n" );
+      report.fatal( source_location, "Unable to read include file '{}'", include_name );
     }
   }
   else
