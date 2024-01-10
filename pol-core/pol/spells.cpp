@@ -398,27 +398,27 @@ void register_spell( USpell* spell, unsigned short spellid )
   {
     USpell* origspell = gamestate.spells[spellid];
     std::string tmp =
-        fmt::format( "Spell ID {} ({}) multiply defined\n", spellid, origspell->name() );
+        fmt::format( "Spell ID {} ({}) multiply defined", spellid, origspell->name() );
     if ( origspell->pkg_ != nullptr )
     {
       fmt::format_to( std::back_inserter( tmp ),
-                      "  Spell originally defined in package '{}' ({})\n", origspell->pkg_->name(),
+                      "\n  Spell originally defined in package '{}' ({})", origspell->pkg_->name(),
                       origspell->pkg_->dir() );
     }
     else
     {
-      tmp += "  Spell originally defined in main\n";
+      tmp += "\n  Spell originally defined in main";
     }
     if ( spell->pkg_ != nullptr )
     {
-      fmt::format_to( std::back_inserter( tmp ), "  Spell redefined in package '{}' ({})\n",
+      fmt::format_to( std::back_inserter( tmp ), "\n  Spell redefined in package '{}' ({})",
                       spell->pkg_->name(), spell->pkg_->dir() );
     }
     else
     {
-      tmp += "  Spell redefined in main\n";
+      tmp += "\n  Spell redefined in main";
     }
-    ERROR_PRINT_N2( tmp );
+    ERROR_PRINTLN( tmp );
     throw std::runtime_error( "Spell ID multiply defined" );
   }
 

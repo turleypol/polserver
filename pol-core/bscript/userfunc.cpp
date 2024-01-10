@@ -24,7 +24,7 @@ void UserFunction::show_instances()
   {
     tmp += uf->name + "\n";
   }
-  ERROR_PRINT_N2( tmp );
+  ERROR_PRINT( tmp );
 }
 void UserFunction::register_instance()
 {

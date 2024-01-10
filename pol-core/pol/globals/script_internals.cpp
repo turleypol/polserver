@@ -229,7 +229,7 @@ void ScriptScheduler::run_ready()
             std::string tmp = fmt::format( "Critical script {} has run for {} instructions\n",
                                            ex->scriptname(), totcount );
             ex->show_context( tmp, ex->PC );
-            ERROR_PRINT_N2( tmp );
+            ERROR_PRINT( tmp );
           }
         }
         continue;

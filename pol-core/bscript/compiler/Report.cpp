@@ -27,7 +27,7 @@ void Report::report_warning( const SourceLocation& source_location, const char* 
   ++warnings;
   try
   {
-    ERROR_PRINT_N2( "{}: warning: {}", source_location, msg );
+    ERROR_PRINTLN( "{}: warning: {}", source_location, msg );
   }
   catch ( ... )
   {
