@@ -94,7 +94,7 @@ BoatShape::ComponentShape::ComponentShape( const std::string& str, unsigned char
     }
   }
 
-  ERROR_PRINT << "Boat component definition '" << str << "' is poorly formed.\n";
+  ERROR_PRINTLN( "Boat component definition '{}' is poorly formed.", str );
   throw std::runtime_error( "Poorly formed boat.cfg component definition" );
 }
 
@@ -137,7 +137,7 @@ BoatShape::ComponentShape::ComponentShape( const std::string& str, const std::st
 
   if ( !ok )
   {
-    ERROR_PRINT << "Boat component definition '" << str << "' is poorly formed.\n";
+    ERROR_PRINTLN( "Boat component definition '{}' is poorly formed.", str );
     throw std::runtime_error( "Poorly formed boat.cfg component definition" );
   }
 }
@@ -257,8 +257,7 @@ void read_boat_cfg( void )
     }
     catch ( std::exception& )
     {
-      ERROR_PRINT << "Error occurred reading definition for boat 0x" << fmt::hexu( multiid )
-                  << "\n";
+      ERROR_PRINTLN( "Error occurred reading definition for boat {:#X}", multiid );
       throw;
     }
   }
@@ -725,7 +724,7 @@ bool UBoat::navigable( const MultiDef& md, const Core::Pos4d& desired_pos )
     {
 #ifdef DEBUG_BOATS
       INFO_PRINTLN( "Location {} {} already has a ship hull present", desired_pos.realm()->name(),
-                   hullpos );
+                    hullpos );
 #endif
       return false;
     }
