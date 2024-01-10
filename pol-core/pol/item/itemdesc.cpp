@@ -1306,13 +1306,14 @@ void read_itemdesc_file( const char* filename, Plib::Package* pkg = nullptr )
 
     if ( has_itemdesc( descriptor->objtype ) )
     {
-      auto pkg = find_itemdesc( descriptor->objtype ).pkg;
-      std::string tmp = fmt::format( "Error: Objtype {:#X} is already defined in {}itemdesc.cfg",
-                                     descriptor->objtype, pkg == nullptr ? "config/" : pkg->dir() );
+      auto objpkg = find_itemdesc( descriptor->objtype ).pkg;
+      std::string tmp =
+          fmt::format( "Error: Objtype {:#X} is already defined in {}itemdesc.cfg",
+                       descriptor->objtype, objpkg == nullptr ? "config/" : objpkg->dir() );
       ERROR_PRINTLN( tmp );
 
-      elem.throw_error( "ObjType " + Clib::hexint( descriptor->objtype ) +
-                        " defined more than once." );
+      elem.throw_error(
+          fmt::format( "ObjType {:#X} defined more than once.", descriptor->objtype ) );
     }
     Core::gamestate.desctable[descriptor->objtype] = descriptor;
 
