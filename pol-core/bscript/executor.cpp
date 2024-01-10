@@ -32,6 +32,7 @@
 #include "str.h"
 #include "token.h"
 #include "tokens.h"
+#include <iterator>
 #ifdef MEMORYLEAK
 #include "../clib/mlog.h"
 #endif
@@ -3114,6 +3115,12 @@ std::string Executor::dbg_get_instruction( size_t atPC ) const
      << prog_->instr[atPC].token;
   return os.str();
 }
+void Executor::dbg_get_instruction( size_t atPC, std::string& os ) const
+{
+  fmt::format_to( std::back_inserter( os ), "{}{}{} {}", ( atPC == PC ) ? ">" : " ", atPC,
+                  breakpoints_.count( static_cast<unsigned>( atPC ) ) ? "*" : ":",
+                  prog_->instr[atPC].token );
+}
 
 void Executor::show_context( unsigned atPC )
 {
@@ -3149,6 +3156,25 @@ void Executor::show_context( fmt::Writer& os, unsigned atPC )
   for ( unsigned i = start; i <= end; ++i )
   {
     os << dbg_get_instruction( i ) << '\n';
+  }
+}
+void Executor::show_context( std::string& os, unsigned atPC )
+{
+  unsigned start, end;
+  if ( atPC >= 5 )
+    start = atPC - 5;
+  else
+    start = 0;
+
+  end = atPC + 5;
+
+  if ( end >= nLines )
+    end = nLines - 1;
+
+  for ( unsigned i = start; i <= end; ++i )
+  {
+    dbg_get_instruction( i, os );
+    os += '\n';
   }
 }
 

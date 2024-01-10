@@ -1159,8 +1159,6 @@ int xmain_inner( bool testing )
   Core::start_uo_client_listeners();
 
   POLLOG_INFO << "Initialization complete.  POL is active.  Ctrl-C to stop.\n\n";
-  ERROR_PRINTLN( "Create Character: Stats sum to {}.\nValid values/ranges are: {}", 99,
-                 Core::settingsManager.ssopt.total_stats_at_creation );
 
   DEINIT_STARTLOG();
   POLLOG.Format( "{0:s} ({1:s}) compiled on {2:s} running.\n" )
