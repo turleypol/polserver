@@ -45,7 +45,7 @@ int translate( const std::string& name, TRANSLATION* table )
       name );
   for ( int i = 0; table[i].name; ++i )
   {
-    fmt::format_to( std::back_inserter( tmp ), "\n {}", table[i].name )
+    fmt::format_to( std::back_inserter( tmp ), "\n {}", table[i].name );
   }
   ERROR_PRINTLN( tmp );
   throw std::runtime_error( "Unable to translate value" );
