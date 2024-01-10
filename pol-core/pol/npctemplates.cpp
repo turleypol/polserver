@@ -42,22 +42,20 @@ void NpcTemplateConfigSource::display_error( const std::string& msg, bool /*show
 
   std::string tmp = fmt::format(
       "{} reading configuratiom file {}:\n"
-      "\t{}\n",
+      "\t{}",
       error ? "Error" : "Warning", _filename, msg );
 
   if ( elem != nullptr )
   {
     if ( strlen( elem->type() ) > 0 )
     {
-      fmt::format_to( std::back_inserter( tmp ), "\tElement: {} {}", elem->type(), elem->rest() );
+      fmt::format_to( std::back_inserter( tmp ), "\n\tElement: {} {}", elem->type(), elem->rest() );
       if ( _fileline )
-        fmt::format_to( std::back_inserter( tmp ), , ", found on line {}", _fileline );
+        fmt::format_to( std::back_inserter( tmp ), ", found on line {}", _fileline );
       showed_elem_line = true;
     }
   }
 
-  // if (show_curline)
-  //    cerr << "\tNear line: " << _cur_line << endl;
   if ( _fileline && !showed_elem_line )
     fmt::format_to( std::back_inserter( tmp ), "\n\tElement started on line: {}", _fileline );
   ERROR_PRINTLN( tmp );
