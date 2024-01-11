@@ -184,7 +184,8 @@ enum MethodID
   MTH_CALL,
   MTH_SORTEDINSERT,
   MTH_SETUTF8STRING,
-  MTH_SETPILOT,  // 155
+  MTH_SET_PILOT,  // 155
+  MTH_SET_ALTERNATE_MULTIID
 };
 
 inline auto format_as( MethodID id )
