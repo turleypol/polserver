@@ -448,43 +448,36 @@ void PrintHeapData()
   INFO_PRINTLN( "OpNewHeap: allocated {} blocks, {} bytes\nOpNewHeap: delta {} blocks, {} bytes",
                blocks_allocated, bytes_allocated, delta_blocks, delta_bytes );
 #else
-  DEBUGLOG << "Heap (whole):  " << blocks_allocated << " blocks with " << bytes_allocated
-           << " Bytes\n"
-           << "Heap (delta):  " << delta_blocks << " blocks with " << delta_bytes << " Bytes\n"
-           << "Heap (blocks): " << used_8 << " of " << requested_8 << " blocks of 8 Byte ("
-           << allocated_8 << ")\n"
-           << "Heap (blocks): " << used_16 << " of " << requested_16 << " blocks of 16 Byte ("
-           << allocated_16 << ")\n"
-           << "Heap (blocks): " << used_32 << " of " << requested_32 << " blocks of 32 Byte ("
-           << allocated_32 << ")\n"
-           << "Heap (blocks): " << used_64 << " of " << requested_64 << " blocks of 64 Byte ("
-           << allocated_64 << ")\n"
-           << "Heap (blocks): " << used_128 << " of " << requested_128 << " blocks of 128 Byte ("
-           << allocated_128 << ")\n"
-           << "Heap (blocks): " << used_512 << " of " << requested_512 << " blocks of 512 Byte ("
-           << allocated_512 << ")\n"
-           << "Heap (blocks): " << used_1024 << " of " << requested_1024 << " blocks of 1 KByte ("
-           << allocated_1024 << ")\n"
-           << "Heap (blocks): " << used_2048 << " of " << requested_2048 << " blocks of 2 KByte ("
-           << allocated_2048 << ")\n"
-           << "Heap (blocks): " << used_4096 << " of " << requested_4096 << " blocks of 4 KByte ("
-           << allocated_4096 << ")\n"
-           << "Heap (blocks): " << used_8192 << " of " << requested_8192 << " blocks of 8 KByte ("
-           << allocated_8192 << ")\n"
-           << "Heap (blocks): " << used_16384 << " of " << requested_16384
-           << " blocks of 16 KByte (" << allocated_16384 << ")\n"
-           << "Heap (blocks): " << used_65536 << " of " << requested_65536
-           << " blocks of 64 KByte (" << allocated_65536 << ")\n"
-           << "Heap (blocks): " << used_131072 << " of " << requested_131072
-           << " blocks of 128 KByte (" << allocated_131072 << ")\n"
-           << "Heap (blocks): " << used_524288 << " of " << requested_524288
-           << " blocks of 0.5 MByte (" << allocated_524288 << ")\n"
-           << "Heap (blocks): " << used_1048576 << " of " << requested_1048576
-           << " blocks of 1 MByte (" << allocated_1048576 << ")\n"
-           << "Heap (blocks): " << used_16777216 << " of " << requested_16777216
-           << " blocks of 16 MByte (" << allocated_16777216 << ")\n"
-           << "Heap (blocks): " << used_huge << " of " << requested_huge << " huge blocks ("
-           << allocated_huge << ")\n";
+  DEBUGLOGLN(
+      "Heap (whole):  {} blocks with {} Bytes\n"
+      "Heap (delta):  {} blocks with {} Bytes\n"
+      "Heap (blocks): {} of {} blocks of 8 Byte ({})\n"
+      "Heap (blocks): {} of {} blocks of 16 Byte ({})\n"
+      "Heap (blocks): {} of {} blocks of 32 Byte ({})\n"
+      "Heap (blocks): {} of {} blocks of 64 Byte ({})\n"
+      "Heap (blocks): {} of {} blocks of 128 Byte ({})\n"
+      "Heap (blocks): {} of {} blocks of 512 Byte ({})\n"
+      "Heap (blocks): {} of {} blocks of 1 KByte ({})\n"
+      "Heap (blocks): {} of {} blocks of 2 KByte ({})\n"
+      "Heap (blocks): {} of {} blocks of 4 KByte ({})\n"
+      "Heap (blocks): {} of {} blocks of 8 KByte ({})\n"
+      "Heap (blocks): {} of {} blocks of 16 KByte ({})\n"
+      "Heap (blocks): {} of {} blocks of 64 KByte ({})\n"
+      "Heap (blocks): {} of {} blocks of 128 KByte ({})\n"
+      "Heap (blocks): {} of {} blocks of 0.5 MByte ({})\n"
+      "Heap (blocks): {} of {} blocks of 1 MByte ({})\n"
+      "Heap (blocks): {} of {} blocks of 16 MByte ({})\n"
+      "Heap (blocks): {} of {} huge blocks ({})",
+      blocks_allocated, bytes_allocated, delta_blocks, delta_bytes, used_8, requested_8,
+      allocated_8, used_16, requested_16, allocated_16, used_32, requested_32, allocated_32,
+      used_64, requested_64, allocated_64, used_128, requested_128, allocated_128, used_512,
+      requested_512, allocated_512, used_1024, requested_1024, allocated_1024, used_2048,
+      requested_2048, allocated_2048, used_4096, requested_4096, allocated_4096, used_8192,
+      requested_8192, allocated_8192, used_16384, requested_16384, allocated_16384, used_65536,
+      requested_65536, allocated_65536, used_131072, requested_131072, allocated_131072,
+      used_524288, requested_524288, allocated_524288, used_1048576, requested_1048576,
+      allocated_1048576, used_16777216, requested_16777216, allocated_16777216, used_huge,
+      requested_huge, allocated_huge );
 
 
   LEAKLOGLN(

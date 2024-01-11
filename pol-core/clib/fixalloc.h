@@ -83,9 +83,8 @@ fixed_allocator<N, B>::~fixed_allocator()
 template <size_t N, size_t B>
 void fixed_allocator<N, B>::log_stuff( const std::string& detail )
 {
-  DEBUGLOG << "fixed_allocator[" << detail << "]: " << buffers << " Buffer with "
-           << sizeof( Buffer[B] ) << " Bytes allocated [" << requests << " Requests of "
-           << max_requests << "]\n";
+  DEBUGLOGLN( "fixed_allocator[{}]: {} Buffer with {} Bytes allocated [{} Requests of {}]", detail,
+              buffers, sizeof( Buffer[B] ), requests, max_requests );
 
   LEAKLOG( "{};{};{};{};", buffers, sizeof( Buffer[B] ), requests, max_requests );
 }

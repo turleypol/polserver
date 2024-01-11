@@ -258,10 +258,10 @@ void initLogging( LogFacility* logger );  // initalize the logging
 // log into script.log without \n addition
 #define SCRIPTLOG Clib::Logging::Message2<Clib::Logging::LogSink_scriptlog>::logmsg<false>
 
-// log into debug.log (if enabled)
-#define DEBUGLOG                                    \
+// log into debug.log (if enabled) with \n addition
+#define DEBUGLOGLN                                  \
   if ( !Clib::Logging::LogSink_debuglog::Disabled ) \
-  Clib::Logging::Message<Clib::Logging::LogSink_debuglog>().message()
+  Clib::Logging::Message2<Clib::Logging::LogSink_debuglog>::logmsg<true>
 
 // log into leak.log without \n addition
 #define LEAKLOG Clib::Logging::Message2<Clib::Logging::LogSink_leaklog>::logmsg<false>
