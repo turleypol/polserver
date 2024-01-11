@@ -243,7 +243,7 @@ void initLogging( LogFacility* logger );  // initalize the logging
 #define INFO_PRINTLN Clib::Logging::Message2<Clib::Logging::LogSink_cout>::logmsg<true>
 // log only into std::cout without \n addition
 #define INFO_PRINT Clib::Logging::Message2<Clib::Logging::LogSink_cout>::logmsg<false>
-// log only into std::cout if level is equal or higher
+// log only into std::cout if level is equal or higher with \n addition
 #define INFO_PRINTLN_TRACE( n )                    \
   if ( Plib::systemstate.config.debug_level >= n ) \
   INFO_PRINTLN
@@ -253,8 +253,11 @@ void initLogging( LogFacility* logger );  // initalize the logging
 // log only into std::cerr without \n addition
 #define ERROR_PRINT Clib::Logging::Message2<Clib::Logging::LogSink_cerr>::logmsg<false>
 
-// log into script.log
-#define SCRIPTLOG Clib::Logging::Message<Clib::Logging::LogSink_scriptlog>().message()
+// log into script.log with \n addition
+#define SCRIPTLOGLN Clib::Logging::Message2<Clib::Logging::LogSink_scriptlog>::logmsg<true>
+// log into script.log without \n addition
+#define SCRIPTLOG Clib::Logging::Message2<Clib::Logging::LogSink_scriptlog>::logmsg<false>
+
 // log into debug.log (if enabled)
 #define DEBUGLOG                                    \
   if ( !Clib::Logging::LogSink_debuglog::Disabled ) \
