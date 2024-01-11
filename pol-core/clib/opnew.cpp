@@ -219,13 +219,13 @@ void* do_new( size_t len )
 
 #if MEMORYLOGBLOCKS == 1
 #ifdef _WIN32
-      LEAKLOG.Format( "New 64 KB {:x} {}\n" ) << vp << len;
+      LEAKLOGLN( "New 64 KB {:x} {}", vp, len );
 #else
-      LEAKLOG.Format( "New 64 KB {:x} {} {} {} {} {} {} {} {} {}\n" )
-          << vp << len << __builtin_return_address( 0 ) << __builtin_return_address( 1 )
-          << __builtin_return_address( 2 ) << __builtin_return_address( 3 )
-          << __builtin_return_address( 4 ) << __builtin_return_address( 5 )
-          << __builtin_return_address( 6 ) << __builtin_return_address( 7 );
+      LEAKLOGLN( "New 64 KB {:x} {} {} {} {} {} {} {} {} {}", vp, len,
+                 __builtin_return_address( 0 ), __builtin_return_address( 1 ),
+                 __builtin_return_address( 2 ), __builtin_return_address( 3 ),
+                 __builtin_return_address( 4 ), __builtin_return_address( 5 ),
+                 __builtin_return_address( 6 ), __builtin_return_address( 7 ) );
 #endif
 #endif
     }
@@ -243,13 +243,13 @@ void* do_new( size_t len )
 
 #if MEMORYLOGBLOCKS == 1
 #ifdef _WIN32
-      LEAKLOG.Format( "New 0.5 MB {:x} {}\n" ) << vp << len;
+      LEAKLOGLN( "New 0.5 MB {:x} {}", vp, len );
 #else
-      LEAKLOG.Format( "New 0.5 M {:x} {} {} {} {} {} {} {} {} {}\n" )
-          << vp << len << __builtin_return_address( 0 ) << __builtin_return_address( 1 )
-          << __builtin_return_address( 2 ) << __builtin_return_address( 3 )
-          << __builtin_return_address( 4 ) << __builtin_return_address( 5 )
-          << __builtin_return_address( 6 ) << __builtin_return_address( 7 );
+      LEAKLOGLN( "New 0.5 M {:x} {} {} {} {} {} {} {} {} {}", vp, len,
+                 __builtin_return_address( 0 ), __builtin_return_address( 1 ),
+                 __builtin_return_address( 2 ), __builtin_return_address( 3 ),
+                 __builtin_return_address( 4 ), __builtin_return_address( 5 ),
+                 __builtin_return_address( 6 ), __builtin_return_address( 7 ) );
 #endif
 #endif
     }
@@ -273,13 +273,13 @@ void* do_new( size_t len )
 
 #if MEMORYLOGBLOCKS == 1
 #ifdef _WIN32
-      LEAKLOG.Format( "New huge {:x} {}\n" ) << vp << len;
+      LEAKLOGLN( "New huge {:x} {}", vp, len );
 #else
-      LEAKLOG.Format( "New huge {:x} {} {} {} {} {} {} {} {} {}\n" )
-          << vp << len << __builtin_return_address( 0 ) << __builtin_return_address( 1 )
-          << __builtin_return_address( 2 ) << __builtin_return_address( 3 )
-          << __builtin_return_address( 4 ) << __builtin_return_address( 5 )
-          << __builtin_return_address( 6 ) << __builtin_return_address( 7 );
+      LEAKLOGLN( "New huge {:x} {} {} {} {} {} {} {} {} {}", vp, len, __builtin_return_address( 0 ),
+                 __builtin_return_address( 1 ), __builtin_return_address( 2 ),
+                 __builtin_return_address( 3 ), __builtin_return_address( 4 ),
+                 __builtin_return_address( 5 ), __builtin_return_address( 6 ),
+                 __builtin_return_address( 7 ) );
 #endif
 #endif
     }
@@ -369,13 +369,13 @@ void do_delete( void* ptr )
 
 #if MEMORYLOGBLOCKS == 1
 #ifdef _WIN32
-      LEAKLOG.Format( "Delete 64 KB {:x} {}\n" ) << ptr << len;
+      LEAKLOGLN( "Delete 64 KB {:x} {}", ptr, len );
 #else
-      LEAKLOG.Format( "Delete 64 KB {:x} {} {} {} {} {} {} {} {} {}\n" )
-          << ptr << len << __builtin_return_address( 0 ) << __builtin_return_address( 1 )
-          << __builtin_return_address( 2 ) << __builtin_return_address( 3 )
-          << __builtin_return_address( 4 ) << __builtin_return_address( 5 )
-          << __builtin_return_address( 6 ) << __builtin_return_address( 7 );
+      LEAKLOGLN( "Delete 64 KB {:x} {} {} {} {} {} {} {} {} {}", ptr, len,
+                 __builtin_return_address( 0 ), __builtin_return_address( 1 ),
+                 __builtin_return_address( 2 ), __builtin_return_address( 3 ),
+                 __builtin_return_address( 4 ), __builtin_return_address( 5 ),
+                 __builtin_return_address( 6 ), __builtin_return_address( 7 ) );
 #endif
 #endif
     }
@@ -391,13 +391,13 @@ void do_delete( void* ptr )
 
 #if MEMORYLOGBLOCKS == 1
 #ifdef _WIN32
-      LEAKLOG.Format( "Delete 0.5 MB {:x} {}\n" ) << ptr << len;
+      LEAKLOGLN( "Delete 0.5 MB {:x} {}", ptr, len );
 #else
-      LEAKLOG.Format( "Delete 0.5 MB {:x} {} {} {} {} {} {} {} {} {}\n" )
-          << ptr << len << __builtin_return_address( 0 ) << __builtin_return_address( 1 )
-          << __builtin_return_address( 2 ) << __builtin_return_address( 3 )
-          << __builtin_return_address( 4 ) << __builtin_return_address( 5 )
-          << __builtin_return_address( 6 ) << __builtin_return_address( 7 );
+      LEAKLOGLN( "Delete 0.5 MB {:x} {} {} {} {} {} {} {} {} {}", ptr, len,
+                 __builtin_return_address( 0 ), __builtin_return_address( 1 ),
+                 __builtin_return_address( 2 ), __builtin_return_address( 3 ),
+                 __builtin_return_address( 4 ), __builtin_return_address( 5 ),
+                 __builtin_return_address( 6 ), __builtin_return_address( 7 ) );
 #endif
 #endif
     }
@@ -418,13 +418,13 @@ void do_delete( void* ptr )
 
 #if MEMORYLOGBLOCKS == 1
 #ifdef _WIN32
-      LEAKLOG.Format( "Delete huge {:x} {}\n" ) << ptr << len;
+      LEAKLOGLN( "Delete huge {:x} {}", ptr, len );
 #else
-      LEAKLOG.Format( "Delete huge {:x} {} {} {} {} {} {} {} {} {}\n" )
-          << ptr << len << __builtin_return_address( 0 ) << __builtin_return_address( 1 )
-          << __builtin_return_address( 2 ) << __builtin_return_address( 3 )
-          << __builtin_return_address( 4 ) << __builtin_return_address( 5 )
-          << __builtin_return_address( 6 ) << __builtin_return_address( 7 );
+      LEAKLOGLN( "Delete huge {:x} {} {} {} {} {} {} {} {} {}", ptr, len,
+                 __builtin_return_address( 0 ), __builtin_return_address( 1 ),
+                 __builtin_return_address( 2 ), __builtin_return_address( 3 ),
+                 __builtin_return_address( 4 ), __builtin_return_address( 5 ),
+                 __builtin_return_address( 6 ), __builtin_return_address( 7 ) );
 #endif
 #endif
     }
@@ -487,22 +487,20 @@ void PrintHeapData()
            << allocated_huge << ")\n";
 
 
-  LEAKLOG << blocks_allocated << "; " << bytes_allocated << "; " << delta_blocks << ";"
-          << delta_bytes << ";" << used_8 << ";" << requested_8 << ";" << allocated_8 << ";"
-          << used_16 << ";" << requested_16 << ";" << allocated_16 << ";" << used_32 << ";"
-          << requested_32 << ";" << allocated_32 << ";" << used_64 << ";" << requested_64 << ";"
-          << allocated_64 << ";" << used_128 << ";" << requested_128 << ";" << allocated_128 << ";"
-          << used_512 << ";" << requested_512 << ";" << allocated_512 << ";" << used_1024 << ";"
-          << requested_1024 << ";" << allocated_1024 << ";" << used_2048 << ";" << requested_2048
-          << ";" << allocated_2048 << ";" << used_4096 << ";" << requested_4096 << ";"
-          << allocated_4096 << ";" << used_8192 << ";" << requested_8192 << ";" << allocated_8192
-          << ";" << used_16384 << ";" << requested_16384 << ";" << allocated_16384 << ";"
-          << used_65536 << ";" << requested_65536 << ";" << allocated_65536 << ";" << used_131072
-          << ";" << requested_131072 << ";" << allocated_131072 << ";" << used_524288 << ";"
-          << requested_524288 << ";" << allocated_524288 << ";" << used_1048576 << ";"
-          << requested_1048576 << ";" << allocated_1048576 << ";" << used_16777216 << ";"
-          << requested_16777216 << ";" << allocated_16777216 << ";" << used_huge << ";"
-          << requested_huge << ";" << allocated_huge << "\n";
+  LEAKLOGLN(
+      "{}; {}; "
+      "{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}"
+      ";{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}",
+      blocks_allocated, bytes_allocated, delta_blocks, delta_bytes, used_8, requested_8,
+      allocated_8, used_16, requested_16, allocated_16, used_32, requested_32, allocated_32,
+      used_64, requested_64, allocated_64, used_128, requested_128, allocated_128, used_512,
+      requested_512, allocated_512, used_1024, requested_1024, allocated_1024, used_2048,
+      requested_2048, allocated_2048, used_4096, requested_4096, allocated_4096, used_8192,
+      requested_8192, allocated_8192, used_16384, requested_16384, allocated_16384, used_65536,
+      requested_65536, allocated_65536, used_131072, requested_131072, allocated_131072,
+      used_524288, requested_524288, allocated_524288, used_1048576, requested_1048576,
+      allocated_1048576, used_16777216, requested_16777216, allocated_16777216, used_huge,
+      requested_huge, allocated_huge );
 #endif
 }
 }  // namespace Clib

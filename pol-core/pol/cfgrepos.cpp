@@ -369,8 +369,8 @@ void ConfigFiles_log_stuff()
   DEBUGLOG << "ConfigFiles: " << Core::configurationbuffer.cfgfiles.size() << " files loaded and "
            << Core::configurationbuffer.oldcfgfiles.size() << " files 'removed'\n";
 
-  LEAKLOG << Core::configurationbuffer.cfgfiles.size() << ";"
-          << Core::configurationbuffer.oldcfgfiles.size() << ";";
+  LEAKLOG( "{};{};", Core::configurationbuffer.cfgfiles.size(),
+              Core::configurationbuffer.oldcfgfiles.size() );
 }
 #endif
 }  // namespace Core

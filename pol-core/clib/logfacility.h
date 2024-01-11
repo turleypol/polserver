@@ -262,8 +262,11 @@ void initLogging( LogFacility* logger );  // initalize the logging
 #define DEBUGLOG                                    \
   if ( !Clib::Logging::LogSink_debuglog::Disabled ) \
   Clib::Logging::Message<Clib::Logging::LogSink_debuglog>().message()
-// log into leak.log
-#define LEAKLOG Clib::Logging::Message<Clib::Logging::LogSink_leaklog>().message()
+
+// log into leak.log without \n addition
+#define LEAKLOG Clib::Logging::Message2<Clib::Logging::LogSink_leaklog>::logmsg<false>
+// log into leak.log with \n addition
+#define LEAKLOGLN Clib::Logging::Message2<Clib::Logging::LogSink_leaklog>::logmsg<true>
 
 // log into sink id need a call of OPEN_LOG before
 #define FLEXLOG( id ) \

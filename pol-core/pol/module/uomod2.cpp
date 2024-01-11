@@ -1972,7 +1972,7 @@ BObjectImp* PolCore::call_polmethod( const char* methodname, UOExecutor& ex )
 
         strftime( buffer, sizeof buffer, "%m/%d %H:%M:%S", &time_tm );
         DEBUGLOG << "[" << buffer << "] polcore().internal\n";
-        LEAKLOG << buffer << ";";
+        LEAKLOG( "{:%m/%d %T};", time_tm );
 
         bobject_alloc.log_stuff( "bobject" );
         uninit_alloc.log_stuff( "uninit" );

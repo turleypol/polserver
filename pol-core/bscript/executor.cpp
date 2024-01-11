@@ -3228,18 +3228,18 @@ void Executor::initForFnCall( unsigned in_PC )
     {
       if ( !data_shown )
       {
-        LEAKLOG << "ValueStack... ";
+        LEAKLOG( "ValueStack... " );
         data_shown = true;
       }
 
-      LEAKLOG << ValueStack.back()->impptr()->pack();
-      LEAKLOG << " [" << ValueStack.back()->impptr()->sizeEstimate() << "] ";
+      LEAKLOG( "{} [{}]", ValueStack.back()->impptr()->pack(),
+                  ValueStack.back()->impptr()->sizeEstimate() );
     }
     ValueStack.pop_back();
   }
   if ( Clib::memoryleak_debug )
     if ( data_shown )
-      LEAKLOG << " ...deleted\n";
+      LEAKLOGLN( " ...deleted" );
 #endif
 
   ValueStack.clear();
