@@ -1,6 +1,7 @@
 use os;
 use uo;
 use boat;
+use polsys;
 
 include "testutil";
 include "communication";
@@ -135,17 +136,17 @@ exported function move_boat_overflow()
   return 1;
 endfunction
 
-// Tests handling of pilot via boatref.setpilot() method and boatref.pilot member
+// Tests handling of pilot via boatref.set_pilot() method and boatref.pilot member
 // Also checks for mount piece functionality on both client and server.
 exported function boat_pilot_mbr_mth()
   MoveBoatXY(boat,10,50);
   var h:=getstandingheight(11,50, boat.z, boat.realm);
-  boat.setpilot(0);
+  boat.set_pilot(0);
   MoveObjectToLocation(char, 11,50,h.z);
 
   var res;
 
-  res := boat.setpilot(char);
+  res := boat.set_pilot(char);
   if (!res)
     return res;
   elseif (!boat.pilot)
@@ -154,7 +155,7 @@ exported function boat_pilot_mbr_mth()
     return ret_error($"New boat pilot ({boat.pilot.name}) does not equal the set pilot ({char.name})");
   endif
 
-  res := boat.setpilot(char);
+  res := boat.set_pilot(char);
   if (res != error)
     return ret_error($"Unexpected success when setting pilot of an already-pilotted boat: {res}");
   endif
@@ -184,7 +185,7 @@ exported function boat_pilot_mbr_mth()
     return ret_error("Character mount piece not found on list of equipped items from client.");
   endif
 
-  res := boat.setpilot(0);
+  res := boat.set_pilot(0);
   if (!res)
     return ret_error($"Unable to clear pilot: {res}");
   elseif (boat.pilot)
@@ -222,12 +223,12 @@ endfunction
 exported function boat_pilot_packets()
   MoveBoatXY(boat,10,50);
   var h:=getstandingheight(11,50, boat.z, boat.realm);
-  boat.setpilot(0);
+  boat.set_pilot(0);
   MoveObjectToLocation(char, 11,50,h.z);
 
   var res;
 
-  res := boat.setpilot(char);
+  res := boat.set_pilot(char);
   if (!res)
     return ret_error($"Failed to set pilot: {res}");
   endif
@@ -253,29 +254,29 @@ exported function boat_pilot_packets()
     clientcon.sendevent(struct{todo:="boat_move", arg:=struct{ serial := char.serial, direction := direction, speed := speed }, id:=0});
     res := get_boat_move_events(control_script_event, client_boat_move_event);
     if (!res)
-      boat.setpilot(0);
+      boat.set_pilot(0);
       return res;
     endif
 
     if (control_script_event.direction != direction)
-      boat.setpilot(0);
+      boat.set_pilot(0);
       return ret_error($"control_script_event.direction ({control_script_event.direction}) != direction ({direction})");
     elseif (client_boat_move_event.direction != direction)
-      boat.setpilot(0);
+      boat.set_pilot(0);
       return ret_error($"client_boat_move_event.direction ({client_boat_move_event.direction}) != direction ({direction})");
     elseif (control_script_event.speed != speed)
-      boat.setpilot(0);
+      boat.set_pilot(0);
       return ret_error($"control_script_event.speed ({control_script_event.speed}) != speed ({speed})");
     elseif (control_script_event.type != SYSEVENT_BOAT_MOVEMENT)
-      boat.setpilot(0);
+      boat.set_pilot(0);
       return ret_error($"control_script_event.type ({control_script_event.type}) != SYSEVENT_BOAT_MOVEMENT ({SYSEVENT_BOAT_MOVEMENT})");
     elseif (client_boat_move_event.speed != speed)
-      boat.setpilot(0);
+      boat.set_pilot(0);
       return ret_error($"client_boat_move_event.speed ({client_boat_move_event.speed}) != speed ({speed})");
     endif
   endforeach
 
-  res := boat.setpilot(0);
+  res := boat.set_pilot(0);
   if (!res)
     return ret_error($"Failed to clear pilot: {res}");
   endif
@@ -311,17 +312,17 @@ function get_boat_move_events(byref control_script_event, byref client_boat_move
   return 1;
 endfunction
 
-// Tests handling of pilot via boatref.setpilot() method and boatref.pilot member
+// Tests handling of pilot via boatref.set_pilot() method and boatref.pilot member
 // Also checks for mount piece functionality on both client and server.
 exported function boat_pilot_blocks_movement()
   MoveBoatXY(boat,10,50);
   var h:=getstandingheight(11,50, boat.z, boat.realm);
-  boat.setpilot(0);
+  boat.set_pilot(0);
   MoveObjectToLocation(char, 11,50,h.z);
 
   var res;
 
-  res := boat.setpilot(char);
+  res := boat.set_pilot(char);
   if (!res)
     return res;
   endif
@@ -331,10 +332,10 @@ exported function boat_pilot_blocks_movement()
   while (1)
     var ev:=waitForClient(0, {EVT_MOVED});
     if (!ev)
-      boat.setpilot(0);
+      boat.set_pilot(0);
       return ev;
     elseif (ev.ack)
-      boat.setpilot(0);
+      boat.set_pilot(0);
       return ret_error("Character unexpectedly successfully moved via client movement.");
     endif
     break;
@@ -342,11 +343,11 @@ exported function boat_pilot_blocks_movement()
 
   res := MoveObjectToLocation(char, char.x, char.y, char.z);
   if (res)
-    boat.setpilot(0);
+    boat.set_pilot(0);
     return ret_error("Character unexpectedly successfully moved via MoveObjectToLocation.");
   endif
 
-  boat.setpilot(0);
+  boat.set_pilot(0);
   return 1;
 endfunction
 
@@ -413,5 +414,148 @@ exported function boat_update_range()
       break;
     endif
   endwhile
+  return 1;
+endfunction
+
+exported function boat_nondefault_control_script()
+  var boat2:=CreateMultiAtLocation(20,30,-4,0x11002, CRMULTI_FACING_EAST);
+  if (!boat2)
+    return ret_error($"Failed to create boat: {boat2}");
+  endif
+
+  var expected := "testpkgs/boat/boat.ecl";
+  var actual := boat2.process.name;
+
+  if (actual != expected)
+    DestroyMulti(boat2);
+    return ret_error($"Boat 0x11002 control script mismatch, expected '{expected}' != actual '{actual}'");
+  endif
+
+  DestroyMulti(boat2);
+  return 1;
+endfunction
+
+exported function boat_bad_control_script_no_crash()
+  var boat2:=CreateMultiAtLocation(20,30,-4,0x11003, CRMULTI_FACING_EAST);
+  if (!boat2)
+    return ret_error($"Failed to create boat: {boat2}");
+  elseif (boat2.process)
+    DestroyMulti(boat2);
+    return ret_error($"Boat has an unexpected control script: {boat.process.name}");
+  endif
+
+  DestroyMulti(boat2);
+  return 1;
+endfunction
+
+exported function boat_alternate_multiid()
+  MoveBoatXY(boat,10,50);
+  var h:=getstandingheight(11,50, boat.z, boat.realm);
+  MoveObjectToLocation(char, 11,50,h.z);
+  while (!waitForClient(0, {EVT_OWNCREATE}))
+  endwhile
+
+  var res;
+
+  do
+    res := ensure_multiid(1, "Unexpected initial boat.multiid");
+
+    if (!res)
+      break;
+    endif
+
+    res := boat.set_alternate_multiid(1);
+
+    if (!res)
+      res := ret_error($"Unable to set_alternate_multiid(1): {res}");
+      break;
+    endif
+
+    res := ensure_multiid(5, "Unexpected first alternate boat.multiid");
+
+    if (!res)
+      break;
+    endif
+
+    res := boat.set_alternate_multiid(2);
+
+    if (!res)
+      res := ret_error($"Unable to set_alternate_multiid(2): {res}");
+      break;
+    endif
+
+    res := ensure_multiid(9, "Unexpected second alternate boat.multiid");
+
+    if (!res)
+      break;
+    endif
+
+    res := boat.set_alternate_multiid(3);
+
+    if (res != error)
+      res := ret_error($"Unexpected success for set_alternate_multiid(3): {res}");
+      break;
+    endif
+
+    res := ensure_multiid(9, "Unexpected change in boat.multiid after invalid boat.set_alternate_multiid(3)");
+
+    if (!res)
+      break;
+    endif
+
+    res := boat.set_alternate_multiid(0);
+
+    if (!res)
+      res := ret_error($"Unable to set_alternate_multiid(0): {res.errortext}");
+      break;
+    endif
+
+    res := ensure_multiid(1, "Unexpected base boat.multiid");
+
+    if (!res)
+      break;
+    endif
+
+    res := 1;
+  dowhile (0);
+
+  return res;
+endfunction
+
+function ensure_multiid(multiid, errormsg)
+  if (boat.multiid != multiid)
+    return ret_error($"{errormsg}, expected {multiid} != actual {boat.multiid}");
+  endif
+
+  Clear_Event_Queue();
+
+  clientcon.sendevent(struct{todo:="list_objects", id:=0});
+  while (1)
+    var res:=waitForClient(0, {EVT_LIST_OBJS});
+    if (!res)
+      return res;
+    endif
+
+    foreach obj in (res.objs)
+      if (obj.serial == boat.serial)
+        if (obj.graphic != multiid)
+          return ret_error("client boat.graphic mismatch, expected {multiid} != actual {obj.graphic}");
+        else
+          return 1;
+        endif
+      endif
+    endforeach
+    break;
+  endwhile
+  return ret_error("client object list does not contain boat");
+endfunction
+
+exported function boat_alternate_multiid_itemdesc()
+  var actual := GetItemDescriptor(0x11000).AlternateMultiID;
+  var expected := array{4, 8};
+  if (actual != expected)
+    return ret_error($"Expected AlternateMultiID to be {expected}, got {actual}");
+  endif
+
   return 1;
 endfunction
