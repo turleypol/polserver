@@ -305,7 +305,7 @@ BObjectImp* Executor::getParamImp( unsigned param, BObjectImp::BObjectType type 
   {
     if ( !IS_DEBUGLOG_DISABLED )
     {
-      std::string tmp = fmt::format( "Script Error in '{}' PC={}:\n" scriptname(), PC );
+      std::string tmp = fmt::format( "Script Error in '{}' PC={}:\n", scriptname(), PC );
       if ( current_module_function )
         fmt::format_to( std::back_inserter( tmp ), "\tCall to function {}:\n",
                         current_module_function->name.get() );
