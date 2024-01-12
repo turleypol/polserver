@@ -191,7 +191,7 @@ private:
 template <typename Sink>
 struct Message
 {
-  template <bool newline, std::string id = "", typename Str, typename... Args>
+  template <bool newline, typename Str, typename... Args>
   static void logmsg( Str const& format, Args&&... args )
   {
     try
@@ -199,17 +199,33 @@ struct Message
       if constexpr ( sizeof...( args ) == 0 )
       {
         if constexpr ( newline )
-          send( std::string( format ) + '\n', id );
+          send( std::string( format ) + '\n' );
         else
-          send( std::string( format ), id );
+          send( std::string( format ) );
       }
       else
       {
         if constexpr ( newline )
-          send( fmt::format( format, args... ) + '\n', id );
+          send( fmt::format( format, args... ) + '\n' );
         else
-          send( fmt::format( format, args... ), id );
+          send( fmt::format( format, args... ) );
       }
+    }
+    catch ( fmt::format_error& )
+    {
+      send( std::string( "failed to format" ) + format + '\n' );
+    }
+  }
+
+  template <typename Str, typename... Args>
+  static void logmsglnID( const std::string& id, Str const& format, Args&&... args )
+  {
+    try
+    {
+      if constexpr ( sizeof...( args ) == 0 )
+        send( std::string( format ) + '\n', id );
+      else
+        send( fmt::format( format, args... ) + '\n', id );
     }
     catch ( fmt::format_error& )
     {
@@ -218,7 +234,7 @@ struct Message
   }
 
 private:
-  static void send( std::string msg, std::string id );
+  static void send( std::string msg, std::string id = {} );
 };
 
 extern LogFacility* global_logger;        // pointer to the instance of the main class
@@ -279,9 +295,8 @@ void initLogging( LogFacility* logger );  // initalize the logging
 #define FLEXLOG( id )                                                                       \
   Clib::Logging::MessageOld<Clib::Logging::LogSink_flexlog>( Clib::Logging::logWithID, id ) \
       .message()
-#define FLEXLOGLN( id )                                                             \
-  Clib::Logging::Message<Clib::Logging::LogSink_flexlog>( Clib::Logging::logWithID, \
-                                                          id )::logmsg<true, id>
+#define FLEXLOGLN( id ) \
+  Clib::Logging::Message<Clib::Logging::LogSink_flexlog>( Clib::Logging::logWithID, id )::logmsglnID
 // open logfile of given filename, returns unique unsigned int for usage of logging/closing
 #define OPEN_FLEXLOG( filename, open_timestamp ) \
   Clib::Logging::global_logger->registerFlexLogger( filename, open_timestamp )
