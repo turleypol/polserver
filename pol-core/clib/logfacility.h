@@ -179,7 +179,7 @@ class MessageOld
 public:
   MessageOld();
   MessageOld( LogWithIDTag, const std::string& id );
-  ~OldMessage();  // auto flush
+  ~MessageOld();  // auto flush
 
   fmt::Writer& message() { return *( _formater.get() ); }
 
@@ -191,7 +191,7 @@ private:
 template <typename Sink>
 struct Message
 {
-  template <bool newline, std::string id = {}, typename Str, typename... Args>
+  template <bool newline, std::string id = "", typename Str, typename... Args>
   static void logmsg( Str const& format, Args&&... args )
   {
     try
@@ -279,6 +279,9 @@ void initLogging( LogFacility* logger );  // initalize the logging
 #define FLEXLOG( id )                                                                       \
   Clib::Logging::MessageOld<Clib::Logging::LogSink_flexlog>( Clib::Logging::logWithID, id ) \
       .message()
+#define FLEXLOGLN( id )                                                             \
+  Clib::Logging::Message<Clib::Logging::LogSink_flexlog>( Clib::Logging::logWithID, \
+                                                          id )::logmsg<true, id>
 // open logfile of given filename, returns unique unsigned int for usage of logging/closing
 #define OPEN_FLEXLOG( filename, open_timestamp ) \
   Clib::Logging::global_logger->registerFlexLogger( filename, open_timestamp )
