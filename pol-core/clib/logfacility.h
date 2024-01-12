@@ -194,19 +194,26 @@ struct Message2
   template <bool newline, typename Str, typename... Args>
   static void logmsg( Str const& format, Args&&... args )
   {
-    if constexpr ( sizeof...( args ) == 0 )
+    try
     {
-      if constexpr ( newline )
-        send( std::string( format ) + '\n' );
+      if constexpr ( sizeof...( args ) == 0 )
+      {
+        if constexpr ( newline )
+          send( std::string( format ) + '\n' );
+        else
+          send( std::string( format ) );
+      }
       else
-        send( std::string( format ) );
+      {
+        if constexpr ( newline )
+          send( fmt::format( format, args... ) + '\n' );
+        else
+          send( fmt::format( format, args... ) );
+      }
     }
-    else
+    catch ( fmt::format_error& )
     {
-      if constexpr ( newline )
-        send( fmt::format( format, args... ) + '\n' );
-      else
-        send( fmt::format( format, args... ) );
+      send( std::string( "failed to format" ) + format + '\n' );
     }
   }
 
