@@ -401,9 +401,10 @@ bool ScriptScheduler::logScriptVariables( const std::string& name ) const
     log += "\nGlobals\n";
     for ( const auto& global : exec->Globals2 )
     {
-      fmt::format_to( std::back_inserter( log ), "  {} ({}) {}\n",
-                      prog->globalvarnames.size() > i ? prog->globalvarnames[i] : i,
-                      global->impref().typeOf(), global->impref().sizeEstimate() );
+      fmt::format_to(
+          std::back_inserter( log ), "  {} ({}) {}\n",
+          prog->globalvarnames.size() > i ? prog->globalvarnames[i] : std::to_string( i ),
+          global->impref().typeOf(), global->impref().sizeEstimate() );
     }
     log += "Locals\n";
     auto log_stack = [&]( unsigned PC, Bscript::BObjectRefVec* locals )
@@ -431,8 +432,8 @@ bool ScriptScheduler::logScriptVariables( const std::string& name ) const
     log_stack( exec->PC, exec->Locals2 );
     for ( int stack_i = static_cast<int>( exec->ControlStack.size() ) - 1; stack_i >= 0; --stack_i )
     {
-      fmt::format_to( std::back_inserter( log ), "Stack {}\n", stack_i )
-          log_stack( exec->ControlStack[stack_i].PC, exec->upperLocals2[stack_i] );
+      fmt::format_to( std::back_inserter( log ), "Stack {}\n", stack_i );
+      log_stack( exec->ControlStack[stack_i].PC, exec->upperLocals2[stack_i] );
     }
   }
   auto logf = OPEN_FLEXLOG( "log/scriptmemory.log", false );
