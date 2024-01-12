@@ -13,6 +13,7 @@
 #include "ucfg.h"
 #include "uvars.h"
 #include <format/format.h>
+#include <iterator>
 
 #include "pol_global_config.h"
 
@@ -96,19 +97,17 @@ void MemoryUsage::log()
   auto log = OPEN_FLEXLOG( "log/memoryusage.log", false );
   if ( needs_header )
   {
-    fmt::Writer header;
-    header << "Time";
+    std::string header = "Time";
     for ( const auto& entry : logs )
-      header << " ;" << entry.first;
-    FLEXLOG( log ) << header.str() << "\n";
+      fmt::format_to( std::back_inserter( header ), " ;{}", entry.first );
+    FLEXLOG( log )( header );
   }
 
 
-  fmt::Writer line;
-  line << GET_LOG_FILESTAMP;
+  std::string line = GET_LOG_FILESTAMP;
   for ( const auto& entry : logs )
-    line << " ;" << entry.second;
-  FLEXLOG( log ) << line.str() << "\n";
+    fmt::format_to( std::back_inserter( line ), " ;{}", entry.second );
+  FLEXLOG( log )( line );
 
   CLOSE_FLEXLOG( log );
 }
