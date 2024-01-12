@@ -12,7 +12,7 @@
 #include "state.h"
 #include "ucfg.h"
 #include "uvars.h"
-#include <format/format.h>
+#include <fmt/format.h>
 #include <iterator>
 
 #include "pol_global_config.h"
@@ -100,14 +100,13 @@ void MemoryUsage::log()
     std::string header = "Time";
     for ( const auto& entry : logs )
       fmt::format_to( std::back_inserter( header ), " ;{}", entry.first );
-    FLEXLOG( log )( header );
+    FLEXLOGLN( log )( header );
   }
-
 
   std::string line = GET_LOG_FILESTAMP;
   for ( const auto& entry : logs )
     fmt::format_to( std::back_inserter( line ), " ;{}", entry.second );
-  FLEXLOG( log )( line );
+  FLEXLOGLN( log )( line );
 
   CLOSE_FLEXLOG( log );
 }
