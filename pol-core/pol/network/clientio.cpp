@@ -6,6 +6,7 @@
 
 
 #include <errno.h>
+#include <iterator>
 #include <mutex>
 #include <stddef.h>
 #include <string>
@@ -268,10 +269,9 @@ void Client::transmit( const void* data, int len )
     Clib::SpinLockGuard guard( _fpLog_lock );
     if ( !fpLog.empty() )
     {
-      fmt::Writer tmp;
-      tmp << "Server -> Client: 0x" << fmt::hexu( msgtype ) << ", " << len << " bytes\n";
-      Clib::fdump( tmp, data, len );
-      FLEXLOG( fpLog ) << tmp.str() << "\n";
+      std::string tmp = fmt::format( "Server -> Client: {:#X}, {} bytes\n", msgtype, len );
+      Clib::fdump( std::back_inserter( tmp ), data, len );
+      FLEXLOGLN( fpLog, tmp );
     }
   }
 

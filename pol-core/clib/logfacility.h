@@ -291,10 +291,7 @@ void initLogging( LogFacility* logger );  // initalize the logging
 // log into leak.log with \n addition
 #define LEAKLOGLN Clib::Logging::Message<Clib::Logging::LogSink_leaklog>::logmsg<true>
 
-// log into sink id need a call of OPEN_LOG before
-#define FLEXLOG( id )                                                                       \
-  Clib::Logging::MessageOld<Clib::Logging::LogSink_flexlog>( Clib::Logging::logWithID, id ) \
-      .message()
+// log into sink id with \n addition, need a call of OPEN_LOG before
 #define FLEXLOGLN Clib::Logging::Message<Clib::Logging::LogSink_flexlog>::logmsglnID
 // open logfile of given filename, returns unique unsigned int for usage of logging/closing
 #define OPEN_FLEXLOG( filename, open_timestamp ) \
