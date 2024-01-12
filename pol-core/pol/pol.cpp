@@ -1015,7 +1015,7 @@ int xmain_inner( bool testing )
                 POL_COPYRIGHT );
   if ( testing )
     POLLOG_INFO2( "TESTING MODE\n" );
-
+  INFO_PRINTLN( "{blunb", 1 );
 #ifndef NDEBUG
   POLLOG_INFO << "Sizes: \n"
               << "   UObject:    " << sizeof( Core::UObject ) << "\n"
