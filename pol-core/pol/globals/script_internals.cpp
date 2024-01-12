@@ -1,5 +1,6 @@
 #include "script_internals.h"
 
+#include <iterator>
 #include <string.h>
 
 #include "../../clib/logfacility.h"
@@ -82,46 +83,49 @@ ScriptScheduler::Memory ScriptScheduler::estimateSize( bool verbose ) const
   }
   usage.scriptstorage_count = scrstore.size();
 
-  fmt::Writer verbose_w;
+  std::string verbose_w;
   if ( verbose )
-    verbose_w << GET_LOG_FILESTAMP << "\n";
+    verbose_w = GET_LOG_FILESTAMP + "\n";
   usage.script_size += 3 * sizeof( UOExecutor** ) + runlist.size() * sizeof( UOExecutor* );
   if ( verbose )
-    verbose_w << "runlist:\n";
+    verbose_w += "runlist:\n";
   for ( const auto& exec : runlist )
   {
     if ( exec != nullptr )
     {
       usage.script_size += exec->sizeEstimate();
       if ( verbose )
-        verbose_w << exec->scriptname() << " " << exec->sizeEstimate() << "\n";
+        fmt::format_to(std::back_inserter(verbose_w),
+            "{} {} \n",  exec->scriptname() ,exec->sizeEstimate();
     }
   }
   usage.script_count += runlist.size();
 
   usage.script_size += 3 * sizeof( UOExecutor** ) + ranlist.size() * sizeof( UOExecutor* );
   if ( verbose )
-    verbose_w << "ranlist:\n";
+    verbose_w += "ranlist:\n";
   for ( const auto& exec : ranlist )
   {
     if ( exec != nullptr )
     {
       usage.script_size += exec->sizeEstimate();
       if ( verbose )
-        verbose_w << exec->scriptname() << " " << exec->sizeEstimate() << "\n";
+        fmt::format_to(std::back_inserter(verbose_w),"{} {}\n",
+        exec->scriptname(), exec->sizeEstimate();
     }
   }
   usage.script_count += ranlist.size();
 
   if ( verbose )
-    verbose_w << "holdlist:\n";
+    verbose_w += "holdlist:\n";
   for ( const auto& hold : holdlist )
   {
     if ( hold.second != nullptr )
     {
       usage.script_size += hold.second->sizeEstimate();
       if ( verbose )
-        verbose_w << hold.second->scriptname() << " " << hold.second->sizeEstimate() << "\n";
+        fmt::format_to( std::back_inserter( verbose_w ), "{} {}\n", hold.second->scriptname(),
+                        hold.second->sizeEstimate() );
     }
     usage.script_size += sizeof( Core::polclock_t ) + ( sizeof( void* ) * 3 + 1 ) / 2;
   }
@@ -129,35 +133,37 @@ ScriptScheduler::Memory ScriptScheduler::estimateSize( bool verbose ) const
 
   usage.script_size += 3 * sizeof( void* );
   if ( verbose )
-    verbose_w << "notimeoutholdlist:\n";
+    verbose_w += "notimeoutholdlist:\n";
   for ( const auto& hold : notimeoutholdlist )
   {
     if ( hold != nullptr )
     {
       usage.script_size += hold->sizeEstimate() + 3 * sizeof( void* );
       if ( verbose )
-        verbose_w << hold->scriptname() << " " << hold->sizeEstimate() << "\n";
+        fmt::format_to( std::back_inserter( verbose_w ), "{} {}\n", hold->scriptname(),
+                        hold->sizeEstimate() );
     }
   }
   usage.script_count += notimeoutholdlist.size();
 
   usage.script_size += 3 * sizeof( void* );
   if ( verbose )
-    verbose_w << "debuggerholdlist:\n";
+    verbose_w += "debuggerholdlist:\n";
   for ( const auto& hold : debuggerholdlist )
   {
     if ( hold != nullptr )
     {
       usage.script_size += hold->sizeEstimate() + 3 * sizeof( void* );
       if ( verbose )
-        verbose_w << hold->scriptname() << " " << hold->sizeEstimate() << "\n";
+        fmt::format_to( std::back_inserter( verbose_w ), "{} {}\n", hold->scriptname(),
+                        hold->sizeEstimate() );
     }
   }
   usage.script_count += debuggerholdlist.size();
   if ( verbose )
   {
     auto log = OPEN_FLEXLOG( "log/memoryusagescripts.log", false );
-    FLEXLOG( log ) << verbose_w.str();
+    FLEXLOGLN( log, verbose_w );  // extra newline at the end,seperates the old from the new entry
 
     CLOSE_FLEXLOG( log );
   }

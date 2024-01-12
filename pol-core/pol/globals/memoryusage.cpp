@@ -100,13 +100,13 @@ void MemoryUsage::log()
     std::string header = "Time";
     for ( const auto& entry : logs )
       fmt::format_to( std::back_inserter( header ), " ;{}", entry.first );
-    FLEXLOGLN( log )( header );
+    FLEXLOGLN( log, header );
   }
 
   std::string line = GET_LOG_FILESTAMP;
   for ( const auto& entry : logs )
     fmt::format_to( std::back_inserter( line ), " ;{}", entry.second );
-  FLEXLOGLN( log )( line );
+  FLEXLOGLN( log, line );
 
   CLOSE_FLEXLOG( log );
 }

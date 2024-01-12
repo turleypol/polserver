@@ -295,8 +295,7 @@ void initLogging( LogFacility* logger );  // initalize the logging
 #define FLEXLOG( id )                                                                       \
   Clib::Logging::MessageOld<Clib::Logging::LogSink_flexlog>( Clib::Logging::logWithID, id ) \
       .message()
-#define FLEXLOGLN( id ) \
-  Clib::Logging::Message<Clib::Logging::LogSink_flexlog>( Clib::Logging::logWithID, id )::logmsglnID
+#define FLEXLOGLN Clib::Logging::Message<Clib::Logging::LogSink_flexlog>::logmsglnID
 // open logfile of given filename, returns unique unsigned int for usage of logging/closing
 #define OPEN_FLEXLOG( filename, open_timestamp ) \
   Clib::Logging::global_logger->registerFlexLogger( filename, open_timestamp )
