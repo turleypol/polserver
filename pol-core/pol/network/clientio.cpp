@@ -75,7 +75,7 @@ PacketLog ThreadedClient::stop_log()
   if ( !fpLog.empty() )
   {
     auto time_tm = Clib::localtime( time( nullptr ) );
-    FLEXLOG( fpLog ) << "Log closed at %s" << asctime( &time_tm ) << "\n";
+    FLEXLOGLN( fpLog, "Log closed at {:%c}", time_tm );
     CLOSE_FLEXLOG( fpLog );
     fpLog.clear();
     return PacketLog::Success;

@@ -366,8 +366,7 @@ bool ScriptScheduler::find_exec( unsigned int pid, UOExecutor** exec )
 
 bool ScriptScheduler::logScriptVariables( const std::string& name ) const
 {
-  fmt::Writer log;
-  log << GET_LOG_FILESTAMP << " " << name << "\n";
+  std::string log = fmt::format( "{} {}\n", GET_LOG_FILESTAMP, name );
   std::vector<Bscript::Executor*> scripts;
   for ( const auto& exec : runlist )
   {
@@ -391,30 +390,27 @@ bool ScriptScheduler::logScriptVariables( const std::string& name ) const
   }
   for ( const auto& exec : scripts )
   {
-    log << "Size: " << exec->sizeEstimate();
+    fmt::format_to( std::back_inserter( log ), "Size: {}", exec->sizeEstimate() );
     auto prog = const_cast<Bscript::EScriptProgram*>( exec->prog() );
     if ( prog->read_dbg_file() != 0 )
     {
-      log << " failed to load debug info\n";
+      log += " failed to load debug info\n";
       break;
     }
     size_t i = 0;
-    log << "\nGlobals\n";
+    log += "\nGlobals\n";
     for ( const auto& global : exec->Globals2 )
     {
-      log << "  ";
-      if ( prog->globalvarnames.size() > i )
-        log << prog->globalvarnames[i];
-      else
-        log << i;
-      ++i;
-      log << " (" << global->impref().typeOf() << ") " << global->impref().sizeEstimate() << "\n";
+      fmt::format_to( std::back_inserter( log ), "  {} ({}) {}\n",
+                      prog->globalvarnames.size() > i ? prog->globalvarnames[i] : i,
+                      global->impref().typeOf(), global->impref().sizeEstimate() );
     }
-    log << "Locals\n";
+    log += "Locals\n";
     auto log_stack = [&]( unsigned PC, Bscript::BObjectRefVec* locals )
     {
-      log << "  " << prog->dbg_filenames[prog->dbg_filenum[PC]] << ": " << prog->dbg_linenum[PC]
-          << "\n";
+      fmt::format_to( std::back_inserter( log ), "  {}: {}\n",
+                      prog->dbg_filenames[prog->dbg_filenum[PC]], prog->dbg_linenum[PC] );
+
 
       unsigned block = prog->dbg_ins_blocks[PC];
       size_t left = locals->size();
@@ -428,19 +424,19 @@ bool ScriptScheduler::logScriptVariables( const std::string& name ) const
         size_t varidx = left - 1 - progblock.parentvariables;
         left--;
         Bscript::BObjectImp* ptr = ( *locals )[varidx]->impptr();
-        log << "  " << progblock.localvarnames[varidx] << " (" << ptr->typeOf() << ") "
-            << ptr->sizeEstimate() << "\n";
+        fmt::format_to( std::back_inserter( log ), "  {} ({}) {}\n",
+                        progblock.localvarnames[varidx], ptr->typeOf(), ptr->sizeEstimate() );
       }
     };
     log_stack( exec->PC, exec->Locals2 );
     for ( int stack_i = static_cast<int>( exec->ControlStack.size() ) - 1; stack_i >= 0; --stack_i )
     {
-      log << "Stack " << stack_i << "\n";
-      log_stack( exec->ControlStack[stack_i].PC, exec->upperLocals2[stack_i] );
+      fmt::format_to( std::back_inserter( log ), "Stack {}\n", stack_i )
+          log_stack( exec->ControlStack[stack_i].PC, exec->upperLocals2[stack_i] );
     }
   }
   auto logf = OPEN_FLEXLOG( "log/scriptmemory.log", false );
-  FLEXLOG( logf ) << log.str();
+  FLEXLOGLN( logf, log );
   CLOSE_FLEXLOG( logf );
   return true;
 }
