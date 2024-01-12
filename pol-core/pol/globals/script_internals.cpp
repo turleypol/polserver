@@ -95,8 +95,8 @@ ScriptScheduler::Memory ScriptScheduler::estimateSize( bool verbose ) const
     {
       usage.script_size += exec->sizeEstimate();
       if ( verbose )
-        fmt::format_to(std::back_inserter(verbose_w),
-            "{} {} \n",  exec->scriptname() ,exec->sizeEstimate();
+        fmt::format_to( std::back_inserter( verbose_w ), "{} {} \n", exec->scriptname(),
+                        exec->sizeEstimate() );
     }
   }
   usage.script_count += runlist.size();
@@ -110,8 +110,8 @@ ScriptScheduler::Memory ScriptScheduler::estimateSize( bool verbose ) const
     {
       usage.script_size += exec->sizeEstimate();
       if ( verbose )
-        fmt::format_to(std::back_inserter(verbose_w),"{} {}\n",
-        exec->scriptname(), exec->sizeEstimate();
+        fmt::format_to( std::back_inserter( verbose_w ), "{} {}\n", exec->scriptname(),
+                        exec->sizeEstimate() );
     }
   }
   usage.script_count += ranlist.size();
