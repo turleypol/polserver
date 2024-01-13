@@ -450,9 +450,8 @@ void UBoat::send_display_boat( Network::Client* client )
     if ( object_count >= max_count )
     {
       POLLOG_INFOLN( "Boat {:#X} at {} with {} items is too full - truncating display boat packet",
-                     serial, pos(), travellers_.size() )
-      ");
-          break;
+                     serial, pos(), travellers_.size() );
+      break;
     }
     u8 flags = 0;
     if ( obj->ismobile() )
