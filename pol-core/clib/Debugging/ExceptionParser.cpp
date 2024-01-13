@@ -616,7 +616,7 @@ void ExceptionParser::logAllStackTraces()
     {
       fprintf( stderr, "%s",
                fmt::format( "pthread_kill() failed to send SIGUSR1 to thread {}({})\n",
-                            threadsDesc[threadID], , threadID )
+                            threadsDesc[threadID], threadID )
                    .c_str() );
     }
   }
