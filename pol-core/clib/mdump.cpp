@@ -231,7 +231,7 @@ protected:
   {
   }
   virtual void OnDbgHelpErr( LPCSTR szFuncName, DWORD gle, DWORD64 addr ) override{};
-  virtual void OnOutput( LPCSTR szText ) override { _log << szText; }
+  virtual void OnOutput( LPCSTR szText ) override { _log += szText; }
   virtual void OnCallstackEntry( CallstackEntryType eType, CallstackEntry& entry ) override
   {
     try
