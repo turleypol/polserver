@@ -461,7 +461,7 @@ BObjectImp* OSExecutorModule::mf_SysLog()
     if ( Plib::systemstate.config.enable_colored_output && color->length() )
     {
       INFO_PRINTLN( "{}syslog [{}]: {}{}", color->value(), exec.scriptname(), strval,
-                   Clib::Logging::CONSOLE_RESET_COLOR );
+                    Clib::Logging::CONSOLE_RESET_COLOR );
     }
     else
     {
@@ -477,7 +477,7 @@ BObjectImp* OSExecutorModule::mf_SysLog()
     }
     else
     {
-      POLLOG_INFO << strval << "\n";
+      POLLOG_INFOLN( strval );
     }
   }
   return new BLong( 1 );
@@ -925,7 +925,7 @@ bool OSExecutorModule::signal_event( BObjectImp* imp )
           {
             NPCExecutorModule* npcemod = static_cast<NPCExecutorModule*>( em );
             INFO_PRINTLN( "NPC Serial: {:#x}{}", npcemod->controlled_npc().serial,
-                         npcemod->controlled_npc().pos() );
+                          npcemod->controlled_npc().pos() );
           }
 
           INFO_PRINTLN( "Event: {}", ob->getStringRep() );
