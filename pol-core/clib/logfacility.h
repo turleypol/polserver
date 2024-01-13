@@ -245,18 +245,15 @@ void initLogging( LogFacility* logger );  // initalize the logging
 
 // several helper defines
 
-// log into pol.log and std::cerr
+// log into pol.log and std::cerr with \n addition
 #define POLLOG_ERRORLN                                                            \
   Clib::Logging::Message<Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cerr, \
                                                      Clib::Logging::LogSink_pollog>>::logmsg<true>
-#define POLLOG_ERROR_N2                                                           \
+// log into pol.log and std::cerr without \n addition
+#define POLLOG_ERROR                                                              \
   Clib::Logging::Message<Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cerr, \
                                                      Clib::Logging::LogSink_pollog>>::logmsg<true>
 
-#define POLLOG_ERROR                                                                             \
-  Clib::Logging::MessageOld<                                                                     \
-      Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cerr, Clib::Logging::LogSink_pollog>>() \
-      .message()
 // log into pol.log and std::cout
 #define POLLOG_INFO                                                                              \
   Clib::Logging::MessageOld<                                                                     \

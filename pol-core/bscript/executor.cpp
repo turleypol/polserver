@@ -3094,7 +3094,7 @@ void Executor::execInstr()
       tmp += "done = true\n";
 
     seterror( true );
-    POLLOG_ERROR_N2( tmp );
+    POLLOG_ERROR( tmp );
 
     show_context( onPC );
   }

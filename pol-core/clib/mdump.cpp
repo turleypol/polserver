@@ -219,7 +219,7 @@ public:
   virtual ~StackWalkerLogger()
   {
     if ( !_log.empty() )
-      POLLOG_ERROR_N2( _log );
+      POLLOG_ERROR( _log );
   }
   std::string _log;
 

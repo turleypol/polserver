@@ -597,7 +597,7 @@ static void handleStackTraceRequestLinux( int signal, siginfo_t* signalInfo, voi
   printf( "%s", output.c_str() );
 
   // print to error output
-  POLLOG_ERROR_N2( output );
+  POLLOG_ERROR( output );
 
   // wait here for logging facility to make sure everything was processed
   if ( Clib::Logging::global_logger )
