@@ -178,7 +178,7 @@ int Executor::getParams( unsigned howMany )
     {
       if ( ValueStack.empty() )
       {
-        POLLOG_ERROR.Format( "Fatal error: Value Stack Empty! ({},PC={})\n" ) << prog_->name << PC;
+        POLLOG_ERRORLN( "Fatal error: Value Stack Empty! ({},PC={})", prog_->name, PC );
         seterror( true );
         return -1;
       }
@@ -808,7 +808,7 @@ BObjectRef Executor::getObjRef( void )
 {
   if ( ValueStack.empty() )
   {
-    POLLOG_ERROR.Format( "Fatal error: Value Stack Empty! ({},PC={})\n" ) << prog_->name << PC;
+    POLLOG_ERRORLN( "Fatal error: Value Stack Empty! ({},PC={})", prog_->name, PC );
     seterror( true );
     return BObjectRef( UninitObject::create() );
   }
@@ -3082,21 +3082,19 @@ void Executor::execInstr()
   }
   catch ( std::exception& ex )
   {
-    fmt::Writer tmp;
-    tmp << "Exception in: " << prog_->name.get() << " PC=" << onPC << ": " << ex.what() << "\n";
+    std::string tmp =
+        fmt::format( "Exception in: {} PC={}: {}\n", prog_->name.get(), onPC, ex.what() );
     if ( !run_ok_ )
-      tmp << "run_ok_ = false\n";
+      tmp += "run_ok_ = false\n";
     if ( PC < nLines )
-    {
-      tmp << " PC < nLines: (" << PC << " < " << nLines << ") \n";
-    }
+      fmt::format_to( std::back_inserter( tmp ), " PC < nLines: ({} < {})\n", PC, nLines );
     if ( error_ )
-      tmp << "error_ = true\n";
+      tmp += "error_ = true\n";
     if ( done )
-      tmp << "done = true\n";
+      tmp += "done = true\n";
 
     seterror( true );
-    POLLOG_ERROR << tmp.str();
+    POLLOG_ERROR_N2( tmp );
 
     show_context( onPC );
   }
@@ -3104,7 +3102,7 @@ void Executor::execInstr()
   catch ( ... )
   {
     seterror( true );
-    POLLOG_ERROR << "Exception in " << prog_->name.get() << ", PC=" << onPC << ": unclassified\n";
+    POLLOG_ERRORLN( "Exception in {}, PC={}: unclassified", prog_->name.get(), onPC );
 
     show_context( onPC );
   }
