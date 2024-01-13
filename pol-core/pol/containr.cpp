@@ -200,7 +200,7 @@ void UContainer::add( Items::Item* item )
   // passert( can_add( *item ) );
   if ( orphan() )
   {
-    POLLOG_ERROR << "Trying to add item to orphan container!\n";
+    POLLOG_ERRORLN( "Trying to add item to orphan container!" );
     passert_always( 0 );  // TODO remove once found
   }
   INC_PROFILEVAR( container_adds );
@@ -326,7 +326,7 @@ void UContainer::extract( Contents& cnt )
 {
   if ( orphan() )
   {
-    POLLOG_ERROR << "Trying to add item to orphan container!\n";
+    POLLOG_ERRORLN( "Trying to add item to orphan container!" );
     passert_always( 0 );  // TODO remove once found
   }
   contents_.swap( cnt );
@@ -357,7 +357,7 @@ void UContainer::swap( UContainer& cont )
 
   if ( orphan() )
   {
-    POLLOG_ERROR << "Trying to add item to orphan container!\n";
+    POLLOG_ERRORLN( "Trying to add item to orphan container!" );
     passert_always( 0 );  // TODO remove once found
   }
   contents_.swap( cont.contents_ );

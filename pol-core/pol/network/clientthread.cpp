@@ -239,18 +239,18 @@ bool client_io_thread( Network::Client* client, bool login )
   }
   catch ( std::string& str )
   {
-    POLLOG_ERROR.Format( "Client#{}: Exception in i/o thread: {}! (checkpoint={})\n" )
-        << client->instance_ << str << client->session()->checkpoint;
+    POLLOG_ERRORLN( "Client#{}: Exception in i/o thread: {}! (checkpoint={})", client->instance_,
+                    str, client->session()->checkpoint );
   }
   catch ( const char* msg )
   {
-    POLLOG_ERROR.Format( "Client#{}: Exception in i/o thread: {}! (checkpoint={})\n" )
-        << client->instance_ << msg << client->session()->checkpoint;
+    POLLOG_ERRORLN( "Client#{}: Exception in i/o thread: {}! (checkpoint={})", client->instance_,
+                    msg, client->session()->checkpoint );
   }
   catch ( std::exception& ex )
   {
-    POLLOG_ERROR.Format( "Client#{}: Exception in i/o thread: {}! (checkpoint={})\n" )
-        << client->instance_ << ex.what() << client->session()->checkpoint;
+    POLLOG_ERRORLN( "Client#{}: Exception in i/o thread: {}! (checkpoint={})", client->instance_,
+                    ex.what(), client->session()->checkpoint );
   }
   CLIENT_CHECKPOINT( 20 );
 
@@ -413,10 +413,10 @@ bool process_data( Network::ThreadedClient* session )
         {
           // Such combinations of instance and acct happen quite often. Maybe this should become
           // Client->full_id() or something.
-          POLLOG_ERROR.Format( "Client#{} ({}, Acct {}) sent non-allowed message type 0x{:X}.\n" )
-              << session->myClient.instance_ << session->ipaddrAsString()
-              << ( session->myClient.acct ? session->myClient.acct->name() : "unknown" )
-              << (int)msgtype;
+          POLLOG_ERRORLN( "Client#{} ({}, Acct {}) sent non-allowed message type {:#X}.",
+                          session->myClient.instance_, session->ipaddrAsString(),
+                          ( session->myClient.acct ? session->myClient.acct->name() : "unknown" ),
+                          (int)msgtype );
         }
       }
       session->recv_state = Network::ThreadedClient::RECV_STATE_MSGTYPE_WAIT;
@@ -655,8 +655,8 @@ void Client::handle_msg( unsigned char* pktbuffer, int pktlen )
   }
   catch ( std::exception& ex )
   {
-    POLLOG_ERROR.Format( "Client#{}: Exception in message handler 0x{:X}: {}\n" )
-        << instance_ << (int)msgtype << ex.what();
+    POLLOG_ERRORLN( "Client#{}: Exception in message handler {:#X}: {}", instance_, (int)msgtype,
+                    ex.what() );
 
     fmt::Writer tmp;
     Clib::fdump( tmp, pktbuffer, pktlen );

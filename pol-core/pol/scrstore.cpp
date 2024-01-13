@@ -63,7 +63,7 @@ ref_ptr<Bscript::EScriptProgram> find_script( const std::string& name, bool comp
   {
     if ( complain_if_not_found )
     {
-      POLLOG_ERROR << "Unable to read script '" << pathname << "'\n";
+      POLLOG_ERRORLN( "Unable to read script '{}'", pathname );
     }
     return ref_ptr<Bscript::EScriptProgram>( nullptr );
   }
@@ -94,7 +94,7 @@ ref_ptr<Bscript::EScriptProgram> find_script2( const ScriptDef& script, bool com
   {
     if ( complain_if_not_found )
     {
-      POLLOG_ERROR << "Unable to read script '" << script.name() << "'\n";
+      POLLOG_ERRORLN( "Unable to read script '{}'", script.name() );
     }
     return ref_ptr<Bscript::EScriptProgram>( nullptr );
   }

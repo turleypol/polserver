@@ -537,7 +537,7 @@ void SetVersionDetailStruct( const std::string& ver, VersionDetailStruct& detail
     detail.minor = 0;
     detail.rev = 0;
     detail.patch = 0;
-    POLLOG_ERROR.Format( "Malformed client version string in Packethook: {}\n" ) << ver;
+    POLLOG_ERRORLN( "Malformed client version string in Packethook: {}", ver );
   }
 }
 

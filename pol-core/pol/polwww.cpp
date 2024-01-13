@@ -106,7 +106,7 @@ void load_mime_config( void )
   }
   catch ( ... )
   {
-    POLLOG_ERROR << "Error while parsing www.cfg\n";
+    POLLOG_ERRORLN( "Error while parsing www.cfg" );
   }
 }
 

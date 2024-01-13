@@ -2001,13 +2001,13 @@ BObjectImp* PolCore::call_polmethod( const char* methodname, UOExecutor& ex )
       }
       else if ( type == 3 )
       {
-        POLLOG_ERROR << "Forcing crash\n";
+        POLLOG_ERRORLN( "Forcing crash" );
         int* i = nullptr;
         *i = 1;
       }
       else if ( type == 4 )
       {
-        POLLOG_ERROR << "Forcing assert crash\n";
+        POLLOG_ERRORLN( "Forcing assert crash" );
         passert_always( false );
       }
       else if ( type == 5 )
@@ -2175,9 +2175,9 @@ void handle_selcolor( Client* client, PKTBI_95* msg )
       valstack = new BObject( new BError( "Client selected an out-of-range color" ) );
 
       // unsigned short newcolor = ((color - 2) % 1000) + 2;
-      POLLOG_ERROR.Format( "Client #{:d} (account {}) selected an out-of-range color 0x{:X}\n" )
-          << static_cast<unsigned long>( client->instance_ )
-          << ( ( client->acct != nullptr ) ? client->acct->name() : "unknown" ) << color;
+      POLLOG_ERRORLN( "Client #{:d} (account {}) selected an out-of-range color {:#X}",
+                      static_cast<unsigned long>( client->instance_ ),
+                      ( ( client->acct != nullptr ) ? client->acct->name() : "unknown" ), color );
     }
 
     // client->gd->selcolor_uoemod->uoexec.ValueStack.back().set( new BObject( new BLong( color )

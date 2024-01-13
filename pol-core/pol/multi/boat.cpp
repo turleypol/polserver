@@ -1389,10 +1389,10 @@ void UBoat::transform_components( const BoatShape& old_boatshape, Realms::Realm*
       if ( item->container != nullptr || item->has_gotten_by() )
       {
         u32 containerSerial = ( item->container != nullptr ) ? item->container->serial : 0;
-        POLLOG_ERROR.Format(
+        POLLOG_ERRORLN(
             "Boat component is gotten or in a container and couldn't be moved together with the "
-            "boat: serial 0x{:X}\n, graphic: 0x{:X}, container: 0x{:X}." )
-            << item->serial << item->graphic << containerSerial;
+            "boat: serial {:#X}\n, graphic: {:#X}, container: {:#X}.",
+            item->serial, item->graphic, containerSerial );
         continue;
       }
 
@@ -1666,8 +1666,8 @@ void UBoat::readProperties( Clib::ConfigElem& elem )
 
   if ( prog.get() == nullptr )
   {
-    POLLOG_ERROR.Format( "Could not start script {}, boat: serial 0x{:X}" )
-        << control_script.c_str() << this->serial;
+    POLLOG_ERRORLN( "Could not start script {}, boat: serial {:#X}", control_script.c_str(),
+                    this->serial );
     return;
   }
 
@@ -1675,8 +1675,8 @@ void UBoat::readProperties( Clib::ConfigElem& elem )
 
   if ( script == nullptr )
   {
-    POLLOG_ERROR.Format( "Could not start script {}, boat: serial 0x{:X}" )
-        << control_script.c_str() << this->serial;
+    POLLOG_ERRORLN( "Could not start script {}, boat: serial {:#X}", control_script.c_str(),
+                    this->serial );
   }
   else
   {
@@ -1765,8 +1765,8 @@ Bscript::BObjectImp* UBoat::scripted_create( const Items::ItemDesc& descriptor, 
 
   if ( prog.get() == nullptr )
   {
-    POLLOG_ERROR.Format( "Could not start script {}, boat: serial 0x{:X}" )
-        << control_script.c_str() << boat->serial;
+    POLLOG_ERRORLN( "Could not start script {}, boat: serial {:#X}", control_script.c_str(),
+                    boat->serial );
 
     return boatref;
   }
@@ -1775,8 +1775,8 @@ Bscript::BObjectImp* UBoat::scripted_create( const Items::ItemDesc& descriptor, 
 
   if ( script == nullptr )
   {
-    POLLOG_ERROR.Format( "Could not start script {}, boat: serial 0x{:X}" )
-        << control_script.c_str() << boat->serial;
+    POLLOG_ERRORLN( "Could not start script {}, boat: serial {:#X}", control_script.c_str(),
+                    boat->serial );
   }
   else
   {

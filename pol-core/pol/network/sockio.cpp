@@ -93,14 +93,14 @@ int init_sockets_library( void )
   res = WSAStartup( WSOCK_VERSION, &wsa_data );
   if ( res < 0 )
   {
-    POLLOG_ERROR << "Error starting Winsock 1.1: " << res << "\n";
+    POLLOG_ERRORLN( "Error starting Winsock 1.1: {}", res );
     return -1;
   }
 #endif
 
   if ( gethostname( Core::networkManager.hostname, sizeof Core::networkManager.hostname ) )
   {
-    POLLOG_ERROR << "gethostname failed: " << socket_errno << "\n";
+    POLLOG_ERRORLN( "gethostname failed: {}", socket_errno );
   }
   search_name( Core::networkManager.hostname );
 
@@ -121,7 +121,7 @@ int deinit_sockets_library( void )
   res = WSACleanup();
   if ( res < 0 )
   {
-    POLLOG_ERROR << "Error stopping Winsock 1.1: " << res << "\n";
+    POLLOG_ERRORLN( "Error stopping Winsock 1.1: {}", res );
     return -1;
   }
 #endif

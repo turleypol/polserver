@@ -213,7 +213,7 @@ void decay_single_thread( void* arg )
   }
   if ( !total_grid_count )
   {
-    POLLOG_ERROR << "No realm grids?!\n";
+    POLLOG_ERRORLN( "No realm grids?!" );
     return;
   }
   // sweep every realm ~10minutes -> 36ms for 6 realms
@@ -269,7 +269,7 @@ void decay_single_thread( void* arg )
           wx = 0;
           if ( ++wy >= gridy )
           {
-            POLLOG_ERROR << "SHOULD NEVER HAPPEN\n";
+            POLLOG_ERRORLN( "SHOULD NEVER HAPPEN" );
             wy = 0;
           }
         }

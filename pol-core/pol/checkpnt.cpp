@@ -27,7 +27,7 @@ Checkpoint::Checkpoint( const char* file ) : _file( file ), _line( 0 ) {}
 Checkpoint::~Checkpoint()
 {
   if ( _line )
-    POLLOG_ERROR << "Abnormal end after checkpoint: File " << _file << ", line " << _line << "\n";
+    POLLOG_ERRORLN( "Abnormal end after checkpoint: File {}, line {}", _file, _line );
 }
 }
 }

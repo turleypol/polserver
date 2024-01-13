@@ -183,8 +183,8 @@ bool UHouse::add_component( Items::Item* item, s32 xoff, s32 yoff, s16 zoff )
   {
     // Printing an error because this is supposed to not happen,
     // so it's probably a bug.
-    POLLOG_ERROR << "Out-of-range coordinates while trying to add Item "
-                 << fmt::hexu( item->serial ) << " to House " << fmt::hexu( serial ) << '\n';
+    POLLOG_ERRORLN( "Out-of-range coordinates while trying to add Item {:#X} to House {:#X}",
+                    item->serial, serial );
     return false;
   }
   item->setposition( Core::Pos4d( newx, newy, newz, realm() ) );
