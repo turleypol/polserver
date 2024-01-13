@@ -19,7 +19,7 @@ void checkpoint( const char* msg, unsigned short minlvl /* = 11 */ )
   Core::stateManager.last_checkpoint = msg;
   if ( Plib::systemstate.config.loglevel >= minlvl )
   {
-    POLLOG_INFO << "checkpoint: " << msg << "\n";
+    POLLOG_INFOLN( "checkpoint: {}", msg );
   }
 }
 

@@ -245,17 +245,17 @@ void decay_single_thread( void* arg )
                 stateManager.decay_statistics.temp_count_active );
             stateManager.decay_statistics.temp_count_decayed = 0;
             stateManager.decay_statistics.temp_count_active = 0;
-            POLLOG_INFO.Format(
+            POLLOG_INFOLN(
                 "DECAY STATISTICS: decayed: max {} mean {} variance {} runs {} active max {} mean "
-                "{} variance {} runs {}\n" )
-                << stateManager.decay_statistics.decayed.max()
-                << stateManager.decay_statistics.decayed.mean()
-                << stateManager.decay_statistics.decayed.variance()
-                << stateManager.decay_statistics.decayed.count()
-                << stateManager.decay_statistics.active_decay.max()
-                << stateManager.decay_statistics.active_decay.mean()
-                << stateManager.decay_statistics.active_decay.variance()
-                << stateManager.decay_statistics.active_decay.count();
+                "{} variance {} runs {}",
+                stateManager.decay_statistics.decayed.max(),
+                stateManager.decay_statistics.decayed.mean(),
+                stateManager.decay_statistics.decayed.variance(),
+                stateManager.decay_statistics.decayed.count(),
+                stateManager.decay_statistics.active_decay.max(),
+                stateManager.decay_statistics.active_decay.mean(),
+                stateManager.decay_statistics.active_decay.variance(),
+                stateManager.decay_statistics.active_decay.count() );
           }
           init = false;
         }
