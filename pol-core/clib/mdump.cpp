@@ -128,7 +128,7 @@ void HiddenMiniDumper::Initialize()
 
   if ( szResult )
   {
-    POLLOG_INFO << szResult << "\n";
+    POLLOG_INFOLN( szResult );
     InstallOldStructuredExceptionHandler();
   }
 }

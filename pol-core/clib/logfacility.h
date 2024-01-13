@@ -259,9 +259,14 @@ void initLogging( LogFacility* logger );  // initalize the logging
   Clib::Logging::MessageOld<                                                                     \
       Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>() \
       .message()
-#define POLLOG_INFO2                                                              \
+// log into pol.log and std::cout eith \n addition
+#define POLLOG_INFOLN                                                             \
   Clib::Logging::Message<Clib::Logging::LogSink_dual<Clib::Logging::LogSink_cout, \
                                                      Clib::Logging::LogSink_pollog>>::logmsg<true>
+// log into pol.log and std::cout without \n addition
+#define POLLOG_INFO_N2                                \
+  Clib::Logging::Message<Clib::Logging::LogSink_dual< \
+      Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>::logmsg<false>
 
 // log into pol.log
 #define POLLOG Clib::Logging::MessageOld<Clib::Logging::LogSink_pollog>().message()
