@@ -15,13 +15,13 @@
 // FILE: MSJEXHND.CPP
 //==========================================
 
-#include "msjexhnd.h"
-#include "logfacility.h"
 #include <algorithm>
 #include <imagehlp.h>
 #include <stdio.h>
 #include <tchar.h>
 
+#include "logfacility.h"
+#include "msjexhnd.h"
 namespace Pol
 {
 namespace Clib
