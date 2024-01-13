@@ -203,7 +203,7 @@ public:
       POLLOG_ERRORLN(
           "ERROR: Write: trying to write {} on offset {} for pkt {:#X}/{:#X} and only {} is "
           "allowed!",
-          (T)x, offset, (int)ID, SUB, std::numeric_limits<T>::max() );
+          (int)x, offset, (int)ID, SUB, std::numeric_limits<T>::max() );
       PktWriterTemplateSpecs::WriteHelper<T>::Write( std::numeric_limits<T>::max(), buffer,
                                                      offset );
     }
@@ -235,7 +235,7 @@ public:
       POLLOG_ERRORLN(
           "ERROR: WriteFlipped: trying to write {} on offset {} for pkt {:#X}/{:#X} and only {} "
           "is allowed!",
-          (T)x, offset, (int)ID, SUB, std::numeric_limits<T>::max() );
+          (int)x, offset, (int)ID, SUB, std::numeric_limits<T>::max() );
       PktWriterTemplateSpecs::WriteHelper<T>::WriteFlipped( std::numeric_limits<T>::max(), buffer,
                                                             offset );
     }
