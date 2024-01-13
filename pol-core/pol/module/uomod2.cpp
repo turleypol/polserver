@@ -389,7 +389,7 @@ void oldBuyHandler( Client* client, PKTBI_3B* msg )
 
   if ( total_cost > INT_MAX )
   {
-    POLLOG_INFO_N2(
+    POLLOG_INFO(
         "\n"
         "Warning: Character {:#X} tried to buy items with an overflow from vendor {:#X}.\n",
         client->chr->serial, vendor->serial );
@@ -2663,7 +2663,7 @@ void popup_menu_selection_made( Network::Client* client, u32 serial, u16 id )
          serial )
       uoex.ValueStack.back().set( new BObject( new BLong( id ) ) );
     else
-      POLLOG_INFO_N2( "{}/{} send an unexpected popup reply for {:#X}.\n", client->acct->name(),
+      POLLOG_INFO( "{}/{} send an unexpected popup reply for {:#X}.\n", client->acct->name(),
                       client->chr->name(), serial );
   }
 

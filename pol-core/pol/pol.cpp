@@ -1162,7 +1162,7 @@ int xmain_inner( bool testing )
   Core::checkpoint( "starting client listeners" );
   Core::start_uo_client_listeners();
 
-  POLLOG_INFO_N2( "Initialization complete.  POL is active.  Ctrl-C to stop.\n\n" );
+  POLLOG_INFO( "Initialization complete.  POL is active.  Ctrl-C to stop.\n\n" );
 
   DEINIT_STARTLOG();
   POLLOG.Format( "{0:s} ({1:s}) compiled on {2:s} running.\n" )
@@ -1217,7 +1217,7 @@ int xmain_inner( bool testing )
   if ( Core::should_write_data() )
   {
     Core::CoreSetSysTrayToolTip( "Writing data files", Core::ToolTipPriorityShutdown );
-    POLLOG_INFO_N2( "Writing data files..." );
+    POLLOG_INFO( "Writing data files..." );
 
     Core::PolLock lck;
     unsigned int dirty, clean;

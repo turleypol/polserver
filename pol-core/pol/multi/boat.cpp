@@ -314,9 +314,8 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
   {
     if ( object_count >= max_count )
     {
-      POLLOG_INFO.Format(
-          "Boat 0x{:X} at ({},{},{}) with {} items is too full - truncating movement packet\n",
-          serial, x(), y(), z(), travellers_.size() );
+      POLLOG_INFOLN( "Boat {:#X} at {} with {} items is too full - truncating movement packet",
+                     serial, pos(), travellers_.size() );
       break;
     }
     if ( component == nullptr || component->orphan() )
@@ -332,9 +331,8 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
   {
     if ( object_count >= max_count )
     {
-      POLLOG_INFO.Format(
-          "Boat 0x{:X} at ({},{},{}) with {} items is too full - truncating movement packet\n",
-          serial, x(), y(), z(), travellers_.size() );
+      POLLOG_INFOLN( "Boat {:#X} at {} with {} items is too full - truncating movement packet",
+                     serial, pos(), travellers_.size() );
       break;
     }
     UObject* obj = travellerRef.get();
@@ -420,9 +418,8 @@ void UBoat::send_display_boat( Network::Client* client )
   {
     if ( object_count >= max_count )
     {
-      POLLOG_INFO.Format(
-          "Boat 0x{:X} at ({},{},{}) with {} items is too full - truncating display boat packet\n",
-          serial, x(), y(), z(), travellers_.size() );
+      POLLOG_INFOLN( "Boat {:#X} at {} with {} items is too full - truncating display boat packet",
+                     serial, pos(), travellers_.size() );
       break;
     }
     if ( component == nullptr || component->orphan() )
@@ -452,10 +449,10 @@ void UBoat::send_display_boat( Network::Client* client )
       continue;
     if ( object_count >= max_count )
     {
-      POLLOG_INFO.Format(
-          "Boat 0x{:X} at ({},{},{}) with {} items is too full - truncating display boat packet\n",
-          serial, x(), y(), z(), travellers_.size() );
-      break;
+      POLLOG_INFOLN( "Boat {:#X} at {} with {} items is too full - truncating display boat packet",
+                     serial, pos(), travellers_.size() )
+      ");
+          break;
     }
     u8 flags = 0;
     if ( obj->ismobile() )
@@ -1462,10 +1459,11 @@ void UBoat::move_components( Realms::Realm* /*oldrealm*/ )
       if ( item->container != nullptr || item->has_gotten_by() )
       {
         u32 containerSerial = ( item->container != nullptr ) ? item->container->serial : 0;
-        POLLOG_INFO.Format(
+        POLLOG_INFOLN(
             "Boat component is gotten or in a container and couldn't be moved together with the "
-            "boat: serial 0x{:X}\n, graphic: 0x{:X}, container: 0x{:X}." )
-            << item->serial << item->graphic << containerSerial;
+            "boat: serial {:#X}\n"
+            ", graphic: {:#X}, container: {:#X}.",
+            item->serial, item->graphic, containerSerial );
         continue;
       }
 

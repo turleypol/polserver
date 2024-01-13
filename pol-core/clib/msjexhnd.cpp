@@ -406,7 +406,7 @@ int __cdecl MSJExceptionHandler::_tprintf( const TCHAR* format, ... )
   va_end( argptr );
 
   //    WriteFile( m_hReportFile, szBuff, retValue * sizeof(TCHAR), &cbWritten, 0 );
-  POLLOG_INFO_N2( szBuff );
+  POLLOG_INFO( szBuff );
 
   return retValue;
 }

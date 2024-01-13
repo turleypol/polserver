@@ -909,7 +909,7 @@ void http_func( SOCKET client_socket )
     }
     else
     {
-      POLLOG_INFO << "HTTP server: I can't handle pagetype '" << pagetype << "'\n";
+      POLLOG_INFOLN( "HTTP server: I can't handle pagetype '{}'", pagetype );
       http_internal_error( sck, page );
     }
   }

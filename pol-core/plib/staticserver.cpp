@@ -44,7 +44,7 @@ StaticServer::StaticServer( const RealmDescriptor& descriptor )
 
 void StaticServer::Validate() const
 {
-  POLLOG_INFO_N2( "Validating statics files: " );
+  POLLOG_INFO( "Validating statics files: " );
   Tools::Timer<> timer;
   for ( unsigned short y = 0; y < _descriptor.height; y += STATICBLOCK_CHUNK )
   {

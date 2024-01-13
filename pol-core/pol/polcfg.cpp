@@ -312,11 +312,11 @@ void PolConfig::reload_pol_cfg()
     if ( ( newst.st_mtime != PolConfig::pol_cfg_stat.st_mtime ) &&
          ( newst.st_mtime < time( nullptr ) - 10 ) )
     {
-      POLLOG_INFO << "Reloading pol.cfg...";
+      POLLOG_INFO( "Reloading pol.cfg..." );
       memcpy( &PolConfig::pol_cfg_stat, &newst, sizeof PolConfig::pol_cfg_stat );
 
       PolConfig::read_pol_config( false );
-      POLLOG_INFO << "Done!\n";
+      POLLOG_INFOLN( "Done!" );
     }
   }
   catch ( std::exception& ex )

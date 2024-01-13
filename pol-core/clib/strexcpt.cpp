@@ -58,7 +58,7 @@ void se_trans_func( unsigned int n, EXCEPTION_POINTERS* ex )
     }
     tmp += '\n';
   }
-  POLLOG_INFO_N2( tmp );
+  POLLOG_INFO( tmp );
 
 
   POLLOG_INFOLN(
@@ -155,7 +155,7 @@ void se_trans_func( unsigned int n, EXCEPTION_POINTERS* ex )
       eip = new_eip;
       tmp += "\n";
     }
-    POLLOG_INFO_N2( tmp );
+    POLLOG_INFO( tmp );
   }
 
   if ( n == EXCEPTION_ACCESS_VIOLATION )

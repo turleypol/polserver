@@ -33,18 +33,18 @@ namespace Network
 void set_ip_address( const char* ip )
 {
   Clib::stracpy( Core::networkManager.ipaddr_str, ip, sizeof Core::networkManager.ipaddr_str );
-  POLLOG_INFO << "Internet IP address is " << Core::networkManager.ipaddr_str << "\n";
+  POLLOG_INFOLN( "Internet IP address is {}", Core::networkManager.ipaddr_str );
 }
 void set_lan_address( const char* ip )
 {
   Clib::stracpy( Core::networkManager.lanaddr_str, ip, sizeof Core::networkManager.lanaddr_str );
-  POLLOG_INFO << "LAN IP address is " << Core::networkManager.lanaddr_str << "\n";
+  POLLOG_INFOLN( "LAN IP address is {}", Core::networkManager.lanaddr_str );
 }
 
 void search_name( const char* hostname )
 {
   struct sockaddr_in server;
-  POLLOG_INFO << "hostname is " << hostname << "\n";
+  POLLOG_INFOLN( "hostname is {}", hostname );
   struct hostent* he = gethostbyname( hostname );
   for ( int i = 0; ( he != nullptr ) && ( he->h_addr_list[i] != nullptr ); ++i )
   {
@@ -52,7 +52,7 @@ void search_name( const char* hostname )
 
     const in_addr ad = server.sin_addr;
     const char* adstr = inet_ntoa( ad );
-    POLLOG_INFO << "address: " << adstr << "\n";
+    POLLOG_INFOLN( "address: {}", adstr );
 
 #ifdef _WIN32
     const unsigned long ip = ad.S_un.S_addr;

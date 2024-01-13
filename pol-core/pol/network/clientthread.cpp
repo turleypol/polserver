@@ -73,7 +73,7 @@ bool threadedclient_io_step( Network::ThreadedClient* session, Clib::SinglePolle
   SESSION_CHECKPOINT( 1 );
   if ( !clientpoller.prepare( session->have_queued_data() ) )
   {
-    POLLOG_INFO_N2( "Client#{}: ERROR - couldn't poll socket={}\n", session->myClient.instance_,
+    POLLOG_INFO( "Client#{}: ERROR - couldn't poll socket={}\n", session->myClient.instance_,
                     session->csocket );
 
     if ( session->csocket != INVALID_SOCKET )
@@ -518,7 +518,7 @@ void report_weird_packet( Network::ThreadedClient* session, const std::string& w
   if ( session->bytes_received <= 64 )
   {
     Clib::fdump( std::back_inserter( tmp ), session->buffer, session->bytes_received );
-    POLLOG_INFO_N2( tmp );
+    POLLOG_INFO( tmp );
   }
   else
   {

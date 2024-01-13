@@ -14,10 +14,11 @@ void SuspiciousActs::GumpResponseWasUnexpected( Network::Client* client, u32 gum
 {
   if ( Plib::systemstate.config.show_warning_gump )
   {
-    POLLOG_INFO.Format(
-        "\nWarning: Character 0x{:X} sent an unexpected gump menu selection. Gump ID 0x{:X}, "
-        "button ID 0x{:X}\n" )
-        << client->chr->serial << gumpid << buttonid;
+    POLLOG_INFOLN(
+        "\n"
+        "Warning: Character {:#X} sent an unexpected gump menu selection. Gump ID {:#X}, "
+        "button ID {:#X}",
+        client->chr->serial, gumpid, buttonid );
   }
 }
 
