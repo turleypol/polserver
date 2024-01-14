@@ -1,13 +1,14 @@
 #ifndef CLIB_STREAMSAVER_H
 #define CLIB_STREAMSAVER_H
 
+#include <format/format.h>
 #include <iosfwd>
 #include <memory>
 #include <string>
 #include <thread>
 
 #include "message_queue.h"
-#include <format/format.h>
+
 #if 0
 #include "timer.h"
 #endif

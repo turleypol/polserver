@@ -38,7 +38,7 @@
 #include "pktbothid.h"
 #include "pktdef.h"
 #include "pktinid.h"
-#include <format/format.h>
+
 
 #define CLIENT_CHECKPOINT( x ) client->session()->checkpoint = x
 #define SESSION_CHECKPOINT( x ) session->checkpoint = x

@@ -7,7 +7,7 @@
 #include "bobject.h"
 #include "impstr.h"
 
-#include <format/format.h>
+
 #include <sstream>
 
 namespace Pol
