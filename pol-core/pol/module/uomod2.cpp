@@ -2364,8 +2364,7 @@ void read_book_page_handler( Client* client, PKTBI_66* msg )
   Item* book = find_legal_item( client->chr, book_serial );
   if ( book == nullptr )
   {
-    POLLOG.Format( "Unable to find book 0x{:X} for character 0x{:X}\n" )
-        << book_serial << client->chr->serial;
+    POLLOGLN( "Unable to find book {:#X} for character {:#X}", book_serial, client->chr->serial );
     return;
   }
 
@@ -2482,8 +2481,7 @@ void open_book_handler( Client* client, PKTBI_93* msg )
   Item* book = find_legal_item( client->chr, book_serial );
   if ( book == nullptr )
   {
-    POLLOG.Format( "Unable to find book 0x{:X} for character 0x{:X}\n" )
-        << book_serial << client->chr->serial;
+    POLLOGLN( "Unable to find book {:#X} for character {:#X}", book_serial, client->chr->serial );
     return;
   }
   BObjectImpRefVec params;

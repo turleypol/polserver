@@ -162,8 +162,10 @@ void log_all_script_cycle_counts( bool clear_counters )
     total_instr += scr.second->instr_cycles;
   }
 
-  POLLOG.Format( "Scheduler passes: {}\nScript passes:    {}\n" )
-      << ( GET_PROFILEVAR( scheduler_passes ) ) << stateManager.profilevars.script_passes;
+  POLLOGLN(
+      "Scheduler passes: {}\n"
+      "Script passes:    {}",
+      ( GET_PROFILEVAR( scheduler_passes ) ), stateManager.profilevars.script_passes );
 
   fmt::Writer tmp;
   tmp.Format( "{:<38} {:>12} {:>6} {:>12} {:>6}\n" ) << "Script"

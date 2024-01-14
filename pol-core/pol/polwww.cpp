@@ -120,12 +120,12 @@ void config_web_server()
     {
       if ( gamestate.wwwroot_pkg == nullptr )
       {
-        POLLOG.Format( "wwwroot package is {}\n" ) << pkg->desc();
+        POLLOGLN( "wwwroot package is {}", pkg->desc() );
         gamestate.wwwroot_pkg = pkg;
       }
       else
       {
-        POLLOG.Format( "Package {} also provides a wwwroot, ignoring\n" ) << pkg->desc();
+        POLLOGLN( "Package {} also provides a wwwroot, ignoring", pkg->desc() );
       }
     }
   }
@@ -543,7 +543,7 @@ bool start_http_script( Clib::Socket& sck, const std::string& page, Plib::Packag
 
   if ( !page_sd.exists() )
   {
-    POLLOG.Format( "WebServer: not found: {}\n" ) << page_sd.name();
+    POLLOGLN( "WebServer: not found: {}", page_sd.name() );
     http_not_found( sck, page );
     return false;
   }

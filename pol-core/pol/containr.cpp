@@ -540,8 +540,8 @@ void UContainer::remove( Items::Item* item )
 {
   if ( item->container != this )
   {
-    POLLOG.Format( "UContainer::remove(Item*), serial=0x{:X}, item=0x{:X}, item->cont=0x{:X}\n" )
-        << serial << item->serial << item->container->serial;
+    POLLOGLN( "UContainer::remove(Item*), serial={:#X}, item={:#X}, item->cont={:#X}", serial,
+              item->serial, item->container->serial );
     passert_always( item->container == this );
     int* p = nullptr;
     *p = 6;

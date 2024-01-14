@@ -140,8 +140,7 @@ void loginserver_login( Network::Client* client, PKTIN_80* msg )
   {
     send_login_error( client, LOGIN_ERROR_WRONG_PASSWORD );
     client->Disconnect();
-    POLLOG.Format( "Incorrect password for account {} from {}\n" )
-        << acct->name() << client->ipaddrAsString();
+    POLLOGLN( "Incorrect password for account {} from {}", acct->name(), client->ipaddrAsString() );
     return;
   }
   else
@@ -190,8 +189,7 @@ void loginserver_login( Network::Client* client, PKTIN_80* msg )
       }
       else
       {
-        POLLOG.Format( "gethostbyname(\"{}\") failed for server {}\n" )
-            << server->hostname << server->name;
+        POLLOGLN( "gethostbyname(\"{}\") failed for server {}", server->hostname, server->name );
         continue;
       }
     }
@@ -216,8 +214,7 @@ void loginserver_login( Network::Client* client, PKTIN_80* msg )
 
   if ( servcount == 0 )
   {
-    POLLOG.Format( "No applicable servers for client connecting from {}\n" )
-        << client->ipaddrAsString();
+    POLLOGLN( "No applicable servers for client connecting from {}", client->ipaddrAsString() );
   }
 }
 
@@ -420,8 +417,7 @@ void login2( Network::Client* client, PKTIN_91* msg )  // Gameserver login and c
   {
     send_login_error( client, LOGIN_ERROR_WRONG_PASSWORD );
     client->Disconnect();
-    POLLOG.Format( "Incorrect password for account {} from {}\n" )
-        << acct->name() << client->ipaddrAsString();
+    POLLOGLN( "Incorrect password for account {} from {}", acct->name(), client->ipaddrAsString() );
     return;
   }
   else
@@ -445,7 +441,7 @@ void login2( Network::Client* client, PKTIN_91* msg )  // Gameserver login and c
   // Dave moved the max_clients check to pol.cpp so character cmdlevel could be checked.
   //
 
-  POLLOG.Format( "Account {} logged in from {}\n" ) << acct->name() << client->ipaddrAsString();
+  POLLOGLN( "Account {} logged in from {}", acct->name(), client->ipaddrAsString() );
 
   // ENHANCEMENT: could authenticate with real loginservers.
 
@@ -471,7 +467,7 @@ void delete_character( Accounts::Account* acct, Mobile::Character* chr, int char
 {
   if ( !chr->logged_in() )
   {
-    POLLOG.Format( "Account {} deleting character 0x{:X}\n" ) << acct->name() << chr->serial;
+    POLLOGLN( "Account {} deleting character {:#X}", acct->name(), chr->serial );
 
     chr->acct.clear();
     acct->clear_character( charidx );

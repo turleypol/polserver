@@ -301,7 +301,7 @@ void Client::itemizeclientversion( const std::string& ver, VersionDetailStruct& 
     detail.minor = 0;
     detail.rev = 0;
     detail.patch = 0;
-    POLLOG.Format( "Malformed clientversion string: {}\n" ) << ver;
+    POLLOGLN( "Malformed clientversion string: {}", ver );
   }
 }
 
@@ -444,8 +444,8 @@ void ThreadedClient::queue_data( const void* data, unsigned short datalen )
   else
   {
     THREAD_CHECKPOINT( active_client, 307 );
-    POLLOG.Format( "Client#{}: Unable to allocate {} bytes for queued data.  Disconnecting.\n" )
-        << myClient.instance_ << ( sizeof( Core::XmitBuffer ) - 1 + datalen );
+    POLLOGLN( "Client#{}: Unable to allocate {} bytes for queued data.  Disconnecting.",
+              myClient.instance_, ( sizeof( Core::XmitBuffer ) - 1 + datalen ) );
     disconnect = true;
   }
   THREAD_CHECKPOINT( active_client, 309 );
@@ -544,8 +544,8 @@ void ThreadedClient::send_queued_data()
       else
       {
         if ( !disconnect )
-          POLLOG.Format( "Client#{}: Disconnecting client due to send() error (2): {}\n" )
-              << myClient.instance_ << sckerr;
+          POLLOGLN( "Client#{}: Disconnecting client due to send() error (2): {}",
+                    myClient.instance_, sckerr );
         disconnect = true;
         return;
       }
@@ -562,8 +562,8 @@ void ThreadedClient::send_queued_data()
         if ( first_xmit_buffer == nullptr )
         {
           last_xmit_buffer = nullptr;
-          POLLOG.Format( "Client#{}: Leaving queued mode ({} bytes xmitted)\n" )
-              << myClient.instance_ << queued_bytes_counter;
+          POLLOGLN( "Client#{}: Leaving queued mode ({} bytes xmitted)", myClient.instance_,
+                    queued_bytes_counter );
           queued_bytes_counter = 0;
         }
         free( xbuffer );

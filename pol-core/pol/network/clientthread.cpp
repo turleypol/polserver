@@ -93,8 +93,7 @@ bool threadedclient_io_step( Network::ThreadedClient* session, Clib::SinglePolle
   if ( res < 0 )
   {
     int sckerr = socket_errno;
-    POLLOG.Format( "Client#{}: select res={}, sckerr={}\n" )
-        << session->myClient.instance_ << res << sckerr;
+    POLLOGLN( "Client#{}: select res={}, sckerr={}", session->myClient.instance_, res, sckerr );
     return false;
   }
   else if ( res == 0 )
@@ -229,7 +228,7 @@ bool client_io_thread( Network::Client* client, bool login )
 {
   if ( !login && Plib::systemstate.config.loglevel >= 11 )
   {
-    POLLOG.Format( "Network::Client#{} i/o thread starting\n" ) << client->instance_;
+    POLLOGLN( "Network::Client#{} i/o thread starting", client->instance_ );
   }
 
   CLIENT_CHECKPOINT( 0 );
@@ -257,9 +256,9 @@ bool client_io_thread( Network::Client* client, bool login )
   if ( login && client->isConnected() )
     return true;
 
-  POLLOG.Format( "Client#{} ({}): disconnected (account {})\n" )
-      << client->instance_ << client->ipaddrAsString()
-      << ( ( client->acct != nullptr ) ? client->acct->name() : "unknown" );
+  POLLOGLN( "Client#{} ({}): disconnected (account {})", client->instance_,
+            client->ipaddrAsString(),
+            ( ( client->acct != nullptr ) ? client->acct->name() : "unknown" ) );
 
   try
   {
@@ -267,8 +266,8 @@ bool client_io_thread( Network::Client* client, bool login )
   }
   catch ( std::exception& ex )
   {
-    POLLOG.Format( "Client#{}: Exception in i/o thread: {}! (checkpoint={}, what={})\n" )
-        << client->instance_ << client->session()->checkpoint << ex.what();
+    POLLOGLN( "Client#{}: Exception in i/o thread: {}! (checkpoint={}, what={})", client->instance_,
+              client->session()->checkpoint, ex.what() );
   }
 
   // queue delete of client ptr see method doc for reason

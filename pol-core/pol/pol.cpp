@@ -406,15 +406,14 @@ void char_select( Network::Client* client, PKTIN_5D* msg )
 
   Mobile::Character* chosen_char = client->acct->get_character( charidx );
 
-  POLLOG.Format( "Account {} selecting character {}\n" )
-      << client->acct->name() << chosen_char->name();
+  POLLOGLN( "Account {} selecting character {}", client->acct->name(), chosen_char->name() );
 
   if ( Plib::systemstate.config.min_cmdlevel_to_login > chosen_char->cmdlevel() )
   {
-    POLLOG.Format(
+    POLLOGLN(
         "Account {} with character {} doesn't fit MinCmdlevelToLogin from pol.cfg. Client "
-        "disconnected by Core.\n" )
-        << client->acct->name() << chosen_char->name();
+        "disconnected by Core.",
+        client->acct->name(), chosen_char->name() );
 
     send_login_error( client, LOGIN_ERROR_MISC );
     client->Disconnect();
@@ -426,10 +425,11 @@ void char_select( Network::Client* client, PKTIN_5D* msg )
                           clientHasCharacter ) ) >= Plib::systemstate.config.max_clients ) &&
        ( chosen_char->cmdlevel() < Plib::systemstate.config.max_clients_bypass_cmdlevel ) )
   {
-    POLLOG.Format(
+    POLLOGLN(
         "To much clients connected. Check MaximumClients and/or MaximumClientsBypassCmdLevel in "
-        "pol.cfg.\nAccount {} with character {} Client disconnected by Core.\n" )
-        << client->acct->name() << chosen_char->name();
+        "pol.cfg.\n"
+        "Account {} with character {} Client disconnected by Core.",
+        client->acct->name(), chosen_char->name() );
 
     send_login_error( client, LOGIN_ERROR_MISC );
     client->Disconnect();
@@ -565,17 +565,17 @@ void tasks_thread( void )
   }
   catch ( const char* msg )
   {
-    POLLOG.Format( "Tasks Thread exits due to exception: {}\n" ) << msg;
+    POLLOGLN( "Tasks Thread exits due to exception: {}", msg );
     throw;
   }
   catch ( std::string& str )
   {
-    POLLOG.Format( "Tasks Thread exits due to exception: {}\n" ) << str;
+    POLLOGLN( "Tasks Thread exits due to exception: {}", str );
     throw;
   }
   catch ( std::exception& ex )
   {
-    POLLOG.Format( "Tasks Thread exits due to exception: {}\n" ) << ex.what();
+    POLLOGLN( "Tasks Thread exits due to exception: {}", ex.what() );
     throw;
   }
 }
@@ -1165,9 +1165,8 @@ int xmain_inner( bool testing )
   POLLOG_INFO( "Initialization complete.  POL is active.  Ctrl-C to stop.\n\n" );
 
   DEINIT_STARTLOG();
-  POLLOG.Format( "{0:s} ({1:s}) compiled on {2:s} running.\n" )
-      << "POL " << POL_VERSION_ID << Clib::ProgramConfig::build_target()
-      << Clib::ProgramConfig::build_datetime();
+  POLLOGLN( "{0:s} ({1:s}) compiled on {2:s} running.", "POL ", POL_VERSION_ID,
+            Clib::ProgramConfig::build_target(), Clib::ProgramConfig::build_datetime() );
 
   POLLOG_INFOLN( "Game is active." );
 
