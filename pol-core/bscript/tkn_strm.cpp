@@ -15,7 +15,7 @@
 
 namespace Pol
 {
-namespace Bscript
+/*namespace Bscript
 {
 void Token::printOn( std::ostream& os ) const
 {
@@ -507,9 +507,9 @@ fmt::Writer& operator<<( fmt::Writer& w, const Token& tok )
   tok.printOn( os );
   w << os.str();
   return w;
-}
-}  // namespace Bscript
-namespace Clib
+}*/
+//}  // namespace Bscript
+/*namespace Clib
 {
 template <>
 std::string tostring( const Bscript::Token& tok )
@@ -518,5 +518,5 @@ std::string tostring( const Bscript::Token& tok )
   tok.printOn( os );
   return os.str();
 }
-}  // namespace Clib
+}  // namespace Clib*/
 }  // namespace Pol

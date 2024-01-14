@@ -90,8 +90,8 @@ public:
   void printOn( std::ostream& outputStream ) const;
 };
 
-std::ostream& operator<<( std::ostream&, const Token& );
-fmt::Writer& operator<<( fmt::Writer&, const Token& );
+/*std::ostream& operator<<( std::ostream&, const Token& );
+fmt::Writer& operator<<( fmt::Writer&, const Token& );*/
 }  // namespace Bscript
 namespace Clib
 {

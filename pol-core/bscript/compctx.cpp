@@ -147,15 +147,15 @@ int CompilerContext::skipcomments()
   return 0;
 }
 
-void CompilerContext::printOn( std::ostream& os ) const
+/*void CompilerContext::printOn( std::ostream& os ) const
 {
   os << "File: " << filename << ", Line " << line << std::endl;
-}
+}*/
 
-void CompilerContext::printOn( fmt::Writer& writer ) const
+/*void CompilerContext::printOn( fmt::Writer& writer ) const
 {
   writer << "File: " << filename << ", Line " << line << "\n";
-}
+}*/
 }  // namespace Bscript
 }  // namespace Pol
 
