@@ -21,6 +21,8 @@
 #define INLINE_BOBJECTIMP_CTOR 1
 #endif
 
+#include <format/format.h>
+
 #include <fmt/ostream.h>
 
 
