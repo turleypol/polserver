@@ -32,7 +32,7 @@ public:
   void add( Str&& key, T&& value )
   {
     fmt::format_to( std::back_inserter( _buf ), "\t{}\t{}\n", key, value );
-    _writer << _buf;
+    *_writer << _buf;
     if ( _writer->size() >= 500 )  // guard against to big objects
       flush();
     _buf = "";
@@ -44,7 +44,7 @@ public:
       _buf += format;
     else
       fmt::format_to( std::back_inserter( _buf ), format, args... );
-    _writer << _buf;
+    *_writer << _buf;
     if ( _writer->size() >= 500 )  // guard against to big objects
       flush();
     _buf = "";
