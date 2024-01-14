@@ -46,8 +46,6 @@ public:
   const unsigned short character_column;  // 1-based on line, as seen in an editor
 };
 
-fmt::Writer& operator<<( fmt::Writer&, const SourceLocation& );  // pathname:line:column
-
 }  // namespace Pol::Bscript::Compiler
 
 template <>

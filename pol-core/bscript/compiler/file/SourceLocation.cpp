@@ -51,14 +51,6 @@ void SourceLocation::internal_error( const std::string& msg, const SourceLocatio
   throw std::runtime_error( msg );
 }
 
-fmt::Writer& operator<<( fmt::Writer& w, const SourceLocation& location )
-{
-  w << location.source_file_identifier->pathname;
-  if ( location.line_number || location.character_column )
-    w << ":" << location.line_number << ":" << location.character_column;
-  return w;
-}
-
 }  // namespace Pol::Bscript::Compiler
 
 fmt::format_context::iterator fmt::formatter<Pol::Bscript::Compiler::SourceLocation>::format(
