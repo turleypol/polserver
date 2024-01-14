@@ -559,9 +559,7 @@ void handle_humongous_packet( Network::ThreadedClient* session, unsigned int rep
   // be useful for debugging)
   session->recv_remaining( sizeof session->buffer / 2 );
 
-  fmt::Writer tmp;
-  tmp.Format( "Humongous packet (length {})", reported_size );
-  report_weird_packet( session, tmp.str() );
+  report_weird_packet( session, fmt::format( "Humongous packet (length {})", reported_size ) );
 }
 }  // namespace Pol::Core
 
