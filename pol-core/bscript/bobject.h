@@ -21,8 +21,6 @@
 #define INLINE_BOBJECTIMP_CTOR 1
 #endif
 
-#include <format/format.h>
-
 #include <fmt/ostream.h>
 
 
@@ -337,7 +335,6 @@ public:
   virtual ContIterator* createIterator( BObject* pIterVal );
 
   friend std::ostream& operator<<( std::ostream&, const BObjectImp& );
-  //  friend fmt::Writer& operator<<( fmt::Writer&, const BObjectImp& );
 
 private:
   BObjectType type_;
@@ -397,7 +394,6 @@ public:
 
   //   friend StreamWriter& operator << (StreamWriter&, const BObject& );
   friend std::ostream& operator<<( std::ostream&, const BObject& );
-  //  friend fmt::Writer& operator<<( fmt::Writer&, const BObject& );
   void printOn( std::ostream& ) const;
 
   BObjectImp* impptr();
