@@ -62,8 +62,8 @@ public:
   bool operator==( const Range2d& other ) const;
   bool operator!=( const Range2d& other ) const;
 };
-fmt::Writer& operator<<( fmt::Writer& w, const Range2d& v );
-std::ostream& operator<<( std::ostream& os, const Range2d& v );
+// fmt::Writer& operator<<( fmt::Writer& w, const Range2d& v );
+// std::ostream& operator<<( std::ostream& os, const Range2d& v );
 
 class Range3d
 {
@@ -100,8 +100,8 @@ public:
   bool operator==( const Range3d& other ) const;
   bool operator!=( const Range3d& other ) const;
 };
-fmt::Writer& operator<<( fmt::Writer& w, const Range3d& v );
-std::ostream& operator<<( std::ostream& os, const Range3d& v );
+// fmt::Writer& operator<<( fmt::Writer& w, const Range3d& v );
+// std::ostream& operator<<( std::ostream& os, const Range3d& v );
 
 inline Range2dItr::reference Range2dItr::operator*() const
 {
