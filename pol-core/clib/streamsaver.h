@@ -36,6 +36,7 @@ public:
       fmt::format_to( std::back_inserter( _buf ), "\t{}\tbool{:d}\n", key, value );
     else
       fmt::format_to( std::back_inserter( _buf ), "\t{}\t{}\n", key, value );
+    _buf += typeid( T ).name();
     *_writer << _buf;
     if ( _writer->size() >= 500 )  // guard against to big objects
       flush();
