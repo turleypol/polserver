@@ -35,7 +35,6 @@ public:
 };
 Vec2d operator-( Vec2d lhs, const Vec2d& rhs );
 Vec2d operator+( Vec2d lhs, const Vec2d& rhs );
-// std::ostream& operator<<( std::ostream& os, const Vec2d& v );
 
 class Vec3d
 {
@@ -77,7 +76,6 @@ Vec3d operator-( Vec3d lhs, const Vec3d& rhs );
 Vec3d operator-( Vec3d lhs, const Vec2d& rhs );
 Vec3d operator+( Vec3d lhs, const Vec3d& rhs );
 Vec3d operator+( Vec3d lhs, const Vec2d& rhs );
-// std::ostream& operator<<( std::ostream& os, const Vec3d& v );
 
 
 inline Vec2d::Vec2d( s16 x, s16 y ) : _x( x ), _y( y ) {}
