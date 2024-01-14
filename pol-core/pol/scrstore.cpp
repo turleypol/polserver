@@ -169,7 +169,7 @@ void log_all_script_cycle_counts( bool clear_counters )
       ( GET_PROFILEVAR( scheduler_passes ) ), stateManager.profilevars.script_passes );
 
   std::string tmp=
-  fnt::format( "{:<38} {:>12} {:>6} {:>12} {:>6}\n" , "Script"
+  fmt::format( "{:<38} {:>12} {:>6} {:>12} {:>6}\n" , "Script"
                                                      , "cycles"
                                                      , "incov"
                                                      , "cyc/invoc"
