@@ -177,7 +177,7 @@ void log_all_script_cycle_counts( bool clear_counters )
         total_instr != 0 ? ( static_cast<double>( eprog->instr_cycles ) / total_instr * 100.0 ) : 0;
     fmt::format_to( std::back_inserter( tmp ), "{:<38} {:>12} {:>6} {:>12} {:>6}\n", eprog->name,
                     eprog->instr_cycles, eprog->invocations,
-                    eprog->instr_cycles / ( eprog->invocations ? eprog->invocations : 1 ), ,
+                    eprog->instr_cycles / ( eprog->invocations ? eprog->invocations : 1 ),
                     cycle_percent );
     if ( clear_counters )
     {
