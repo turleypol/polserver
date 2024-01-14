@@ -74,7 +74,7 @@ bool threadedclient_io_step( Network::ThreadedClient* session, Clib::SinglePolle
   if ( !clientpoller.prepare( session->have_queued_data() ) )
   {
     POLLOG_INFO( "Client#{}: ERROR - couldn't poll socket={}\n", session->myClient.instance_,
-                    session->csocket );
+                 session->csocket );
 
     if ( session->csocket != INVALID_SOCKET )
       session->forceDisconnect();
@@ -523,7 +523,7 @@ void report_weird_packet( Network::ThreadedClient* session, const std::string& w
   {
     INFO_PRINT( tmp );
     Clib::fdump( std::back_inserter( tmp ), session->buffer, session->bytes_received );
-    POLLOG << tmp << "\n";
+    POLLOGLN( tmp );
   }
 }
 
@@ -657,9 +657,9 @@ void Client::handle_msg( unsigned char* pktbuffer, int pktlen )
     POLLOG_ERRORLN( "Client#{}: Exception in message handler {:#X}: {}", instance_, (int)msgtype,
                     ex.what() );
 
-    fmt::Writer tmp;
-    Clib::fdump( tmp, pktbuffer, pktlen );
-    POLLOG << tmp.str() << "\n";
+    std::string tmp;
+    Clib::fdump( std::back_inserter( tmp ), pktbuffer, pktlen );
+    POLLOGLN( tmp );
 
     Core::restart_all_clients();
     throw;

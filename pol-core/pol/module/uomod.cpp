@@ -3137,7 +3137,7 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
   }
   catch ( std::exception& ex )
   {
-    POLLOG << "Exception during world save! (" << ex.what() << ")\n";
+    POLLOGLN( "Exception during world save! ({})", ex.what() );
     return new BError( "Exception during world save" );
   }
 }
@@ -5046,8 +5046,8 @@ BObjectImp* UOExecutorModule::mf_FindPath()
                                           params.AddBlocker( chr->pos3d() );
 
                                           if ( Plib::systemstate.config.loglevel >= 12 )
-                                            POLLOG << "[FindPath]   add Blocker " << chr->name()
-                                                   << " at " << chr->pos() << "\n";
+                                            POLLOGLN( "[FindPath]   add Blocker {} at {}",
+                                                      chr->name(), chr->pos() );
                                         } );
   }
 

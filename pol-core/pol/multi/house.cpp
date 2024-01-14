@@ -585,7 +585,7 @@ void UHouse::destroy_components()
     if ( !item->orphan() )
       Core::destroy_item( item );
     if ( Plib::systemstate.config.loglevel >= 5 )
-      POLLOG << "Component destroyed\n";
+      POLLOGLN( "Component destroyed" );
     components_.pop_back();
   }
 }

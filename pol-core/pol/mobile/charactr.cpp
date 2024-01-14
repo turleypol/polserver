@@ -1891,7 +1891,7 @@ void Character::run_hit_script( Character* defender, double damage )
   }
   else
   {
-    POLLOG << "Blech, couldn't start hitscript " << weapon->hit_script().name() << "\n";
+    POLLOGLN( "Blech, couldn't start hitscript {}", weapon->hit_script().name() );
   }
 }
 

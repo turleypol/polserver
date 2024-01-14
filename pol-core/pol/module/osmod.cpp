@@ -457,7 +457,7 @@ BObjectImp* OSExecutorModule::mf_SysLog()
   std::string strval = imp->getStringRep();
   if ( log_verbose )
   {
-    POLLOG << "[" << exec.scriptname() << "]: " << strval << "\n";
+    POLLOGLN( "[{}]: {}", exec.scriptname(), strval );
     if ( Plib::systemstate.config.enable_colored_output && color->length() )
     {
       INFO_PRINTLN( "{}syslog [{}]: {}{}", color->value(), exec.scriptname(), strval,
@@ -472,7 +472,7 @@ BObjectImp* OSExecutorModule::mf_SysLog()
   {
     if ( Plib::systemstate.config.enable_colored_output && color->length() )
     {
-      POLLOG << strval << "\n";
+      POLLOGLN( strval );
       INFO_PRINTLN( "{}{}{}", color->value(), strval, Clib::Logging::CONSOLE_RESET_COLOR );
     }
     else

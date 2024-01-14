@@ -18,6 +18,7 @@
 #include "profile.h"
 #include "scrdef.h"
 #include <format/format.h>
+#include <iterator>
 
 
 namespace Pol
@@ -167,30 +168,30 @@ void log_all_script_cycle_counts( bool clear_counters )
       "Script passes:    {}",
       ( GET_PROFILEVAR( scheduler_passes ) ), stateManager.profilevars.script_passes );
 
-  fmt::Writer tmp;
-  tmp.Format( "{:<38} {:>12} {:>6} {:>12} {:>6}\n" ) << "Script"
-                                                     << "cycles"
-                                                     << "incov"
-                                                     << "cyc/invoc"
-                                                     << "%";
+  std::string tmp=
+  fnt::format( "{:<38} {:>12} {:>6} {:>12} {:>6}\n" , "Script"
+                                                     , "cycles"
+                                                     , "incov"
+                                                     , "cyc/invoc"
+                                                     , "%";
   for ( const auto& scr : scriptScheduler.scrstore )
   {
     Bscript::EScriptProgram* eprog = scr.second.get();
     double cycle_percent =
         total_instr != 0 ? ( static_cast<double>( eprog->instr_cycles ) / total_instr * 100.0 ) : 0;
-    tmp.Format( "{:<38} {:>12} {:>6} {:>12} {:>6}\n" )
-        << eprog->name << eprog->instr_cycles << eprog->invocations
-        << ( eprog->instr_cycles / ( eprog->invocations ? eprog->invocations : 1 ) )
-        << cycle_percent;
+    fmt::format_to( std::back_inserter( tmp ), "{:<38} {:>12} {:>6} {:>12} {:>6}\n", eprog->name,
+                    eprog->instr_cycles, eprog->invocations,
+                    eprog->instr_cycles / ( eprog->invocations ? eprog->invocations : 1 ), ,
+                    cycle_percent );
     if ( clear_counters )
     {
       eprog->instr_cycles = 0;
       eprog->invocations = eprog->count() - 1;  // 1 count is the scrstore's
     }
   }
-  POLLOG << tmp.str();
+  POLLOG(  tmp );
   if ( clear_counters )
-    POLLOG << "Profiling counters cleared.\n";
+    POLLOGLN( "Profiling counters cleared." );
 }
 
 
@@ -203,7 +204,7 @@ void clear_script_profile_counters()
     eprog->invocations = eprog->count() - 1;  // 1 count is the scrstore's
   }
 
-  POLLOG << "Profiling counters cleared.\n";
+  POLLOGLN( "Profiling counters cleared." );
 }
 }  // namespace Core
 }  // namespace Pol
