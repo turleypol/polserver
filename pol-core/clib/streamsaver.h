@@ -78,7 +78,6 @@ private:
 
 class ThreadedOFStreamWriter final : public StreamWriter
 {
-  //  typedef std::unique_ptr<fmt::Writer> WriterPtr;
   typedef message_queue<std::string> writer_queue;
 
 public:
