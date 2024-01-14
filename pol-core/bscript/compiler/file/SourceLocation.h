@@ -4,8 +4,6 @@
 #include <fmt/format.h>
 #include <string>
 
-#include "clib/formatfwd.h"
-
 namespace antlr4
 {
 class ParserRuleContext;

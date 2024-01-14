@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "clib/formatfwd.h"
 #include "token.h"  // for DebugToken
 
 namespace Pol::Bscript
