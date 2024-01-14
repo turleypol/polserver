@@ -1,8 +1,10 @@
 #ifndef CLIB_STREAMSAVER_H
 #define CLIB_STREAMSAVER_H
 
+#include <fmt/format.h>
 #include <format/format.h>
 #include <iosfwd>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <thread>
@@ -25,11 +27,34 @@ public:
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;
   fmt::Writer& operator()();
+
+  template <typename Str, typename T>
+  void add( Str&& key, T&& value )
+  {
+    fmt::format_to( std::back_inserter( _buf ), "\t{}\t{}\n", key, value );
+    _writer << _buf;
+    if ( _writer->size() >= 500 )  // guard against to big objects
+      flush();
+    _buf = "";
+  }
+  template <typename Str, typename... Args>
+  void write( Str&& format, Args&&... args )
+  {
+    if constexpr ( sizeof...( args ) == 0 )
+      _buf += format;
+    else
+      fmt::format_to( std::back_inserter( _buf ), format, args... );
+    _writer << _buf;
+    if ( _writer->size() >= 500 )  // guard against to big objects
+      flush();
+    _buf = "";
+  }
   virtual void init( const std::string& filepath ) = 0;
   virtual void flush() = 0;
   virtual void flush_file() = 0;
 
 protected:
+  std::string _buf = {};
   std::unique_ptr<fmt::Writer> _writer;
 };
 
