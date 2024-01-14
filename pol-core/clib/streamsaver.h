@@ -30,7 +30,7 @@ public:
   virtual void flush_file() = 0;
 
 protected:
-  std::unique_ptr<fmt::Writer> _writer;
+  std::stringfmt::Writer > _writer;
 };
 
 class FMTStreamWriter final : public StreamWriter
@@ -78,8 +78,8 @@ private:
 
 class ThreadedOFStreamWriter final : public StreamWriter
 {
-  typedef std::unique_ptr<fmt::Writer> WriterPtr;
-  typedef message_queue<WriterPtr> writer_queue;
+  //  typedef std::unique_ptr<fmt::Writer> WriterPtr;
+  typedef message_queue<std::string> writer_queue;
 
 public:
   ThreadedOFStreamWriter();
@@ -94,7 +94,7 @@ private:
   std::ofstream* _stream;
   writer_queue _msg_queue;
   std::thread _writethread;
-  std::list<WriterPtr> _writers_hold;
+  std::list<std::string> _writers_hold;
   std::string _stream_name;
 };
 }  // namespace Clib
