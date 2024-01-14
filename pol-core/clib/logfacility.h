@@ -167,27 +167,8 @@ private:
   std::vector<LogSink*> _registered_sinks;
 };
 
-// constructor tag for id constructor
-static struct LogWithIDTag
-{
-} logWithID;
-
-// construct a message for given sink, on deconstruction sends the msg to the facility
-template <typename Sink>
-class MessageOld
-{
-public:
-  MessageOld();
-  MessageOld( LogWithIDTag, const std::string& id );
-  ~MessageOld();  // auto flush
-
-  fmt::Writer& message() { return *( _formater.get() ); }
-
-private:
-  std::unique_ptr<fmt::Writer> _formater;
-  std::string _id = {};
-};
-
+// macro struct for logging entrypoint
+// performs the actual formatting and sending to sink
 template <typename Sink>
 struct Message
 {
@@ -263,12 +244,10 @@ void initLogging( LogFacility* logger );  // initalize the logging
   Clib::Logging::Message<Clib::Logging::LogSink_dual< \
       Clib::Logging::LogSink_cout, Clib::Logging::LogSink_pollog>>::logmsg<false>
 
-// log into pol.log
-#define POLLOG Clib::Logging::MessageOld<Clib::Logging::LogSink_pollog>().message()
 // log into pol.log with \n addition
 #define POLLOGLN Clib::Logging::Message<Clib::Logging::LogSink_pollog>::logmsg<true>
 // log into pol.log without \n addition
-#define POLLOG_N2 Clib::Logging::Message<Clib::Logging::LogSink_pollog>::logmsg<false>
+#define POLLOG Clib::Logging::Message<Clib::Logging::LogSink_pollog>::logmsg<false>
 
 // log only into std::cout with \n addition
 #define INFO_PRINTLN Clib::Logging::Message<Clib::Logging::LogSink_cout>::logmsg<true>

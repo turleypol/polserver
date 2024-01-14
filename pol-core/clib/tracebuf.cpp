@@ -38,7 +38,7 @@ void LogTraceBuffer()
                       tracebuffer[i].value );
   }
   tmp += "End of TraceBuffer.\n";
-  POLLOG_N2( tmp );
+  POLLOG( tmp );
 #endif
 }
 }  // namespace Clib

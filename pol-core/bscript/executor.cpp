@@ -2513,16 +2513,17 @@ void Executor::ins_jsr_userfunc( const Instruction& ins )
   PC = (unsigned)ins.token.lval;
   if ( ControlStack.size() >= escript_config.max_call_depth )
   {
-    fmt::Writer tmp;
-    tmp << "Script " << scriptname() << " exceeded maximum call depth\n"
-        << "Return path PCs: ";
+    std::string tmp = fmt::format(
+        "Script {} exceeded maximum call depth\n"
+        "Return path PCs: ",
+        scriptname() );
     while ( !ControlStack.empty() )
     {
       rc = ControlStack.back();
       ControlStack.pop_back();
-      tmp << rc.PC << " ";
+      fmt::format_to( std::back_inserter( tmp ), "{} ", rc.PC );
     }
-    POLLOG << tmp.str() << "\n";
+    POLLOGLN( tmp );
     seterror( true );
   }
 }
@@ -3139,7 +3140,7 @@ void Executor::show_context( unsigned atPC )
 
   for ( unsigned i = start; i <= end; ++i )
   {
-    POLLOG.Format( "{}: {}\n" ) << i << dbg_get_instruction( i );
+    POLLOGLN( "{}: {}", i, dbg_get_instruction( i ) );
   }
 }
 void Executor::show_context( fmt::Writer& os, unsigned atPC )
