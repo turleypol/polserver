@@ -62,7 +62,7 @@ bool MD5_Encrypt( const std::string& in, std::string& out )
     return false;
   }
 
-  out ='';
+  out = "";
   for ( auto& elem : buf )
   {
     fmt::format_to( std::back_inserter( out ), "{:02x}", (int)elem );
@@ -99,7 +99,7 @@ bool MD5_Encrypt( const std::string& in, std::string& out )
   EVP_DigestFinal_ex( ctx, hash, nullptr );
   EVP_MD_CTX_free( ctx );
 
-  out ='';
+  out = "";
   for ( auto& elem : hash )
   {
     fmt::format_to( std::back_inserter( out ), "{:02x}", (int)elem );
