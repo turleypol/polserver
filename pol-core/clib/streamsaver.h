@@ -33,7 +33,7 @@ public:
   void add( Str&& key, T&& value )
   {
     if constexpr ( std::is_same_v<T, bool> )  // force bool to writr as 0/1
-      fmt::format_to( std::back_inserter( _buf ), "\t{}\t{:d}\n", key, value );
+      fmt::format_to( std::back_inserter( _buf ), "\t{}\tbool{:d}\n", key, value );
     else
       fmt::format_to( std::back_inserter( _buf ), "\t{}\t{}\n", key, value );
     *_writer << _buf;
