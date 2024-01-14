@@ -32,7 +32,6 @@ public:
   template <typename Str, typename T>
   void add( Str&& key, T&& value )
   {
-    _buf += typeid( T ).name();
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )  // force bool to write as 0/1
       fmt::format_to( std::back_inserter( _buf ), "\t{}\t{}\n", key, value );
     else
