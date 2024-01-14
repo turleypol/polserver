@@ -6,6 +6,7 @@
 #include "bscript/compiler/representation/ModuleFunctionDescriptor.h"
 #include "objmembers.h"
 #include "objmethods.h"
+#include <algorithm>
 #include <iterator>
 
 namespace Pol::Bscript::Compiler
