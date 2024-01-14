@@ -168,12 +168,8 @@ void log_all_script_cycle_counts( bool clear_counters )
       "Script passes:    {}",
       ( GET_PROFILEVAR( scheduler_passes ) ), stateManager.profilevars.script_passes );
 
-  std::string tmp=
-  fmt::format( "{:<38} {:>12} {:>6} {:>12} {:>6}\n" , "Script"
-                                                     , "cycles"
-                                                     , "incov"
-                                                     , "cyc/invoc"
-                                                     , "%";
+  std::string tmp = fmt::format( "{:<38} {:>12} {:>6} {:>12} {:>6}\n", "Script", "cycles", "incov",
+                                 "cyc/invoc", "%" );
   for ( const auto& scr : scriptScheduler.scrstore )
   {
     Bscript::EScriptProgram* eprog = scr.second.get();
@@ -189,7 +185,7 @@ void log_all_script_cycle_counts( bool clear_counters )
       eprog->invocations = eprog->count() - 1;  // 1 count is the scrstore's
     }
   }
-  POLLOG(  tmp );
+  POLLOG( tmp );
   if ( clear_counters )
     POLLOGLN( "Profiling counters cleared." );
 }
