@@ -15,7 +15,7 @@
 
 namespace Pol
 {
-/*namespace Bscript
+namespace Bscript
 {
 void Token::printOn( std::ostream& os ) const
 {
@@ -470,7 +470,8 @@ void Token::printOn( std::ostream& os ) const
     os << "?: (elvis)";
     break;
   case TOK_INTERPOLATE_STRING:
-    os << "interpolate string " << "(" << lval << "parts)";
+    os << "interpolate string "
+       << "(" << lval << "parts)";
     break;
   case TOK_FORMAT_EXPRESSION:
     os << "format expression";
@@ -500,14 +501,14 @@ std::ostream& operator<<( std::ostream& os, const Token& tok )
 {
   tok.printOn( os );
   return os;
-}
-fmt::Writer& operator<<( fmt::Writer& w, const Token& tok )
-{
-  std::ostringstream os;
-  tok.printOn( os );
-  w << os.str();
-  return w;
-}*/
+} /*
+ fmt::Writer& operator<<( fmt::Writer& w, const Token& tok )
+ {
+   std::ostringstream os;
+   tok.printOn( os );
+   w << os.str();
+   return w;
+ }*/
 //}  // namespace Bscript
 /*namespace Clib
 {
