@@ -509,7 +509,7 @@ std::ostream& operator<<( std::ostream& os, const Token& tok )
    w << os.str();
    return w;
  }*/
-//}  // namespace Bscript
+}  // namespace Bscript
 /*namespace Clib
 {
 template <>
