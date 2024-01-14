@@ -30,7 +30,7 @@ public:
   virtual void flush_file() = 0;
 
 protected:
-  std::stringfmt::Writer > _writer;
+  std::unique_ptr<fmt::Writer> _writer;
 };
 
 class FMTStreamWriter final : public StreamWriter
