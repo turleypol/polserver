@@ -397,7 +397,7 @@ void StoredTokenDecoder::decode_to( const StoredToken& tkn, std::string& w )
                     getObjMember( tkn.offset )->code );
     break;
   case INS_SET_MEMBER_ID_UNMINUSMINUS_POST:
-    fmt::format_to( std::back_inserter( w ), "set member id '{}' unary -- post" l,
+    fmt::format_to( std::back_inserter( w ), "set member id '{}' unary -- post",
                     getObjMember( tkn.offset )->code );
     break;
   case INS_SKIPIFTRUE_ELSE_CONSUME:
