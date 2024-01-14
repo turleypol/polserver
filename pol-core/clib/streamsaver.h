@@ -32,11 +32,11 @@ public:
   template <typename Str, typename T>
   void add( Str&& key, T&& value )
   {
-    if constexpr ( std::is_same_v<T, bool> )  // force bool to writr as 0/1
-      fmt::format_to( std::back_inserter( _buf ), "\t{}\tbool{:d}\n", key, value );
-    else
-      fmt::format_to( std::back_inserter( _buf ), "\t{}\t{}\n", key, value );
     _buf += typeid( T ).name();
+    if constexpr ( !std::is_same<T, bool>::value )  // force bool to write as 0/1
+      fmt::format_to( std::back_inserter( _buf ), "\t{}\t{}\n", key, value );
+    else
+      fmt::format_to( std::back_inserter( _buf ), "\t{} bool\t{}\n", key, value );
     *_writer << _buf;
     if ( _writer->size() >= 500 )  // guard against to big objects
       flush();
