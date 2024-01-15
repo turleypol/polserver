@@ -833,7 +833,7 @@ void write_system_data( Clib::StreamWriter& sw )
   sw.add( "CompileDateTime", Clib::ProgramConfig::build_datetime() );
   sw.add( "LastItemSerialNumber", GetCurrentItemSerialNumber() );
   sw.add( "LastCharSerialNumber", GetCurrentCharSerialNumber() );
-sw.write("}\n\n);
+  sw.write( "}\n\n" );
 }
 
 void write_shadow_realms( Clib::StreamWriter& sw )
