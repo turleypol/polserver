@@ -915,7 +915,8 @@ void write_items( Clib::StreamWriter& sw_items )
       {
         if ( item->itemdesc().save_on_exit && item->saveonexit() )
         {
-          sw_items << *item;
+          item->printOn( sw_items );
+          ;
           item->clear_dirty();
         }
       }
@@ -958,7 +959,7 @@ void write_multis( Clib::StreamWriter& ofs )
             }
           }
         }
-        ofs << *multi;
+        multi->printOn( ofs );
         multi->clear_dirty();
       }
     }
