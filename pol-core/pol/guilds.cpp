@@ -29,11 +29,11 @@ SerialSet::SerialSet( Clib::ConfigElem& elem, const char* tag )
   }
 }
 
-void SerialSet::writeOn( Clib::StreamWriter& os, const char* tag ) const
+void SerialSet::writeOn( Clib::StreamWriter& sw, const char* tag ) const
 {
   for ( const_iterator citr = begin(), citrend = end(); citr != citrend; ++citr )
   {
-    os.add( tag, Clib::hexint( *citr ) );
+    sw.add( tag, Clib::hexint( *citr ) );
   }
 }
 
