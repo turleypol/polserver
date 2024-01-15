@@ -916,7 +916,6 @@ void write_items( Clib::StreamWriter& sw_items )
         if ( item->itemdesc().save_on_exit && item->saveonexit() )
         {
           item->printOn( sw_items );
-          ;
           item->clear_dirty();
         }
       }
@@ -1056,10 +1055,11 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
               {
                 try
                 {
-                  sc.pol() << "#" << pf_endl << "#  Created by Version: " << POL_VERSION_ID
-                           << pf_endl << "#  Mobiles: " << get_mobile_count() << pf_endl
-                           << "#  Top-level Items: " << get_toplevel_item_count() << pf_endl << "#"
-                           << pf_endl << pf_endl;
+                  sc.pol.write( "#\n" );
+                  sc.pol.write( "#  Created by Version: {}\n", POL_VERSION_ID );
+                  sc.pol.write( "#  Mobiles: {}\n", get_mobile_count() );
+                  sc.pol.write( "#  Top-level Items: {}\n", get_toplevel_item_count() );
+                  sc.pol.write( "#\n\n" );
 
                   write_system_data( sc.pol );
                   write_global_properties( sc.pol );

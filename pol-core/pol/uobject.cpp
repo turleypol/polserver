@@ -517,12 +517,6 @@ void UObject::printOnDebug( Clib::StreamWriter& sw ) const
   sw.write( "}\n\n" );
 }
 
-Clib::StreamWriter& operator<<( Clib::StreamWriter& writer, const UObject& obj )
-{
-  obj.printOn( writer );
-  return writer;
-}
-
 bool UObject::setgraphic( u16 /*newgraphic*/ )
 {
   ERROR_PRINTLN(
