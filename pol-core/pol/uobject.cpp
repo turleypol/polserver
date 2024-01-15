@@ -49,7 +49,7 @@ int display_orphan( UObject* o )
 {
   Clib::FMTStreamWriter sw;
   Clib::OFStreamWriter sw_orphan( &orphans_txt );
-  sw() << o->name() << ", " << o->ref_counted_count() << '\n';
+  sw.write( "{}, {}\n", o->name(), o->ref_counted_count() );
   o->printOn( sw );
   o->printOnDebug( sw_orphan );
   INFO_PRINT( sw().str() );

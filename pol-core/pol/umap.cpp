@@ -67,7 +67,7 @@ void Map::printProperties( Clib::StreamWriter& sw ) const
 
   printPinPoints( sw );
 
-  sw() << pf_endl;
+  sw.write( "\n" );
 }
 
 void Map::printPinPoints( Clib::StreamWriter& sw ) const

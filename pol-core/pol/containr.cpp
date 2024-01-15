@@ -119,7 +119,7 @@ void UContainer::printContents( Clib::StreamWriter& sw ) const
     {
       if ( item->itemdesc().save_on_exit && item->saveonexit() )
       {
-        sw << *item;
+        item->printOn( sw );
         item->clear_dirty();
       }
     }
