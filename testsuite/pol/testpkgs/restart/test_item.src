@@ -122,7 +122,7 @@ exported function load_item_base()
 endfunction
 
 exported function load_item_itemcpp()
-  var props:=dictionary{
+  var props:={
                   {"Name", {"name","itemcpp"},
 //                 {"Layer", {"",1}},
                {"Movable", {"movable",1}},
@@ -166,7 +166,7 @@ exported function load_item_itemcpp()
                     {"Hp", {"hp",123}},
                {"Quality", {"quality",1.123}},
             {"NameSuffix", {"name_suffix","my_suffix"}},
-                {"NoDrop", {"nodrop",1}},
+                {"NoDrop", {"nodrop",1}}
   };
 
   if (testrun == 1)
