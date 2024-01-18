@@ -173,7 +173,7 @@ exported function load_item_itemcpp()
     var item := CreateItemAtLocation(10,11,-5, 0xf3f,1,"britannia2");
     SetGlobalProperty("test_item_storage_itemcpp", item.serial);
     foreach prop in props
-      print(propi[2][1]);
+      print(prop[2][1]);
       print(item.set_member(prop[2][1],prop[2][2]));
     endforeach
     AddAmount(item,1234);
