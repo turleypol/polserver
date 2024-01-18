@@ -180,7 +180,7 @@ exported function load_item_itemcpp()
       print(prop[1]);
       print(item.set_member(prop[1],prop[2]));
     endforeach
-    SetAmount(item,1234);
+    AddAmount(item,1234);
   else
 
     var serial := GetGlobalProperty("test_item_storage_itemcpp");
