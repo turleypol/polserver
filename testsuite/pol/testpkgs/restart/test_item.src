@@ -271,7 +271,7 @@ endfunction
 exported function load_save_armor()
   var props:={
                 {"AR_mod", {"ar_mod",12}},
-           {"OnHitScript", {"onhitscript","myhitscript"}}
+           {"OnHitScript", {"onhitscript",":testrestart:myhitscript"}}
   };
 
   if (testrun == 1)
@@ -310,7 +310,7 @@ exported function load_save_weapon()
   var props:={
                 {"dmg_mod", {"dmg_mod",1}},
               {"speed_mod", {"speed_mod",2}},
-              {"HitScript", {"hitscript","myhitscript"}}
+              {"HitScript", {"hitscript",":testrestart:myhitscript"}}
   };
 
   if (testrun == 1)
