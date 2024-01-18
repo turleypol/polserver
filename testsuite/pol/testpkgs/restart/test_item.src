@@ -56,7 +56,7 @@ endfunction
 // save/load test for things in UObject
 exported function load_save_uobject()
   var props:={
-                   {"Name", {"name","uobject"}},
+                   {"Name", {"name","load_save_uobject"}},
                 {"Graphic", {"graphic",0x1234}},
                   {"Color", {"color",0xff0}},
                  {"Facing", {"facing",6}}, // after graphic or it gets resetted
@@ -131,7 +131,7 @@ endfunction
 // save/load test for things in Item
 exported function load_save_item()
   var props:={
-                  {"Name", {"name","itemcpp"}},
+                  {"Name", {"name","load_save_item"}},
 //                 {"Layer", {"",1}},
                {"Movable", {"movable",1}},
              {"Invisible", {"invisible",1}},
@@ -240,7 +240,8 @@ exported function load_save_item_descriptor()
     {"SwingSpeedIncrease", {"swing_speed_increase", desc.SwingSpeedIncrease}}
   };
   if (testrun == 1)
-    var item := CreateItemAtLocation(10,11,-5, desc,1,"britannia2");
+    vari item := CreateItemAtLocation(10,11,-5, desc,1,"britannia2");
+    item.name:="load_save_item_descriptor";
     if (!item)
       return ret_error($"failed to create item {item}");
     endif
@@ -275,6 +276,7 @@ exported function load_save_item()
 
   if (testrun == 1)
     var item := CreateItemAtLocation(10,11,-5, "intrinsicshield",1,"britannia2");
+    item.name:="load_save_armor";
     if (!item)
       return ret_error($"failed to create item {item}");
     endif
