@@ -97,4 +97,21 @@ var props:=dictionary{
     endfunction
   else
 
+    var serial := GetGlobalProperty("test_item_storage1");
+    if (!serial)
+      return ret_error("Global property test_item_storage1 not found");
+    endif
+
+    var item := SystemFindObjectBySerial(serial);
+    if (!item)
+      return ret_error($"Item with serial {serial:#x} does not exists: {item})");
+    endif
+    foreach prop in props
+      var val:=item.get_member(prop[1]);
+      if (val != prop[2])
+        return ret_error($"Member {prop[1]} {prop[2]} != {val}");
+      endif
+    endfunction
   endif
+  return 1;
+endfunction
