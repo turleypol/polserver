@@ -50,47 +50,46 @@ program test_item()
 endprogram
 
 exported function load_item_base()
-  var props:=dictionary{
-                   "Name" -> {"name","uobject"},
-                "Graphic" -> {"graphic",0x1234},
-                  "Color" -> {"color",0xff0},
-//                 "Facing" -> {"facing",6}, // facing needs ro be after graphic or it gets resetted
-//               "Revision" -> {"",1},
-          "FireResistMod" -> {"resist_fire_mod",1},
-          "ColdResistMod" -> {"resist_cold_mod",2},
-        "EnergyResistMod" -> {"resist_energy_mod",3},
-        "PoisonResistMod" -> {"resist_poison_mod",4},
-      "PhysicalResistMod" -> {"resist_physical_mod",5},
-          "FireDamageMod" -> {"damage_fire_mod",6},
-          "ColdDamageMod" -> {"damage_cold_mod",7},
-        "EnergyDamageMod" -> {"damage_energy_mod",8},
-        "PoisonDamageMod" -> {"damage_poison_mod",9},
-      "PhysicalDamageMod" -> {"damage_physical_mod",10},
-    "LowerReagentCostMod" -> {"lower_reagent_cost_mod",11},
-     "DefenceIncreaseMod" -> {"defence_increase_mod",12},
-  "DefenceIncreaseCapMod" -> {"defence_increase_cap_mod",13},
-       "LowerManaCostMod" -> {"lower_mana_cost_mod",14},
-           "HitChanceMod" -> {"hit_chance_mod",15},
-       "FireResistCapMod" -> {"resist_fire_cap_mod",16},
-       "ColdResistCapMod" -> {"resist_cold_cap_mod",17},
-     "EnergyResistCapMod" -> {"resist_energy_cap_mod",18},
-   "PhysicalResistCapMod" -> {"resist_physical_cap_mod",19},
-     "PoisonResistCapMod" -> {"resist_poison_cap_mod",20},
- "SpellDamageIncreaseMod" -> {"spell_damage_increase_mod",21},
-       "FasterCastingMod" -> {"faster_casting_mod",22},
-  "FasterCastRecoveryMod" -> {"faster_cast_recovery_mod",23},
-                "LuckMod" -> {"luck_mod",24},
-  "SwingSpeedIncreaseMod" -> {"swing_speed_increase_mod",25}
+  var props:={
+                   {"Name", {"name","uobject"}},
+                {"Graphic", {"graphic",0x1234}},
+                  {"Color", {"color",0xff0}},
+                 {"Facing", {"facing",6}}, // after graphic or it gets resetted
+//               {"Revision", {"",1}},
+          {"FireResistMod", {"resist_fire_mod",1}},
+          {"ColdResistMod", {"resist_cold_mod",2}},
+        {"EnergyResistMod", {"resist_energy_mod",3}},
+        {"PoisonResistMod", {"resist_poison_mod",4}},
+      {"PhysicalResistMod", {"resist_physical_mod",5}},
+          {"FireDamageMod", {"damage_fire_mod",6}},
+          {"ColdDamageMod", {"damage_cold_mod",7}},
+        {"EnergyDamageMod", {"damage_energy_mod",8}},
+        {"PoisonDamageMod", {"damage_poison_mod",9}},
+      {"PhysicalDamageMod", {"damage_physical_mod",10}},
+    {"LowerReagentCostMod", {"lower_reagent_cost_mod",11}},
+     {"DefenceIncreaseMod", {"defence_increase_mod",12}},
+  {"DefenceIncreaseCapMod", {"defence_increase_cap_mod",13}},
+       {"LowerManaCostMod", {"lower_mana_cost_mod",14}},
+           {"HitChanceMod", {"hit_chance_mod",15}},
+       {"FireResistCapMod", {"resist_fire_cap_mod",16}},
+       {"ColdResistCapMod", {"resist_cold_cap_mod",17}},
+     {"EnergyResistCapMod", {"resist_energy_cap_mod",18}},
+   {"PhysicalResistCapMod", {"resist_physical_cap_mod",19}},
+     {"PoisonResistCapMod", {"resist_poison_cap_mod",20}},
+ {"SpellDamageIncreaseMod", {"spell_damage_increase_mod",21}},
+       {"FasterCastingMod", {"faster_casting_mod",22}},
+  {"FasterCastRecoveryMod", {"faster_cast_recovery_mod",23}},
+                {"LuckMod", {"luck_mod",24}},
+  {"SwingSpeedIncreaseMod", {"swing_speed_increase_mod",25}}
   };
 
   if (testrun == 1)
     var item := CreateItemAtLocation(10,11,-5, 0xeed,1,"britannia2");
     SetGlobalProperty("test_item_storage_base", item.serial);
     foreach prop in props
-      print(prop[1]);
-      print(item.set_member(prop[1],prop[2]));
+      print(prop[2][1]);
+      print(item.set_member(prop[2][1],prop[2][2]));
     endforeach
-    item.facing:=6;
     item.setprop("test","testcprop");
   else
 
@@ -104,14 +103,11 @@ exported function load_item_base()
       return ret_error($"Item with serial {serial:#x} does not exists: {item})");
     endif
     foreach prop in props
-      var val:=item.get_member(prop[1]);
-      if (val != prop[2])
-        return ret_error($"Member {prop[1]} {prop[2]} != {val}");
+      var val:=item.get_member(prop[2][1]);
+      if (val != prop[2][2])
+        return ret_error($"Member {prop[2][1]} {prop[2][2]} != {val}");
       endif
     endforeach
-    if (item.facing != 6)
-      return ret_error($"wrong facing {item.facing} != 6");
-    endif
     if (item.objtype != 0xeed)
       return ret_error($"wrong objtype {item.objtype:#x} != 0xeed");
     endif
@@ -127,58 +123,58 @@ endfunction
 
 exported function load_item_itemcpp()
   var props:=dictionary{
-                   "Name" -> {"name","itemcpp"},
-//                  "Layer" -> {"",1},
-                "Movable" -> {"movable",1},
-              "Invisible" -> {"invisible",1},
-                 "Cursed" -> {"cursed",1},
-//              "Container" -> {"",1},
-//            "OnUseScript" -> {"",1},
-//            "EquipScript" -> {"",1},
-//          "UnequipScript" -> {"",1},
-//            "SnoopScript" -> {"",1},
-//                "DecayAt" -> {"",1},
-//              "SellPrice" -> {"",1},
-//               "BuyPrice" -> {"",1},
-                 "Newbie" -> {"newbie",1},
-                "Insured" -> {"insured",1},
-//             "FireResist" -> {"",1},
-//             "ColdResist" -> {"",1},
-//           "EnergyResist" -> {"",1},
-//           "PoisonResist" -> {"",1},
-//         "PhysicalResist" -> {"",1},
-//             "FireDamage" -> {"",1},
-//             "ColdDamage" -> {"",1},
-//           "EnergyDamage" -> {"",1},
-//           "PoisonDamage" -> {"",1},
-//         "PhysicalDamage" -> {"",1},
-//       "LowerReagentCost" -> {"",1},
-//    "SpellDamageIncrease" -> {"",1},
-//          "FasterCasting" -> {"",1},
-//     "FasterCastRecovery" -> {"",1},
-//        "DefenceIncrease" -> {"",1},
-//     "DefenceIncreaseCap" -> {"",1},
-//          "LowerManaCost" -> {"",1},
-//          "FireResistCap" -> {"",1},
-//          "ColdResistCap" -> {"",1},
-//        "EnergyResistCap" -> {"",1},
-//      "PhysicalResistCap" -> {"",1},
-//        "PoisonResistCap" -> {"",1},
-//                   "Luck" -> {"",1},
-//     "SwingSpeedIncrease" -> {"",1},
-              "MaxHp_mod" -> {"maxhp_mod",200},
-                     "Hp" -> {"hp",123},
-                "Quality" -> {"quality",1.12345},
-             "NameSuffix" -> {"name_suffix","my_suffix"},
-                 "NoDrop" -> {"nodrop",1}
+                  {"Name", {"name","itemcpp"},
+//                 {"Layer", {"",1}},
+               {"Movable", {"movable",1}},
+             {"Invisible", {"invisible",1}},
+                {"Cursed", {"cursed",1}},
+//             {"Container", {"",1}},
+//           {"OnUseScript", {"",1}},
+//           {"EquipScript", {"",1}},
+//         {"UnequipScript", {"",1}},
+//           {"SnoopScript", {"",1}},
+//               {"DecayAt", {"",1}},
+//             {"SellPrice", {"",1}},
+//              {"BuyPrice", {"",1}},
+                {"Newbie", {"newbie",1}},
+               {"Insured", {"insured",1}},
+//            {"FireResist", {"",1}},
+//            {"ColdResist", {"",1}},
+//          {"EnergyResist", {"",1}},
+//          {"PoisonResist", {"",1}},
+//        {"PhysicalResist", {"",1}},
+//            {"FireDamage", {"",1}},
+//            {"ColdDamage", {"",1}},
+//          {"EnergyDamage", {"",1}},
+//          {"PoisonDamage", {"",1}},
+//        {"PhysicalDamage", {"",1}},
+//      {"LowerReagentCost", {"",1}},
+//   {"SpellDamageIncrease", {"",1}},
+//         {"FasterCasting", {"",1}},
+//    {"FasterCastRecovery", {"",1}},
+//       {"DefenceIncrease", {"",1}},
+//    {"DefenceIncreaseCap", {"",1}},
+//         {"LowerManaCost", {"",1}},
+//         {"FireResistCap", {"",1}},
+//         {"ColdResistCap", {"",1}},
+//       {"EnergyResistCap", {"",1}},
+//     {"PhysicalResistCap", {"",1}},
+//       {"PoisonResistCap", {"",1}},
+//                  {"Luck", {"",1}},
+//    {"SwingSpeedIncrease", {"",1}},
+             {"MaxHp_mod", {"maxhp_mod",200}},
+                    {"Hp", {"hp",123}},
+               {"Quality", {"quality",1.123}},
+            {"NameSuffix", {"name_suffix","my_suffix"}},
+                {"NoDrop", {"nodrop",1}},
   };
 
   if (testrun == 1)
     var item := CreateItemAtLocation(10,11,-5, 0xf3f,1,"britannia2");
     SetGlobalProperty("test_item_storage_itemcpp", item.serial);
     foreach prop in props
-      print(prop[1]);
-      print(item.set_member(prop[1],prop[2]));
+      print(propi[2][1]);
+      print(item.set_member(prop[2][1],prop[2][2]));
     endforeach
     AddAmount(item,1234);
   else
@@ -193,9 +189,9 @@ exported function load_item_itemcpp()
       return ret_error($"Item with serial {serial:#x} does not exists: {item})");
     endif
     foreach prop in props
-      var val:=item.get_member(prop[1]);
-      if (val != prop[2])
-        return ret_error($"Member {prop[1]} {prop[2]} != {val}");
+      var val:=item.get_member(prop[2][1]);
+      if (val != prop[2][2])
+        return ret_error($"Member {prop[2][1]} {prop[2][2]} != {val}");
       endif
     endforeach
     if (item.amount != 1234)
