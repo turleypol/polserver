@@ -50,18 +50,12 @@ program test_item()
 endprogram
 
 exported function load_item_base()
-var props:=dictionary{
-//                   "Name" -> {"","",1},
-//                 "Serial" -> {"","",1},
-//                "ObjType" -> {"","",1},
-//                "Graphic" -> {"","",1},
-//                  "Color" -> {"","",1},
-//                      "X" -> {"","",1},
-//                      "Y" -> {"","",1},
-//                      "Z" -> {"","",1},
-//                 "Facing" -> {"","",1},
-//               "Revision" -> {"","",1},
-//                  "Realm" -> {"","",1},
+  var props:=dictionary{
+                   "Name" -> {"name","uobject"},
+                "Graphic" -> {"graphic",0x1234},
+                  "Color" -> {"color",0xff0},
+                 "Facing" -> {"facing",6},
+//               "Revision" -> {"",1},
           "FireResistMod" -> {"resist_fire_mod",1},
           "ColdResistMod" -> {"resist_cold_mod",2},
         "EnergyResistMod" -> {"resist_energy_mod",3},
@@ -87,10 +81,10 @@ var props:=dictionary{
   "FasterCastRecoveryMod" -> {"faster_cast_recovery_mod",23},
                 "LuckMod" -> {"luck_mod",24},
   "SwingSpeedIncreaseMod" -> {"swing_speed_increase_mod",25}
-};
+  };
 
   if (testrun == 1)
-    var item := CreateItemAtLocation(55,55,0, 0xeed);
+    var item := CreateItemAtLocation(10,11,-5, 0xeed,1,"britannia2");
     SetGlobalProperty("test_item_storage1", item.serial);
     foreach prop in props
       item.set_member(prop[1],prop[2]);
@@ -112,6 +106,12 @@ var props:=dictionary{
         return ret_error($"Member {prop[1]} {prop[2]} != {val}");
       endif
     endfunction
+    if (item.objtype != 0xeed)
+      return ret_error($"wrong objtype {item.objtype:#x} != 0xeed");
+    endif
+    if (item.x != 10 || item.y != 11 || item.z != -5 || item.realm != "britannia2")
+      return ret_error($"wrong pos {item.x},{item.y},{item.z},{item.realm} != 10,11,-5,britannia2");
+    endif
   endif
   return 1;
 endfunction
