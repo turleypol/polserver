@@ -268,7 +268,7 @@ exported function load_save_item_descriptor()
 endfunction
 
 // save/load test for things in Armor
-exported function load_save_item()
+exported function load_save_armor()
   var props:={
                 {"AR_mod", {"ar_mod",12}},
            {"OnHitScript", {"onhitscript","myhitscript"}}
@@ -306,7 +306,7 @@ exported function load_save_item()
 endfunction
 
 // save/load test for things in Weapon class
-exported function load_save_item()
+exported function load_save_weapon()
   var props:={
                 {"dmg_mod", {"dmg_mod",1}},
               {"speed_mod", {"speed_mod",2}},
