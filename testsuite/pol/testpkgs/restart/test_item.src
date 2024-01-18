@@ -178,7 +178,6 @@ endfunction
 
 exported function load_item_itemcpp_descriptor()
   var desc := GetItemDescriptor("restart_test");
-  print(desc);
   desc.FireResist := 1;
   desc.ColdResist := 2;
   desc.EnergyResist := 3;
@@ -204,7 +203,6 @@ exported function load_item_itemcpp_descriptor()
   desc.Luck := 23;
   desc.SwingSpeedIncrease := 24;
   var props:={
-                  {"Name", {"name","itemcpp_descriptor"}},
             {"FireResist", {"resist_fire", desc.FireResist}},
             {"ColdResist", {"resist_cold", desc.ColdResist}},
           {"EnergyResist", {"resist_energy", desc.EnergyResist}},
