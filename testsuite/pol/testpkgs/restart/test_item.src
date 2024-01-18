@@ -177,7 +177,7 @@ exported function load_item_itemcpp()
 endfunction
 
 exported function load_item_itemcpp_descriptor()
-  var desc := GetItemDescriptor(0xf3f);
+  var desc := GetItemDescriptor("restart_test");
   print(desc);
   desc.FireResist := 1;
   desc.ColdResist := 2;
