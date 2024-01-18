@@ -253,7 +253,7 @@ exported function load_item_itemcpp_descriptor()
      {"PhysicalResistCap", {"resist_physical_cap", descriptor.PhysicalResistCap}},
        {"PoisonResistCap", {"resist_poison_cap", descriptor.PoisonResistCap}},
                   {"Luck", {"luck", descriptor.Luck}},
-    {"SwingSpeedIncrease", {"swing_speed_increase", descriptor.SwingSpeedIncrease}},
+    {"SwingSpeedIncrease", {"swing_speed_increase", descriptor.SwingSpeedIncrease}}
   };
   if (testrun == 1)
     var item := CreateItemAtLocation(10,11,-5, descriptor,1,"britannia2");
