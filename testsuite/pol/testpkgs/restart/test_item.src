@@ -48,3 +48,53 @@ program test_item()
   endif
   return 1;
 endprogram
+
+exported function load_item_base()
+var props:=dictionary{
+//                   "Name" -> {"","",1},
+//                 "Serial" -> {"","",1},
+//                "ObjType" -> {"","",1},
+//                "Graphic" -> {"","",1},
+//                  "Color" -> {"","",1},
+//                      "X" -> {"","",1},
+//                      "Y" -> {"","",1},
+//                      "Z" -> {"","",1},
+//                 "Facing" -> {"","",1},
+//               "Revision" -> {"","",1},
+//                  "Realm" -> {"","",1},
+          "FireResistMod" -> {"resist_fire_mod",1},
+          "ColdResistMod" -> {"resist_cold_mod",2},
+        "EnergyResistMod" -> {"resist_energy_mod",3},
+        "PoisonResistMod" -> {"resist_poison_mod",4},
+      "PhysicalResistMod" -> {"resist_physical_mod",5},
+          "FireDamageMod" -> {"damage_fire_mod",6},
+          "ColdDamageMod" -> {"damage_cold_mod",7},
+        "EnergyDamageMod" -> {"damage_energy_mod",8},
+        "PoisonDamageMod" -> {"damage_poison_mod",9},
+      "PhysicalDamageMod" -> {"damage_physical_mod",10}
+/*    "LowerReagentCostMod" -> {"","",1},
+     "DefenceIncreaseMod" -> {"","",1},
+  "DefenceIncreaseCapMod" -> {"","",1},
+       "LowerManaCostMod" -> {"","",1},
+           "HitChanceMod" -> {"","",1},
+       "FireResistCapMod" -> {"","",1},
+       "ColdResistCapMod" -> {"","",1},
+     "EnergyResistCapMod" -> {"","",1},
+   "PhysicalResistCapMod" -> {"","",1},
+     "PoisonResistCapMod" -> {"","",1},
+ "SpellDamageIncreaseMod" -> {"","",1},
+       "FasterCastingMod" -> {"","",1},
+  "FasterCastRecoveryMod" -> {"","",1},
+                "LuckMod" -> {"","",1},
+  "SwingSpeedIncreaseMod" -> {"","",1},*/
+};
+
+  if (testrun == 1)
+    var item := CreateItemAtLocation(55,55,0, 0xeed);
+    SetGlobalProperty("test_item_storage1", item.serial);
+    foreach prop in props
+      item.set_member(prop[1],prop[2]);
+    endfunction
+  else
+
+  endif
