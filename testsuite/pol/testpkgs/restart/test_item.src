@@ -6,6 +6,10 @@ include "testutil";
 var testrun:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
 
 program test_item()
+  return 1;
+endprogram
+
+exported function test_saveonexit()
   if (testrun == 1)
     // Test setting SaveOnExit in item descriptor successfully changes item save behavior
     var desc := GetItemDescriptor(0xeed);
@@ -47,9 +51,10 @@ program test_item()
     endif
   endif
   return 1;
-endprogram
+endfunction
 
-exported function load_item_base()
+// save/load test for things in UObject
+exported function load_save_uobject()
   var props:={
                    {"Name", {"name","uobject"}},
                 {"Graphic", {"graphic",0x1234}},
@@ -87,8 +92,7 @@ exported function load_item_base()
     var item := CreateItemAtLocation(10,11,-5, 0xeed,1,"britannia2");
     SetGlobalProperty("test_item_storage_base", item.serial);
     foreach prop in props
-      print(prop[2][1]);
-      print(item.set_member(prop[2][1],prop[2][2]));
+      item.set_member(prop[2][1],prop[2][2]);
     endforeach
     item.setprop("test","testcprop");
   else
@@ -121,7 +125,8 @@ exported function load_item_base()
   return 1;
 endfunction
 
-exported function load_item_itemcpp()
+// save/load test for things in Item
+exported function load_save_item()
   var props:={
                   {"Name", {"name","itemcpp"}},
 //                 {"Layer", {"",1}},
@@ -149,8 +154,7 @@ exported function load_item_itemcpp()
     var item := CreateItemAtLocation(10,11,-5, 0xf3f,1234,"britannia2");
     SetGlobalProperty("test_item_storage_itemcpp", item.serial);
     foreach prop in props
-      print(prop[2][1]);
-      print(item.set_member(prop[2][1],prop[2][2]));
+      item.set_member(prop[2][1],prop[2][2]);
     endforeach
   else
 
@@ -176,7 +180,8 @@ exported function load_item_itemcpp()
   return 1;
 endfunction
 
-exported function load_item_itemcpp_descriptor()
+// save/load test for things in Item (descriptor only)
+exported function load_save_item_descriptor()
   var desc := GetItemDescriptor("restart_test");
   desc.FireResist := 1;
   desc.ColdResist := 2;
