@@ -138,30 +138,6 @@ exported function load_item_itemcpp()
               {"BuyPrice", {"buyprice",110}},
                 {"Newbie", {"newbie",1}},
                {"Insured", {"insured",1}},
-//            {"FireResist", {"",1}},
-//            {"ColdResist", {"",1}},
-//          {"EnergyResist", {"",1}},
-//          {"PoisonResist", {"",1}},
-//        {"PhysicalResist", {"",1}},
-//            {"FireDamage", {"",1}},
-//            {"ColdDamage", {"",1}},
-//          {"EnergyDamage", {"",1}},
-//          {"PoisonDamage", {"",1}},
-//        {"PhysicalDamage", {"",1}},
-//      {"LowerReagentCost", {"",1}},
-//   {"SpellDamageIncrease", {"",1}},
-//         {"FasterCasting", {"",1}},
-//    {"FasterCastRecovery", {"",1}},
-//       {"DefenceIncrease", {"",1}},
-//    {"DefenceIncreaseCap", {"",1}},
-//         {"LowerManaCost", {"",1}},
-//         {"FireResistCap", {"",1}},
-//         {"ColdResistCap", {"",1}},
-//       {"EnergyResistCap", {"",1}},
-//     {"PhysicalResistCap", {"",1}},
-//       {"PoisonResistCap", {"",1}},
-//                  {"Luck", {"",1}},
-//    {"SwingSpeedIncrease", {"",1}},
              {"MaxHp_mod", {"maxhp_mod",200}},
                     {"Hp", {"hp",123}},
                {"Quality", {"quality",1.123}},
@@ -257,6 +233,9 @@ exported function load_item_itemcpp_descriptor()
   };
   if (testrun == 1)
     var item := CreateItemAtLocation(10,11,-5, descriptor,1,"britannia2");
+    if (!item)
+      return ret_error($"failed to create item {item}");
+    endif
     SetGlobalProperty("test_item_storage_itemcpp_descriptor", item.serial);
   else
 
