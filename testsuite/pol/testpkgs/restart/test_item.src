@@ -71,22 +71,22 @@ var props:=dictionary{
           "ColdDamageMod" -> {"damage_cold_mod",7},
         "EnergyDamageMod" -> {"damage_energy_mod",8},
         "PoisonDamageMod" -> {"damage_poison_mod",9},
-      "PhysicalDamageMod" -> {"damage_physical_mod",10}
-/*    "LowerReagentCostMod" -> {"","",1},
-     "DefenceIncreaseMod" -> {"","",1},
-  "DefenceIncreaseCapMod" -> {"","",1},
-       "LowerManaCostMod" -> {"","",1},
-           "HitChanceMod" -> {"","",1},
-       "FireResistCapMod" -> {"","",1},
-       "ColdResistCapMod" -> {"","",1},
-     "EnergyResistCapMod" -> {"","",1},
-   "PhysicalResistCapMod" -> {"","",1},
-     "PoisonResistCapMod" -> {"","",1},
- "SpellDamageIncreaseMod" -> {"","",1},
-       "FasterCastingMod" -> {"","",1},
-  "FasterCastRecoveryMod" -> {"","",1},
-                "LuckMod" -> {"","",1},
-  "SwingSpeedIncreaseMod" -> {"","",1},*/
+      "PhysicalDamageMod" -> {"damage_physical_mod",10},
+    "LowerReagentCostMod" -> {"lower_reagent_cost_mod",11},
+     "DefenceIncreaseMod" -> {"defence_increase_mod",12},
+  "DefenceIncreaseCapMod" -> {"defence_increase_cap_mod",13},
+       "LowerManaCostMod" -> {"lower_mana_cost_mod",14},
+           "HitChanceMod" -> {"hit_chance_mod",15},
+       "FireResistCapMod" -> {"resist_fire_cap_mod",16},
+       "ColdResistCapMod" -> {"resist_cold_cap_mod",17},
+     "EnergyResistCapMod" -> {"resist_energy_cap_mod",18},
+   "PhysicalResistCapMod" -> {"resist_physical_cap_mod",19},
+     "PoisonResistCapMod" -> {"resist_poison_cap_mod",20},
+ "SpellDamageIncreaseMod" -> {"spell_damage_increase_mod",21},
+       "FasterCastingMod" -> {"faster_casting_mod",22},
+  "FasterCastRecoveryMod" -> {"faster_cast_recovery_mod",23},
+                "LuckMod" -> {"luck_mod",24},
+  "SwingSpeedIncreaseMod" -> {"swing_speed_increase_mod",25}
 };
 
   if (testrun == 1)
