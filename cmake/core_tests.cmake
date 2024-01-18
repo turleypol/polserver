@@ -211,7 +211,7 @@ set_tests_properties( uoconvert_multis PROPERTIES FIXTURES_REQUIRED "client;shar
 set_tests_properties( uoconvert_multis PROPERTIES FIXTURES_SETUP uoconvert)
 
 add_test(NAME shard_ecompile
-  COMMAND ecompile -A -x -xt -l
+  COMMAND ecompile -A -x
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coretest
 )
 set_tests_properties( shard_ecompile PROPERTIES FIXTURES_REQUIRED shard)

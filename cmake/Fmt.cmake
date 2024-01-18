@@ -1,3 +1,4 @@
+# https://github.com/fmtlib/fmt
 
 message("* format")
 
@@ -10,9 +11,8 @@ set(FMT_ARGS -DCMAKE_BUILD_TYPE=Release
    -DFMT_MASTER_PROJECT=Off # no docs/tests
    -DCMAKE_USER_MAKE_RULES_OVERRIDE_CXX=${CMAKE_CURRENT_LIST_DIR}/cxx_flag_overrides.cmake
    -DCMAKE_USER_MAKE_RULES_OVERRIDE_C=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake
-   -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+   -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded # /Mt instead lf /Md
    -DCMAKE_OSX_ARCHITECTURES=${PIPED_OSX_ARCHITECTURES}
-   -DCMAKE_VERBOSE_MAKEFILE=1
  )
 if (${linux})
   set(FMT_LIB "${FMT_INSTALL_DIR}/lib/libfmt.a")

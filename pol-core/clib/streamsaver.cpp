@@ -41,7 +41,7 @@ OFStreamWriter::OFStreamWriter( std::ofstream* stream )
 OFStreamWriter::~OFStreamWriter()
 {
 #if 0
-  if ( _buf.size() )
+  if ( !_buf.empty() )
   {
     Tools::HighPerfTimer t;
     *_stream << _buf;
