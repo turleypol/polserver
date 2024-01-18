@@ -1017,7 +1017,7 @@ void Item::on_invisible_changed()
 
 void Item::setfacing( u8 newfacing )
 {
-  INFO_PRINT( "SETFACING {}", newfacing );
+  INFO_PRINTLN( "SETFACING {}", newfacing );
   /// allow 0-127 (all but MSB)
   if ( newfacing > 127 )
     newfacing = 0;
@@ -1027,7 +1027,7 @@ void Item::setfacing( u8 newfacing )
     facing = newfacing;
     on_facing_changed();
   }
-  INFO_PRINT( "SETFACING new {}", facing );
+  INFO_PRINTLN( "SETFACING new {}", facing );
 }
 
 void Item::on_facing_changed()
