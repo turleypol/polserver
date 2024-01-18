@@ -132,7 +132,7 @@ exported function load_item_itemcpp()
            {"OnUseScript", {"usescript","myusescript"}},
            {"EquipScript", {"equipscript","myequipscript"}},
          {"UnequipScript", {"unequipscript","myunequipscript"}},
-//           {"SnoopScript", {"",1}},
+           {"SnoopScript", {"snoopscript","mysnoopscript"}},
                {"DecayAt", {"decayat",12345678}},
              {"SellPrice", {"sellprice",111}},
               {"BuyPrice", {"buyprice",110}},
