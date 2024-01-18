@@ -88,7 +88,7 @@ exported function load_item_base()
     SetGlobalProperty("test_item_storage1", item.serial);
     foreach prop in props
       item.set_member(prop[1],prop[2]);
-    endfunction
+    endforeach
   else
 
     var serial := GetGlobalProperty("test_item_storage1");
@@ -105,7 +105,7 @@ exported function load_item_base()
       if (val != prop[2])
         return ret_error($"Member {prop[1]} {prop[2]} != {val}");
       endif
-    endfunction
+    endforeach
     if (item.objtype != 0xeed)
       return ret_error($"wrong objtype {item.objtype:#x} != 0xeed");
     endif
