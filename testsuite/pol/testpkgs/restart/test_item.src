@@ -85,17 +85,18 @@ exported function load_item_base()
 
   if (testrun == 1)
     var item := CreateItemAtLocation(10,11,-5, 0xeed,1,"britannia2");
-    SetGlobalProperty("test_item_storage1", item.serial);
+    SetGlobalProperty("test_item_storage_base", item.serial);
     foreach prop in props
       print(prop[1]);
       print(item.set_member(prop[1],prop[2]));
     endforeach
     item.facing:=6;
+    item.setprop("test","testcprop");
   else
 
-    var serial := GetGlobalProperty("test_item_storage1");
+    var serial := GetGlobalProperty("test_item_storage_base");
     if (!serial)
-      return ret_error("Global property test_item_storage1 not found");
+      return ret_error("Global property test_item_storage_base not found");
     endif
 
     var item := SystemFindObjectBySerial(serial);
@@ -116,6 +117,89 @@ exported function load_item_base()
     endif
     if (item.x != 10 || item.y != 11 || item.z != -5 || item.realm != "britannia2")
       return ret_error($"wrong pos {item.x},{item.y},{item.z},{item.realm} != 10,11,-5,britannia2");
+    endif
+    if (item.getprop("test") != "testcprop")
+      return ret_error("failed to load cprop: "+item.getprop("test"));
+    endif
+  endif
+  return 1;
+endfunction
+
+exported function load_item_itemcpp()
+  var props:=dictionary{
+                   "Name" -> {"name","itemcpp"},
+//                  "Layer" -> {"",1},
+                "Movable" -> {"movable",1},
+              "Invisible" -> {"invisible",1},
+                 "Cursed" -> {"cursed",1},
+/*              "Container" -> {"",1},
+            "OnUseScript" -> {"",1},
+            "EquipScript" -> {"",1},
+          "UnequipScript" -> {"",1},
+            "SnoopScript" -> {"",1},
+                "DecayAt" -> {"",1},
+              "SellPrice" -> {"",1},
+               "BuyPrice" -> {"",1},
+                 "Newbie" -> {"",1},
+                "Insured" -> {"",1},
+             "FireResist" -> {"",1},
+             "ColdResist" -> {"",1},
+           "EnergyResist" -> {"",1},
+           "PoisonResist" -> {"",1},
+         "PhysicalResist" -> {"",1},
+             "FireDamage" -> {"",1},
+             "ColdDamage" -> {"",1},
+           "EnergyDamage" -> {"",1},
+           "PoisonDamage" -> {"",1},
+         "PhysicalDamage" -> {"",1},
+       "LowerReagentCost" -> {"",1},
+    "SpellDamageIncrease" -> {"",1},
+          "FasterCasting" -> {"",1},
+     "FasterCastRecovery" -> {"",1},
+        "DefenceIncrease" -> {"",1},
+     "DefenceIncreaseCap" -> {"",1},
+          "LowerManaCost" -> {"",1},
+          "FireResistCap" -> {"",1},
+          "ColdResistCap" -> {"",1},
+        "EnergyResistCap" -> {"",1},
+      "PhysicalResistCap" -> {"",1},
+        "PoisonResistCap" -> {"",1},
+                   "Luck" -> {"",1},
+     "SwingSpeedIncrease" -> {"",1},
+              "MaxHp_mod" -> {"",1},
+                     "Hp" -> {"",1},
+                "Quality" -> {"",1},
+             "NameSuffix" -> {"",1},
+                 "NoDrop" -> {"",1},*/
+  };
+
+  if (testrun == 1)
+    var item := CreateItemAtLocation(10,11,-5, 0xf3f,1,"britannia2");
+    SetGlobalProperty("test_item_storage_itemcpp", item.serial);
+    foreach prop in props
+      print(prop[1]);
+      print(item.set_member(prop[1],prop[2]));
+    endforeach
+    SetAmount(item,1234);
+  else
+
+    var serial := GetGlobalProperty("test_item_storage_itemcpp");
+    if (!serial)
+      return ret_error("Global property test_item_storage_itemcpp not found");
+    endif
+
+    var item := SystemFindObjectBySerial(serial);
+    if (!item)
+      return ret_error($"Item with serial {serial:#x} does not exists: {item})");
+    endif
+    foreach prop in props
+      var val:=item.get_member(prop[1]);
+      if (val != prop[2])
+        return ret_error($"Member {prop[1]} {prop[2]} != {val}");
+      endif
+    endforeach
+    if (item.amount != 1234)
+      return ret_error($"wrong amount {item.amount} != 1234");
     endif
   endif
   return 1;
