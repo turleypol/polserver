@@ -54,7 +54,7 @@ exported function load_item_base()
                    "Name" -> {"name","uobject"},
                 "Graphic" -> {"graphic",0x1234},
                   "Color" -> {"color",0xff0},
-                 "Facing" -> {"facing",6},
+//                 "Facing" -> {"facing",6}, // facing needs ro be after graphic or it gets resetted
 //               "Revision" -> {"",1},
           "FireResistMod" -> {"resist_fire_mod",1},
           "ColdResistMod" -> {"resist_cold_mod",2},
@@ -90,6 +90,7 @@ exported function load_item_base()
       print(prop[1]);
       print(item.set_member(prop[1],prop[2]));
     endforeach
+    item.facing:=6;
   else
 
     var serial := GetGlobalProperty("test_item_storage1");
@@ -107,6 +108,9 @@ exported function load_item_base()
         return ret_error($"Member {prop[1]} {prop[2]} != {val}");
       endif
     endforeach
+    if (item.facing != 6)
+      return ret_error($"wrong facing {item.facing} != 6");
+    endif
     if (item.objtype != 0xeed)
       return ret_error($"wrong objtype {item.objtype:#x} != 0xeed");
     endif
