@@ -177,62 +177,60 @@ exported function load_item_itemcpp()
 endfunction
 
 exported function load_item_itemcpp_descriptor()
-  var descriptor:=struct{
-    ObjType := 0xf3f,
-    FireResist := 1,
-    ColdResist := 2,
-    EnergyResist := 3,
-    PoisonResist := 4,
-    PhysicalResist := 5,
-    FireDamage := 6,
-    ColdDamage := 7,
-    EnergyDamage := 8,
-    PoisonDamage := 9,
-    PhysicalDamage := 10,
-    LowerReagentCost := 11,
-    SpellDamageIncrease := 12,
-    FasterCasting := 13,
-    FasterCastRecovery := 14,
-    DefenceIncrease := 15,
-    DefenceIncreaseCap := 16,
-    LowerManaCost := 17,
-    FireResistCap := 18,
-    ColdResistCap := 19,
-    EnergyResistCap := 20,
-    PhysicalResistCap := 21,
-    PoisonResistCap := 22,
-    Luck := 23,
-    SwingSpeedIncrease := 24
-  };
+  var desc := GetItemDescriptor(0xf3f);
+  desc.FireResist := 1;
+  desc.ColdResist := 2;
+  desc.EnergyResist := 3;
+  desc.PoisonResist := 4;
+  desc.PhysicalResist := 5;
+  desc.FireDamage := 6;
+  desc.ColdDamage := 7;
+  desc.EnergyDamage := 8;
+  desc.PoisonDamage := 9;
+  desc.PhysicalDamage := 10;
+  desc.LowerReagentCost := 11;
+  desc.SpellDamageIncrease := 12;
+  desc.FasterCasting := 13;
+  desc.FasterCastRecovery := 14;
+  desc.DefenceIncrease := 15;
+  desc.DefenceIncreaseCap := 16;
+  desc.LowerManaCost := 17;
+  desc.FireResistCap := 18;
+  desc.ColdResistCap := 19;
+  desc.EnergyResistCap := 20;
+  desc.PhysicalResistCap := 21;
+  desc.PoisonResistCap := 22;
+  desc.Luck := 23;
+  desc.SwingSpeedIncrease := 24;
   var props:={
                   {"Name", {"name","itemcpp_descriptor"}},
-            {"FireResist", {"resist_fire", descriptor.FireResist}},
-            {"ColdResist", {"resist_cold", descriptor.ColdResist}},
-          {"EnergyResist", {"resist_energy", descriptor.EnergyResist}},
-          {"PoisonResist", {"resist_poison", descriptor.PoisonResist}},
-        {"PhysicalResist", {"resist_physical", descriptor.PhysicalResist}},
-            {"FireDamage", {"damage_fire", descriptor.FireDamage}},
-            {"ColdDamage", {"damage_cold", descriptor.ColdDamage}},
-          {"EnergyDamage", {"damage_energy", descriptor.EnergyDamage}},
-          {"PoisonDamage", {"damage_poison", descriptor.PoisonDamage}},
-        {"PhysicalDamage", {"damage_physical", descriptor.PhysicalDamage}},
-      {"LowerReagentCost", {"lower_reagent_cost", descriptor.LowerReagentCost}},
-   {"SpellDamageIncrease", {"spell_damage_increase", descriptor.SpellDamageIncrease}},
-         {"FasterCasting", {"faster_casting", descriptor.FasterCasting}},
-    {"FasterCastRecovery", {"faster_cast_recovery", descriptor.FasterCastRecovery}},
-       {"DefenceIncrease", {"defence_increase", descriptor.DefenceIncrease}},
-    {"DefenceIncreaseCap", {"defence_increase_cap", descriptor.DefenceIncreaseCap}},
-         {"LowerManaCost", {"lower_mana_cost", descriptor.LowerManaCost}},
-         {"FireResistCap", {"resist_fire_cap", descriptor.FireResistCap}},
-         {"ColdResistCap", {"resist_cold_cap", descriptor.ColdResistCap}},
-       {"EnergyResistCap", {"resist_energy_cap", descriptor.EnergyResistCap}},
-     {"PhysicalResistCap", {"resist_physical_cap", descriptor.PhysicalResistCap}},
-       {"PoisonResistCap", {"resist_poison_cap", descriptor.PoisonResistCap}},
-                  {"Luck", {"luck", descriptor.Luck}},
-    {"SwingSpeedIncrease", {"swing_speed_increase", descriptor.SwingSpeedIncrease}}
+            {"FireResist", {"resist_fire", desc.FireResist}},
+            {"ColdResist", {"resist_cold", desc.ColdResist}},
+          {"EnergyResist", {"resist_energy", desc.EnergyResist}},
+          {"PoisonResist", {"resist_poison", desc.PoisonResist}},
+        {"PhysicalResist", {"resist_physical", desc.PhysicalResist}},
+            {"FireDamage", {"damage_fire", desc.FireDamage}},
+            {"ColdDamage", {"damage_cold", desc.ColdDamage}},
+          {"EnergyDamage", {"damage_energy", desc.EnergyDamage}},
+          {"PoisonDamage", {"damage_poison", desc.PoisonDamage}},
+        {"PhysicalDamage", {"damage_physical", desc.PhysicalDamage}},
+      {"LowerReagentCost", {"lower_reagent_cost", desc.LowerReagentCost}},
+   {"SpellDamageIncrease", {"spell_damage_increase", desc.SpellDamageIncrease}},
+         {"FasterCasting", {"faster_casting", desc.FasterCasting}},
+    {"FasterCastRecovery", {"faster_cast_recovery", desc.FasterCastRecovery}},
+       {"DefenceIncrease", {"defence_increase", desc.DefenceIncrease}},
+    {"DefenceIncreaseCap", {"defence_increase_cap", desc.DefenceIncreaseCap}},
+         {"LowerManaCost", {"lower_mana_cost", desc.LowerManaCost}},
+         {"FireResistCap", {"resist_fire_cap", desc.FireResistCap}},
+         {"ColdResistCap", {"resist_cold_cap", desc.ColdResistCap}},
+       {"EnergyResistCap", {"resist_energy_cap", desc.EnergyResistCap}},
+     {"PhysicalResistCap", {"resist_physical_cap", desc.PhysicalResistCap}},
+       {"PoisonResistCap", {"resist_poison_cap", desc.PoisonResistCap}},
+                  {"Luck", {"luck", desc.Luck}},
+    {"SwingSpeedIncrease", {"swing_speed_increase", desc.SwingSpeedIncrease}}
   };
   if (testrun == 1)
-    var item := CreateItemAtLocation(10,11,-5, descriptor,1,"britannia2");
+    var item := CreateItemAtLocation(10,11,-5, desc,1,"britannia2");
     if (!item)
       return ret_error($"failed to create item {item}");
     endif
