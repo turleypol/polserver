@@ -275,7 +275,7 @@ exported function load_save_item()
   };
 
   if (testrun == 1)
-    var item := CreateItemAtLocation(10,11,-5, "intrinsicshield",1,"britannia2");
+    var item := CreateItemAtLocation(10,11,-5, "restart_test_armor",1,"britannia2");
     item.name:="load_save_armor";
     if (!item)
       return ret_error($"failed to create item {item}");
@@ -314,7 +314,7 @@ exported function load_save_item()
   };
 
   if (testrun == 1)
-    var item := CreateItemAtLocation(10,11,-5, "Intrinsic Weapon",1,"britannia2");
+    var item := CreateItemAtLocation(10,11,-5, "restart_test_weapon",1,"britannia2");
     item.name:="load_save_weapon";
     if (!item)
       return ret_error($"failed to create item {item}");
