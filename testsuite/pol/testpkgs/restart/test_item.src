@@ -166,17 +166,16 @@ exported function load_item_itemcpp()
                     {"Hp", {"hp",123}},
                {"Quality", {"quality",1.123}},
             {"NameSuffix", {"name_suffix","my_suffix"}},
-                {"NoDrop", {"nodrop",1}}
+                {"NoDrop", {"no_drop",1}}
   };
 
   if (testrun == 1)
-    var item := CreateItemAtLocation(10,11,-5, 0xf3f,1,"britannia2");
+    var item := CreateItemAtLocation(10,11,-5, 0xf3f,1234,"britannia2");
     SetGlobalProperty("test_item_storage_itemcpp", item.serial);
     foreach prop in props
       print(prop[2][1]);
       print(item.set_member(prop[2][1],prop[2][2]));
     endforeach
-    AddAmount(item,1234);
   else
 
     var serial := GetGlobalProperty("test_item_storage_itemcpp");
@@ -197,6 +196,85 @@ exported function load_item_itemcpp()
     if (item.amount != 1234)
       return ret_error($"wrong amount {item.amount} != 1234");
     endif
+  endif
+  return 1;
+endfunction
+
+exported function load_item_itemcpp_descriptor()
+  var descriptor:=struct{
+    ObjType := 0xf3f,
+    FireResist := 1,
+    ColdResist := 2,
+    EnergyResist := 3,
+    PoisonResist := 4,
+    PhysicalResist := 5,
+    FireDamage := 6,
+    ColdDamage := 7,
+    EnergyDamage := 8,
+    PoisonDamage := 9,
+    PhysicalDamage := 10,
+    LowerReagentCost := 11,
+    SpellDamageIncrease := 12,
+    FasterCasting := 13,
+    FasterCastRecovery := 14,
+    DefenceIncrease := 15,
+    DefenceIncreaseCap := 16,
+    LowerManaCost := 17,
+    FireResistCap := 18,
+    ColdResistCap := 19,
+    EnergyResistCap := 20,
+    PhysicalResistCap := 21,
+    PoisonResistCap := 22,
+    Luck := 23,
+    SwingSpeedIncrease := 24
+  };
+  var props:={
+                  {"Name", {"name","itemcpp_descriptor"}},
+            {"FireResist", {"resist_fire", descriptor.FireResist}},
+            {"ColdResist", {"resist_cold", descriptor.ColdResist}},
+          {"EnergyResist", {"resist_energy", descriptor.EnergyResist}},
+          {"PoisonResist", {"resist_poison", descriptor.PoisonResist}},
+        {"PhysicalResist", {"resist_physical", descriptor.PhysicalResist}},
+            {"FireDamage", {"damage_fire", descriptor.FireDamage}},
+            {"ColdDamage", {"damage_cold", descriptor.ColdDamage}},
+          {"EnergyDamage", {"damage_energy", descriptor.EnergyDamage}},
+          {"PoisonDamage", {"damage_poison", descriptor.PoisonDamage}},
+        {"PhysicalDamage", {"damage_physical", descriptor.PhysicalDamage}},
+      {"LowerReagentCost", {"lower_reagent_cost", descriptor.LowerReagentCost}},
+   {"SpellDamageIncrease", {"spell_damage_increase", descriptor.SpellDamageIncrease}},
+         {"FasterCasting", {"faster_casting", descriptor.FasterCasting}},
+    {"FasterCastRecovery", {"faster_cast_recovery", descriptor.FasterCastRecovery}},
+       {"DefenceIncrease", {"defence_increase", descriptor.DefenceIncrease}},
+    {"DefenceIncreaseCap", {"defence_increase_cap", descriptor.DefenceIncreaseCap}},
+         {"LowerManaCost", {"lower_mana_cost", descriptor.LowerManaCost}},
+         {"FireResistCap", {"resist_fire_cap", descriptor.FireResistCap}},
+         {"ColdResistCap", {"resist_cold_cap", descriptor.ColdResistCap}},
+       {"EnergyResistCap", {"resist_energy_cap", descriptor.EnergyResistCap}},
+     {"PhysicalResistCap", {"resist_physical_cap", descriptor.PhysicalResistCap}},
+       {"PoisonResistCap", {"resist_poison_cap", descriptor.PoisonResistCap}},
+                  {"Luck", {"luck", descriptor.Luck}},
+    {"SwingSpeedIncrease", {"swing_speed_increase", descriptor.SwingSpeedIncrease}},
+  };
+  if (testrun == 1)
+    var item := CreateItemAtLocation(10,11,-5, descriptor,1,"britannia2");
+    SetGlobalProperty("test_item_storage_itemcpp_descriptor", item.serial);
+  else
+
+    var serial := GetGlobalProperty("test_item_storage_itemcpp_descriptor");
+    if (!serial)
+      return ret_error("Global property test_item_storage_itemcpp_descriptor not found");
+    endif
+
+    var item := SystemFindObjectBySerial(serial);
+    if (!item)
+      return ret_error($"Item with serial {serial:#x} does not exists: {item})");
+    endif
+    foreach prop in props
+      var val:=item.get_member(prop[2][1]);
+      if (val != prop[2][2])
+        return ret_error($"Member {prop[2][1]} {prop[2][2]} != {val}");
+      endif
+    endforeach
   endif
   return 1;
 endfunction
