@@ -166,10 +166,10 @@ exported function load_item_itemcpp()
 //        "PoisonResistCap" -> {"",1},
 //                   "Luck" -> {"",1},
 //     "SwingSpeedIncrease" -> {"",1},
-//              "MaxHp_mod" -> {"",1},
-//                     "Hp" -> {"",1},
+              "MaxHp_mod" -> {"maxhp_mod",200},
+                     "Hp" -> {"hp",123},
                 "Quality" -> {"quality",1.12345},
-//             "NameSuffix" -> {"suffix",1},
+             "NameSuffix" -> {"name_suffix","my_suffix"},
                  "NoDrop" -> {"nodrop",1}
   };
 
