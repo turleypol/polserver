@@ -87,7 +87,8 @@ exported function load_item_base()
     var item := CreateItemAtLocation(10,11,-5, 0xeed,1,"britannia2");
     SetGlobalProperty("test_item_storage1", item.serial);
     foreach prop in props
-      item.set_member(prop[1],prop[2]);
+      print(prop[1]);
+      print(item.set_member(prop[1],prop[2]));
     endforeach
   else
 
