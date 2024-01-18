@@ -123,7 +123,7 @@ endfunction
 
 exported function load_item_itemcpp()
   var props:={
-                  {"Name", {"name","itemcpp"},
+                  {"Name", {"name","itemcpp"}},
 //                 {"Layer", {"",1}},
                {"Movable", {"movable",1}},
              {"Invisible", {"invisible",1}},
