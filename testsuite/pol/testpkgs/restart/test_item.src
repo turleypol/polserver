@@ -90,16 +90,19 @@ exported function load_save_uobject()
 
   if (testrun == 1)
     var item := CreateItemAtLocation(10,11,-5, 0xeed,1,"britannia2");
-    SetGlobalProperty("test_item_storage_base", item.serial);
+    if (!item)
+      return ret_error($"failed to create item {item}");
+    endif
+    SetGlobalProperty("test_item_storage_uobject", item.serial);
     foreach prop in props
       item.set_member(prop[2][1],prop[2][2]);
     endforeach
     item.setprop("test","testcprop");
   else
 
-    var serial := GetGlobalProperty("test_item_storage_base");
+    var serial := GetGlobalProperty("test_item_storage_uobject");
     if (!serial)
-      return ret_error("Global property test_item_storage_base not found");
+      return ret_error("Global property not found");
     endif
 
     var item := SystemFindObjectBySerial(serial);
@@ -152,15 +155,18 @@ exported function load_save_item()
 
   if (testrun == 1)
     var item := CreateItemAtLocation(10,11,-5, 0xf3f,1234,"britannia2");
-    SetGlobalProperty("test_item_storage_itemcpp", item.serial);
+    if (!item)
+      return ret_error($"failed to create item {item}");
+    endif
+    SetGlobalProperty("test_item_storage_item", item.serial);
     foreach prop in props
       item.set_member(prop[2][1],prop[2][2]);
     endforeach
   else
 
-    var serial := GetGlobalProperty("test_item_storage_itemcpp");
+    var serial := GetGlobalProperty("test_item_storage_item");
     if (!serial)
-      return ret_error("Global property test_item_storage_itemcpp not found");
+      return ret_error("Global property not found");
     endif
 
     var item := SystemFindObjectBySerial(serial);
@@ -238,12 +244,49 @@ exported function load_save_item_descriptor()
     if (!item)
       return ret_error($"failed to create item {item}");
     endif
-    SetGlobalProperty("test_item_storage_itemcpp_descriptor", item.serial);
+    SetGlobalProperty("test_item_storage_item_descriptor", item.serial);
   else
 
-    var serial := GetGlobalProperty("test_item_storage_itemcpp_descriptor");
+    var serial := GetGlobalProperty("test_item_storage_item_descriptor");
     if (!serial)
-      return ret_error("Global property test_item_storage_itemcpp_descriptor not found");
+      return ret_error("Global property not found");
+    endif
+
+    var item := SystemFindObjectBySerial(serial);
+    if (!item)
+      return ret_error($"Item with serial {serial:#x} does not exists: {item})");
+    endif
+    foreach prop in props
+      var val:=item.get_member(prop[2][1]);
+      if (val != prop[2][2])
+        return ret_error($"Member {prop[2][1]} {prop[2][2]} != {val}");
+      endif
+    endforeach
+  endif
+  return 1;
+endfunction
+
+// save/load test for things in Armor
+exported function load_save_item()
+  var props:={
+                {"AR_mod", {"ar_mod",12}},
+           {"OnHitScript", {"onhitscript","myhitscript"}},
+  };
+
+  if (testrun == 1)
+    var item := CreateItemAtLocation(10,11,-5, "intrinsicshield",1,"britannia2");
+    if (!item)
+      return ret_error($"failed to create item {item}");
+    endif
+    SetGlobalProperty("test_item_storage_armor", item.serial);
+    foreach prop in props
+      item.set_member(prop[2][1],prop[2][2]);
+    endforeach
+  else
+
+    var serial := GetGlobalProperty("test_item_storage_armor");
+    if (!serial)
+      return ret_error("Global property not found");
     endif
 
     var item := SystemFindObjectBySerial(serial);
