@@ -36,7 +36,7 @@ exported function load_save_house()
       return ret_error($"House with serial {serial:#x} does not exists: {house})");
     endif
     foreach prop in props
-      var val:=item.get_member(prop[2][1]);
+      var val:=house.get_member(prop[2][1]);
       if (val != prop[2][2])
         return ret_error($"Member {prop[2][1]} {prop[2][2]} != {val}");
       endif
