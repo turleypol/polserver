@@ -282,6 +282,7 @@ void UObject::printProperties( Clib::StreamWriter& sw ) const
   sw.add( "X", x() );
   sw.add( "Y", y() );
   sw.add( "Z", (int)z() );
+
   if ( facing )
     sw.add( "Facing", static_cast<int>( facing ) );
 
