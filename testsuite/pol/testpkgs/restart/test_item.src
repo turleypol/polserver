@@ -555,7 +555,7 @@ exported function load_save_corpse()
       return ret_error($"failed to create npc {npc}");
     endif
     SetGlobalProperty("test_item_storage_npc_corpse", npc.serial);
-    var npcserial = npc.serial;
+    var npcserial := npc.serial;
     npc.kill();
     var item;
     var items:=ListObjectsInBoxOfType(POLCLASS_CORPSE,100,100,0,100,100,0,"britannia2");
