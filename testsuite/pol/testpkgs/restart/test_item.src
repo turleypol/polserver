@@ -274,7 +274,7 @@ exported function load_save_item_in_container()
       return ret_error($"failed to create item {cnt}");
     endif
     cnt.name:="load_save_cnt_for_item";
-    var item := CreateItemInContainer(cnt, 0xeed, 1, 12, 13);
+    var item := CreateItemInContainer(cnt, 0xeed, 1, 2, 3);
     if (!item)
       return ret_error($"failed to create item {item}");
     endif
@@ -300,8 +300,8 @@ exported function load_save_item_in_container()
     if (item.container != cnt)
       return ret_error($"Item not in container: {item.container} != {cnt.serial}");
     endif
-    if (item.x != 12 || item.y != 13)
-      return ret_error($"wrong coordinates ({item.x},{item.y}) != (12,13)");
+    if (item.x != 2 || item.y != 3)
+      return ret_error($"wrong coordinates ({item.x},{item.y}) != (2,3)");
     endif
   endif
   return 1;
