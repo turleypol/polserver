@@ -4,12 +4,8 @@
 #include <fmt/format.h>
 #include <iosfwd>
 #include <iterator>
-#include <memory>
 #include <string>
-#include <thread>
 #include <type_traits>
-
-#include "message_queue.h"
 
 #if 0
 #include "timer.h"
@@ -54,17 +50,6 @@ protected:
   std::string _buf = {};
 };
 
-class FMTStreamWriter final : public StreamWriter
-{
-public:
-  FMTStreamWriter() = default;
-  virtual ~FMTStreamWriter() = default;
-  virtual void init( const std::string& ) override{};  // argument is not used
-  virtual void flush() override{};
-  virtual void flush_file() override{};
-  const std::string& buffer() const { return _buf; };
-};
-
 class OFStreamWriter final : public StreamWriter
 {
 public:
@@ -83,41 +68,6 @@ private:
   std::string _stream_name;
 };
 
-class OStreamWriter final : public StreamWriter
-{
-public:
-  OStreamWriter();
-  OStreamWriter( std::ostream* stream );
-  virtual ~OStreamWriter();
-  virtual void init( const std::string& filepath ) override;
-  virtual void flush() override;
-  virtual void flush_file() override;
-
-private:
-  std::ostream* _stream;
-};
-
-
-class ThreadedOFStreamWriter final : public StreamWriter
-{
-  typedef message_queue<std::string> writer_queue;
-
-public:
-  ThreadedOFStreamWriter();
-  ThreadedOFStreamWriter( std::ofstream* stream );
-  virtual ~ThreadedOFStreamWriter();
-  virtual void init( const std::string& filepath ) override;
-  virtual void flush() override;
-  virtual void flush_file() override;
-
-private:
-  void start_worker();
-  std::ofstream* _stream;
-  writer_queue _msg_queue;
-  std::thread _writethread;
-  std::list<std::string> _writers_hold;
-  std::string _stream_name;
-};
 }  // namespace Clib
 }  // namespace Pol
 #endif  // CLIB_STREAMSAVER_H
