@@ -550,7 +550,7 @@ endfunction
 // save/load test for things in Corpse class
 exported function load_save_corpse()
   if (testrun == 1)
-    var npc:=CreateNPCFromTemplate(":testrestart:load_npc",10,11,5,"britannia2");
+    var npc:=CreateNPCFromTemplate(":testrestart:load_npc",10,11,5,0,"britannia2");
     if (!npc)
       return ret_error($"failed to create npc {npc}");
     endif
