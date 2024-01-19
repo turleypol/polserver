@@ -136,7 +136,6 @@ exported function load_save_item()
                {"Movable", {"movable",1}},
              {"Invisible", {"invisible",1}},
                 {"Cursed", {"cursed",1}},
-//             {"Container", {"",1}},
            {"OnUseScript", {"usescript","myusescript"}},
            {"EquipScript", {"equipscript","myequipscript"}},
          {"UnequipScript", {"unequipscript","myunequipscript"}},
@@ -263,6 +262,47 @@ exported function load_save_item_descriptor()
         return ret_error($"Member {prop[2][1]} {prop[2][2]} != {val}");
       endif
     endforeach
+  endif
+  return 1;
+endfunction
+
+// save/load test for things in Item (container)
+exported function load_save_item_in_container()
+  if (testrun == 1)
+    var cnt := CreateItemAtLocation(10,11,-5, "restart_test_container",1,"britannia2");
+    if (!cnt)
+      return ret_error($"failed to create item {cnt}");
+    endif
+    cnt.name:="load_save_cnt_for_item";
+    var item := CreateItemInContainer(cnt, 0xeed, 1, 12, 13);
+    if (!item)
+      return ret_error($"failed to create item {item}");
+    endif
+    item.name:="load_save_item_in_container";
+    SetGlobalProperty("test_item_storage_item_in_cnt", item.serial);
+    SetGlobalProperty("test_item_storage_cnt_item_in_cnt", cnt.serial);
+  else
+
+    var serial := GetGlobalProperty("test_item_storage_item_in_cnt");
+    var serialcnt := GetGlobalProperty("test_item_storage_cnt_item_in_cnt");
+    if (!serial || !serialcnt)
+      return ret_error("Global property not found");
+    endif
+
+    var item := SystemFindObjectBySerial(serial);
+    if (!item)
+      return ret_error($"Item with serial {serial:#x} does not exists: {item})");
+    endif
+    var cnt := SystemFindObjectBySerial(serialcnt);
+    if (!cnt)
+      return ret_error($"Cnt with serial {serialcnt:#x} does not exists: {cnt})");
+    endif
+    if (item.container != cnt)
+      return ret_error($"Item not in container: {item.container} != {cnt.serial}");
+    endif
+    if (item.x != 12 || item.y != 13)
+      return ret_error($"wrong coordinates ({item.x},{item.y}) != (12,13)");
+    endif
   endif
   return 1;
 endfunction
