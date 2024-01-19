@@ -511,8 +511,8 @@ exported function load_save_map()
     if (pins[1].x!=4 or pins[1].y!=5)
       return ret_error($"invalid coord {pins[1]} != 4,5");
     endif
-    if (pins[3].x!=6 or pins[2].y!=7)
-      return ret_error($"invalid coord {pins[1]} != 6,7");
+    if (pins[2].x!=6 or pins[2].y!=7)
+      return ret_error($"invalid coord {pins[2]} != 6,7");
     endif
   endif
   return 1;
