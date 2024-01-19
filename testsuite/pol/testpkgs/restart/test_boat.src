@@ -46,8 +46,8 @@ exported function load_save_boat()
     if (len(boat.mobiles)!=1)
       return ret_error($"invalid traveller size: {boat.mobiles}");
     endif
-    if (boat.mobiles[1].serial != boat.getprop('npc'))
-      return ret_error($"invalid traveller {boat.mobiles[1].serial} != {boat.getprop('npc')}");
+    if (boat.mobiles[1].serial != boat.getprop("npc"))
+      return ret_error($"invalid traveller {boat.mobiles[1].serial} != {boat.getprop(\"npc\")}");
     endif
 
   endif
