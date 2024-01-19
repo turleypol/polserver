@@ -19,7 +19,7 @@ class StreamWriter
 {
 public:
   StreamWriter( std::ofstream* stream );
-  ~StreamWriter() = default;
+  ~StreamWriter();
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;
 
