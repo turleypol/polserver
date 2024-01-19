@@ -48,6 +48,10 @@ endfunction
 exported function load_save_house_custom()
   var props:={
                 {"Custom", {"custom",1}}
+//                {"Current", {"",1}},
+//                {"Working", {"",1}},
+//                 {"Backup", {"",1}},
+//         {"DesignRevision", {"",1}}
   };
 
   if (testrun == 1)
@@ -58,7 +62,7 @@ exported function load_save_house_custom()
     endif
     SetGlobalProperty("test_storage_house_custom", house.serial);
     house.setcustom(1);
-    print(house.addhousepart(0x1,1,2,3);
+    print(house.addhousepart(0x1,1,2,3));
   else
 
     var serial := GetGlobalProperty("test_storage_house_custom");
