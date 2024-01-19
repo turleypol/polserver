@@ -3,31 +3,51 @@ use uo;
 include "testutil";
 
 var testrun:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
-var house;
 
 program test_house()
-  if (testrun == 1) 
-    house:=CreateMultiAtLocation(50,50,0,0x12000);
-    house.setprop("restart_test_house",1);
-  else
-    foreach multi in (ListMultisInBox(0,0,-200,10000,10000,200))
-      if (multi.getprop("restart_test_house"))
-        house:=multi;
-      endif
-    endforeach
-    if (!house)
-      return ret_error("failed to find house");
-    endif
-  endif
   return 1;
 endprogram
 
-exported function test_basic()
-  if (testrun != 2)
-    return 1;
-  endif
-  if (house.x !=50 || house.y != 50 || house.z != 0 || house.multiid !=0x6b)
-      return ret_error("Wrong pos or multiid: {},{},{} {}".format(house.x, house.y, house.z, house.multiid));
+// save/load test for things in House class
+exported function load_save_house()
+  var props:={
+                {"MultiID", {"multiid",0x6b}}
+  };
+
+  if (testrun == 1)
+    var house:=CreateMultiAtLocation(50,50,0,0x12000);
+    house.name:="load_save_house";
+    if (!house)
+      return ret_error($"failed to create house {house}");
+    endif
+    SetGlobalProperty("test_storage_house", house.serial);
+    var item := CreateItemAtLocation(50,50,5,0xf3f);
+    house.add_component(item);
+    SetGlobalProperty("test_storage_house_comp", item.serial);
+  else
+
+    var serial := GetGlobalProperty("test_storage_house");
+    if (!serial)
+      return ret_error("Global property not found");
+    endif
+
+    var house := SystemFindObjectBySerial(serial);
+    if (!house)
+      return ret_error($"House with serial {serial:#x} does not exists: {house})");
+    endif
+    foreach prop in props
+      var val:=item.get_member(prop[2][1]);
+      if (val != prop[2][2])
+        return ret_error($"Member {prop[2][1]} {prop[2][2]} != {val}");
+      endif
+    endforeach
+    var comp:=SystemFindObjectBySerial(GetGlobalProperty("test_storage_house_comp"));
+    if (len(house.components)!=1)
+      return ret_error($"invalid components: {house.components}");
+    endif
+    if (house.components[1]!=comp)
+      return ret_error($"invalid component {house.components[1].serial} != {comp.serial}");
+    endif
   endif
   return 1;
 endfunction
