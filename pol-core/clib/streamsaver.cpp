@@ -16,10 +16,8 @@ void StreamWriter::flush_test()
     flush();
 }
 
-/// ofstream implementation (simple non threaded)
-OFStreamWriter::OFStreamWriter()
-    : StreamWriter(),
-      _stream(),
+StreamWriter::StreamWriter( std::ofstream* stream )
+    : _stream( stream ),
 #if 0
       _fs_time( 0 ),
 #endif
@@ -27,17 +25,7 @@ OFStreamWriter::OFStreamWriter()
 {
 }
 
-OFStreamWriter::OFStreamWriter( std::ofstream* stream )
-    : StreamWriter(),
-      _stream( stream ),
-#if 0
-      _fs_time( 0 ),
-#endif
-      _stream_name()
-{
-}
-
-OFStreamWriter::~OFStreamWriter()
+StreamWriter::~StreamWriter()
 {
 #if 0
   if ( !_buf.empty() )
@@ -53,14 +41,14 @@ OFStreamWriter::~OFStreamWriter()
 #endif
 }
 
-void OFStreamWriter::init( const std::string& filepath )
+void StreamWriter::init( const std::string& filepath )
 {
   _stream->exceptions( std::ios_base::failbit | std::ios_base::badbit );
   _stream->open( filepath.c_str(), std::ios::out | std::ios::trunc );
   _stream_name = filepath;
 }
 
-void OFStreamWriter::flush()
+void StreamWriter::flush()
 {
 #if 0
       Tools::HighPerfTimer t;
@@ -75,7 +63,7 @@ void OFStreamWriter::flush()
 #endif
 }
 
-void OFStreamWriter::flush_file()
+void StreamWriter::flush_file()
 {
   flush();
   _stream->flush();

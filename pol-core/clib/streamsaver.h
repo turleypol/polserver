@@ -18,8 +18,8 @@ namespace Clib
 class StreamWriter
 {
 public:
-  StreamWriter() = default;
-  virtual ~StreamWriter() = default;
+  StreamWriter( std::ofstream* stream );
+  ~StreamWriter() = default;
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;
 
@@ -41,26 +41,13 @@ public:
       fmt::format_to( std::back_inserter( _buf ), format, args... );
     flush_test();
   }
-  virtual void init( const std::string& filepath ) = 0;
-  virtual void flush() = 0;
-  virtual void flush_file() = 0;
+  void init( const std::string& filepath );
+  void flush();
+  void flush_file();
 
 protected:
   void flush_test();
   std::string _buf = {};
-};
-
-class OFStreamWriter final : public StreamWriter
-{
-public:
-  OFStreamWriter();
-  OFStreamWriter( std::ofstream* stream );
-  virtual ~OFStreamWriter();
-  virtual void init( const std::string& filepath ) override;
-  virtual void flush() override;
-  virtual void flush_file() override;
-
-private:
   std::ofstream* _stream;
 #if 0
       Tools::HighPerfTimer::time_mu _fs_time;
