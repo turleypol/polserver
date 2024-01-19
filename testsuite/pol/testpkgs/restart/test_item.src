@@ -469,7 +469,7 @@ exported function load_save_map()
                  {"xeast", {"xeast",10}},
                 {"ysouth", {"ysouth",20}},
              {"gumpwidth", {"gumpwidth",100}},
-            {"gumpheight", {"gumheight",200}},
+            {"gumpheight", {"gumpheight",200}},
                {"facetid", {"facetid",3}},
               {"editable", {"editable",1}}
 //               {"NumPins", {"",1}}, //tested via appendpin
