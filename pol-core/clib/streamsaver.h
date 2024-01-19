@@ -44,6 +44,7 @@ public:
   void init( const std::string& filepath );
   void flush();
   void flush_file();
+  const std::string& buffer() const { return _buf; };
 
 protected:
   void flush_test();

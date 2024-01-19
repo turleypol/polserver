@@ -36,15 +36,18 @@ StreamWriter::~StreamWriter()
   }
   ERROR_PRINTLN( "streamwriter {} io time {}", _stream_name, _fs_time.count() );
 #else
-  if ( !_buf.empty() )
+  if ( !_buf.empty() && _stream )
     *_stream << _buf;
 #endif
 }
 
 void StreamWriter::init( const std::string& filepath )
 {
-  _stream->exceptions( std::ios_base::failbit | std::ios_base::badbit );
-  _stream->open( filepath.c_str(), std::ios::out | std::ios::trunc );
+  if ( _stream )
+  {
+    _stream->exceptions( std::ios_base::failbit | std::ios_base::badbit );
+    _stream->open( filepath.c_str(), std::ios::out | std::ios::trunc );
+  }
   _stream_name = filepath;
 }
 
@@ -53,7 +56,7 @@ void StreamWriter::flush()
 #if 0
       Tools::HighPerfTimer t;
 #endif
-  if ( !_buf.empty() )
+  if ( !_buf.empty() && _stream )
   {
     *_stream << _buf;
     _buf.clear();
@@ -66,7 +69,8 @@ void StreamWriter::flush()
 void StreamWriter::flush_file()
 {
   flush();
-  _stream->flush();
+  if ( _stream )
+    _stream->flush();
 }
 
 }  // namespace Clib
