@@ -81,7 +81,7 @@ exported function load_save_house_custom()
       endif
     endforeach
     if (len(house.house_parts)!=1) 
-      return ret_error($"invalid number of parts: "+len(house.house_parts)");
+      return ret_error($"invalid number of parts: "+len(house.house_parts));
     endif
   endif
   return 1;
