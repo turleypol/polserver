@@ -16,9 +16,8 @@ exported function load_save_shadowrealm()
       return ret_error($"failed to add: {r}");
     endif
   else
-    print(Realms());
-    print(Realms("savetest_realm"));
-    if (!Realms("savetest_realm"))
+    var r:=Realms("savetest_realm");
+    if (!r || r.mapid!=1)
       return ret_error("failed to load realm");
     endif
   endif
