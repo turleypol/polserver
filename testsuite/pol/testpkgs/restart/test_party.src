@@ -13,13 +13,11 @@ exported function load_save_party()
   if (testrun == 1)
     var chr1:=createAccountWithChar("restart_test_party1", "pass");
     var chr2:=createAccountWithChar("restart_test_party2", "pass");
-    var party:=CreateParty(chr1,chr2);
-    if (!chr1 || !chr2 || !party)
-      return ret_error($"create failed {chr1} {chr2} {party}");
+    var res:=CreateParty(chr1,chr2);
+    if (!chr1 || !chr2 || !res)
+      return ret_error($"create failed {chr1} {chr2} {res}");
     endif
-    print(party.setprop("name","test"));
-    print(chr1.party.getprop("name"));
-    print(party.getprop("name"));
+    chr1.party.setprop("name","test");
   else
     var chr1:=FindAccount("restart_test_party1").getcharacter(1);
     var chr2:=FindAccount("restart_test_party2").getcharacter(1);
