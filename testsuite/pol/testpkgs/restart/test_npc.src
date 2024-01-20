@@ -123,7 +123,7 @@ endfunction
 
 exported function test_saveonexit()
   if (testrun == 1)
-    var npc:=CreateNPCFromTemplate(":testrestart:restart_npc",49,50,0,override,"britannia2");
+    var npc:=CreateNPCFromTemplate(":testrestart:restart_npc",49,50,0);
     if (!npc)
       return ret_error($"failed to create npc {npc}");
     endif
