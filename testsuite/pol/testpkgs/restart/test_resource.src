@@ -1,0 +1,24 @@
+use os;
+use uo;
+include "testutil";
+
+var testrun:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
+
+program test_resource()
+  return 1;
+endprogram
+
+exported function load_save_resource()
+  if (testrun == 1)
+    var res:=harvestresource("testres",50,50,5,5);
+    if (res != 25)
+      print($"should harvest 5*5 but got only {res}");
+    endif
+  else
+    var res:=harvestresource("testres",50,50,10,5);
+    if (res != 25)
+      print($"25 should be left got {res}");
+    endif
+  endif
+  return 1;
+endfunction
