@@ -1,0 +1,28 @@
+use os;
+use uo;
+use party;
+include "testutil";
+
+var testrun:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
+
+program test_party()
+  return 1;
+endprogram
+
+exported function load_save_party()
+  if (testrun == 1)
+    var chr1:=createAccountWithChar("restart_test_party1", "pass");
+    var chr2:=createAccountWithChar("restart_test_party2", "pass");
+    var party:=CreateParty(chr1,chr2);
+    if (!chr1 || !chr2 || !party)
+      return ret_error($"create failed {chr1} {chr2} {party}");
+    endif
+    party.setprop("name","test");
+  else
+    var chr1:=FindAccount("restart_test_party1").getcharacter(1);
+    var chr2:=FindAccount("restart_test_party2").getcharacter(1);
+    print(chr1.party);
+    print(chr2.party);
+  endif
+  return 1;
+endfunction
