@@ -1,5 +1,7 @@
 use os;
 use uo;
+use attribute;
+use vitals;
 include "testutil";
 
 var testrun:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
@@ -11,8 +13,8 @@ endprogram
 // save/load test for things in Character class
 exported function load_save_character()
   var props:={
-//               {"Account", {"",1}},
-//               {"CharIdx", {"",1}},
+//               {"Account", {"",1}}, // indirect
+//               {"CharIdx", {"",1}}, // indirect
               {"CmdLevel", {"cmdlevel",1}},
              {"Concealed", {"concealed",1}},
              {"TrueColor", {"truecolor",105}},
@@ -47,7 +49,7 @@ exported function load_save_character()
             {"TitleGuild", {"title_guild","myguild"}},
              {"TitleRace", {"title_race","myrace"}},
               {"Murderer", {"murderer",1}}
-//          {"PartyCanLoot", {"",1}},
+//          {"PartyCanLoot", {"",1}}, // client only settable?
 //            {"Reportable", {"",1}},
 //            {"LastCorpse", {"",1}},
   };
@@ -63,6 +65,10 @@ exported function load_save_character()
     grandprivilege(chr,"hiddenattack");
     grandprivilege(chr,"runwhilestealth");
     chr.enable("hiddenattack");
+    SetAttributeBaseValue(chr,"Strength",900);
+    SetAttributeCap(chr,"Strength",1000);
+    SetAttributeLock(chr,"Strength",ATTRIBUTE_LOCK_DOWN);
+    SetVital(chr,"Mana",200);
   else
 
     var a:=FindAccount("restart_test_char");
