@@ -27,7 +27,7 @@ exported function load_save_account()
       return ret_error($"failed to create account {acc}");
     endif
     acc.setdefaultcmdlevel(1);
-    acc.set_uo_expansion("se");
+    acc.set_uo_expansion("SE");
     acc.addcharacter(0);
     acc.setprop("test",1);
   else
