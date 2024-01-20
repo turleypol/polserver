@@ -66,7 +66,7 @@ exported function load_save_character()
     grantprivilege(chr,"runwhilestealth");
     chr.enable("hiddenattack");
     SetAttributeBaseValue(chr,"Strength",900);
-    SetAttributeCap(chr,"Strength",1000);
+    print(SetAttributeCap(chr,"Strength",1000));
     SetAttributeLock(chr,"Strength",ATTRIBUTE_LOCK_DOWN);
     SetAttributeBaseValue(chr,"INT",901);
     SetAttributeCap(chr,"INT",1002);
