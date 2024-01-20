@@ -720,7 +720,7 @@ void Character::printProperties( Clib::StreamWriter& sw ) const
     sw.add( "PartyCanLoot", party_can_loot() );
   for ( const auto& rt : reportable_ )
   {
-    sw.add( "Reportable", fmt::format( "{:#X} {}", rt.serial, rt.polclock ) );
+    sw.add( "Reportable", fmt::format( "{:#x} {}", rt.serial, rt.polclock ) );
   }
 
   Core::UCorpse* corpse_obj = static_cast<Core::UCorpse*>( Core::system_find_item( last_corpse ) );
