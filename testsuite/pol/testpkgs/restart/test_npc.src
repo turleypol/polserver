@@ -77,7 +77,7 @@ exported function load_save_npc()
        {"NoDropException", {"no_drop_exception",1}}
   };
   if (testrun == 1)
-    var npc:=CreateNPCFromTemplate(":testrestart:restart_npc",9,50,0);
+    var npc:=CreateNPCFromTemplate(":testrestart:restart_npc",9,50,0,override);
     SetGlobalProperty("test_storage_npc", npc.serial);
   else
 
