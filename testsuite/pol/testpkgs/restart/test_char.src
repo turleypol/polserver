@@ -68,6 +68,9 @@ exported function load_save_character()
     SetAttributeBaseValue(chr,"Strength",900);
     SetAttributeCap(chr,"Strength",1000);
     SetAttributeLock(chr,"Strength",ATTRIBUTE_LOCK_DOWN);
+    SetAttributeBaseValue(chr,"INT",901);
+    SetAttributeCap(chr,"INT",1002);
+    SetAttributeLock(chr,"INT",ATTRIBUTE_LOCK_LOCKED);
     SetVital(chr,"Mana",200);
   else
 
