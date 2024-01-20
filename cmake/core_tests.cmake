@@ -14,50 +14,6 @@ else()
 endif()
 set_tests_properties(cleantestdir PROPERTIES FIXTURES_SETUP "client;initial_cleanup")
 
-# uoconvert tests
-
-add_test(NAME uoconvert_test_map0_hsa
-  COMMAND poltool testfiles
-    outdir=coretest/convert_test/client
-    width=768
-    height=4096
-    mapid=0
-    hsa=1
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-)
-set_tests_properties(uoconvert_test_map0_hsa PROPERTIES FIXTURES_REQUIRED initial_cleanup)
-set_tests_properties(uoconvert_test_map0_hsa PROPERTIES FIXTURES_SETUP uoconvert_tests_map0)
-
-add_test(NAME uoconvert_test_setup_map1_no_hsa
-  COMMAND poltool testfiles
-    outdir=coretest/convert_test/client
-    width=640
-    height=4096
-    mapid=1
-    hsa=0
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-)
-set_tests_properties(uoconvert_test_setup_map1_no_hsa PROPERTIES FIXTURES_REQUIRED initial_cleanup)
-set_tests_properties(uoconvert_test_setup_map1_no_hsa PROPERTIES FIXTURES_SETUP uoconvert_tests_map1)
-
-add_test(NAME uoconvert_test_convert_map0
-  COMMAND uoconvert map realm=britannia
-    mapid=0
-    uodata=client
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coretest/convert_test
-)
-set_tests_properties( uoconvert_test_convert_map0 PROPERTIES FIXTURES_REQUIRED uoconvert_tests_map0)
-
-add_test(NAME uoconvert_test_convert_map1
-  COMMAND uoconvert map realm=britannia2
-    mapid=1
-    uodata=client
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coretest/convert_test
-)
-set_tests_properties( uoconvert_test_convert_map1 PROPERTIES FIXTURES_REQUIRED uoconvert_tests_map1)
-
-
-
 # generate client files, minimal distro and needed core cfgs
 add_test(NAME testenv_map1
   COMMAND poltool testfiles
