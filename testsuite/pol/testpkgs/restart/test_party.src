@@ -25,10 +25,10 @@ exported function load_save_party()
       return ret_error("lost party");
     endif
     if (chr2.party.leader != chr1)
-      return ret_error($"{chr2.party.leader.serial : #x} != {chr1.serial : #x}");
+      return ret_error($"leader {chr2.party.leader.serial : #x} != {chr1.serial : #x}");
     endif
-    if (chr1.party.members[1] != chr2)
-      return ret_error($"{chr1.party.members[1].serial : #x} != {chr2.serial : #x}");
+    if (chr1.party.members[2] != chr2)
+      return ret_error($"member {chr1.party.members[2].serial : #x} != {chr2.serial : #x}");
     endif
   endif
   return 1;
