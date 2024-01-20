@@ -88,7 +88,6 @@ exported function load_save_npc()
     setname(npc,"storage_test");
     npc.setmaster(chr);
 
-    setVital(npc,"Mana",22100);
     SetGlobalProperty("test_storage_npc", npc.serial);
   else
 
@@ -114,7 +113,7 @@ exported function load_save_npc()
     if (npc.master != chr)
       return ret_error("master not saved");
     endif
-    if (getvital(npc,"Mana") != 221)
+    if (getvital(npc,"Mana") != 20000)
       return ret_error("Wrong Mana value: "+getvital(npc,"Mana"));
     endif
   endif
