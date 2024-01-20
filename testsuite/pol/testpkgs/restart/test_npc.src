@@ -49,7 +49,7 @@ exported function load_save_npc()
                 {"script", {"script", override.script}},
 //                {"master", {"",1}},
            {"SpeechColor", {"speech_color", override.SpeechColor}},
-            {"SpeechFont", {"sperch_font", override.SpeechFont}},
+            {"SpeechFont", {"speech_font", override.SpeechFont}},
               {"RunSpeed", {"run_speed",210}},
         {"UseAdjustments", {"use_adjustments",0}},
             {"FireResist", {"resist_fire", override.FireResist}},
