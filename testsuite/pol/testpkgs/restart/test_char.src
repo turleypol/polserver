@@ -71,8 +71,6 @@ exported function load_save_character()
     SetAttributeBaseValue(chr,"INT",901);
     SetAttributeCap(chr,"INT",1002);
     SetAttributeLock(chr,"INT",ATTRIBUTE_LOCK_LOCKED);
-    print(getVitalMaximumValue(chr,"Mana"));
-    print(SetVital(chr,"Mana",200));
 
     chr.deaf(300);
     chr.squelch(400);

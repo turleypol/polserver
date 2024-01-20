@@ -3,32 +3,99 @@ use uo;
 include "testutil";
 
 var testrun:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
-var npc;
 
 program test_npc()
-  if (testrun == 1)
-    npc:=CreateNPCFromTemplate(":testnpc:test_movement",100,100,0);
-    npc.setprop("restart_test",1);
-  else
-    foreach mob in (listmobilesinbox(0,0,-200,10000,10000,2000))
-      if (mob.getprop("restart_test"))
-        npc:=mob;
-      endif
-    endforeach
-    if (!npc)
-      return ret_error("failed to find npc");
-    endif
-  endif
   return 1;
 endprogram
 
-exported function npc_name()
+// save/load test for things in NPC class
+exported function load_save_npc()
+  var override:=struct{
+    AR := 101,
+    script := "dummyscript",
+    SpeechColor := 102,
+    SpeechFont := 103,
+    FireResist := 1,
+    ColdResist := 2,
+    EnergyResist := 3,
+    PoisonResist := 4,
+    PhysicalResist := 5,
+    FireDamage := 6,
+    ColdDamage := 7,
+    EnergyDamage := 8,
+    PoisonDamage := 9,
+    PhysicalDamage := 10,
+    LowerReagentCost := 11,
+    SpellDamageIncrease := 12,
+    FasterCasting := 13,
+    FasterCastRecovery := 14,
+    DefenceIncrease := 15,
+    DefenceIncreaseCap := 16,
+    LowerManaCost := 17,
+    FireResistCap := 18,
+    ColdResistCap := 19,
+    EnergyResistCap := 20,
+    PhysicalResistCap := 21,
+    PoisonResistCap := 22,
+    Luck := 23,
+    SwingSpeedIncrease := 24,
+    NoDropException := 1
+  };
+  var props:={
+//       {"RegisteredHouse", {"",1}},
+                    {"AR", {"ar", overwrite.AR}},
+                {"script", {"script", overwrite.script}},
+//                {"master", {"",1}},
+           {"SpeechColor", {"speech_color",overwrite.SpeechColor}},
+            {"SpeechFont", {"sperch_font",overwrite.SpeechFont}},
+//              {"RunSpeed", {"",1}},
+//        {"UseAdjustments", {"",1}},
+            {"FireResist", {"resist_fire", overwrite.FireResist}},
+            {"ColdResist", {"resist_cold", overwrite.ColdResist}},
+          {"EnergyResist", {"resist_energy", overwrite.EnergyResist}},
+          {"PoisonResist", {"resist_poison", overwrite.PoisonResist}},
+        {"PhysicalResist", {"resist_physical", overwrite.PhysicalResist}},
+            {"FireDamage", {"damage_fire", overwrite.FireDamage}},
+            {"ColdDamage", {"damage_cold", overwrite.ColdDamage}},
+          {"EnergyDamage", {"damage_energy", overwrite.EnergyDamage}},
+          {"PoisonDamage", {"damage_poison", overwrite.PoisonDamage}},
+        {"PhysicalDamage", {"damage_physical", overwrite.PhysicalDamage}},
+      {"LowerReagentCost", {"lower_reagent_cost", overwrite.LowerReagentCost}},
+   {"SpellDamageIncrease", {"spell_damage_increase", overwrite.SpellDamageIncrease}},
+         {"FasterCasting", {"faster_casting", overwrite.FasterCasting}},
+    {"FasterCastRecovery", {"faster_cast_recovery", overwrite.FasterCastRecovery}},
+       {"DefenceIncrease", {"defence_increase", overwrite.DefenceIncrease}},
+    {"DefenceIncreaseCap", {"defence_increase_cap", overwrite.DefenceIncreaseCap}},
+         {"LowerManaCost", {"lower_mana_cost", overwrite.LowerManaCost}},
+         {"FireResistCap", {"resist_fire_cap", overwrite.FireResistCap}},
+         {"ColdResistCap", {"resist_cold_cap", overwrite.ColdResistCap}},
+       {"EnergyResistCap", {"resist_energy_cap", overwrite.EnergyResistCap}},
+     {"PhysicalResistCap", {"resist_physical_cap", overwrite.PhysicalResistCap}},
+       {"PoisonResistCap", {"resist_poison_cap", overwrite.PoisonResistCap}},
+                  {"Luck", {"luck", overwrite.Luck}},
+    {"SwingSpeedIncrease", {"swing_speed_increase", overwrite.SwingSpeedIncrease}}
+       {"NoDropException", {"no_drop_exception",1}}
+  };
   if (testrun == 1)
-    setname(npc, "restart_npc");
+    var npc:=CreateNPCFromTemplate(":testrestart:restart_npc",9,50,0);
+    SetGlobalProperty("test_storage_npc", npc.serial);
   else
-    if (npc.name !="restart_npc")
-      return ret_error("name missmatch \"{}\"".format(npc.name));
+
+    var serial := GetGlobalProperty("test_storage_npc");
+    if (!serial)
+      return ret_error("Global property not found");
     endif
+
+    var npc := SystemFindObjectBySerial(serial);
+    if (!npc)
+      return ret_error($"Npc with serial {serial:#x} does not exists: {npc})");
+    endif
+    foreach prop in props
+      var val:=npc.get_member(prop[2][1]);
+      if (val != prop[2][2])
+        return ret_error($"Member {prop[2][1]} {prop[2][2]} != {val}");
+      endif
+    endforeach
   endif
   return 1;
 endfunction
