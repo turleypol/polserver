@@ -18,6 +18,7 @@ exported function load_save_party()
       return ret_error($"create failed {chr1} {chr2} {party}");
     endif
     party.setprop("name","test");
+    print(chr1.party.getprop("name"));
   else
     var chr1:=FindAccount("restart_test_party1").getcharacter(1);
     var chr2:=FindAccount("restart_test_party2").getcharacter(1);
