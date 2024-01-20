@@ -88,7 +88,7 @@ exported function load_save_npc()
     setname(npc,"storage_test");
     npc.setmaster(chr);
 
-    setVital(npc,"Mana",221);
+    setVital(npc,"Mana",22100);
     SetGlobalProperty("test_storage_npc", npc.serial);
   else
 
