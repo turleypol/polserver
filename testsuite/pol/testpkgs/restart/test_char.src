@@ -95,7 +95,7 @@ exported function load_save_character()
     if (chr.enabled("runwhilestealth"))
       return ret_error("priv is enabled");
     endif
-    if (len(chr.privileges())!=2)
+    if (chr.privileges().size()!=2)
       return ret_error($"wrong number of privs {chr.privileges()}");
     endif
     var v:={ GetAttributeBaseValue(chr,"Strength"),
