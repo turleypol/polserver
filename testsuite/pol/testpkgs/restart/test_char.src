@@ -22,7 +22,7 @@ exported function load_save_character()
 //       {"RegisteredHouse", {"",1}},
                 {"Gender", {"gender",1}},
                   {"Race", {"race",RACE_GARGOYLE}},
-//                  {"Dead", {"",1}},
+//                  {"Dead", {"",1}}, // other test
           {"MountedSteps", {"mountedsteps",7}},
                 {"Hidden", {"hidden",1}},
                 {"Frozen", {"frozen",1}},
@@ -31,8 +31,8 @@ exported function load_save_character()
 {"MovementWalkMountedMod", {"movecost_walk_mounted_mod",8.3}},
  {"MovementRunMountedMod", {"movecost_run_mounted_mod",8.4}},
    {"CarryingCapacityMod", {"carrying_capacity_mod",9}},
-//           {"pAttr->name", {"",1}},
-//          {"pVital->name", {"",1}},
+//           {"pAttr->name", {"",1}}, // functions
+//          {"pVital->name", {"",1}}, // npc?
                {"Statcap", {"statcap",256}},
               {"Skillcap", {"skillcap",701}},
              {"Followers", {"followers",9}},
@@ -42,16 +42,16 @@ exported function load_save_character()
 //                 {"Privs", {"",1}}, //method
 //              {"Settings", {"",1}}, //method
 //             {"CreatedAt", {"",1}},
-//        {"SquelchedUntil", {"",1}},
-//         {"DeafenedUntil", {"",1}},
+//        {"SquelchedUntil", {"",1}}, //method
+//         {"DeafenedUntil", {"",1}}, //method
            {"TitlePrefix", {"title_prefix","myprefix"}},
            {"TitleSuffix", {"title_suffix","mysuffix"}},
             {"TitleGuild", {"title_guild","myguild"}},
              {"TitleRace", {"title_race","myrace"}},
               {"Murderer", {"murderer",1}}
 //          {"PartyCanLoot", {"",1}}, // client only settable?
-//            {"Reportable", {"",1}},
-//            {"LastCorpse", {"",1}},
+//            {"Reportable", {"",1}}, // other test
+//            {"LastCorpse", {"",1}}, // other test
   };
 
   if (testrun == 1)
@@ -73,6 +73,9 @@ exported function load_save_character()
     SetAttributeLock(chr,"INT",ATTRIBUTE_LOCK_LOCKED);
     print(getVitalMaximumValue(chr,"Mana"));
     print(SetVital(chr,"Mana",200));
+
+    chr.deaf(300);
+    chr.squelch(400);
   else
 
     var a:=FindAccount("restart_test_char");
@@ -110,7 +113,12 @@ exported function load_save_character()
     if (v != {901,1002,ATTRIBUTE_LOCK_LOCKED})
       return ret_error($"invalid INT values {v}");
     endif
-
+    if (!chr.deafed)
+      return ret_error("failed to save deaf status");
+    endif
+    if (!chr.squelched)
+      return ret_error("failed to save squelch status");
+    endif
   endif
   return 1;
 endfunction

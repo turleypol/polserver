@@ -899,12 +899,16 @@ void Character::readCommonProperties( Clib::ConfigElem& elem )
   std::string rt;
   while ( elem.remove_prop( "REPORTABLE", &rt ) )
   {
+    INFO_PRINTLN( rt );
     ISTRINGSTREAM is( rt );
     reportable_t rt_t;
     if ( is >> rt_t.serial >> rt_t.polclock )
     {
+      INFO_PRINTLN( "ADDED" );
       reportable_.insert( rt_t );
     }
+    else
+      INFO_PRINTLN( "FAILED" );
   }
 
   uclang = elem.remove_string( "UCLang", "enu" );
