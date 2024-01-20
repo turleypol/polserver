@@ -126,6 +126,7 @@ exported function load_save_character_dead()
       return chr1;
     endif
     chr.kill(chr1);
+    chr.setprop("testcorpse",chr.getcorpse().serial);
   else
 
     var chr:=FindAccount("restart_test_chardead").getcharacter(1);
@@ -139,6 +140,9 @@ exported function load_save_character_dead()
 
     if (!chr.dead)
       return ret_error("chr is not dead");
+    endif
+    if (chr.getcorpse().serial != chr.getprop("testcorpse"))
+      return ret_error("failed to save corpse");
     endif
     return ret_error($"{chr.reportables}");
   endif
