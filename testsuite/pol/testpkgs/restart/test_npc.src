@@ -84,6 +84,7 @@ exported function load_save_npc()
       return ret_error($"failed to create npc {npc}");
     endif
     var chr:=createAccountWithChar("restart_test_charnpc_master", "pass");
+    setname(npc,"storage_test");
     npc.setmaster(chr);
     SetGlobalProperty("test_storage_npc", npc.serial);
   else
