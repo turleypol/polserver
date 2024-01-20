@@ -37,8 +37,8 @@ exported function load_save_character()
           {"FollowersMax", {"followers_max",10}},
                {"Tithing", {"tithing",11}},
 //              {"MoveMode", {"",1}},
-//                 {"Privs", {"",1}},
-//              {"Settings", {"",1}},
+//                 {"Privs", {"",1}}, //method
+//              {"Settings", {"",1}}, //method
 //             {"CreatedAt", {"",1}},
 //        {"SquelchedUntil", {"",1}},
 //         {"DeafenedUntil", {"",1}},
@@ -60,6 +60,9 @@ exported function load_save_character()
     foreach prop in props
       chr.set_member(prop[2][1],prop[2][2]);
     endforeach
+    grandprivilege(chr,"hiddenattack");
+    grandprivilege(chr,"runwhilestealth");
+    chr.enable("hiddenattack");
   else
 
     var a:=FindAccount("restart_test_char");
@@ -76,6 +79,17 @@ exported function load_save_character()
         return ret_error($"Member {prop[2][1]} {prop[2][2]} != {val}");
       endif
     endforeach
+    if (!chr.enabled("hiddenattack"))
+      return ret_error("priv not enabled");
+    endif
+    if (chr.enabled("runwhilestealth"))
+      return ret_error("priv is enabled");
+    endif
+    if (len(chr.privileges())!=2)
+      return ret_error($"wrong number of privs {chr.privileges()}");
+    endif
+
+
   endif
   return 1;
 endfunction
