@@ -12,11 +12,11 @@ endprogram
 exported function load_save_npc()
   var override:=struct{
     AR := 101,
-    script := "dummyscript",
+    script := "restartnpcscript",
     SpeechColor := 102,
     SpeechFont := 103,
     RunSpeed := 210,
-    UseAdjustments := 1,
+    UseAdjustments := 0,
     FireResist := 1,
     ColdResist := 2,
     EnergyResist := 3,
@@ -51,7 +51,7 @@ exported function load_save_npc()
            {"SpeechColor", {"speech_color", override.SpeechColor}},
             {"SpeechFont", {"sperch_font", override.SpeechFont}},
               {"RunSpeed", {"run_speed",210}},
-        {"UseAdjustments", {"use_adjustments",1}},
+        {"UseAdjustments", {"use_adjustments",0}},
             {"FireResist", {"resist_fire", override.FireResist}},
             {"ColdResist", {"resist_cold", override.ColdResist}},
           {"EnergyResist", {"resist_energy", override.EnergyResist}},
@@ -83,6 +83,8 @@ exported function load_save_npc()
     if (!npc)
       return ret_error($"failed to create npc {npc}");
     endif
+    var chr:=createAccountWithChar("restart_test_charnpc_master", "pass");
+    npc.setmaster(chr);
     SetGlobalProperty("test_storage_npc", npc.serial);
   else
 
@@ -101,6 +103,13 @@ exported function load_save_npc()
         return ret_error($"Member {prop[2][1]} {prop[2][2]} != {val}");
       endif
     endforeach
+    var chr:=FindAccount("restart_test_charnpc_master").getcharacter(1);
+    if (!chr)
+      return ret_error("failed to find char");
+    endif
+    if (npc.master != chr)
+      return ret_error("master not saved");
+    endif
   endif
   return 1;
 endfunction
