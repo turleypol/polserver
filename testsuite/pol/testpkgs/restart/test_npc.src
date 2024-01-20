@@ -73,7 +73,7 @@ exported function load_save_npc()
      {"PhysicalResistCap", {"resist_physical_cap", overwrite.PhysicalResistCap}},
        {"PoisonResistCap", {"resist_poison_cap", overwrite.PoisonResistCap}},
                   {"Luck", {"luck", overwrite.Luck}},
-    {"SwingSpeedIncrease", {"swing_speed_increase", overwrite.SwingSpeedIncrease}}
+    {"SwingSpeedIncrease", {"swing_speed_increase", overwrite.SwingSpeedIncrease}},
        {"NoDropException", {"no_drop_exception",1}}
   };
   if (testrun == 1)
