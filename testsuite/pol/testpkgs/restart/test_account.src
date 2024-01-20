@@ -14,7 +14,7 @@ exported function load_save_account()
   var props:={
 //                  {"Name", {"",1}},
 //              {"Password", {"",1}},
-          {"PasswordHash", {"usernamepasswordhash",MD5Encrypt("restart_accountmypass"}},
+          {"PasswordHash", {"usernamepasswordhash",MD5Encrypt("restart_accountmypass")}},
                {"Enabled", {"enabled",0}},
 //          {"DefaultPrivs", {"",1}},
        {"DefaultCmdLevel", {"defaultcmdlevel",1}},
