@@ -902,7 +902,7 @@ void Character::readCommonProperties( Clib::ConfigElem& elem )
     INFO_PRINTLN( rt );
     ISTRINGSTREAM is( rt );
     reportable_t rt_t;
-    if ( is >> rt_t.serial >> rt_t.polclock )
+    if ( is >> std::hex >> rt_t.serial >> std::dec >> rt_t.polclock )
     {
       INFO_PRINTLN( "ADDED" );
       reportable_.insert( rt_t );
