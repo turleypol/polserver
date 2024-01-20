@@ -122,6 +122,13 @@ add_test(NAME shard_testpkgs
 set_tests_properties(shard_testpkgs PROPERTIES DEPENDS testenv)
 set_tests_properties(shard_testpkgs PROPERTIES FIXTURES_SETUP shard)
 
+add_test(NAME shard_testregion
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${testsuite}/regions coretest/regions
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+set_tests_properties(shard_testregion PROPERTIES DEPENDS testenv)
+set_tests_properties(shard_testregion PROPERTIES FIXTURES_SETUP shard)
+
 # uoconvert part
 
 add_test(NAME uoconvert_map
