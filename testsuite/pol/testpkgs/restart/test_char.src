@@ -101,13 +101,13 @@ exported function load_save_character()
              GetAttributeCap(chr,"Strength"),
              GetAttributeLock(chr,"Strength") };
     if (v != {900,950,ATTRIBUTE_LOCK_DOWN})
-      return ret_error($"invalid STR values {v});
+      return ret_error($"invalid STR values {v}");
     endif
     v:={ GetAttributeBaseValue(chr,"INT"),
          GetAttributeCap(chr,"INT"),
          GetAttributeLock(chr,"INT") };
     if (v != {901,1002,ATTRIBUTE_LOCK_LOCKED})
-      return ret_error($"invalid INT values {v});
+      return ret_error($"invalid INT values {v}");
     endif
 
   endif
