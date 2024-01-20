@@ -28,7 +28,7 @@ exported function load_save_account()
     endif
     acc.setdefaultcmdlevel(1);
     acc.set_uo_expansion("SE");
-    acc.addcharacter(0);
+    acc.addcharacter(1);
     acc.setprop("test",1);
   else
 
@@ -42,7 +42,7 @@ exported function load_save_account()
         return ret_error($"Member {prop[2][1]} {prop[2][2]} != {val}");
       endif
     endforeach
-    var chr:=acc.getcharacter(0);
+    var chr:=acc.getcharacter(1);
     if (!chr)
       return ret_error($"failed to load chr {chr}");
     endif
