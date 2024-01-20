@@ -18,7 +18,7 @@ exported function load_save_account()
                {"Enabled", {"enabled",0}},
 //          {"DefaultPrivs", {"",1}},
        {"DefaultCmdLevel", {"defaultcmdlevel",1}},
-           {"UOExpansion", {"uo_expansion","SE"}},
+           {"UOExpansion", {"uo_expansion","SE"}}
   };
 
   if (testrun == 1)
