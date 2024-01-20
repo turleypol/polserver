@@ -123,8 +123,6 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
-          ls .
-          ls ../lib/fmt-10.2.0
 
       - name: Test (EScript)
         if: matrix.config.nopch == 0
@@ -148,11 +146,11 @@ jobs:
           cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
           #env:
           #POLCORE_TEST_FILTER: testitems
-      - name: Upload shard test log
+      - name: Upload coretest folder
         if: matrix.config.nopch == 0 && always()
         uses: actions/upload-artifact@v3
         with:
-          name: Testlog-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
+          name: Testdir-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin-build/coretest/
 
       - name: Create Artefact
@@ -210,7 +208,7 @@ jobs:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "NightlyRelease"
-          reference_release_tag: "v100.0.0"
+          reference_release_tag: "v100.1.0"
           prerelease: true
           title: "Nightly Release"
           files: |
