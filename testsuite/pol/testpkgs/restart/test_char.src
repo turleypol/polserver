@@ -113,3 +113,33 @@ exported function load_save_character()
   endif
   return 1;
 endfunction
+
+exported function load_save_character_dead()
+  if (testrun == 1)
+    var chr:=createAccountWithChar("restart_test_chardead", "pass");
+    if (!chr)
+      return chr;
+    endif
+    var chr1:=createAccountWithChar("restart_test_charkiller", "pass");
+    if (!chr1)
+      return chr1;
+    endif
+    chr.kill(chr1);
+  else
+
+    var chr:=FindAccount("restart_test_chardead").getcharacter(1);
+    if (!chr)
+      return ret_error("failed to find char");
+    endif
+    var chr1:=FindAccount("restart_test_charkiller").getcharacter(1);
+    if (!chr)
+      return ret_error("failed to find char");
+    endif
+
+    if (!chr.dead)
+      return ret_error("chr is not dead");
+    endif
+    return ret_error($"{chr.reportables}");
+  endif
+  return 1;
+endfunction
