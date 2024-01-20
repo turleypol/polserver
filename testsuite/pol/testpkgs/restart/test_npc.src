@@ -47,7 +47,7 @@ exported function load_save_npc()
 //       {"RegisteredHouse", {"",1}},
                     {"AR", {"ar", override.AR}},
                 {"script", {"script", override.script}},
-//                {"master", {"",1}},
+//                {"master", {"",1}}, //method
            {"SpeechColor", {"speech_color", override.SpeechColor}},
             {"SpeechFont", {"speech_font", override.SpeechFont}},
               {"RunSpeed", {"run_speed",210}},
@@ -86,6 +86,8 @@ exported function load_save_npc()
     var chr:=createAccountWithChar("restart_test_charnpc_master", "pass");
     setname(npc,"storage_test");
     npc.setmaster(chr);
+
+    setVital(npc,"Mana",321);
     SetGlobalProperty("test_storage_npc", npc.serial);
   else
 
@@ -111,6 +113,32 @@ exported function load_save_npc()
     if (npc.master != chr)
       return ret_error("master not saved");
     endif
+    if (getvital(npc,"Mana") != 321)
+      return ret_error("Wrong Mana value: "+getvital(npc,"Mana"));
+    endif
+  endif
+  return 1;
+endfunction
+
+exported function test_saveonexit()
+  if (testrun == 1)
+    var npc:=CreateNPCFromTemplate(":testrestart:restart_npc",49,50,0,override,"britannia2");
+    if (!npc)
+      return ret_error($"failed to create npc {npc}");
+    endif
+    npc.saveonexit:=0;
+    SetGlobalProperty("test_npc_shouldNotExist", npc.serial);
+  else
+    var serial := GetGlobalProperty("test_npc_shouldNotExist");
+    if (!serial)
+      return ret_error("Global property test_npc_shouldNotExist not found");
+    endif
+
+    var npc := SystemFindObjectBySerial(serial);
+    if (npc)
+      return ret_error($"Npc with serial {npc.serial:#x} erroneously exists");
+    endif
+
   endif
   return 1;
 endfunction
