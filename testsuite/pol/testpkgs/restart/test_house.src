@@ -62,7 +62,6 @@ exported function load_save_house_custom()
     endif
     SetGlobalProperty("test_storage_house_custom", house.serial);
     house.setcustom(1);
-    print(len(house.house_parts));
   else
 
     var serial := GetGlobalProperty("test_storage_house_custom");
