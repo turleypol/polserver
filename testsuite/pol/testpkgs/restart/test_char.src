@@ -1,6 +1,6 @@
 use os;
 use uo;
-use attribute;
+use attributes;
 use vitals;
 include "testutil";
 
