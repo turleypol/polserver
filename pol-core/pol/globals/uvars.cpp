@@ -281,6 +281,10 @@ void GameState::deinitialize()
 
   task_thread_pool.deinit_pool();
 
+  for ( auto& t : task_queue )
+    delete t;
+  task_queue.clear();
+
   checkpoint( "end of xmain2" );
 
 #ifdef __linux__
