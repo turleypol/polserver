@@ -5,9 +5,11 @@ include "testutil";
 var testrun:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
 
 program test_resource()
-  return 1;
+  return IGNORE_TEST;
 endprogram
 
+// nice try, but thats not stored
+// only a otherwise unused variable??
 exported function load_save_resource()
   if (testrun == 1)
     var res:=harvestresource("testres",50,50,5,5);
