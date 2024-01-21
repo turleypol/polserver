@@ -44,6 +44,9 @@ ResourceRegion::ResourceRegion( Clib::ConfigElem& elem, RegionId id )
 {
 }
 
+// TODO this variable gets read/write but never used??
+// if we want to recover the region depletions_ would
+// be the needed variable
 void ResourceRegion::read_data( Clib::ConfigElem& elem )
 {
   units_ = elem.remove_ulong( "Units" );
@@ -216,6 +219,9 @@ void ResourceDef::regenerate( time_t now )
   }
 }
 
+// TODO: why does it not check if enough units exists?
+//  this gets called when an item with itemdesc.resource gets
+//  created
 void ResourceDef::consume( unsigned amount )
 {
   current_units_ -= amount;
@@ -395,7 +401,7 @@ void read_region_data( Clib::ConfigElem& elem )
 
 void read_resources_dat()
 {
-  std::string resourcefile = Plib::systemstate.config.world_data_path + "resource.dat";
+  std::string resourcefile = Plib::systemstate.config.world_data_path + "resource.txt";
 
   if ( Clib::FileExists( resourcefile ) )
   {
