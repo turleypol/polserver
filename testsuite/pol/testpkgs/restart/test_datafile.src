@@ -1,0 +1,33 @@
+use os;
+use uo;
+use datafile;
+include "testutil";
+
+var testrun:=CInt(GetEnvironmentVariable("POLCORE_TEST_RUN"));
+
+program test_datafile()
+  return 1;
+endprogram
+
+exported function load_save_datafile()
+  if (testrun == 1)
+    var dfs := CreateDataFile(":TestRestart:dfstring",DF_KEYTYPE_STRING);
+    var dfi := CreateDataFile(":TestRestart:dfstring",DF_KEYTYPE_INTEGER);
+    if (!dfs || !dfi)
+      return ret_error($"failed to create {dfs}/{dfi}");
+    endif
+    var ele1_s := dfs.createelement("key1");
+    var ele2_s := dfs.createelement("key2");
+    ele1_s.setprop("prop1-1",1);
+    ele1_s.setprop("prop1-2",2);
+    ele2_s.setprop("prop2-1",3);
+
+    var ele1_i := dfs.createelement(10);
+    var ele2_i := dfs.createelement(11);
+    ele1_i.setprop("prop1-1",1);
+    ele1_i.setprop("prop1-2",2);
+    ele2_i.setprop("prop2-1",3);
+  else
+  endif
+  return 1;
+endfunction
