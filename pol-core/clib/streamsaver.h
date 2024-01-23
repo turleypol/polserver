@@ -32,14 +32,6 @@ public:
       fmt::format_to( std::back_inserter( _buf ), "\t{}\t{:d}\n", key, value );
   }
   template <typename Str, typename... Args>
-  void write( Str&& format, Args&&... args )
-  {
-    if constexpr ( sizeof...( args ) == 0 )
-      _buf += format;
-    else
-      fmt::format_to( std::back_inserter( _buf ), format, args... );
-  }
-  template <typename Str, typename... Args>
   void comment( Str&& format, Args&&... args )
   {
     _buf += "# ";
