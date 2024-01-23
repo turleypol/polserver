@@ -768,7 +768,7 @@ void Party::printOn( Clib::StreamWriter& sw ) const
       sw.add( "Member", Clib::hexint( mserial ) );
   }
   _proplist.printProperties( sw );
-  sw.write( "}\n\n" );
+  sw.end();
 }
 
 std::vector<Mobile::Character*> Party::get_members( bool include_offline ) const

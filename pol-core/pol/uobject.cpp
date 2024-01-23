@@ -506,7 +506,7 @@ void UObject::printOn( Clib::StreamWriter& sw ) const
 {
   sw.write( "{}\n{{\n", classname() );
   printProperties( sw );
-  sw.write( "}\n\n" );
+  sw.end();
 }
 
 void UObject::printOnDebug( Clib::StreamWriter& sw ) const
@@ -514,7 +514,7 @@ void UObject::printOnDebug( Clib::StreamWriter& sw ) const
   sw.write( "{}\n{{\n", classname() );
   printProperties( sw );
   printDebugProperties( sw );
-  sw.write( "}\n\n" );
+  sw.end();
 }
 
 bool UObject::setgraphic( u16 /*newgraphic*/ )

@@ -374,7 +374,7 @@ void read_global_data( Clib::ConfigElem& elem )
   ResourceDef* rd = find_resource_def( elem.rest() );
   if ( rd == nullptr )
   {
-    ERROR_PRINTLN( "Error reading RESOURCE.DAT: Unable to find resource type {}", elem.rest() );
+    ERROR_PRINTLN( "Error reading RESOURCE.TXT: Unable to find resource type {}", elem.rest() );
     throw std::runtime_error( "Data file error" );
   }
 
@@ -385,14 +385,14 @@ void read_region_data( Clib::ConfigElem& elem )
   ResourceDef* rd = find_resource_def( elem.rest() );
   if ( rd == nullptr )
   {
-    ERROR_PRINTLN( "Error reading RESOURCE.DAT: Unable to find resource type {}", elem.rest() );
+    ERROR_PRINTLN( "Error reading RESOURCE.TXT: Unable to find resource type {}", elem.rest() );
     throw std::runtime_error( "Data file error" );
   }
   std::string regionname = elem.remove_string( "Name" );
   ResourceRegion* rgn = rd->getregion( regionname );
   if ( rgn == nullptr )
   {
-    ERROR_PRINTLN( "Error reading RESOURCE.DAT: Unable to find region {} in resource {}",
+    ERROR_PRINTLN( "Error reading RESOURCE.TXT: Unable to find region {} in resource {}",
                    regionname, elem.rest() );
     throw std::runtime_error( "Data file error" );
   }
@@ -425,7 +425,7 @@ void ResourceDef::write( Clib::StreamWriter& sw ) const
 {
   sw.write( "GlobalResourcePool {}\n{{\n", name() );
   sw.add( "Units", current_units_ );
-  sw.write( "}\n\n" );
+  sw.end();
 
   for ( unsigned i = 0; i < regions_.size(); ++i )
   {
@@ -452,7 +452,7 @@ void ResourceRegion::write( Clib::StreamWriter& sw, const std::string& resource_
   sw.add( "Name", name_ );
   sw.add( "Units", units_ );
   sw.write( "#\t(regions/{}.cfg: Capacity is {})\n", resource_name, capacity_ );
-  sw.write( "}\n\n" );
+  sw.end();
 }
 
 size_t ResourceRegion::estimateSize() const

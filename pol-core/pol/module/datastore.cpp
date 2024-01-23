@@ -96,14 +96,14 @@ void DataFileContents::save( Clib::StreamWriter& sw )
   {
     sw.write( "Element {}\n{{\n", element.first );
     element.second->printOn( sw );
-    sw.write( "}\n\n" );
+    sw.end();
   }
 
   for ( const auto& element : elements_by_integer )
   {
     sw.write( "Element {}\n{{\n", element.first );
     element.second->printOn( sw );
-    sw.write( "}\n\n" );
+    sw.end();
   }
 }
 
@@ -631,7 +631,7 @@ void DataStoreFile::printOn( Clib::StreamWriter& sw ) const
   sw.add( "Flags", flags );
   sw.add( "Version", version );
   sw.add( "OldVersion", oldversion );
-  sw.write( "}\n\n" );
+  sw.end();
 }
 
 std::string DataStoreFile::filename( unsigned ver ) const

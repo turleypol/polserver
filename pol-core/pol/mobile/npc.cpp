@@ -244,7 +244,7 @@ void NPC::printOn( Clib::StreamWriter& sw ) const
 {
   sw.write( "{} {}\n{{\n", classname(), template_name.get() );
   printProperties( sw );
-  sw.write( "}\n\n" );
+  sw.end();
 }
 
 void NPC::printSelfOn( Clib::StreamWriter& sw ) const

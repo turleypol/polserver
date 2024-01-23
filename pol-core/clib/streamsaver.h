@@ -30,7 +30,6 @@ public:
       fmt::format_to( std::back_inserter( _buf ), "\t{}\t{}\n", key, value );
     else
       fmt::format_to( std::back_inserter( _buf ), "\t{}\t{:d}\n", key, value );
-    flush_test();
   }
   template <typename Str, typename... Args>
   void write( Str&& format, Args&&... args )
@@ -39,6 +38,25 @@ public:
       _buf += format;
     else
       fmt::format_to( std::back_inserter( _buf ), format, args... );
+  }
+  template <typename Str, typename... Args>
+  void comment( Str&& format, Args&&... args )
+  {
+    _buf += "# ";
+    if constexpr ( sizeof...( args ) == 0 )
+      _buf += format;
+    else
+      fmt::format_to( std::back_inserter( _buf ), format, args... );
+    _buf += '\n';
+  }
+  template <typename Str>
+  void begin( Str&& key )
+  {
+    fmt::format_to( std::back_inserter( _buf ), "{}\n{{\n", key );
+  }
+  void end()
+  {
+    _buf += "}\n\n";
     flush_test();
   }
   void init( const std::string& filepath );

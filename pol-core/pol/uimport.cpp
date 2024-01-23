@@ -843,7 +843,7 @@ void write_global_properties( Clib::StreamWriter& sw )
 {
   sw.write( "GlobalProperties\n{\n" );
   gamestate.global_properties->printProperties( sw );
-  sw.write( "}\n\n" );
+  sw.end();
 }
 
 void write_system_data( Clib::StreamWriter& sw )
@@ -854,7 +854,7 @@ void write_system_data( Clib::StreamWriter& sw )
   sw.add( "CompileDateTime", Clib::ProgramConfig::build_datetime() );
   sw.add( "LastItemSerialNumber", GetCurrentItemSerialNumber() );
   sw.add( "LastCharSerialNumber", GetCurrentCharSerialNumber() );
-  sw.write( "}\n\n" );
+  sw.end();
 }
 
 void write_shadow_realms( Clib::StreamWriter& sw )
@@ -866,7 +866,7 @@ void write_shadow_realms( Clib::StreamWriter& sw )
       sw.write( "Realm\n{\n" );
       sw.add( "Name", realm->shadowname );
       sw.add( "BaseRealm", realm->baserealm->name() );
-      sw.write( "}\n\n" );
+      sw.end();
     }
   }
 }
