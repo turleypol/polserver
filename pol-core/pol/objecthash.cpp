@@ -7,8 +7,8 @@
 
 #include "objecthash.h"
 
+#include <fstream>
 #include <stddef.h>
-#include <fstream≥
 
 #include "../clib/clib_endian.h"
 #include "../clib/logfacility.h"
