@@ -377,7 +377,7 @@ void UObject::printProperties( Clib::StreamWriter& sw ) const
 
 void UObject::printDebugProperties( Clib::StreamWriter& sw ) const
 {
-  sw.write( "# uobj_class: {}\n", (int)uobj_class_ );
+  sw.comment( "uobj_class: {}", (int)uobj_class_ );
 }
 
 /// Fixes invalid graphic, moving here to allow it to be overridden in subclass (see Multi)
@@ -504,14 +504,14 @@ void UObject::printSelfOn( Clib::StreamWriter& sw ) const
 
 void UObject::printOn( Clib::StreamWriter& sw ) const
 {
-  sw.write( "{}\n{{\n", classname() );
+  sw.begin( classname() );
   printProperties( sw );
   sw.end();
 }
 
 void UObject::printOnDebug( Clib::StreamWriter& sw ) const
 {
-  sw.write( "{}\n{{\n", classname() );
+  sw.begin( classname() );
   printProperties( sw );
   printDebugProperties( sw );
   sw.end();

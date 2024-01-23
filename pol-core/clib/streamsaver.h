@@ -54,8 +54,8 @@ public:
   {
     fmt::format_to( std::back_inserter( _buf ), "{}\n{{\n", key );
   }
-  template <typename Str>
-  void begin( Str&& key, Str&& value )
+  template <typename Str, typename StrValue>
+  void begin( Str&& key, StrValue&& value )
   {
     fmt::format_to( std::back_inserter( _buf ), "{} {}\n{{\n", key, value );
   }

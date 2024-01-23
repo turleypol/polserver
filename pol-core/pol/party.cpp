@@ -758,7 +758,7 @@ void Party::printOn( Clib::StreamWriter& sw ) const
   if ( system_find_mobile( _leaderserial ) == nullptr )
     return;
 
-  sw.write( "Party\n{\n" );
+  sw.begin( "Party" );
   sw.add( "Leader", Clib::hexint( _leaderserial ) );
 
   for ( const auto& mserial : _member_serials )

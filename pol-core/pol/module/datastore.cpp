@@ -94,14 +94,14 @@ void DataFileContents::save( Clib::StreamWriter& sw )
 {
   for ( const auto& element : elements_by_string )
   {
-    sw.write( "Element {}\n{{\n", element.first );
+    sw.begin( "Element", element.first );
     element.second->printOn( sw );
     sw.end();
   }
 
   for ( const auto& element : elements_by_integer )
   {
-    sw.write( "Element {}\n{{\n", element.first );
+    sw.begin( "Element", element.first );
     element.second->printOn( sw );
     sw.end();
   }
@@ -621,7 +621,7 @@ DataStoreFile::~DataStoreFile()
 
 void DataStoreFile::printOn( Clib::StreamWriter& sw ) const
 {
-  sw.write( "DataFile\n{\n" );
+  sw.begin( "DataFile" );
   sw.add( "Descriptor", descriptor );
   sw.add( "Name", name );
 

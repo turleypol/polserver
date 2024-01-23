@@ -841,14 +841,14 @@ void SaveContext::ready()
 
 void write_global_properties( Clib::StreamWriter& sw )
 {
-  sw.write( "GlobalProperties\n{\n" );
+  sw.begin( "GlobalProperties" );
   gamestate.global_properties->printProperties( sw );
   sw.end();
 }
 
 void write_system_data( Clib::StreamWriter& sw )
 {
-  sw.write( "System\n{\n" );
+  sw.begin( "System" );
   sw.add( "CoreVersion", POL_VERSION_STR );
   sw.add( "CoreVersionString", POL_VERSION_STR );
   sw.add( "CompileDateTime", Clib::ProgramConfig::build_datetime() );
@@ -863,7 +863,7 @@ void write_shadow_realms( Clib::StreamWriter& sw )
   {
     if ( realm->is_shadowrealm )
     {
-      sw.write( "Realm\n{\n" );
+      sw.begin( "Realm" );
       sw.add( "Name", realm->shadowname );
       sw.add( "BaseRealm", realm->baserealm->name() );
       sw.end();
