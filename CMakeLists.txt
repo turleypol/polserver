@@ -21,7 +21,7 @@ project(polserver
 	VERSION 100.2.0
 	DESCRIPTION "Penultima Online"
 	HOMEPAGE_URL "polserver.com")
-
+  set (CMAKE_VERBOSE_MAKEFILE TRUE)
 set(POL_VERSION_STR "${polserver_VERSION}")
 set(POL_VERSION_NAME "Never Gonna Give You Up")
 set(POL_COPYRIGHT "Copyright (C) 1993-2024 Eric N. Swanson")
