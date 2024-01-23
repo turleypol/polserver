@@ -1,5 +1,6 @@
 use npc;
 program dummy()
+  print("HELLO");
   var me:=Self();
-  setanchor(me.x,me.y,20,10);
+  print(setanchor(me.x,me.y,20,10));
 endprogram
