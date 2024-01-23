@@ -15,7 +15,6 @@ function(set_compile_flags target is_executable)
   target_include_directories(${target} SYSTEM PRIVATE
     ${BOOST_SOURCE_DIR} # boost
     "${POL_EXT_LIB_DIR}" #antlr/, tinyxml/, etc
-    "${POL_EXT_LIB_DIR}/picojson-1.3.0" #pico
   )
 
   target_compile_definitions(${target} PRIVATE

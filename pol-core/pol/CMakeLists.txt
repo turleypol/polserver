@@ -21,6 +21,7 @@ target_link_libraries(${ex_name} PUBLIC
   plib
   tinyxml
   libz
+  picojsonlib
 )
 if (${linux})
   target_link_libraries(${ex_name} PUBLIC
