@@ -44,12 +44,13 @@ ExternalProject_Add_StepDependencies(kaitai_Ext configure libz)
 
 # imported target to add include/lib dir and additional dependencies
 add_library(kaitai STATIC IMPORTED)
-set_target_properties(kaitai PROPERTIES IMPORTED_LOCATION ${KAITAI_LIB})
-set_target_properties(kaitai PROPERTIES IMPORTED_IMPLIB ${KAITAI_LIB})
-
+set_target_properties(kaitai PROPERTIES
+  IMPORTED_LOCATION ${KAITAI_LIB}
+  IMPORTED_IMPLIB ${KAITAI_LIB}
+  INTERFACE_INCLUDE_DIRECTORIES ${KAITAI_INSTALL_DIR}/include
+  INTERFACE_LINK_LIBRARIES libz
+ FOLDER 3rdParty
+)
 file(MAKE_DIRECTORY ${KAITAI_INSTALL_DIR}/include) #directory has to exist during configure
-set_target_properties(kaitai PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${KAITAI_INSTALL_DIR}/include)
 
-set_target_properties(kaitai PROPERTIES INTERFACE_LINK_LIBRARIES libz)
 add_dependencies(kaitai kaitai_Ext)
-set_target_properties (kaitai PROPERTIES FOLDER 3rdParty)

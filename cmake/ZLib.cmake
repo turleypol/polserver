@@ -33,11 +33,12 @@ if (${windows})
   endif()
   # imported target to add include/lib dir and additional dependencies
   add_library(libz STATIC IMPORTED)
-  set_target_properties(libz PROPERTIES IMPORTED_LOCATION ${ZLIB_LIB})
-  set_target_properties(libz PROPERTIES IMPORTED_IMPLIB ${ZLIB_LIB})
-
-  set_target_properties(libz PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INSTALL_DIR}/include)
-
+  set_target_properties(libz PROPERTIES
+    IMPORTED_LOCATION ${ZLIB_LIB}
+    IMPORTED_IMPLIB ${ZLIB_LIB}
+    INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INSTALL_DIR}/include
+    FOLDER 3rdParty
+  )
   add_dependencies(libz libz_ext)
 
 else()
@@ -45,4 +46,3 @@ else()
   set_property(TARGET libz PROPERTY INTERFACE_LINK_LIBRARIES z)
 endif()
 
-set_target_properties (libz PROPERTIES FOLDER 3rdParty)
