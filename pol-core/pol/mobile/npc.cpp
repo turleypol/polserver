@@ -242,7 +242,7 @@ bool NPC::npc_path_blocked( Core::UFACING fdir ) const
 
 void NPC::printOn( Clib::StreamWriter& sw ) const
 {
-  sw.write( "{} {}\n{{\n", classname(), template_name.get() );
+  sw.begin( classname(), template_name.get() );
   printProperties( sw );
   sw.end();
 }
@@ -334,11 +334,11 @@ void NPC::printProperties( Clib::StreamWriter& sw ) const
 void NPC::printDebugProperties( Clib::StreamWriter& sw ) const
 {
   base::printDebugProperties( sw );
-  sw.write( "# template: {}\n", template_->name );
+  sw.comment( "template: {}", template_->name );
   if ( anchor.enabled )
   {
-    sw.write( "# anchor: x={} y={} dstart={} psub={}\n", anchor.pos.x(), anchor.pos.y(),
-              anchor.dstart, anchor.psub );
+    sw.comment( "anchor: x={} y={} dstart={} psub={}", anchor.pos.x(), anchor.pos.y(),
+                anchor.dstart, anchor.psub );
   }
 }
 

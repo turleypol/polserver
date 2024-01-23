@@ -148,7 +148,7 @@ bool Guild::hasEnemy( const Guild* g2 ) const
 
 void Guild::printOn( Clib::StreamWriter& sw ) const
 {
-  sw.write( "Guild\n{\n" );
+  sw.begin( "Guild" );
   sw.add( "GuildId", _guildid );
   _member_serials.writeOn( sw, "Member" );
   _allyguild_serials.writeOn( sw, "AllyGuild" );
@@ -223,7 +223,7 @@ void read_guilds_dat()
 
 void write_guilds( Clib::StreamWriter& sw )
 {
-  sw.write( "General\n{\n" );
+  sw.begin( "General" );
   sw.add( "NextGuildId", Core::gamestate.nextguildid );
   sw.end();
 
