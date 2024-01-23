@@ -8,6 +8,7 @@
 #include "objecthash.h"
 
 #include <stddef.h>
+#include <fstream≥
 
 #include "../clib/clib_endian.h"
 #include "../clib/logfacility.h"
@@ -128,14 +129,14 @@ u32 ObjectHash::GetNextUnusedCharSerial()
   return tempserial;
 };
 
-void ObjectHash::PrintContents( std::ofstream& os ) const
+void ObjectHash::PrintContents( std::ofstream* os ) const
 {
   OH_const_iterator itr, itrend;
-  os << fmt::format( "Object Count: {}\n", hash.size() );
+  *os << fmt::format( "Object Count: {}\n", hash.size() );
   for ( itr = hash.begin(), itrend = hash.end(); itr != itrend; ++itr )
   {
-    os << fmt::format( "type: {} serial: {:#X} name: {}\n", itr->second->classname(),
-                       itr->second->serial, itr->second->name() );
+    *os << fmt::format( "type: {} serial: {:#X} name: {}\n", itr->second->classname(),
+                        itr->second->serial, itr->second->name() );
   }
 }
 

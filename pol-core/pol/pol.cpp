@@ -854,7 +854,7 @@ void display_leftover_objects()
   {
     std::ofstream ofs;
     ofs.open( "leftovers.txt", std::ios::out | std::ios::trunc );
-    objStorageManager.objecthash.PrintContents( ofs );
+    objStorageManager.objecthash.PrintContents( &ofs );
   }
   std::string tmp;
   if ( stateManager.uobjcount.uobject_count != 0 )
