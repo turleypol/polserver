@@ -268,7 +268,6 @@ void Storage::print( Clib::StreamWriter& sw ) const
     sw.add( "Name", area.first );
     sw.end();
     area.second->print( sw );
-    sw.write( '\n' );
   }
 }
 
