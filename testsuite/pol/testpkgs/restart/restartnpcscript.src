@@ -1,2 +1,5 @@
+use npc;
 program dummy()
+  var me:=Self();
+  setanchor(me.x,me.y,20,10);
 endprogram
