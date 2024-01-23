@@ -456,7 +456,7 @@ void PropertyList::printPropertiesAsStrings( Clib::StreamWriter& sw ) const
     const std::string& first = prop.first;
     if ( first[0] != '#' )
     {
-      sw.write( "\t{} {}\n", first, prop.second.get() );
+      sw.add( first, prop.second.get() );
     }
   }
 }
