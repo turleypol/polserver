@@ -49,7 +49,7 @@ set_target_properties(kaitai PROPERTIES
   IMPORTED_IMPLIB ${KAITAI_LIB}
   INTERFACE_INCLUDE_DIRECTORIES ${KAITAI_INSTALL_DIR}/include
   INTERFACE_LINK_LIBRARIES libz
- FOLDER 3rdParty
+  FOLDER 3rdParty
 )
 file(MAKE_DIRECTORY ${KAITAI_INSTALL_DIR}/include) #directory has to exist during configure
 
