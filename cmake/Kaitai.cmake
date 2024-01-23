@@ -40,14 +40,9 @@ ExternalProject_Add(kaitai_Ext
     LOG_INSTALL 1
     LOG_OUTPUT_ON_FAILURE 1
   )
-if (${windows})
-  if (NOT EXISTS "${ZLIB_LIB}")
-    ExternalProject_Add_StepDependencies(kaitai_Ext configure libz)
-  endif()
-endif()
+ExternalProject_Add_StepDependencies(kaitai_Ext configure libz)
 
 # imported target to add include/lib dir and additional dependencies
-# dependency to the external project needs to be explicit done in the linking library
 add_library(kaitai STATIC IMPORTED)
 set_target_properties(kaitai PROPERTIES IMPORTED_LOCATION ${KAITAI_LIB})
 set_target_properties(kaitai PROPERTIES IMPORTED_IMPLIB ${KAITAI_LIB})
@@ -56,7 +51,7 @@ file(MAKE_DIRECTORY ${KAITAI_INSTALL_DIR}/include) #directory has to exist durin
 set_target_properties(kaitai PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${KAITAI_INSTALL_DIR}/include)
 
 if (${windows})
-  set_target_properties(kaitai PROPERTIES INTERFACE_LINK_LIBRARIES ${ZLIB_LIB})
+  set_target_properties(kaitai PROPERTIES INTERFACE_LINK_LIBRARIES libz)
 else()
   set_target_properties(kaitai PROPERTIES INTERFACE_LINK_LIBRARIES z)
 endif()
