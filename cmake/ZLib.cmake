@@ -35,10 +35,10 @@ if (${windows})
   set_target_properties(libz PROPERTIES IMPORTED_LOCATION ${ZLIB_LIB})
   set_target_properties(libz PROPERTIES IMPORTED_IMPLIB ${ZLIB_LIB})
 
-  set_target_properties(zlib PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INSTALL_DIR}/include)
+  set_target_properties(libz PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INSTALL_DIR}/include)
 
-  add_dependencies(zlib zlib_ext)
-  set_target_properties (zlib PROPERTIES FOLDER 3rdParty)
+  add_dependencies(libz libz_ext)
+  set_target_properties (libz PROPERTIES FOLDER 3rdParty)
 else()
   add_library(libz INTERFACE IMPORTED)
   set_property(TARGET libz PROPERTY

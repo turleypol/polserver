@@ -50,10 +50,6 @@ set_target_properties(kaitai PROPERTIES IMPORTED_IMPLIB ${KAITAI_LIB})
 file(MAKE_DIRECTORY ${KAITAI_INSTALL_DIR}/include) #directory has to exist during configure
 set_target_properties(kaitai PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${KAITAI_INSTALL_DIR}/include)
 
-if (${windows})
-  set_target_properties(kaitai PROPERTIES INTERFACE_LINK_LIBRARIES libz)
-else()
-  set_target_properties(kaitai PROPERTIES INTERFACE_LINK_LIBRARIES z)
-endif()
+set_target_properties(kaitai PROPERTIES INTERFACE_LINK_LIBRARIES libz)
 add_dependencies(kaitai kaitai_Ext)
 set_target_properties (kaitai PROPERTIES FOLDER 3rdParty)
