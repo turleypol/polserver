@@ -38,7 +38,6 @@ ExternalProject_Add(fmt_Ext
   )
 
 # imported target to add include/lib dir and additional dependencies
-# dependency to the external project needs to be explicit done in the linking library
 add_library(fmt STATIC IMPORTED)
 set_target_properties(fmt PROPERTIES IMPORTED_LOCATION ${FMT_LIB})
 set_target_properties(fmt PROPERTIES IMPORTED_IMPLIB ${FMT_LIB})

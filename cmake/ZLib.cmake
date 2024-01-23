@@ -1,4 +1,5 @@
-# windows only: build zlib
+# windows: build zlib
+# linux: interface to z
 if (${windows})
   message("* zlib")
   set(ZLIB_SOURCE_DIR "${POL_EXT_LIB_DIR}/zlib-1.3")
@@ -38,9 +39,10 @@ if (${windows})
   set_target_properties(libz PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INSTALL_DIR}/include)
 
   add_dependencies(libz libz_ext)
-  set_target_properties (libz PROPERTIES FOLDER 3rdParty)
+
 else()
   add_library(libz INTERFACE IMPORTED)
-  set_property(TARGET libz PROPERTY
-  INTERFACE_LINK_LIBRARIES z)
+  set_property(TARGET libz PROPERTY INTERFACE_LINK_LIBRARIES z)
 endif()
+
+set_target_properties (libz PROPERTIES FOLDER 3rdParty)
