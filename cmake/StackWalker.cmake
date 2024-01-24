@@ -1,6 +1,6 @@
 # windows only: build stackwalker
 
-set(stackwalk_sources 
+set(libstackwalk_sources 
   ${POL_EXT_LIB_DIR}/StackWalker/StackWalker.cpp
   ${POL_EXT_LIB_DIR}/StackWalker/StackWalker.h
 )
