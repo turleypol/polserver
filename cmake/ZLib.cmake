@@ -18,6 +18,7 @@ if (${windows})
       BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
       INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
       BUILD_IN_SOURCE 1
+      DOWNLOAD_EXTRACT_TIMESTAMP 1
       BUILD_BYPRODUCTS ${ZLIB_LIB}
       LOG_DOWNLOAD 1
       LOG_CONFIGURE 1
