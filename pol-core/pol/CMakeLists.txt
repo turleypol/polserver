@@ -26,7 +26,6 @@ target_link_libraries(${ex_name} PUBLIC
 if (${linux})
   target_link_libraries(${ex_name} PUBLIC
     crypto
-    pthread
   )
 endif()
 

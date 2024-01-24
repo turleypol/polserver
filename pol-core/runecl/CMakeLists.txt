@@ -20,11 +20,6 @@ target_link_libraries(${ex_name} PUBLIC
   libtinyxml
   libpicojson
 )
-if (${linux})
-  target_link_libraries(${ex_name} PUBLIC
-    pthread    
-  )
-endif()
 
 dist(${ex_name} scripts)
 
