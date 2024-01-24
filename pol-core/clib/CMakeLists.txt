@@ -17,9 +17,9 @@ add_dependencies(${lib_name} git_rev)
 target_link_libraries(${lib_name} PUBLIC
   fmt
   libboost_headers
-  libboost_regex
-  libboost_system
-  libboost_thread
+  #  libboost_regex
+  #  libboost_system
+  #  libboost_thread
   utf8lib
 )
 
