@@ -12,10 +12,6 @@ function(set_compile_flags target is_executable)
     )
   endif()
 
-  target_include_directories(${target} SYSTEM PRIVATE
-    "${POL_EXT_LIB_DIR}" #antlr/, tinyxml/, etc
-  )
-
   target_compile_definitions(${target} PRIVATE
     INC_PASSERT=1
     __STDC_CONSTANT_MACROS
