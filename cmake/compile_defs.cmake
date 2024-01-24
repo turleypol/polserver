@@ -13,7 +13,6 @@ function(set_compile_flags target is_executable)
   endif()
 
   target_include_directories(${target} SYSTEM PRIVATE
-    ${BOOST_SOURCE_DIR} # boost
     "${POL_EXT_LIB_DIR}" #antlr/, tinyxml/, etc
   )
 
@@ -225,11 +224,6 @@ function (enable_pch target)
       set_target_properties(${target} PROPERTIES COTIRE_ADD_UNITY_BUILD OFF)
       cotire(${target})
       set_target_properties (clean_cotire PROPERTIES FOLDER 3rdParty)
-      if(NOT EXISTS "${BOOST_SOURCE_DIR}/boost")
-        if(TARGET ${target}_pch)
-          add_dependencies(${target}_pch boost)
-        endif()
-      endif()
     else()
       if ("${argn}" MATCHES "REUSE.*" AND REUSE_PCH)
         target_precompile_headers(${target} REUSE_FROM clib)
