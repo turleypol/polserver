@@ -35,12 +35,14 @@ if(HAVE_MYSQL)
 
   if(${windows})
     get_target_property(sqldll libsql IMPORTED_LOCATION)
-    get_filename_component(dllname sqldll NAME)
+    get_filename_component(dllname ${sqldll} NAME)
     add_custom_command(TARGET ${ex_name} POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
         "${sqldll}"
         "$<TARGET_FILE_DIR:${ex_name}>/${dllname}"
     )
+    message("sql ${sqldll} ${dllname}")
+    message("t $<TARGET_FILE_DIR:${ex_name}>/${dllname}")
     install(
       FILES ${sqldll}
       DESTINATION .
