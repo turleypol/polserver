@@ -15,12 +15,12 @@ use_benchmark(${lib_name})
 add_dependencies(${lib_name} git_rev)
 
 target_link_libraries(${lib_name} PUBLIC
-  fmt
+  libfmt
   libboost_headers
   #  libboost_regex
   #  libboost_system
   #  libboost_thread
-  utf8lib
+  libutf8
 )
 
 if (${linux})
@@ -38,7 +38,7 @@ if (${linux})
   endif()
 elseif(${windows})
   target_link_libraries(${lib_name} PUBLIC
-    stackwalk
+    libstackwalk
     ws2_32
     Psapi
     DbgHelp

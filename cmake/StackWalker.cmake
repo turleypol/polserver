@@ -4,7 +4,7 @@ set(stackwalk_sources
   ${POL_EXT_LIB_DIR}/StackWalker/StackWalker.cpp
   ${POL_EXT_LIB_DIR}/StackWalker/StackWalker.h
 )
-set(lib_name stackwalk)
+set(lib_name libstackwalk)
 
 add_library(${lib_name} STATIC
   ${${lib_name}_sources}

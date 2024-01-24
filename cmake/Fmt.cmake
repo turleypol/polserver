@@ -38,8 +38,8 @@ ExternalProject_Add(fmt_Ext
   )
 
 # imported target to add include/lib dir and additional dependencies
-add_library(fmt STATIC IMPORTED)
-set_target_properties(fmt PROPERTIES
+add_library(libfmt STATIC IMPORTED)
+set_target_properties(libfmt PROPERTIES
   IMPORTED_LOCATION ${FMT_LIB}
   IMPORTED_IMPLIB ${FMT_LIB}
   INTERFACE_INCLUDE_DIRECTORIES ${FMT_INSTALL_DIR}/include
@@ -47,4 +47,4 @@ set_target_properties(fmt PROPERTIES
 )
 file(MAKE_DIRECTORY ${FMT_INSTALL_DIR}/include) #directory has to exist during configure
 
-add_dependencies(fmt fmt_Ext)
+add_dependencies(libfmt fmt_Ext)

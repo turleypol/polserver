@@ -1,4 +1,4 @@
-set(lib_name tinyxml)
+set(lib_name libtinyxml)
 
 add_library(${lib_name} STATIC
   # sorted !

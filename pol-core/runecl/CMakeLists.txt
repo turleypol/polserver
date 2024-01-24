@@ -17,8 +17,8 @@ target_link_libraries(${ex_name} PUBLIC
   bscript
   clib
   plib
-  tinyxml
-  picojsonlib
+  libtinyxml
+  libpicojson
 )
 if (${linux})
   target_link_libraries(${ex_name} PUBLIC
