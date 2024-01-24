@@ -153,6 +153,7 @@ if (BUILD_ALL OR ONLY_POL)
 endif()
 include(cmake/TinyXML.cmake)
 include(cmake/PicoJson.cmake)
+include(cmake/UTF8.cmake)
 
 add_subdirectory(docs)
 add_subdirectory(pol-core)
