@@ -13,7 +13,6 @@ warning_suppression(${ex_name})
 target_link_libraries(${ex_name} PUBLIC
   clib
   plib
-  libkaitai
 )
 
 dist(${ex_name} .)
