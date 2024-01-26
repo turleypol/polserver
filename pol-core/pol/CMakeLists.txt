@@ -24,9 +24,9 @@ target_link_libraries(${ex_name} PUBLIC
   libcurl
 )
 if (${linux})
-  target_link_libraries(${ex_name} PUBLIC
-    crypto
-  )
+  #  target_link_libraries(${ex_name} PUBLIC
+  #    crypto
+  #  )
 endif()
 
 if(HAVE_MYSQL)
