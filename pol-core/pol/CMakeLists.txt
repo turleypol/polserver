@@ -35,8 +35,6 @@ if(HAVE_MYSQL)
         "${sqldll}"
         "$<TARGET_FILE_DIR:${ex_name}>/${dllname}"
     )
-    message("sql ${sqldll} ${dllname}")
-    message("t $<TARGET_FILE_DIR:${ex_name}>/${dllname}")
     install(
       FILES ${sqldll}
       DESTINATION .
