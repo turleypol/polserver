@@ -16,13 +16,11 @@ add_dependencies(${lib_name} git_rev)
 
 target_link_libraries(${lib_name} PUBLIC
   libfmt
+  libutf8
   libboost_headers
   #  libboost_regex
   #  libboost_system
   #  libboost_thread
-)
-target_link_libraries(${lib_name} PRIVATE
-  libutf8
 )
 
 if (${linux})
