@@ -20,6 +20,8 @@ target_link_libraries(${lib_name} PUBLIC
   #  libboost_regex
   #  libboost_system
   #  libboost_thread
+)
+target_link_libraries(${lib_name} PRIVATE
   libutf8
 )
 

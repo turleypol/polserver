@@ -10,8 +10,10 @@ set_compile_flags(${lib_name} 0)
 warning_suppression(${lib_name})
 enable_pch(${lib_name})
 
-target_link_libraries(${lib_name} PUBLIC
+target_link_libraries(${lib_name} PRIVATE
   libkaitai
+)
+target_link_libraries(${lib_name} PUBLIC
   clib
 )
 if(${linux})
