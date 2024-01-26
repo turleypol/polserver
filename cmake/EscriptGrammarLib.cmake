@@ -16,7 +16,7 @@ add_library(${lib_name} STATIC
 )
 set_compile_flags(${lib_name} 0)
 
-target_include_directories(${lib_name} PUBLIC
+target_include_directories(${lib_name} PRIVATE
   "${POL_EXT_LIB_DIR}/EscriptGrammar"
 )
 target_link_libraries(${lib_name} PUBLIC
@@ -35,4 +35,7 @@ target_compile_options(${lib_name} PRIVATE
     >
 )
 
-set_target_properties (${lib_name} PROPERTIES FOLDER 3rdParty)
+set_target_properties (${lib_name} PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES ${POL_EXT_LIB_DIR}
+  FOLDER 3rdParty
+)
