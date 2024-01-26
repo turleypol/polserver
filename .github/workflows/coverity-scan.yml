@@ -63,7 +63,7 @@ jobs:
           cmake --build . --target libcurl_Ext
           cmake --build . --target libantlr_ext
           cmake --build . --target boost_extract
-          cmake --build . --target libkaitai_Ext
+          cmake --build . --target kaitai_Ext
           cmake --build . --target libtinyxml
           cmake --build . --target fmt_Ext
           cmake --build . --target escriptgrammarlib
