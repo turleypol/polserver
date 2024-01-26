@@ -33,7 +33,8 @@ ExternalProject_Add(kaitai_Ext
     BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
     INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
 
-    BUILD_BYPRODUCTS ${KAITAI_LIB}
+    BUILD_BYPRODUCTS ${KAITAI_LIB} ${KAITAI_INSTALL_DIR}/include
+
     LOG_DOWNLOAD 1
     LOG_CONFIGURE 1
     LOG_BUILD 1
@@ -51,6 +52,6 @@ set_target_properties(libkaitai PROPERTIES
   INTERFACE_LINK_LIBRARIES libz
   FOLDER 3rdParty
 )
-file(MAKE_DIRECTORY ${KAITAI_INSTALL_DIR}/include) #directory has to exist during configure
+#file(MAKE_DIRECTORY ${KAITAI_INSTALL_DIR}/include) #directory has to exist during configure
 
 add_dependencies(libkaitai kaitai_Ext)
