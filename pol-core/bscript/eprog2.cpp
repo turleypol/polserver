@@ -563,7 +563,7 @@ void EScriptProgram::addlocalvar( const std::string& localvarname )
 void EScriptProgram::addfunction( std::string funcname, unsigned firstPC, unsigned lastPC )
 {
   EPDbgFunction func;
-  func.name = funcname;
+  func.name = std::move( funcname );
   func.firstPC = firstPC;
   func.lastPC = lastPC;
   dbg_functions.push_back( func );

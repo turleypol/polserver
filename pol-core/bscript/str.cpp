@@ -1046,7 +1046,7 @@ BObjectImp* String::call_method_id( const int id, Executor& ex, bool /*forcebuil
               // the first string body occurrence,
               // will reuse last idx if this is 2nd or more in a row
               last_tag_was_int = false;
-              prop_name = tag_body;
+              prop_name = std::move( tag_body );
               tag_param_idx = last_tag_was_int ? next_param_idx++ : next_param_idx;
             }
           }

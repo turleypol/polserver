@@ -438,7 +438,7 @@ bool pkgdef_split( const std::string& spec, const Package* inpkg, const Package*
         if ( dstpkg != nullptr )
         {
           *outpkg = dstpkg;
-          *path = pkgfile;
+          *path = std::move( pkgfile );
         }
         else
         {

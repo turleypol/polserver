@@ -305,7 +305,7 @@ BObjectImp* BStruct::array_assign( BObjectImp* idx, BObjectImp* target, bool cop
 void BStruct::addMember( const char* name, BObjectRef val )
 {
   std::string key( name );
-  contents_[key] = val;
+  contents_[key] = std::move( val );
 }
 
 void BStruct::addMember( const char* name, BObjectImp* imp )
@@ -467,5 +467,5 @@ const BStruct::Contents& BStruct::contents() const
 {
   return contents_;
 }
-}
-}
+}  // namespace Bscript
+}  // namespace Pol

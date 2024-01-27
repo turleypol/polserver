@@ -72,7 +72,7 @@ std::unique_ptr<FunctionReference> ValueBuilder::function_reference(
   auto function_reference =
       std::make_unique<FunctionReference>( source_location, name, function_link );
 
-  workspace.function_resolver.register_function_link( name, function_link );
+  workspace.function_resolver.register_function_link( name, std::move( function_link ) );
 
   return function_reference;
 }
