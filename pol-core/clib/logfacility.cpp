@@ -17,6 +17,7 @@ POLLOG("hello {}\n", "world");
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <mutex>
 #include <string.h>
 #include <thread>
@@ -190,18 +191,18 @@ void LogFacility::closeFlexLog( const std::string& id )
 // blocks to return unique identifier
 std::string LogFacility::registerFlexLogger( const std::string& logfilename, bool open_timestamp )
 {
-  auto promise = std::promise<std::string>();
-  auto ret = promise.get_future();
+  auto promise = std::make_shared<std::promise<std::string>>();
+  auto ret = promise->get_future();
   _worker->send(
-      [=, p = std::move( promise )]() mutable
+      [=, p = std::move( promise )]()
       {
         try
         {
-          p.set_value( getSink<LogSink_flexlog>()->create( logfilename, open_timestamp ) );
+          p->set_value( getSink<LogSink_flexlog>()->create( logfilename, open_timestamp ) );
         }
         catch ( ... )
         {
-          p.set_exception( std::current_exception() );
+          p->set_exception( std::current_exception() );
         }
       } );
   return ret.get();  // block wait till valid
@@ -210,9 +211,9 @@ std::string LogFacility::registerFlexLogger( const std::string& logfilename, boo
 // block waits till the queue is empty
 void LogFacility::wait_for_empty_queue()
 {
-  auto promise = std::promise<bool>();
-  auto ret = promise.get_future();
-  _worker->send( [p = std::move( promise )]() mutable { p.set_value( true ); } );
+  auto promise = std::make_shared<std::promise<bool>>();
+  auto ret = promise->get_future();
+  _worker->send( [p = std::move( promise )]() { p->set_value( true ); } );
   ret.get();  // block wait till valid
 }
 
