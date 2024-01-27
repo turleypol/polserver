@@ -208,7 +208,7 @@ void ConsoleCommand::exec_console_cmd( char ch )
     ref_ptr<Bscript::EScriptProgram> prog =
         find_script2( sd, true, Plib::systemstate.config.cache_interactive_scripts );
     if ( prog.get() != nullptr )
-      start_script( prog, new Bscript::String( getcmdstr( ch ) ) );
+      start_script( std::move( prog ), new Bscript::String( getcmdstr( ch ) ) );
   }
   catch ( const char* msg )
   {

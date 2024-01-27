@@ -106,7 +106,7 @@ void load_party_cfg_general( Clib::ConfigElem& elem )
   {
     Clib::sanitizeUnicodeWithIso( &tmp );
     tmp += " ";
-    settingsManager.party_cfg.General.PrivateMsgPrefix = tmp;
+    settingsManager.party_cfg.General.PrivateMsgPrefix = std::move( tmp );
   }
   else
     settingsManager.party_cfg.General.PrivateMsgPrefix = "";

@@ -148,7 +148,7 @@ void loginserver_login( Network::Client* client, PKTIN_80* msg )
     if ( Plib::systemstate.config.retain_cleartext_passwords )
     {
       if ( acct->password().empty() )
-        acct->set_password( msgpass );
+        acct->set_password( std::move( msgpass ) );
     }
   }
 
@@ -426,7 +426,7 @@ void login2( Network::Client* client, PKTIN_91* msg )  // Gameserver login and c
     if ( Plib::systemstate.config.retain_cleartext_passwords )
     {
       if ( acct->password().empty() )
-        acct->set_password( msgpass );
+        acct->set_password( std::move( msgpass ) );
     }
   }
 

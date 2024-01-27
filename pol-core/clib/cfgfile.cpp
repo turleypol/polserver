@@ -888,7 +888,7 @@ bool ConfigFile::_read( ConfigElem& elem )
       }
     }
 
-    elem.rest_ = rest;
+    elem.rest_ = std::move( rest );
 
     if ( !fgets( buffer, sizeof buffer, fp ) )
       throw std::runtime_error( "File ends after element type -- expected a '{'" );
@@ -957,7 +957,7 @@ bool ConfigFile::_read( VectorConfigElem& elem )
       }
     }
 
-    elem.rest_ = rest;
+    elem.rest_ = std::move( rest );
 
     if ( !fgets( buffer, sizeof buffer, fp ) )
       throw std::runtime_error( "File ends after element type -- expected a '{'" );

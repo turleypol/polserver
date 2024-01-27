@@ -455,7 +455,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_AppendToFile()
 
   std::string filepath;
   if ( outpkg == nullptr )
-    filepath = path;
+    filepath = std::move( path );
   else
     filepath = outpkg->dir() + path;
 
@@ -568,7 +568,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_OpenBinaryFile()
 
   std::string filepath;
   if ( outpkg == nullptr )
-    filepath = path;
+    filepath = std::move( path );
   else
     filepath = outpkg->dir() + path;
 
@@ -680,7 +680,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_OpenXMLFile()
     filepath = outpkg->dir() + path;
   if ( !Clib::FileExists( filepath ) )
     return new BError( "File does not exist" );
-  std::unique_ptr<Core::BXMLfile> xml( new Core::BXMLfile( filepath ) );
+  std::unique_ptr<Core::BXMLfile> xml( new Core::BXMLfile( std::move( filepath ) ) );
   if ( !xml->isTrue() )
     return new BError( xml->getStringRep() );
   return xml.release();

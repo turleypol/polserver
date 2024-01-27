@@ -749,7 +749,7 @@ std::string DebugContext::cmd_setscript( const std::string& rest, Results& /*res
   if ( eprog->read_dbg_file() != 0 )
     return "Failed to load symbols.";
 
-  _script = res;
+  _script = std::move( res );
   return "";
 }
 

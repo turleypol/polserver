@@ -210,9 +210,9 @@ std::string LogFacility::registerFlexLogger( const std::string& logfilename, boo
 // block waits till the queue is empty
 void LogFacility::wait_for_empty_queue()
 {
-  auto promise = std::make_shared<std::promise<bool>>();
-  auto ret = promise->get_future();
-  _worker->send( [=]() { promise->set_value( true ); } );
+  auto promise = std::promise<bool>();
+  auto ret = promise.get_future();
+  _worker->send( [p = std::move( promise )]() { p.set_value( true ); } );
   ret.get();  // block wait till valid
 }
 

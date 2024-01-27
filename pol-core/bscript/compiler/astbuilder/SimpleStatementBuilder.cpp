@@ -20,8 +20,8 @@ using EscriptGrammar::EscriptParser;
 namespace Pol::Bscript::Compiler
 {
 SimpleStatementBuilder::SimpleStatementBuilder( const SourceFileIdentifier& source_file_identifier,
-                                    BuilderWorkspace& workspace )
-  : ExpressionBuilder( source_file_identifier, workspace )
+                                                BuilderWorkspace& workspace )
+    : ExpressionBuilder( source_file_identifier, workspace )
 {
 }
 
@@ -85,7 +85,7 @@ std::unique_ptr<ConstDeclaration> SimpleStatementBuilder::const_declaration(
   auto value = expression( expression_context );
 
   return std::make_unique<ConstDeclaration>( location_for( *ctx ), std::move( identifier ),
-                                               std::move( value ) );
+                                             std::move( value ) );
 }
 
 std::unique_ptr<JumpStatement> SimpleStatementBuilder::continue_statement(
@@ -122,7 +122,7 @@ std::unique_ptr<EnumDeclaration> SimpleStatementBuilder::enum_declaration(
         auto lhs = std::make_unique<Identifier>( source_location, last_identifier );
         auto one = std::make_unique<IntegerValue>( source_location, 1 );
         value = std::make_unique<BinaryOperator>( source_location, std::move( lhs ), "+", TOK_ADD,
-                                                    std::move( one ) );
+                                                  std::move( one ) );
       }
       else
       {
@@ -130,17 +130,17 @@ std::unique_ptr<EnumDeclaration> SimpleStatementBuilder::enum_declaration(
       }
       bool allow_overwrite = true;
       auto constant = std::make_unique<ConstDeclaration>( location_for( *entry ), identifier,
-                                                            std::move( value ), allow_overwrite );
+                                                          std::move( value ), allow_overwrite );
       workspace.compiler_workspace.const_declarations.push_back( std::move( constant ) );
 
-      last_identifier = identifier;
+      last_identifier = std::move( identifier );
     }
   }
 
   auto source_location = location_for( *ctx );
   std::string identifier = text( ctx->IDENTIFIER() );
   return std::make_unique<EnumDeclaration>( source_location, std::move( identifier ),
-                                              std::move( names ), std::move( expressions ) );
+                                            std::move( names ), std::move( expressions ) );
 }
 
 std::unique_ptr<Expression> SimpleStatementBuilder::variable_initializer(

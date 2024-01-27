@@ -276,7 +276,7 @@ bool BSQLConnection::select_db( const char* db )
   return true;
 }
 
-bool BSQLConnection::query( const std::string query )
+bool BSQLConnection::query( const std::string& query )
 {
   if ( !_conn->ptr() )
   {
@@ -299,7 +299,7 @@ bool BSQLConnection::query( const std::string query )
  * Allows binding parameters to the query
  * Every occurrence of "?" is replaced with a single parameter
  */
-bool BSQLConnection::query( const std::string query, QueryParams params )
+bool BSQLConnection::query( const std::string& query, const QueryParams& params )
 {
   if ( params == nullptr || !params->size() )
     return this->query( query );

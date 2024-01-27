@@ -90,7 +90,7 @@ NpcTemplate::NpcTemplate( const Clib::ConfigElem& elem, const Plib::Package* pkg
     std::string temp = elem.read_string( "MethodScript" );
     if ( !temp.empty() )
     {
-      ExportScript* shs = new ExportScript( pkg, temp );
+      ExportScript* shs = new ExportScript( pkg, std::move( temp ) );
       if ( shs->Initialize() )
         method_script = shs;
       else

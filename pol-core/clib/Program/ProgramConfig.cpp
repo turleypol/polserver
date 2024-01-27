@@ -40,7 +40,7 @@ void ProgramConfig::configureProgramEnvironment( const std::string& programName 
     exeDir.erase( pos, 2 );
   }
 
-  m_programDir = exeDir;
+  m_programDir = std::move( exeDir );
 }
 
 std::string ProgramConfig::programName()
@@ -64,5 +64,5 @@ std::string ProgramConfig::build_datetime()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-}
-}  // namespaces
+}  // namespace Clib
+}  // namespace Pol

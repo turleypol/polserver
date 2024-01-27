@@ -1,9 +1,8 @@
 #runs every friday
 name: coverity-scan
-#on:
-on: [push, pull_request]
-#  schedule:
-#    - cron: '0 0 * * 5'
+on:
+  schedule:
+    - cron: '0 0 * * 5'
 
 jobs:
   coverity:
@@ -65,8 +64,6 @@ jobs:
           cmake --build . --target boost_extract
           cmake --build . --target kaitai_Ext
           cmake --build . --target libtinyxml
-          cmake --build . --target fmt_Ext
-          cmake --build . --target escriptgrammarlib
 
 
       - name: Build with cov-build

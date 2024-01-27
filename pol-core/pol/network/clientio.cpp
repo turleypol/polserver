@@ -38,11 +38,7 @@ namespace Network
 {
 PacketLog Client::start_log()
 {
-  std::string filename = "log/";
-  filename += acct->name();
-  filename += ".log";
-
-  return session()->start_log( filename );
+  return session()->start_log( fmt::format( "log/{}.log", acct->name() ) );
 }
 
 PacketLog Client::stop_log()

@@ -124,7 +124,7 @@ int RunEclMain::runeclScript( std::string fileName )
   }
   exe.setProgram( program.get() );
   // find and set pkg
-  std::string dir = fileName;
+  std::string dir = std::move( fileName );
   Clib::strip_one( dir );
   dir = Clib::normalized_dir_form( dir );
   Plib::load_packages( true /*quiet*/ );
@@ -277,7 +277,7 @@ int RunEclMain::main()
   std::string fileName;
   if ( programArgsFind( "v", &fileName ) && fileName != "" )
   {
-    dumpScript( fileName );
+    dumpScript( std::move( fileName ) );
     return 0;  // return "okay"
   }
 

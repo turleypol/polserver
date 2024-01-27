@@ -101,7 +101,7 @@ void load_mime_config( void )
       std::string ext, mime;
       elem.remove_prop( "Extension", &ext );
       elem.remove_prop( "MIME", &mime );
-      gamestate.mime_types[ext] = mime;
+      gamestate.mime_types[ext] = std::move( mime );
     }
   }
   catch ( ... )

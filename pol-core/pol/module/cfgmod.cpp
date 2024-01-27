@@ -223,7 +223,7 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_ReadConfigFile()
 
     if ( cfile.get() != nullptr )
     {
-      return new EConfigFileRefObjImp( cfile );
+      return new EConfigFileRefObjImp( std::move( cfile ) );
     }
     else
     {

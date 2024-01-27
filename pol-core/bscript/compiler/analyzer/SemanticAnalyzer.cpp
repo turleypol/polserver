@@ -428,11 +428,11 @@ void SemanticAnalyzer::visit_identifier( Identifier& node )
   if ( auto local = locals.find( node.name ) )
   {
     local->mark_used();
-    node.variable = local;
+    node.variable = std::move( local );
   }
   else if ( auto global = globals.find( node.name ) )
   {
-    node.variable = global;
+    node.variable = std::move( global );
   }
   else
   {

@@ -591,7 +591,7 @@ std::vector<std::tuple<short, Multi::UMulti*, Items::Item*>> Realm::get_walkheig
   getmapshapes( shapes, pos, flags );
 
   // Get valid layers on this tile
-  auto layers = get_standheights( movemode, shapes, minz, maxz );
+  auto layers = get_standheights( movemode, std::move( shapes ), minz, maxz );
 
   // Combine those layers into a tuple and put it in our result vector
   for ( const auto& shape : layers )

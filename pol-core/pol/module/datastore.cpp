@@ -138,7 +138,7 @@ Bscript::BObjectImp* DataFileContents::methodCreateElement( const std::string& k
   {
     dfelem = ( *itr ).second;
   }
-  return new DataElemRefObjImp( DataFileContentsRef( this ), dfelem );
+  return new DataElemRefObjImp( DataFileContentsRef( this ), std::move( dfelem ) );
 }
 
 

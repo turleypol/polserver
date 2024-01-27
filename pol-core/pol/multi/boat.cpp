@@ -1668,7 +1668,7 @@ void UBoat::readProperties( Clib::ConfigElem& elem )
     return;
   }
 
-  Module::UOExecutorModule* script = Core::start_script( prog, make_boatref( this ) );
+  Module::UOExecutorModule* script = Core::start_script( std::move( prog ), make_boatref( this ) );
 
   if ( script == nullptr )
   {
@@ -1768,7 +1768,7 @@ Bscript::BObjectImp* UBoat::scripted_create( const Items::ItemDesc& descriptor, 
     return boatref;
   }
 
-  Module::UOExecutorModule* script = Core::start_script( prog, boatref );
+  Module::UOExecutorModule* script = Core::start_script( std::move( prog ), boatref );
 
   if ( script == nullptr )
   {

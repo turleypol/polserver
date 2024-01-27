@@ -189,7 +189,7 @@ void read_npc_templates( Plib::Package* pkg )
         elem.set_rest( descname.c_str() );
       }
       else
-        descname = namebase;
+        descname = std::move( namebase );
 
       gamestate.npc_template_elems[descname] = NpcTemplateElem( cf, elem );
     }
