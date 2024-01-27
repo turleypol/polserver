@@ -416,19 +416,19 @@ void TaskThreadPool::push( const msg& msg )
 /// returns a future which will be set once the msg is processed
 std::future<bool> TaskThreadPool::checked_push( const msg& msg )
 {
-  auto promise = std::promise<bool>();
-  auto ret = promise.get_future();
+  auto promise = std::make_shared<std::promise<bool>>();
+  auto ret = promise->get_future();
   _msg_queue.push(
-      [=, p = std::move( promise )]()
+      [=, promise = std::move( promise )]()
       {
         try
         {
           msg();
-          p.set_value( true );
+          promise->set_value( true );
         }
         catch ( ... )
         {
-          p.set_exception( std::current_exception() );
+          promise->set_exception( std::current_exception() );
         }
       } );
   return ret;
@@ -563,20 +563,20 @@ void DynTaskThreadPool::push( const msg& msg )
 /// returns a future which will be set once the msg is processed
 std::future<bool> DynTaskThreadPool::checked_push( const msg& msg )
 {
-  auto promise = std::promise<bool>();
-  auto ret = promise.get_future();
+  auto promise = std::make_shared<std::promise<bool>>();
+  auto ret = promise->get_future();
   create_thread();
   _msg_queue.push(
-      [=, p = std::move( promise )]()
+      [=, promise = std::move( promise )]()
       {
         try
         {
           msg();
-          p.set_value( true );
+          promise->set_value( true );
         }
         catch ( ... )
         {
-          p.set_exception( std::current_exception() );
+          promise->set_exception( std::current_exception() );
         }
       } );
   return ret;
