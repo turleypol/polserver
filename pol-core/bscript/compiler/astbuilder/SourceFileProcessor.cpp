@@ -199,7 +199,7 @@ std::optional<std::string> SourceFileProcessor::locate_include_file(
             if ( compilercfg.VerbosityLevel >= 10 )
               INFO_PRINTLN( "Found {}", try_filename_full );
 
-            filename_full = try_filename_full;
+            filename_full = std::move( try_filename_full );
           }
         }
         else

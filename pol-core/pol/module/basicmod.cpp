@@ -501,7 +501,7 @@ Bscript::BObjectImp* BasicExecutorModule::mf_SplitWords()
   }
 
   // New delimiter support.
-  std::string new_string = source;
+  std::string new_string = std::move( source );
   std::string::size_type found;
   do
   {

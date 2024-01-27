@@ -79,7 +79,7 @@ Bscript::BObjectImp* AccountObjImp::copy() const
 ///   All methods return Error("Invalid parameter type") if the wrong type was passed.
 ///
 Bscript::BObjectImp* AccountObjImp::call_polmethod_id( const int id, Core::UOExecutor& ex,
-                                                    bool forcebuiltin )
+                                                       bool forcebuiltin )
 {
   using namespace Bscript;
   BObjectImp* result = nullptr;
@@ -266,7 +266,7 @@ Bscript::BObjectImp* AccountObjImp::call_polmethod_id( const int id, Core::UOExe
 
         std::string temp;
         Clib::MD5_Encrypt( obj_->name_ + pwstr->value(), temp );
-        obj_->passwordhash_ = temp;  // MD5
+        obj_->passwordhash_ = std::move( temp );  // MD5
       }
       else
       {
@@ -555,7 +555,7 @@ Bscript::BObjectImp* AccountObjImp::call_polmethod_id( const int id, Core::UOExe
 ///
 Bscript::BObjectImp* AccountObjImp::call_polmethod( const char* methodname, Core::UOExecutor& ex )
 {
-  bool forcebuiltin{Bscript::Executor::builtinMethodForced( methodname )};
+  bool forcebuiltin{ Bscript::Executor::builtinMethodForced( methodname ) };
   Bscript::ObjMethod* objmethod = Bscript::getKnownObjMethod( methodname );
   if ( objmethod != nullptr )
     return this->call_polmethod_id( objmethod->id, ex, forcebuiltin );

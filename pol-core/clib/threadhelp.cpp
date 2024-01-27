@@ -419,7 +419,7 @@ std::future<bool> TaskThreadPool::checked_push( const msg& msg )
   auto promise = std::promise<bool>();
   auto ret = promise.get_future();
   _msg_queue.push(
-      [p = std::move( promise )]()
+      [=, p = std::move( promise )]()
       {
         try
         {
@@ -563,20 +563,20 @@ void DynTaskThreadPool::push( const msg& msg )
 /// returns a future which will be set once the msg is processed
 std::future<bool> DynTaskThreadPool::checked_push( const msg& msg )
 {
-  auto promise = std::make_shared<std::promise<bool>>();
-  auto ret = promise->get_future();
+  auto promise = std::promise<bool>();
+  auto ret = promise.get_future();
   create_thread();
   _msg_queue.push(
-      [=]()
+      [=, p = std::move( promise )]()
       {
         try
         {
           msg();
-          promise->set_value( true );
+          p.set_value( true );
         }
         catch ( ... )
         {
-          promise->set_exception( std::current_exception() );
+          p.set_exception( std::current_exception() );
         }
       } );
   return ret;
