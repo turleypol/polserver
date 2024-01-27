@@ -172,7 +172,7 @@ void load_anim_xlate_cfg( bool /*reload*/ )
                   static_cast<u8>( strtoul( values[2].c_str(), nullptr, 0 ) );
           }
         }
-        Core::gamestate.animation_translates[elem.rest()] = mobiletype;
+        Core::gamestate.animation_translates[elem.rest()] = std::move( mobiletype );
       }
     }
   }

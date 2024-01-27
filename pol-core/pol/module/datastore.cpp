@@ -148,7 +148,7 @@ Bscript::BObjectImp* DataFileContents::methodFindElement( int key )
   if ( itr != elements_by_integer.end() )
   {
     DataFileElementRef dfelem = ( *itr ).second;
-    return new DataElemRefObjImp( DataFileContentsRef( this ), dfelem );
+    return new DataElemRefObjImp( DataFileContentsRef( this ), std::move( dfelem ) );
   }
   else
   {
@@ -162,7 +162,7 @@ Bscript::BObjectImp* DataFileContents::methodFindElement( const std::string& key
   if ( itr != elements_by_string.end() )
   {
     DataFileElementRef dfelem = ( *itr ).second;
-    return new DataElemRefObjImp( DataFileContentsRef( this ), dfelem );
+    return new DataElemRefObjImp( DataFileContentsRef( this ), std::move( dfelem ) );
   }
   else
   {
@@ -327,7 +327,8 @@ Bscript::BObjectImp* DataFileRefObjImp::call_method( const char* methodname, Bsc
 
 
 DataElemRefObjImp::DataElemRefObjImp( DataFileContentsRef dfcontents, DataFileElementRef dfelem )
-    : DataElemRefObjImpBase( &datafileelem_type, DataFileElemObj( dfcontents, dfelem ) )
+    : DataElemRefObjImpBase( &datafileelem_type,
+                             DataFileElemObj( std::move( dfcontents ), std::move( dfelem ) ) )
 {
 }
 const char* DataElemRefObjImp::typeOf() const

@@ -31,7 +31,7 @@ namespace Accounts
 class AccountPtrHolder
 {
 public:
-  explicit AccountPtrHolder( Core::AccountRef i_acct ) : acct( i_acct ) {}
+  explicit AccountPtrHolder( Core::AccountRef i_acct ) : acct( std::move( i_acct ) ) {}
   Account* operator->() { return acct.get(); }
   const Account* operator->() const { return acct.get(); }
   Account* Ptr() { return acct.get(); }
@@ -54,9 +54,9 @@ public:
   virtual u8 typeOfInt() const override;
   virtual Bscript::BObjectImp* copy() const override;
   virtual Bscript::BObjectImp* call_polmethod( const char* methodname,
-                                            Core::UOExecutor& ex ) override;
+                                               Core::UOExecutor& ex ) override;
   virtual Bscript::BObjectImp* call_polmethod_id( const int id, Core::UOExecutor& ex,
-                                               bool forcebuiltin = false ) override;
+                                                  bool forcebuiltin = false ) override;
   virtual Bscript::BObjectRef get_member( const char* membername ) override;
   virtual Bscript::BObjectRef get_member_id( const int id ) override;  // id test
 };

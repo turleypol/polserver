@@ -357,7 +357,7 @@ void HttpExecutorModule::read_query_string( const std::string& query_string )
         name = param;
         value = "";
       }
-      params_[name.c_str()] = value;
+      params_[name.c_str()] = std::move( value );
 
       if ( Plib::systemstate.config.web_server_debug )
         INFO_PRINTLN( "http-param: '{}', '{}'", param, Core::http_decodestr( param ) );

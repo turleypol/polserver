@@ -520,8 +520,7 @@ Bscript::BObjectImp* BasicExecutorModule::mf_SplitWords()
     //  continue;
 
     objarr->addElement( new String( add_string ) );
-    std::string tmp_string = new_string.substr( found + delimiter.length(), new_string.length() );
-    new_string = tmp_string;
+    new_string = new_string.substr( found + delimiter.length(), new_string.length() );
     count += 1;
   } while ( found != std::string::npos );
 

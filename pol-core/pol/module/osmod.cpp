@@ -616,8 +616,8 @@ BObjectImp* OSExecutorModule::mf_OpenConnection()
       bool ignore_line_breaks = ignore_line_breaks_int != 0;
       auto* paramobjimp_raw = scriptparam->copy();  // prevent delete
       Core::networkManager.auxthreadpool->push(
-          [uoexec_w, sd = std::move( sd ), hostname, port, paramobjimp_raw, assume_string,
-           keep_connection, ignore_line_breaks]()
+          [uoexec_w = std::move( uoexec_w ), sd = std::move( sd ), hostname = std::move( hostname ),
+           port, paramobjimp_raw, assume_string, keep_connection, ignore_line_breaks]()
           {
             Clib::Socket s;
             std::unique_ptr<Network::AuxClientThread> client;
@@ -783,7 +783,7 @@ BObjectImp* OSExecutorModule::mf_HTTPRequest()
         }
 
         Core::networkManager.auxthreadpool->push(
-            [uoexec_w, curl_sp, chunk, flags]()
+            [uoexec_w = std::move( uoexec_w ), curl_sp, chunk, flags]()
             {
               CURL* curl = curl_sp.get();
               CURLcode res;
@@ -1146,7 +1146,7 @@ struct PerfData
   weak_ptr<Core::UOExecutor> uoexec_w;
   size_t max_scripts;
   PerfData( weak_ptr<Core::UOExecutor> weak_ex, size_t max_count )
-      : data(), uoexec_w( weak_ex ), max_scripts( max_count )
+      : data(), uoexec_w( std::move( weak_ex ) ), max_scripts( max_count )
   {
   }
   static void collect_perf( PerfData* data_ptr )

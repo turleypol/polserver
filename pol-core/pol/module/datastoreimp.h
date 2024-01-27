@@ -21,7 +21,7 @@ namespace Clib
 class ConfigElem;
 class ConfigFile;
 class StreamWriter;
-}
+}  // namespace Clib
 namespace Plib
 {
 class Package;
@@ -98,7 +98,7 @@ class DataFileElemObj
 {
 public:
   DataFileElemObj( DataFileContentsRef dfcontents, DataFileElementRef dfelem )
-      : dfcontents( dfcontents ), dfelem( dfelem )
+      : dfcontents( std::move( dfcontents ) ), dfelem( std::move( dfelem ) )
   {
   }
 
@@ -151,7 +151,7 @@ public:
 
   DataFileContentsRef dfcontents;
 };
-}
-}
+}  // namespace Module
+}  // namespace Pol
 
 #endif

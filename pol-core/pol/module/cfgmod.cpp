@@ -62,7 +62,7 @@ Bscript::BObjectRef EConfigFileRefObjImp::OperSubscript( const Bscript::BObject&
 
   if ( celem.get() != nullptr )
   {
-    return Bscript::BObjectRef( new EConfigElemRefObjImp( celem ) );
+    return Bscript::BObjectRef( new EConfigElemRefObjImp( std::move( celem ) ) );
   }
   else
   {
@@ -268,7 +268,7 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_LoadTusScpFile()
     return new Bscript::BError( "File not found" );
   }
 
-  return new EConfigFileRefObjImp( cfile );
+  return new EConfigFileRefObjImp( std::move( cfile ) );
 }
 
 Bscript::BObjectImp* ConfigFileExecutorModule::mf_GetConfigMaxIntKey()

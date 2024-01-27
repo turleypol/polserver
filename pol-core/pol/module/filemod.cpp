@@ -305,7 +305,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_FileExists()
 
   std::string filepath;
   if ( outpkg == nullptr )
-    filepath = path;
+    filepath = std::move( path );
   else
     filepath = outpkg->dir() + path;
 
@@ -331,7 +331,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ReadFile()
 
   std::string filepath;
   if ( outpkg == nullptr )
-    filepath = path;
+    filepath = std::string( path );
   else
     filepath = outpkg->dir() + path;
 
@@ -376,7 +376,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_WriteFile()
 
   std::string filepath;
   if ( outpkg == nullptr )
-    filepath = path;
+    filepath = std::move( path );
   else
     filepath = outpkg->dir() + path;
 
@@ -510,7 +510,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_LogToFile()
 
     std::string filepath;
     if ( outpkg == nullptr )
-      filepath = path;
+      filepath = std::move( path );
     else
       filepath = outpkg->dir() + path;
 
@@ -675,7 +675,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_OpenXMLFile()
 
   std::string filepath;
   if ( outpkg == nullptr )
-    filepath = path;
+    filepath = std::move( path );
   else
     filepath = outpkg->dir() + path;
   if ( !Clib::FileExists( filepath ) )

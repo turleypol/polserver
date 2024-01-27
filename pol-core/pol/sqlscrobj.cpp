@@ -38,12 +38,12 @@ BSQLRow::BSQLRow( BSQLResultSet* resultset ) : PolObjectImp( OTSQLRow )
 }
 BSQLRow::BSQLRow( RES_WRAPPER result ) : PolObjectImp( OTSQLRow )
 {
-  _result = result;
+  _result = std::move( result );
   _row = mysql_fetch_row( _result->ptr() );
   _fields = mysql_fetch_fields( _result->ptr() );
 }
 BSQLRow::BSQLRow( RES_WRAPPER result, MYSQL_ROW row, MYSQL_FIELD* fields )
-    : PolObjectImp( OTSQLRow ), _row( row ), _result( result ), _fields( fields )
+    : PolObjectImp( OTSQLRow ), _row( row ), _result( std::move( result ) ), _fields( fields )
 {
 }
 BObjectRef BSQLRow::OperSubscript( const BObject& obj )
@@ -121,7 +121,7 @@ BSQLResultSet::BSQLResultSet( RES_WRAPPER result )
 }
 BSQLResultSet::BSQLResultSet( RES_WRAPPER result, MYSQL_FIELD* fields )
     : Bscript::BObjectImp( OTSQLResultSet ),
-      _result( result ),
+      _result( std::move( result ) ),
       _fields( fields ),
       _affected_rows( 0 )
 {
@@ -195,7 +195,7 @@ Bscript::BObjectImp* BSQLConnection::getResultSet() const
   RES_WRAPPER result = std::make_shared<ResultWrapper>( mysql_store_result( _conn->ptr() ) );
   if ( result && result->ptr() != nullptr )  // there are rows
   {
-    return new BSQLResultSet( result );
+    return new BSQLResultSet( std::move( result ) );
     // retrieve rows, then call mysql_free_result(result)
   }
   else  // mysql_store_result() returned nothing; should it have?
@@ -226,7 +226,7 @@ BSQLConnection::BSQLConnection()
 }
 
 BSQLConnection::BSQLConnection( std::shared_ptr<ConnectionWrapper> conn )
-    : PolObjectImp( OTSQLConnection ), _conn( conn ), _errno( 0 )
+    : PolObjectImp( OTSQLConnection ), _conn( std::move( conn ) ), _errno( 0 )
 {
 }
 

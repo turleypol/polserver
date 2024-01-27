@@ -116,7 +116,7 @@ AuxClientThread::AuxClientThread( Core::ScriptDef scriptdef, Clib::Socket&& sock
       _auxservice( nullptr ),
       _auxconnection(),
       _uoexec( nullptr ),
-      _scriptdef( scriptdef ),
+      _scriptdef( std::move( scriptdef ) ),
       _params( params ),
       _assume_string( assume_string ),
       _transmit_counter( 0 ),
@@ -252,7 +252,7 @@ void AuxClientThread::transmit( const Bscript::BObjectImp* value )
   // defer transmit to not block server
   std::string tmp = _uoexec->auxsvc_assume_string ? value->getStringRep() : value->pack();
   ++_transmit_counter;
-  Core::networkManager.auxthreadpool->push( [tmp, this]() { transmit( tmp ); } );
+  Core::networkManager.auxthreadpool->push( [tmp = std::move( tmp ), this]() { transmit( tmp ); } );
 }
 
 void AuxClientThread::transmit( const std::string& msg )

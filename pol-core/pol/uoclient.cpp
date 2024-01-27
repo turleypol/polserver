@@ -100,7 +100,7 @@ void load_general_entry( const Plib::Package* pkg, Clib::ConfigElem& elem )
   {
     if ( !temp.empty() )
     {
-      ExportScript* shs = new ExportScript( pkg, temp );
+      ExportScript* shs = new ExportScript( pkg, std::move( temp ) );
       if ( shs->Initialize() )
       {
         networkManager.uoclient_general.method_script = shs;

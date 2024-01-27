@@ -197,7 +197,7 @@ void reread_account( Clib::ConfigElem& elem )
   }
   else
   {
-    elem.add_prop( "NAME", name );
+    elem.add_prop( "NAME", std::move( name ) );
     Core::gamestate.accounts.push_back( Core::AccountRef( new Account( elem ) ) );
   }
 }

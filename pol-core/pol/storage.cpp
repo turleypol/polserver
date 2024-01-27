@@ -39,7 +39,7 @@ namespace Core
 {
 using namespace Bscript;
 
-StorageArea::StorageArea( std::string name ) : _name( name ) {}
+StorageArea::StorageArea( std::string name ) : _name( std::move( name ) ) {}
 
 StorageArea::~StorageArea()
 {

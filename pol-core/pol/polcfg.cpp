@@ -263,12 +263,11 @@ void PolConfig::read_pol_config( bool initial_load )
   Plib::systemstate.config.show_warning_boat_move = elem.remove_bool( "ShowWarningBoatMove", true );
 
   // store the configuration for the reporting system in the ExceptionParser
-  bool reportingActive = elem.remove_bool( "ReportCrashsAutomatically", false );
-  std::string reportingAdminEmail = elem.remove_string( "ReportAdminEmail", "" );
-  std::string reportingServer = elem.remove_string( "ReportServer", "polserver.com" );
-  std::string reportingUrl = elem.remove_string( "ReportURL", "/pol/report_program_abort.php" );
   Pol::Clib::ExceptionParser::configureProgramAbortReportingSystem(
-      reportingActive, reportingServer, reportingUrl, reportingAdminEmail );
+      elem.remove_bool( "ReportCrashsAutomatically", false ),
+      elem.remove_string( "ReportServer", "polserver.com" ),
+      elem.remove_string( "ReportURL", "/pol/report_program_abort.php" ),
+      elem.remove_string( "ReportAdminEmail", "" ) );
 
 #ifdef _WIN32
   Clib::MiniDumper::SetMiniDumpType( Plib::systemstate.config.minidump_type );
