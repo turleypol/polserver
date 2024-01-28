@@ -232,7 +232,7 @@ BObjectImp* BDictionary::array_assign( BObjectImp* idx, BObjectImp* target, bool
 void BDictionary::addMember( const char* name, BObjectRef val )
 {
   BObject key( new String( name ) );
-  contents_[key] = std::move( val; )
+  contents_[key] = std::move( val );
 }
 
 void BDictionary::addMember( const char* name, BObjectImp* imp )
