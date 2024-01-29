@@ -25,6 +25,7 @@ if (${windows})
       LOG_BUILD 1
       LOG_INSTALL 1
       LOG_OUTPUT_ON_FAILURE 1
+      EXCLUDE_FROM_ALL 1
     )
     set_target_properties (libz_ext PROPERTIES FOLDER 3rdParty)
   

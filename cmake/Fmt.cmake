@@ -22,20 +22,21 @@ endif()
 
 ExternalProject_Add(fmt_Ext
   SOURCE_DIR  ${FMT_SOURCE_DIR}
-    PREFIX fmt
-    LIST_SEPARATOR |
-    CMAKE_ARGS ${FMT_ARGS}
-    BINARY_DIR ${FMT_SOURCE_DIR}/build
-    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
-    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
+  PREFIX fmt
+  LIST_SEPARATOR |
+  CMAKE_ARGS ${FMT_ARGS}
+  BINARY_DIR ${FMT_SOURCE_DIR}/build
+  BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
+  INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
 
-    BUILD_BYPRODUCTS ${FMT_LIB}
-    LOG_DOWNLOAD 1
-    LOG_CONFIGURE 1
-    LOG_BUILD 1
-    LOG_INSTALL 1
-    LOG_OUTPUT_ON_FAILURE 1
-  )
+  BUILD_BYPRODUCTS ${FMT_LIB}
+  LOG_DOWNLOAD 1
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
+  LOG_OUTPUT_ON_FAILURE 1
+  EXCLUDE_FROM_ALL 1
+)
 
 # imported target to add include/lib dir and additional dependencies
 add_library(libfmt STATIC IMPORTED)

@@ -10,6 +10,7 @@ set(libstackwalk_sources
 set(lib_name libstackwalk)
 
 add_library(${lib_name} STATIC
+  EXCLUDE_FROM_ALL
   ${${lib_name}_sources}
 )
 set_compile_flags(${lib_name} 0)

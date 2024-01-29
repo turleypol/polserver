@@ -1,6 +1,6 @@
 # https://github.com/kaitai-io/kaitai_struct_cpp_stl_runtime
 
-message("* kaitai")
+message("* libkaitai")
 
 set(KAITAI_SOURCE_DIR "${POL_EXT_LIB_DIR}/kaitai-runtime")
 set(KAITAI_INSTALL_DIR "${KAITAI_SOURCE_DIR}/install")
@@ -26,21 +26,22 @@ endif()
 
 ExternalProject_Add(kaitai_Ext
   SOURCE_DIR  ${KAITAI_SOURCE_DIR}
-    PREFIX kaitai
-    LIST_SEPARATOR |
-    CMAKE_ARGS ${KAITAI_ARGS}
-    BINARY_DIR ${KAITAI_SOURCE_DIR}/build
-    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
-    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
+  PREFIX kaitai
+  LIST_SEPARATOR |
+  CMAKE_ARGS ${KAITAI_ARGS}
+  BINARY_DIR ${KAITAI_SOURCE_DIR}/build
+  BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
+  INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
 
-    BUILD_BYPRODUCTS ${KAITAI_LIB}
+  BUILD_BYPRODUCTS ${KAITAI_LIB}
 
-    LOG_DOWNLOAD 1
-    LOG_CONFIGURE 1
-    LOG_BUILD 1
-    LOG_INSTALL 1
-    LOG_OUTPUT_ON_FAILURE 1
-  )
+  LOG_DOWNLOAD 1
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
+  LOG_OUTPUT_ON_FAILURE 1
+  EXCLUDE_FROM_ALL 1
+)
 ExternalProject_Add_StepDependencies(kaitai_Ext configure libz)
 
 # imported target to add include/lib dir and additional dependencies
