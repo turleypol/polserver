@@ -13,7 +13,7 @@ if (${linux})
 else()
   set(ANTLR_LIB "${ANTLR_INSTALL_DIR}/lib/antlr4-runtime-static.lib")
 endif()
-if (NOT EXISTS ${ANTLR_LIB})
+#if (NOT EXISTS ${ANTLR_LIB})
   ExternalProject_Add(libantlr_ext
     SOURCE_DIR  ${ANTLR_SOURCE_DIR}
     PREFIX antlr
@@ -30,10 +30,12 @@ if (NOT EXISTS ${ANTLR_LIB})
     LOG_INSTALL 1
     LOG_OUTPUT_ON_FAILURE 1
   )
+if (NOT EXISTS ${ANTLR_LIB})
   file(MAKE_DIRECTORY ${ANTLR_INCLUDE_DIR}) #directory has to exist during configure
-else()
-  message("Antlr already build")
 endif()
+  #else()
+  #  message("Antlr already build")
+  #endif()
 
 # imported target to add include/lib dir and additional dependencies
 add_library(libantlr STATIC IMPORTED)
