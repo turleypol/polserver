@@ -1,6 +1,6 @@
 # https://github.com/fmtlib/fmt
 
-message("* format")
+message("* libformat")
 
 set(FMT_SOURCE_DIR "${POL_EXT_LIB_DIR}/fmt-10.2.0")
 set(FMT_INSTALL_DIR "${FMT_SOURCE_DIR}/install")

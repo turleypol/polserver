@@ -34,7 +34,7 @@ if(NOT EXISTS "${CURL_LIB}")
   set_target_properties (libcurl_Ext PROPERTIES FOLDER 3rdParty)
   file(MAKE_DIRECTORY ${CURL_INSTALL_DIR}/include) #directory has to exist during configure
 else()
-  message("Curl already build")
+  message("  - already build")
 endif()
 
 # imported target to add include/lib dir and additional dependencies
