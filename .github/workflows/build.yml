@@ -119,6 +119,10 @@ jobs:
         run: |
           cd bin-build
           cmake .. -G Ninja -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
+      - name: Build1
+        run: |
+          cd bin-build
+          cmake --build . --config ${{ matrix.config.build-type }} --target poltool -- -j 2
       - name: Build
         run: |
           cd bin-build
