@@ -118,7 +118,7 @@ jobs:
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} -DENABLE_TIDY=ON -DTIDY_ARGS=-extra-arg=-Wno-unknown-warning-option
+          cmake .. -G Ninja -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} -DENABLE_TIDY=ON -DTIDY_ARGS=-extra-arg=-Wno-unknown-warning-option;-checks=clang-analyser-*,bugprone-*,modernize-*,concurrency-*
       - name: Build
         run: |
           cd bin-build

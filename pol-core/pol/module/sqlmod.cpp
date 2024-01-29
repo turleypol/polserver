@@ -106,7 +106,7 @@ Bscript::BObjectImp* SQLExecutorModule::background_select( weak_ptr<Core::UOExec
 {
   // The BSQLConnection shouldn't be destroyed before the lambda runs
   ref_ptr<Core::BSQLConnection> sqlRef( sql );
-  auto msg = [uoexec = std::move( uoexec ), sqlRef = std::move( sqlRef ), db]()
+  auto msg = [uoexec = uoexec, sqlRef = std::move( sqlRef ), db]()
   {
     if ( sqlRef == nullptr )
     {
@@ -179,7 +179,7 @@ Bscript::BObjectImp* SQLExecutorModule::background_query( weak_ptr<Core::UOExecu
 
   // The BSQLConnection shouldn't be destroyed before the lambda runs
   ref_ptr<Core::BSQLConnection> sqlRef( sql );
-  auto msg = [uoexec = std::move( uoexec ), sqlRef = std::move( sqlRef ), query,
+  auto msg = [uoexec = uoexec, sqlRef = std::move( sqlRef ), query,
               sharedParams = std::move( sharedParams )]()
   {
     if ( sqlRef == nullptr )  // TODO: this doesn't make any sense and should be checked before the

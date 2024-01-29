@@ -55,7 +55,7 @@ bool ExportScript::FindExportedFunction( const std::string& name, unsigned args,
       if ( args != exportedfunc->nargs )
       {
         INFO_PRINTLN( "Exported function {} in script {} takes {} parameters, expected {}", name,
-                     scriptname(), exportedfunc->nargs, args );
+                      scriptname(), exportedfunc->nargs, args );
         return false;
       }
       PC = exportedfunc->PC;
@@ -76,7 +76,7 @@ bool ExportScript::FindExportedFunction( const char* name, unsigned args, unsign
       if ( args != exportedfunc->nargs )
       {
         INFO_PRINTLN( "Exported function {} in script {} takes {} parameters, expected {}", name,
-                     scriptname(), exportedfunc->nargs, args );
+                      scriptname(), exportedfunc->nargs, args );
         return false;
       }
       PC = exportedfunc->PC;
@@ -576,6 +576,7 @@ void ExportScript::SaveStack( BackupStruct& backup )
   {
     backup.PC = uoexec.PC;
     backup.ValueStack = std::move( uoexec.ValueStack );
+    uoexec.ValueStack.clear();
     if ( ( uoexec.Locals2 != nullptr ) && ( !uoexec.Locals2->empty() ) )
     {
       backup.Locals.reset( uoexec.Locals2 );
