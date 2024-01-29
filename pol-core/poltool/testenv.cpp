@@ -28,7 +28,7 @@ void TestEnv::generate()
   if ( _basedir != "." && !fs::exists( _basedir ) )
     fs::create_directories( _basedir );
 
-  FileGenerator g( basedir / "client", _hsa, _maxtiles, 0, _width, _height );
+  FileGenerator g( _basedir / "client", _hsa, _maxtiles, 0, _width, _height );
   g.generateTiledata();
   g.generateMap();
   g.generateStatics();
