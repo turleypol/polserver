@@ -1,4 +1,7 @@
 # windows only: build stackwalker
+if (NOT ${windows})
+  return()
+endif()
 set(stackdir ${POL_EXT_LIB_DIR}/StackWalker-v14)
 set(libstackwalk_sources 
   ${stackdir}/StackWalker/StackWalker.cpp
