@@ -48,12 +48,12 @@ endif()
 
 set(boost_needs_extract FALSE)
 set(boost_needs_build FALSE)
-if (NOT EXISTS "${BOOST_SOURCE_DIR}/boost")
+#if (NOT EXISTS "${BOOST_SOURCE_DIR}/boost")
   message("  - will extract")
   ExternalProject_Add(boost_extract
           URL "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.bz2"
           SOURCE_DIR "${BOOST_SOURCE_DIR}"
-          CONFIGURE_COMMAND ${BOOST_CONFIGURE_COMMAND} --with-toolset=${BOOST_TOOLSET}
+          CONFIGURE_COMMAND "" #${BOOST_CONFIGURE_COMMAND} --with-toolset=${BOOST_TOOLSET}
           BUILD_COMMAND ""
           INSTALL_COMMAND ""
           BUILD_BYPRODUCTS "${BOOST_SOURCE_DIR}"
@@ -64,10 +64,10 @@ if (NOT EXISTS "${BOOST_SOURCE_DIR}/boost")
           DOWNLOAD_EXTRACT_TIMESTAMP 1
           )
   set_target_properties (boost_extract PROPERTIES FOLDER 3rdParty)
-  set(boost_needs_extract TRUE)
-else()
-  message("  - will not extract")
-endif()
+  #  set(boost_needs_extract TRUE)
+  #else()
+  #  message("  - will not extract")
+  #endif()
 
 #if(NOT EXISTS ${BOOST_REGEX_LIB} OR NOT EXISTS ${BOOST_SYSTEM_LIB} OR NOT EXISTS ${BOOST_THREAD_LIB})
 #  message("  - will build in ${BOOST_SOURCE_DIR} toolset=${BOOST_TOOLSET} cxxflags=${BOOST_CXX_FLAGS}")
@@ -96,7 +96,8 @@ add_library(libboost_headers INTERFACE IMPORTED)
 set_target_properties(libboost_headers PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${BOOST_SOURCE_DIR}
 )
-if (boost_needs_extract)
+#if (boost_needs_extract)
+if (NOT EXISTS "${BOOST_SOURCE_DIR}/boost")
   add_dependencies(libboost_headers boost_extract)
 endif()
 
