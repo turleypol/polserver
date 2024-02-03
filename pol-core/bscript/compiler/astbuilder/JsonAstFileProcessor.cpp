@@ -141,8 +141,7 @@ picojson::value new_node( Rangeable* ctx, const std::string& type, Types&&... va
       { "token_index", picojson::value( static_cast<double>( range.end.token_index ) ) },
   } ) );
 
-  //  picojson::value value( w );
-  return std::move( add( &value, var3... ) );
+  return std::move( add( &w, var3... ) );
 };
 
 antlrcpp::Any JsonAstFileProcessor::visitCompilationUnit(
