@@ -77,18 +77,18 @@ antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::a
     }
   }
 
-  return std::move( aggregate );
+  return aggregate;
 }
 
-picojson::value& add( picojson::value& v )
+picojson::value add( picojson::value* v )
 {
-  return v;
+  return *v;
 }
 
 template <typename T>
 picojson::value to_value( T&& arg )
 {
-  return picojson::value( std::forward( arg ) );
+  return picojson::value( arg );
 }
 
 template <>
@@ -106,25 +106,25 @@ picojson::value to_value( antlrcpp::Any&& arg )
 }
 
 template <typename T1, typename... Types>
-picojson::value& add( picojson::value& v, const std::string& var1, T1 var2, Types... var3 )
+picojson::value add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var3 )
 {
-  if ( v.is<picojson::object>() )
+  if ( v->is<picojson::object>() )
   {
-    v.get<picojson::object>().insert(
-        std::pair<std::string, picojson::value>( { var1, to_value( var2 ) } ) );
+    v->get<picojson::object>().insert(
+        std::pair<std::string, picojson::value>( { var1, to_value( std::forward( var2 ) ) } ) );
   }
-  return add( v, var3... );
+  return add( v, std::forward( var3 )... );
 }
 
 template <typename T1, typename... Types>
-picojson::value add( antlrcpp::Any any_v, const std::string& var1, T1 var2, Types... var3 )
+picojson::value add( antlrcpp::Any* any_v, const std::string& var1, T1&& var2, Types&&... var3 )
 {
-  auto v = std::any_cast<picojson::value>( any_v );
-  return add( v, var1, var2, var3... );
+  auto* v = std::any_cast<picojson::value>( any_v );
+  return add( v, var1, std::forward( var2 ), std::forward( var3 )... );
 }
 
 template <typename Rangeable, typename... Types>
-picojson::value new_node( Rangeable* ctx, const std::string& type, Types... var3 )
+picojson::value new_node( Rangeable* ctx, const std::string& type, Types&&... var3 )
 {
   picojson::object w;
   Range range( *ctx );
@@ -143,8 +143,8 @@ picojson::value new_node( Rangeable* ctx, const std::string& type, Types... var3
   } ) );
 
   picojson::value value( w );
-  add( value, var3... );
-  return std::move( value );
+  return std::move( add( value, std::forward( var3 )... ) );
+  //  return std::move( value );
 };
 
 antlrcpp::Any JsonAstFileProcessor::visitCompilationUnit(
