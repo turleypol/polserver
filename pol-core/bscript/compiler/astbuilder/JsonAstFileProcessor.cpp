@@ -86,19 +86,19 @@ picojson::value add( picojson::value* v )
 }
 
 template <typename T>
-picojson::value to_value( T&& arg )
+picojson::value to_value( T& arg )
 {
   return picojson::value( arg );
 }
 
 template <>
-picojson::value to_value( int&& arg )
+picojson::value to_value( int& arg )
 {
   return picojson::value( static_cast<double>( arg ) );
 }
 
 template <>
-picojson::value to_value( antlrcpp::Any&& arg )
+picojson::value to_value( antlrcpp::Any& arg )
 {
   if ( arg.has_value() )
     return std::any_cast<picojson::value>( arg );
