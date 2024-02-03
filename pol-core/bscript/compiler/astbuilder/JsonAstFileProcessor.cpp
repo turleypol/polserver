@@ -60,24 +60,24 @@ antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::a
                                                      antlrcpp::Any /*picojson::array*/ nextResult )
 {
   // std::any_cast<picojson::array>( aggregate )
-  auto accum = std::any_cast<picojson::value>( aggregate );
-  auto next_res = std::any_cast<picojson::value>( nextResult );
+  auto* accum = std::any_cast<picojson::value>( &aggregate );
   // .push_back( std::any_cast<picojson::array>( nextResult ) );
 
-  if ( accum.is<picojson::array>() )
+  if ( accum->is<picojson::array>() )
   {
-    if ( next_res.is<picojson::array>() )
+    auto* next_res = std::any_cast<picojson::value>( &nextResult );
+    if ( next_res->is<picojson::array>() )
     {
-      for ( auto const& v : next_res.get<picojson::array>() )
-        accum.get<picojson::array>().push_back( v );
+      for ( auto const& v : next_res->get<picojson::array>() )
+        accum->get<picojson::array>().push_back( v );
     }
     else
     {
-      accum.get<picojson::array>().push_back( next_res );
+      accum->get<picojson::array>().push_back( *next_res );
     }
   }
 
-  return accum;
+  return std::move( aggregate );
 }
 
 picojson::value& add( picojson::value& v )
@@ -86,9 +86,9 @@ picojson::value& add( picojson::value& v )
 }
 
 template <typename T>
-picojson::value to_value( T arg )
+picojson::value to_value( T&& arg )
 {
-  return picojson::value( arg );
+  return picojson::value( std::forward( arg ) );
 }
 
 template <>
@@ -98,10 +98,10 @@ picojson::value to_value( int arg )
 }
 
 template <>
-picojson::value to_value( antlrcpp::Any arg )
+picojson::value to_value( antlrcpp::Any&& arg )
 {
   if ( arg.has_value() )
-    return picojson::value( std::any_cast<picojson::value>( arg ) );
+    return std::any_cast<picojson::value>( arg );
   return picojson::value();
 }
 
