@@ -125,7 +125,7 @@ picojson::value add( antlrcpp::Any&& any_v, const std::string& var1, T1&& var2, 
 template <typename Rangeable, typename... Types>
 picojson::value new_node( Rangeable* ctx, const std::string& type, Types&&... var3 )
 {
-  auto w = picojson::value( picojson::value::object_type, false );
+  auto w = picojson::value( picojson::object_type, false );
   Range range( *ctx );
 
   w.get<picojson::object>()["type"] = picojson::value( type );
