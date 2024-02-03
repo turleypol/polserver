@@ -110,8 +110,7 @@ picojson::value add( picojson::value* v, const std::string& var1, T1&& var2, Typ
 {
   if ( v->is<picojson::object>() )
   {
-    v->get<picojson::object>().insert(
-        std::pair<std::string, picojson::value>( { var1, to_value( var2 ) } ) );
+    v->get<picojson::object>().emplace( std::make_pair( var1, to_value( var2 ) ) );
   }
   return add( v, var3... );
 }
@@ -126,25 +125,24 @@ picojson::value add( antlrcpp::Any&& any_v, const std::string& var1, T1&& var2, 
 template <typename Rangeable, typename... Types>
 picojson::value new_node( Rangeable* ctx, const std::string& type, Types&&... var3 )
 {
-  picojson::object w;
+  picojson::value w{ picojson::value::object_type, false };
   Range range( *ctx );
 
-  w["type"] = picojson::value( type );
-  w["start"] = picojson::value( picojson::object( {
+  w.get<picojson::object>()["type"] = picojson::value( type );
+  w.get<picojson::object>()["start"] = picojson::value( picojson::object( {
       { "line_number", picojson::value( static_cast<double>( range.start.line_number ) ) },
       { "character_column",
         picojson::value( static_cast<double>( range.start.character_column ) ) },
       { "token_index", picojson::value( static_cast<double>( range.start.token_index ) ) },
   } ) );
-  w["end"] = picojson::value( picojson::object( {
+  w.get<picojson::object>()["end"] = picojson::value( picojson::object( {
       { "line_number", picojson::value( static_cast<double>( range.end.line_number ) ) },
       { "character_column", picojson::value( static_cast<double>( range.end.character_column ) ) },
       { "token_index", picojson::value( static_cast<double>( range.end.token_index ) ) },
   } ) );
 
-  picojson::value value( w );
+  //  picojson::value value( w );
   return std::move( add( &value, var3... ) );
-  //  return std::move( value );
 };
 
 antlrcpp::Any JsonAstFileProcessor::visitCompilationUnit(
