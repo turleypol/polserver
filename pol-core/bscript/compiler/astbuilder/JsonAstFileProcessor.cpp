@@ -92,7 +92,7 @@ picojson::value to_value( T&& arg )
 }
 
 template <>
-picojson::value to_value( int arg )
+picojson::value to_value( int&& arg )
 {
   return picojson::value( static_cast<double>( arg ) );
 }
@@ -143,7 +143,7 @@ picojson::value new_node( Rangeable* ctx, const std::string& type, Types&&... va
   } ) );
 
   picojson::value value( w );
-  return std::move( add( value, std::forward( var3 )... ) );
+  return std::move( add( &value, std::forward( var3 )... ) );
   //  return std::move( value );
 };
 
@@ -491,14 +491,14 @@ antlrcpp::Any JsonAstFileProcessor::visitForStatement(
 
   if ( auto basicForStatement = forGroup->basicForStatement() )
   {
-    return add( visitBasicForStatement( basicForStatement ),  //
-                "label", label                                //
+    return add( &visitBasicForStatement( basicForStatement ),  //
+                "label", label                                 //
     );
   }
   else if ( auto cstyleForStatement = forGroup->cstyleForStatement() )
   {
-    return add( visitCstyleForStatement( cstyleForStatement ),  //
-                "label", label                                  //
+    return add( &visitCstyleForStatement( cstyleForStatement ),  //
+                "label", label                                   //
     );
   }
 
