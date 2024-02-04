@@ -33,20 +33,20 @@ JsonAstFileProcessor::JsonAstFileProcessor( const SourceFileIdentifier& source_f
 {
 }
 
-picojson::value JsonAstFileProcessor::process_compilation_unit( SourceFile& sf )
+antlrcpp::Any JsonAstFileProcessor::process_compilation_unit( SourceFile& sf )
 {
   if ( auto compilation_unit = sf.get_compilation_unit( report, source_file_identifier ) )
   {
-    return std::any_cast<picojson::value>( compilation_unit->accept( this ) );
+    return compilation_unit->accept( this );
   }
   throw std::runtime_error( "No compilation unit in source file" );
 }
 
-picojson::value JsonAstFileProcessor::process_module_unit( SourceFile& sf )
+antlrcpp::Any JsonAstFileProcessor::process_module_unit( SourceFile& sf )
 {
   if ( auto module_unit = sf.get_module_unit( report, source_file_identifier ) )
   {
-    return std::any_cast<picojson::value>( module_unit->accept( this ) );
+    return module_unit->accept( this );
   }
   throw std::runtime_error( "No compilation unit in source file" );
 }
