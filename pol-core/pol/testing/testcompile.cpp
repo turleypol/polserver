@@ -25,7 +25,7 @@ void ast_test()
                                                         inc_parse_tree_cache, profile );
   Compiler::ConsoleReporter c( true, true );
   Compiler::Report report( c );
-  auto res = compiler->build_ast( "bautool.src", report, false );
+  auto res = compiler->build_ast( "bautool.srcb", report, false );
   INFO_PRINTLN( res );
 }
 
