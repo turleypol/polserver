@@ -66,13 +66,17 @@ antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::a
     auto* next_res = std::any_cast<picojson::value>( &nextResult );
     if ( next_res->is<picojson::array>() )
     {
-      auto& a = accum->get<picojson::array>();
-      auto& b = next_res->get<picojson::array>();
-      a.insert( a.end(), std::make_move_iterator( b.begin() ), std::make_move_iterator( b.end() ) );
+      /*      auto& a = accum->get<picojson::array>();
+            auto& b = next_res->get<picojson::array>();
+            a.insert( a.end(), std::make_move_iterator( b.begin() ), std::make_move_iterator(
+         b.end() ) );*/
+      for ( auto const& v : next_res->get<picojson::array>() )
+        accum->get<picojson::array>().push_back( v );
     }
     else
     {
-      accum->get<picojson::array>().emplace_back( std::move( *next_res ) );
+      //      accum->get<picojson::array>().emplace_back( std::move( *next_res ) );
+      accum->get<picojson::array>().push_back( *next_res );
     }
   }
 
