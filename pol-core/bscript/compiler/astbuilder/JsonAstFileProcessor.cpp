@@ -87,7 +87,7 @@ void add( picojson::value* )
 {
   return;
 }
-/*
+
 template <typename T>
 picojson::value to_value( T& arg )
 {
@@ -107,29 +107,31 @@ picojson::value to_value( antlrcpp::Any& arg )
     return std::any_cast<picojson::value>( arg );
   return picojson::value();
 }
-*/
+
 template <typename T1, typename... Types>
 void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var3 )
 {
   if ( v->is<picojson::object>() )
   {
     auto& o = v->get<picojson::object>();
-    if constexpr ( std::is_same<std::decay_t<T1>, int>::value )
-      o[var1] = picojson::value( static_cast<double>( var2 ) );
-    else if constexpr ( std::is_same<std::decay_t<T1>, antlrcpp::Any>::value )
-    {
-      if ( var2.has_value() )
-      {
-        auto* v = std::any_cast<picojson::value>( &var2 );
-        o[var1] = std::move( *v );
-      }
-      else
-        o[var1] = picojson::value();
-    }
-    else
-    {
-      o[var1] = picojson::value( var2 );
-    }
+    /*    if constexpr ( std::is_same<std::decay_t<T1>, int>::value )
+          o[var1] = picojson::value( static_cast<double>( var2 ) );
+        else if constexpr ( std::is_same<std::decay_t<T1>, antlrcpp::Any>::value )
+        {
+          if ( var2.has_value() )
+          {
+            auto* v = std::any_cast<picojson::value>( &var2 );
+            o[var1] = std::move( *v );
+          }
+          else
+            o[var1] = picojson::value();
+        }
+        else
+        {
+          o[var1] = picojson::value( var2 );
+        }
+        */
+    o.emplace( std::make_pair( var1, to_value( var2 ) ) );
   }
   add( v, var3... );
 }
