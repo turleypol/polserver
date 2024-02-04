@@ -128,6 +128,14 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
+      - name: Config1
+        run: |
+          cd bin-build
+          cmake .. -G Ninja -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} -DENABLE_BENCHMARK=ON
+      - name: Build1
+        run: |
+          cd bin-build
+          cmake --build . --config ${{ matrix.config.build-type }} --target pol -- -j 2
 
       - name: Test (EScript)
         if: matrix.config.nopch == 0
