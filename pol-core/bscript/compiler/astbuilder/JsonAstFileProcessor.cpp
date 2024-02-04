@@ -66,12 +66,13 @@ antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::a
     auto* next_res = std::any_cast<picojson::value>( &nextResult );
     if ( next_res->is<picojson::array>() )
     {
-      for ( auto const& v : next_res->get<picojson::array>() )
-        accum->get<picojson::array>().push_back( v );
+      auto& a = accum->get<picojson::array>();
+      auto& b = next_res->get<picojson::array>();
+      std::move( b.begin(), b.end(), std::back_inserter( a ) );
     }
     else
     {
-      accum->get<picojson::array>().push_back( *next_res );
+      accum->get<picojson::array>().emplace_back( std::move( *next_res ) );
     }
   }
 
@@ -110,20 +111,20 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
   {
     auto o& = v->get<picojson::object>();
     if constexpr ( std::is_same<std::decay_t<T1>, int>::value )
-      o.emplace( std::make_pair( var1, picojson::value( static_cast<double>( var2 ) ) ) );
+      o[var1] = picojson::value( static_cast<double>( var2 ) );
     else if constexpr ( std::is_same<std::decay_t<T1>, antlrcpp::Any>::value )
     {
       if ( var2.has_value() )
       {
         auto* v = std::any_cast<picojson::value>( &var2 );
-        o.emplace( std::make_pair( var1, std::move( *v ) ) );
+        o[var1] = std::move( *v );
       }
       else
-        o.emplace( std::make_pair( var1, picojson::value() ) );
+        o[var1] = picojson::value();
     }
     else
     {
-      o.emplace( std::make_pair( var1, picojson::value( var2 ) ) );
+      o[var1] = picojson::value( var2 );
     }
   }
   add( v, var3... );
