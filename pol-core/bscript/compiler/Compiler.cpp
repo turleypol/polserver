@@ -166,6 +166,7 @@ std::string Compiler::build_ast( const std::string& pathname, Report& report, bo
   auto workspace = is_module ? workspace_builder.build_module( pathname )
                              : workspace_builder.build( pathname, user_function_inclusion );
   JsonAstBuilder json_ast_builder( source_loader, profile, report );
+  Tools::Timer<Tools::DebugT> timer( "build_ast" );
   auto json_ast = json_ast_builder.build( pathname, is_module );
   // Pol::Tools::HighPerfTimer timer;
   // CompilerWorkspaceBuilder workspace_builder( source_loader, em_cache, inc_cache, false, true,
