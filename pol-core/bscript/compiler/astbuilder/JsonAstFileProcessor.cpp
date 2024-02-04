@@ -77,7 +77,7 @@ antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::a
     }
   }
 
-  return aggregate;
+  return std::move( aggregate );
 }
 
 void add( picojson::value* )
@@ -116,9 +116,9 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
 }
 
 template <typename T1, typename... Types>
-void add( antlrcpp::Any&& any_v, const std::string& var1, T1&& var2, Types&&... var3 )
+void add( antlrcpp::Any* any_v, const std::string& var1, T1&& var2, Types&&... var3 )
 {
-  auto* v = std::any_cast<picojson::value>( &any_v );
+  auto* v = std::any_cast<picojson::value>( any_v );
   add( v, var1, var2, var3... );
 }
 
@@ -491,8 +491,7 @@ antlrcpp::Any JsonAstFileProcessor::visitForStatement(
   if ( auto basicForStatement = forGroup->basicForStatement() )
   {
     auto node = visitBasicForStatement( basicForStatement );
-    auto* v = std::any_cast<picojson::value>( &node );
-    add( v,              //
+    add( &node,          //
          "label", label  //
     );
     return node;
@@ -500,8 +499,7 @@ antlrcpp::Any JsonAstFileProcessor::visitForStatement(
   else if ( auto cstyleForStatement = forGroup->cstyleForStatement() )
   {
     auto node = visitCstyleForStatement( cstyleForStatement );
-    auto* v = std::any_cast<picojson::value>( &node );
-    add( v,              //
+    add( &node,          //
          "label", label  //
     );
     return node;
