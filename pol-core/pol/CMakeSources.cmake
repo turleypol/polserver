@@ -393,6 +393,7 @@ set (pol_sources  # sorted !
   testing/testdrop.cpp
   testing/testenv.cpp
   testing/testenv.h
+  testing/testcompile.cpp
   testing/testlos.cpp
   testing/testmisc.cpp
   testing/testpos.cpp
