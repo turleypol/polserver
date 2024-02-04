@@ -8,6 +8,7 @@
 #include "bscript/compiler/Report.h"
 #include "bscript/compiler/file/SourceFileCache.h"
 #include "bscript/compiler/file/SourceFileLoader.h"
+#include "bscript/compilercfg.h"
 #include "testenv.h"
 namespace Pol
 {
@@ -17,6 +18,8 @@ using namespace Bscript;
 
 void ast_test()
 {
+  compilercfg.Read( "ecompile.cfg" );
+
   Compiler::Profile profile;
   Compiler::SourceFileLoader source_loader;
   Compiler::SourceFileCache em_parse_tree_cache( source_loader, profile );
