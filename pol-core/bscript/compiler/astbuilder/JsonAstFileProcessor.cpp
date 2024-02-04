@@ -108,22 +108,22 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
 {
   if ( v->is<picojson::object>() )
   {
+    auto o& = v->get<picojson::object>();
     if constexpr ( std::is_same<std::decay_t<T1>, int>::value )
-      v->get<picojson::object>().emplace(
-          std::make_pair( var1, picojson::value( static_cast<double>( var2 ) ) ) );
+      o.emplace( std::make_pair( var1, picojson::value( static_cast<double>( var2 ) ) ) );
     else if constexpr ( std::is_same<std::decay_t<T1>, antlrcpp::Any>::value )
     {
       if ( var2.has_value() )
       {
         auto* v = std::any_cast<picojson::value>( &var2 );
-        v->get<picojson::object>().emplace( std::make_pair( var1, std::move( *v ) ) );
+        o.emplace( std::make_pair( var1, std::move( *v ) ) );
       }
       else
-        v->get<picojson::object>().emplace( std::make_pair( var1, picojson::value() ) );
+        o.emplace( std::make_pair( var1, picojson::value() ) );
     }
     else
     {
-      v->get<picojson::object>().emplace( std::make_pair( var1, picojson::value( var2 ) ) );
+      o.emplace( std::make_pair( var1, picojson::value( var2 ) ) );
     }
   }
   add( v, var3... );
