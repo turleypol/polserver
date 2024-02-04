@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// bautool - bequemes Erzeugen und Verändern von Items und Itemgruppen
+// bautool - bequemes Erzeugen und VerÃ¤ndern von Items und Itemgruppen
 //
 // Author: Turley
 // eMail : michi.at.www@gmx.de
@@ -7,7 +7,7 @@
 // Konfigurationsdateien
 // - Menustruktur
 //   - bautoolmenues.cfg
-// - Erstellt Rechtecke mit Tiles (Zufällig oder nur einen)
+// - Erstellt Rechtecke mit Tiles (ZufÃ¤llig oder nur einen)
 //   - bautoolrandom.cfg
 // - Erstellt einzelne Items
 //   - bautooleinzel.cfg
@@ -18,9 +18,9 @@
 // ToDo:
 // Zufallsding
 //  - Auswahlliste wie Random/Einzel/Sets
-//  - Wählt aus plus Wahrscheinlichkeiten
+//  - WÃ¤hlt aus plus Wahrscheinlichkeiten
 //  - Wenn fertig zusammengestellt Eck-Koords angeben und
-//    createn, immer auf Maphöhe
+//    createn, immer auf MaphÃ¶he
 
 Use cfgfile;
 Use os;
@@ -28,14 +28,15 @@ Use uo;
 Use util;
 
 Include "include/client";
-Include "include/datafile";
-Include "include/itemnpc";
-Include "include/msgs";
-Include "include/server";
-Include "include/set";
+Include ":datafile:datafile";
+include ":gumps:textConsts";
+//Include "include/itemnpc";
+//Include "include/msgs";
+//Include "include/server";
+//Include "include/set";
 Include "include/string";
 
-Const VERSION:="<basefont color="+HTML_LIGHTGRAY+">V4.2a";
+Const VERSION:="<basefont color="+HTML_DARKBLUE+">V4.2a";
 
 Enum TextEntry_Checkboxes
   ITEMCOLOR:=1000,
@@ -44,7 +45,7 @@ Enum TextEntry_Checkboxes
   ITEMPOS,
   ITEMMODIFY,
   ITEMMMULTICREATE,
-  ITEMMODIFYMANUAL,  // ModifyMenü zum späteren Ändern
+  ITEMMODIFYMANUAL,  // Modify menu for later modification
   MODIFY_Z_START,
   MODIFY_Z_END,
   MODIFY_CUSTOM,
@@ -55,7 +56,7 @@ Enum TextEntry_Checkboxes
 EndEnum
 
 Enum Buttons
-  BACKBUTTON      :=2000,  // Zurück-Button
+  BACKBUTTON      :=2000,  // Back-Button
   MODIFY_MARKEDIT,
   MODIFY_START    :=3000,
   MODIFY_Y_UP     :=3005,  // ModifyItem-Buttons
@@ -92,7 +93,7 @@ Enum dataPositionsAngaben
 EndEnum
 
 Enum Ebenen
-  ROOTLIST:=0, // Ebenendefinition
+  ROOTLIST:=0, // plane definition
   FIRSTLIST,
   SECONDLIST,
   THIRDLIST,
@@ -102,14 +103,22 @@ Enum Ebenen
   ITEMLISTDUMMY
 EndEnum
 
-Const MENUSTART := 4000;  // StartWert der Listen/Itembuttons
+Enum Cprops
+  CPROP_INIT  := "bautoolinit",   // CProps to find the items
+  CPROP_ITEMS := "bautoolitems",
+  CPROP_COLOR := "bautoolorigcol" // Original color for markedit
+EndEnum
 
-Const MAXBUTTON   := 7;  // Max Buttons in der NavBar
-Const MAXLINEITEM := 4;  // Wieviel Items nebeneinander bei EinzelCreate
+Const MENUSTART := 4000;  // Start value of the lists / item buttons
+
+Const MAXBUTTON   := 7;  // Max Buttons in the NavBar
+Const MAXLINEITEM := 4;  // How many items side by side in single create
+
+Const MAXAREASIZE := 50;
 
 Const ITEMMOVEFLAGS := MOVEOBJECT_FORCELOCATION+MOVEITEM_IGNOREMOVABLE;
 
-// Alles Laden was man so benötigt
+// Load everything you need
 Var cfgrandom:=ReadConfigFile("bautoolrandom");
 Var cfgeinzel:=ReadConfigFile("bautooleinzel");
 Var cfgset   :=ReadConfigFile("bautoolset");
@@ -128,39 +137,39 @@ Var datafileelement:=dataelementElement.getprop("dictionary");
 
 
 Program bautool(who, param)
-  If (who[1]=="Init") // Per Script Datafile erzeugen
+  If (who[1]=="Init") // Generate datafile via script
     Init();
     Return;
   EndIf
 
-  If (!GetGlobalProperty(BAUSERVER))
-    If (who.cmdlevel<CMDLEVEL_GM)
-      SendSysMessagePergon(who,"Ihr seid nicht befugt diesen Befehl zu nutzen!");
+  If (!GetGlobalProperty("BauServer"))
+    If (who.cmdlevel<3)
+      SendSysMessage(who,"You are not authorized to use this command!");
       Return;
     EndIf
   EndIf
 
-  If (Lower(param)=="init")  // Developer darf manuell Init() anschmeißen
-    If (who.cmdlevel==CMDLEVEL_DEVELOPER)
-      cfgrandom:=0;  // Erst Ref's entfernen damit Unload sauber funzt
+  If (Lower(param)=="init")  // Developer can start Init () manually
+    If (who.cmdlevel==5)
+      cfgrandom:=0;  // First remove Ref's so that Unload works properly
       cfgeinzel:=0;
       cfgset:=0;
       UnloadConfigFile("bautoolmenues");
       UnloadConfigFile("bautooleinzel");
       UnloadConfigFile("bautoolrandom");
       UnloadConfigFile("bautoolset");
-      cfgrandom:=ReadConfigFile("bautoolrandom");
-      cfgeinzel:=ReadConfigFile("bautooleinzel");
-      cfgset   :=ReadConfigFile("bautoolset");
-      SendSysMessagePergon(who,"Datafile building...");
+      cfgrandom:=ReadConfigFile(":bautool:bautoolrandom");
+      cfgeinzel:=ReadConfigFile(":bautool:bautooleinzel");
+      cfgset   :=ReadConfigFile(":bautool:bautoolset");
+      SendSysMessage(who,"Datafile building...");
       Init();
-      SendSysMessagePergon(who,"Datafile completed");
+      SendSysMessage(who,"Datafile completed");
       Return;
     EndIf
   EndIf
 
   If (GetGlobalProperty("bautoolinit"))
-    SendSysMessagePergon(who,"Datafile wird noch erzeugt, probiere es später nochmal.");
+    SendSysMessage(who,"Datafile is still being generated, try again later.");
     Return;
   EndIf
 
@@ -169,7 +178,7 @@ Program bautool(who, param)
 EndProgram
 
 ///////////////////////////////////
-// ShowMenu - Eigentlicher Hauptteil
+// ShowMenu - Actual main part
 ///////////////////////////////////
 
 Function ShowMenu(who) // {{{
@@ -181,7 +190,7 @@ Function ShowMenu(who) // {{{
 
   element:=datafileelement;
 
-  //Jetzt kann es losgehen
+  //Now it can start
   ebene:=FIRSTLIST;
   layout:=dataelementMenu.getprop("LayoutMenuBar");
   data:=dataelementMenu.getprop("DataMenuBar");
@@ -190,13 +199,13 @@ Function ShowMenu(who) // {{{
 
   While (who.connected)
     If ((ret.keys[ret.keys.size()]>MENUSTART) || (back))
-      If (back) //Simulierter Buttondruck
+      If (back) //Simulated buttone printing
         nr:=back;
         back:=0;
       Else
         nr:=ret.keys[ret.keys.size()]-MENUSTART;
       EndIf
-      Case (ebene)  // In welcher Anzeigeebene befinde ich mich, passende dataListe erstellen
+      Case (ebene)  // In which display level I am, create a suitable data list
         ROOTLIST:
           ebene:=FIRSTLIST;
           layout:=dataelementMenu.getprop("LayoutMenuBar");
@@ -287,8 +296,8 @@ Function ShowMenu(who) // {{{
       EndCase
       ret:=SendDialogGump(who,layout,data,10,50);
 
-    ElseIf (ret[BACKBUTTON])  //Zurück
-      ebene-=2;  // 2 weil schon vorher eins dazugezählt wurde
+    ElseIf (ret[BACKBUTTON])  //Back
+      ebene-=2;  // 2 because one was added beforehand
       If (ebene<0)
         ebene:=ROOTLIST;
       EndIf
@@ -311,10 +320,10 @@ Function ShowMenu(who) // {{{
           back:=itemebene;
       EndCase
 
-    // Der Interessante Kram Itemerzeugen
+    // The Interesting Junk Item Creation
     ElseIf (ret[ITEMCREATE])
       ebene-=1;
-      back:=nr; //Damit keine Endloßschleife mit Create entsteht
+      back:=nr; //So that there is no final lock loop with Create
       color:=ret[ITEMCOLOR];
       color[1,6]:="";
       color:=CInt(color);
@@ -326,11 +335,11 @@ Function ShowMenu(who) // {{{
         "Set":
           CreateSet(who,ret,tile[2],color);
         default:
-          SendSysMessagePergon(who,"Fehler...");
+          SendSysMessage(who,"error...");
           Return;
       EndCase
 
-    // Manuelles ItemModify
+    // Manual ItemModify
     ElseIf (ret[ITEMMODIFYMANUAL])
       ModifyItemsManual(who);
       back:=1;
@@ -343,8 +352,8 @@ EndFunction // }}}
 
 
 ///////////////////////////////////
-// BuildItems - layout/data + spezieller Kram
-//   der Itemcreategumps besorgen
+// BuildItems - get layout / data +
+// special stuff from Itemcreategumps
 ///////////////////////////////////
 
 Function BuildItems(byref layout,byref data,byref element,firstebene,secondebene:=0,thirdebene:=0,fourthebene:=0,fifthebene:=0,itemebene:=0) // {{{
@@ -372,7 +381,7 @@ Function BuildItems(byref layout,byref data,byref element,firstebene,secondebene
     data:=dataelementMenu.getprop("DataItem_"+firstebene+"_"+element[1]);
   EndIf
 
-  // Array der Items aufbauen
+  // Build an array of items
   Case (element[2])
     "Random":
        ForEach tile in (GetConfigStringArray(cfgrandom[element[1]],"tile"))
@@ -406,19 +415,19 @@ EndFunction // }}}
 Function CreateRandom(who, byref ret, byref tiles, byref tiles1, byref color, byref element) // {{{
   Var tar1, tar2, item, x, y, z, Tarx, Tary, Tarx2, Tary2, itemdef, items:={}, itemserials:={};
 
-  SendSysMessagePergon(who, "Erste Ecke anvisieren");
+  SendSysMessage(who, "Target first corner");
   tar1:=TargetCoordinates(who);
   If (tar1)
-    SendSysMessagePergon(who, "Zweite Ecke anvisieren");
+    SendSysMessage(who, "Target the second corner");
     tar2:=TargetCoordinates(who);
     If (tar2)
       If ((tar1.item) || (tar2.item))
         If ((tar1.item.container) || (tar2.item.container))
-          SendSysMessagePergon(who,"Abbruch. Item in Container anvisiert!");
+          SendSysMessage(who,"cancellation. Item in Container targeted!");
           Return;
         EndIf
       EndIf
-      If (tar1.x>=tar2.x)  // Sortierung des Bereiches
+      If (tar1.x>=tar2.x)  // Sorting the area
         Tarx:=tar2.x;
         Tarx2:=tar1.x;
       Else
@@ -433,10 +442,7 @@ Function CreateRandom(who, byref ret, byref tiles, byref tiles1, byref color, by
         Tary2:=tar2.y;
       EndIf
       If (((Tarx2-Tarx)>MAXAREASIZE) || ((Tary2-Tary)>MAXAREASIZE))
-        SendSysMessagePergon(who,
-          "Abbruch. Versuch über "+MAXAREASIZE+"x"+MAXAREASIZE+
-          " Items zu erzeugen!"
-        );
+        SendSysMessage(who, "Cancellation.  " + MAXAREASIZE  + "x" + MAXAREASIZE + " Generate items!");
         Return;
       EndIf
       z:=ret[ITEMPOS];
@@ -449,308 +455,308 @@ Function CreateRandom(who, byref ret, byref tiles, byref tiles1, byref color, by
       If (GetConfigString(cfgrandom[element],"y"))
         Tary2:=Tary+CInt(GetConfigString(cfgrandom[element],"y"))-1;
       EndIf
-      If (ret[ITEMRAND])  // Randitems sollen erzeugt werden
+      If (ret[ITEMRAND])  // Random items are to be generated
         For (x:=Tarx;x<=Tarx2;x+=1)
           For (y:=Tary;y<=Tary2;y+=1)
-            If ((x==Tarx) && (y==Tary)) //NW Ecke
+            If ((x==Tarx) && (y==Tary)) //NW corner
               itemdef:=GetConfigString(cfgrandom[element],"nw");
               If (!itemdef)
-                SendSysMessagePergon(who, "NW-Ecke fehlt.");
+                SendSysMessage(who, "NW corner is missing.");
               Else
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! NW-Ecke Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create Error!  "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-              //Zweites Item erzeugen
+              //Create second item
               itemdef:=GetConfigString(cfgrandom[element],"nw1");
               If ((itemdef) && (itemdef<>{}))
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! NW-Ecke 2tes Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! NW-Corner 2nd item"+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-            ElseIf ((x==Tarx2) && (y==Tary)) //NO Ecke
+            ElseIf ((x==Tarx2) && (y==Tary)) //NE corner
               itemdef:=GetConfigString(cfgrandom[element],"no");
               If (!itemdef)
-                SendSysMessagePergon(who, "NO-Ecke fehlt.");
+                SendSysMessage(who, "NE corner missing.");
               Else
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! NO-Ecke Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! NE-corner Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-              //Zweites Item erzeugen
+              //Create second item
               itemdef:=GetConfigString(cfgrandom[element],"no1");
               If ((itemdef) && (itemdef<>{}))
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! NO-Ecke 2tes Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! NE-Corner 2nd item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-            ElseIf ((x==Tarx2) && (y==Tary2)) //SO Ecke
+            ElseIf ((x==Tarx2) && (y==Tary2)) //SE corner
               itemdef:=GetConfigString(cfgrandom[element],"so");
               If (!itemdef)
-                SendSysMessagePergon(who, "SO-Ecke fehlt.");
+                SendSysMessage(who, "SE-Corner is missing.");
               Else
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! SO-Ecke Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! SO-Ecke Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-              //Zweites Item erzeugen
+              //Create second item
               itemdef:=GetConfigString(cfgrandom[element],"so1");
               If ((itemdef) && (itemdef<>{}))
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! SO-Ecke 2tes Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! SE-Corner 2nd item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-            ElseIf ((x==Tarx) && (y==Tary2)) //SW Ecke
+            ElseIf ((x==Tarx) && (y==Tary2)) //SW corner
               itemdef:=GetConfigString(cfgrandom[element],"sw");
               If (!itemdef)
-                SendSysMessagePergon(who, "SW-Ecke fehlt.");
+                SendSysMessage(who, "SW-Corner is missing.");
               Else
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! SW-Ecke Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! SW-corner Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-              //Zweites Item erzeugen
+              //Create second item
               itemdef:=GetConfigString(cfgrandom[element],"sw1");
               If ((itemdef) && (itemdef<>{}))
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! SW-Ecke 2tes Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! SW-Corner 2nd item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-            ElseIf (y==Tary) //N Seite
+            ElseIf (y==Tary) //N page
               itemdef:=GetConfigString(cfgrandom[element],"n");
               If (!itemdef)
-                SendSysMessagePergon(who, "N-Seite fehlt.");
+                SendSysMessage(who, "N-Page is missing.");
               Else
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! N-Seite Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! N-Item page "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-              //Zweites Item erzeugen
+              //Create second item
               itemdef:=GetConfigString(cfgrandom[element],"n1");
               If ((itemdef) && (itemdef<>{}))
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! N-Seite 2tes Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! N-Page 2nd item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-            ElseIf (x==Tarx2) //O Seite
+            ElseIf (x==Tarx2) //E side
               itemdef:=GetConfigString(cfgrandom[element],"o");
               If (!itemdef)
-                SendSysMessagePergon(who, "O-Seite fehlt.");
+                SendSysMessage(who, "E-side is missing.");
               Else
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! O-Seite Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! E-side item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-              //Zweites Item erzeugen
+              //Create second item
               itemdef:=GetConfigString(cfgrandom[element],"o1");
               If ((itemdef) && (itemdef<>{}))
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! O-Seite 2tes Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! E-side 2nd item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-            ElseIf (y==Tary2) //S Seite
+            ElseIf (y==Tary2) //S side
               itemdef:=GetConfigString(cfgrandom[element],"s");
               If (!itemdef)
-                SendSysMessagePergon(who, "S-Seite fehlt.");
+                SendSysMessage(who, "S side is missing.");
               Else
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! S-Seite Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! S-Item page "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-              //Zweites Item erzeugen
+              //Create second item
               itemdef:=GetConfigString(cfgrandom[element],"s1");
               If ((itemdef) && (itemdef<>{}))
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! S-Seite 2tes Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! S-side 2nd item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-            ElseIf (x==Tarx) //W Seite
+            ElseIf (x==Tarx) //W page
               itemdef:=GetConfigString(cfgrandom[element],"w");
               If (!itemdef)
-                SendSysMessagePergon(who, "W-Seite fehlt.");
+                SendSysMessage(who, "W-Page is missing.");
               Else
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! W-Seite Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! W side item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-              //Zweites Item erzeugen
+              //Create second item
               itemdef:=GetConfigString(cfgrandom[element],"w1");
               If ((itemdef) && (itemdef<>{}))
                 itemdef:=SplitWords(itemdef);
                 itemdef:=ChooseRandom(itemdef);
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! W-Seite 2tes Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! W-Page 2nd item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-            Else //Mittelstück
+            Else //centerpiece
               itemdef:=ChooseRandom(tiles);
               If (!itemdef)
-                SendSysMessagePergon(who, "Mittelstück fehlt.");
+                SendSysMessage(who, "Middle piece is missing.");
               Else
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! Mittelteil Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! Midsection item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
-              //Zweites Item erzeugen
+              //Create second item
               itemdef:=tiles1.randomentry();
               If ((itemdef) && (itemdef<>{}))
                 itemdef:=SplitWords(itemdef,",");
-                item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+                item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
                 If (item)
                   item.color:=color;
                   item.movable:=0;
                   items.append(item);
                 Else
-                  SendSysMessagePergon(who, "Createfehler! Mittelteil 2tes Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                  SendSysMessage(who, "Create error! Middle part 2nd item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                             +Hex(itemdef[1])+" ErrorText: "+item.errortext);
                 EndIf
               EndIf
@@ -758,35 +764,35 @@ Function CreateRandom(who, byref ret, byref tiles, byref tiles1, byref color, by
             SleepMS(5);
           EndFor
         EndFor
-      Else // Langweilige Version ohne Rand
+      Else // Boring version without a border
         For (x:=Tarx;x<=Tarx2;x+=1)
           For (y:=Tary;y<=Tary2;y+=1)
             itemdef:=ChooseRandom(tiles);
             If (!itemdef)
-              SendSysMessagePergon(who, "Mittelstück fehlt.");
+              SendSysMessage(who, "Middle piece is missing.");
             Else
               itemdef:=SplitWords(itemdef,",");
-              item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+              item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
               If (item)
                 item.color:=color;
                 item.movable:=0;
                 items.append(item);
               Else
-                SendSysMessagePergon(who, "Createfehler! Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                SendSysMessage(who, "Create error! Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                           +Hex(itemdef[1])+" ErrorText: "+item.errortext);
               EndIf
             EndIf
-            //Zweites Item erzeugen
+            //Create second item
             itemdef:=tiles1.randomentry();
             If ((itemdef) && (itemdef<>{}))
               itemdef:=SplitWords(itemdef,",");
-              item:=CreateItemAtLocationPergon(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
+              item:=CreateItemAtLocation(x,y,tar1.z+CInt(itemdef[2])+z,CInt(itemdef[1]),1,who.realm);
               If (item)
                 item.color:=color;
                 item.movable:=0;
                 items.append(item);
               Else
-                SendSysMessagePergon(who, "Createfehler! 2tes Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
+                SendSysMessage(who, "Create error! 2nd Item "+x+" "+y+" "+(tar1.z+CInt(itemdef[2])+z)+" "
                                           +Hex(itemdef[1])+" ErrorText: "+item.errortext);
               EndIf
             EndIf
@@ -794,7 +800,7 @@ Function CreateRandom(who, byref ret, byref tiles, byref tiles1, byref color, by
           EndFor
         EndFor
       EndIf
-      // Itemserials speichern
+      // Save item series
       ForEach item in items
         item.setprop(CPROP_INIT,items[1].serial);
         SleepMS(2);
@@ -805,31 +811,31 @@ Function CreateRandom(who, byref ret, byref tiles, byref tiles1, byref color, by
       EndForEach
       items[1].setprop(CPROP_ITEMS,itemserials);
 
-      If (ret[ITEMMODIFY]) // Position ändern
+      If (ret[ITEMMODIFY]) // Change position
         If (!ModifyItems(who,items))
           Return;
         EndIf
       EndIf
     Else
-      SendSysMessagePergon(who, "Abbruch", "Abort");
+      SendSysMessage(who, "Abort");
     EndIf
   Else
-    SendSysMessagePergon(who, "Abbruch", "Abort");
+    SendSysMessage(who, "Abort");
   EndIf
 EndFunction // }}}
 
 ///////////////////////////////////
-// CreateEinzel - ...
+// Create singles - ...
 ///////////////////////////////////
 
 Function CreateEinzel(who, byref ret, byref tiles, byref color) // {{{
   Var z, itemdef:={}, iTarget, item, items:={}, itemserials:={};
 
   If (!tiles[ret.keys[2]])
-    SendSysMessagePergon(who, "Kein Item ausgewählt");
+    SendSysMessage(who, "No item selected");
     Return;
   EndIf
-  SendSysMessagePergon(who, "Position anvisieren");
+  SendSysMessage(who, "Target position");
   z:=ret[ITEMPOS];
   z[1,6]:="";
   z:=CInt(z);
@@ -838,22 +844,22 @@ Function CreateEinzel(who, byref ret, byref tiles, byref color) // {{{
   iTarget:=TargetCoordinates(who);
   If (iTarget.item)
     If (iTarget.item.container)
-      SendSysMessagePergon(who,"Abbruch. Item in Container anvisiert!");
+      SendSysMessage(who,"cancellation. Item in Container targeted!");
       Return;
     EndIf
   EndIf
-  While (iTarget)  // Endlos bis ESC
-    item:=CreateItemAtLocationPergon(iTarget.x,iTarget.y,iTarget.z+itemdef[2]+z,itemdef[1],1,who.realm);
+  While (iTarget)  // Endless to ESC
+    item:=CreateItemAtLocation(iTarget.x,iTarget.y,iTarget.z+itemdef[2]+z,itemdef[1],1,who.realm);
     If (item)
       item.color:=color;
       item.movable:=0;
-      // Itemserials speichern
+      // Save item series
       If (!ret[ITEMMMULTICREATE])
         item.setprop(CPROP_INIT,item.serial);
         item.setprop(CPROP_ITEMS,{item.serial});
-        If (ret[ITEMMODIFY])  // Postion ändern
+        If (ret[ITEMMODIFY])  // Change position
           If (!ModifyItems(who,item))
-            SendSysMessagePergon(who, "Abbruch", "Abort");
+            SendSysMessage(who, "Abort");
             Return;
           EndIf
         EndIf
@@ -861,13 +867,13 @@ Function CreateEinzel(who, byref ret, byref tiles, byref color) // {{{
         items.append(item);
       EndIf
     Else
-      SendSysMessagePergon(who, "Createfehler! Item "+iTarget.x+" "+iTarget.y+" "+(iTarget.z+itemdef[2]+z)+" "
+      SendSysMessage(who, "Create error! Item "+iTarget.x+" "+iTarget.y+" "+(iTarget.z+itemdef[2]+z)+" "
                                 +Hex(tiles[ret.keys[2]])+" ErrorText: "+item.errortext);
     EndIf
     iTarget:=TargetCoordinates(who);
   EndWhile
   If (ret[ITEMMMULTICREATE])
-    // Itemserials speichern
+    // Itemserials to save
     ForEach item in items
       item.setprop(CPROP_INIT,items[1].serial);
     EndForEach
@@ -875,19 +881,19 @@ Function CreateEinzel(who, byref ret, byref tiles, byref color) // {{{
       itemserials.append(item.serial);
     EndForEach
     items[1].setprop(CPROP_ITEMS,itemserials);
-    If (ret[ITEMMODIFY])  // Postion ändern
+    If (ret[ITEMMODIFY])  // Postion to change
       ModifyItems(who,items);
     EndIf
   EndIf
-  SendSysMessagePergon(who, "Abbruch", "Abort");
+  SendSysMessage(who, "Abort");
 EndFunction // }}}
 
 ///////////////////////////////////
 // CreateSet - ...
 ///////////////////////////////////
 
-Function CreateSet(who,byref ret,byref set,byref color) // {{{
-  Var iTarget, items, itemserials:={}, wholeitems:={};
+Function CreateSet(unused who, byref unused ret, byref unused set, byref unused color)
+/*  Var iTarget, items, itemserials:={}, wholeitems:={};
   Var z:=ret[ITEMPOS];
   z[1,6]:="";
   z:=CInt(z);
@@ -895,11 +901,11 @@ Function CreateSet(who,byref ret,byref set,byref color) // {{{
   iTarget:=TargetCoordinates(who);
   If (iTarget.item)
     If (iTarget.item.container)
-      SendSysMessagePergon(who,"Abbruch. Item in Container anvisiert!");
+      SendSysMessage(who,"cancellation. Item in Container targeted!");
       Return;
     EndIf
   EndIf
-  While (iTarget)  // Endlos bis ESC
+  While (iTarget)  // Endless to ESC
     iTarget.z:=iTarget.z+z;
     items:=MakeSet(iTarget, set, 1)[2];
     If (items)
@@ -910,7 +916,7 @@ Function CreateSet(who,byref ret,byref set,byref color) // {{{
         EndForEach
       EndIf
       If (!ret[ITEMMMULTICREATE])
-        // Itemserials speichern
+        // Save item series
         itemserials:={};
         ForEach item in items
           item.setprop(CPROP_INIT,items[1].serial);
@@ -922,7 +928,7 @@ Function CreateSet(who,byref ret,byref set,byref color) // {{{
         EndForEach
         items[1].setprop(CPROP_ITEMS,itemserials);
 
-        If (ret[ITEMMODIFY])  // Postion ändern
+        If (ret[ITEMMODIFY])  // Change position
           If (!ModifyItems(who,items))
             Return;
           EndIf
@@ -934,13 +940,13 @@ Function CreateSet(who,byref ret,byref set,byref color) // {{{
         EndForEach
       EndIf
     Else
-      SendSysMessagePergon(who,"Irgendetwas ging schief.");
+      SendSysMessage(who,"Something went wrong.");
       Return;
     EndIf
     iTarget:=TargetCoordinates(who);
   EndWhile
   If (ret[ITEMMMULTICREATE])
-    // Itemserials speichern
+    // Save item series
     ForEach item in wholeitems
       item.setprop(CPROP_INIT,wholeitems[1].serial);
       SleepMS(2);
@@ -950,12 +956,12 @@ Function CreateSet(who,byref ret,byref set,byref color) // {{{
       SleepMS(2);
     EndForEach
     wholeitems[1].setprop(CPROP_ITEMS,itemserials);
-    If (ret[ITEMMODIFY])  // Postion ändern
+    If (ret[ITEMMODIFY])  // Change position
       ModifyItems(who,items);
     EndIf
   EndIf
-  SendSysMessagePergon(who, "Abbruch", "Abort");
-EndFunction // }}}
+  SendSysMessage(who, "Abort"); */
+EndFunction
 
 ///////////////////////////////////
 // ModifyItemsManual - ...
@@ -969,24 +975,24 @@ Function ModifyItemsManual(who) // {{{
   While (who.connected)
     If (items<>{})
       datamodify_M[COLORDATAPOS]:=items[1].color;
-      datamodify_M[XKOORDSPOS]:="<basefont color="+HTML_LIGHTGRAY+"><p align=right>"+items[1].x+"</p></basefont>";
-      datamodify_M[YKOORDSPOS]:="<basefont color="+HTML_LIGHTGRAY+"><p align=right>"+items[1].y+"</p></basefont>";
-      datamodify_M[ZKOORDSPOS]:="<basefont color="+HTML_LIGHTGRAY+"><p align=right>"+items[1].z+"</p></basefont>";
+      datamodify_M[XKOORDSPOS]:="<basefont color="+HTML_DARKBLUE+"><p align=right>"+items[1].x+"</p></basefont>";
+      datamodify_M[YKOORDSPOS]:="<basefont color="+HTML_DARKBLUE+"><p align=right>"+items[1].y+"</p></basefont>";
+      datamodify_M[ZKOORDSPOS]:="<basefont color="+HTML_DARKBLUE+"><p align=right>"+items[1].z+"</p></basefont>";
       datamodify_M[XENTRY]:=items[1].x;
       datamodify_M[YENTRY]:=items[1].y;
       datamodify_M[ZENTRY]:=items[1].z;
     Else
       datamodify_M[COLORDATAPOS]:="0";
-      datamodify_M[XKOORDSPOS]:="<basefont color="+HTML_LIGHTGRAY+"><p align=right>x</p></basefont>";
-      datamodify_M[YKOORDSPOS]:="<basefont color="+HTML_LIGHTGRAY+"><p align=right>y</p></basefont>";
-      datamodify_M[ZKOORDSPOS]:="<basefont color="+HTML_LIGHTGRAY+"><p align=right>z</p></basefont>";
+      datamodify_M[XKOORDSPOS]:="<basefont color="+HTML_DARKBLUE+"><p align=right>x</p></basefont>";
+      datamodify_M[YKOORDSPOS]:="<basefont color="+HTML_DARKBLUE+"><p align=right>y</p></basefont>";
+      datamodify_M[ZKOORDSPOS]:="<basefont color="+HTML_DARKBLUE+"><p align=right>z</p></basefont>";
       datamodify_M[XENTRY]:=0;
       datamodify_M[YENTRY]:=0;
       datamodify_M[ZENTRY]:=0;
     EndIf
     retmodify:=SendDialogGump(who,layoutmodify_M,datamodify_M,10,50);
     If (retmodify[MODIFY_START])
-      If (!retmodify[MODIFY_CUSTOM]) // Suche nach .bautool Items
+      If (!retmodify[MODIFY_CUSTOM]) // Search for .bautool items
         tar:=Target(who,TGTOPT_NOCHECK_LOS);
         If (tar)
           If ((!tar.getprop(CPROP_ITEMS)) && (tar.getprop(CPROP_INIT)))
@@ -998,22 +1004,23 @@ Function ModifyItemsManual(who) // {{{
               ForEach item in itemserials
                 obj:=SystemFindObjectBySerial(item);
                 If (obj)
-                  If (CInt(obj.getprop(CPROP_INIT))==CInt(inititem.serial)) // gehört es noch der selben Gruppe an
+                  If (CInt(obj.getprop(CPROP_INIT))==CInt(inititem.serial)) // it belongs to the same group
                     items.append(obj);
                     tempitems.append(obj.serial);
                   EndIf
                 EndIf
                 SleepMS(5);
               EndForEach
-              inititem.setprop(CPROP_ITEMS,tempitems); // gefilterte Serials speichern
+              inititem.setprop(CPROP_ITEMS,tempitems); // save filtered serials
               If ((!items) || (items=={}))
-                SendSysMessagePergon(who,"Items konnten nicht gefunden werden. Abbruch");
+                SendSysMessage(who,"Items could not be found. ");
               Else
-                SendSysMessagePergon(who,items.size()+" Items erkannt.");
+                SendSysMessage(who,items.size()+" Items recognized.");
               EndIf
             Else
-              SendSysMessagePergon(who,"Init-Item nicht gefunden. Bestimme neues Init-Item ...");
+              SendSysMessage(who,"Init item not found. ");
               items := RecoverInitItem(tar);
+              // items:={};
             EndIf
           ElseIf (tar.getprop(CPROP_ITEMS))
             itemserials:=tar.getprop(CPROP_ITEMS);
@@ -1022,23 +1029,23 @@ Function ModifyItemsManual(who) // {{{
             ForEach item in itemserials
               obj:=SystemFindObjectBySerial(item);
               If (obj)
-                If (CInt(obj.getprop(CPROP_INIT))==CInt(tar.serial)) // gehört es noch der selben Gruppe an
+                If (CInt(obj.getprop(CPROP_INIT))==CInt(tar.serial)) // it belongs to the same group
                   items.append(obj);
                   tempitems.append(obj.serial);
                 EndIf
               EndIf
               SleepMS(5);
             EndForEach
-            tar.setprop(CPROP_ITEMS,tempitems); // gefilterte Serials speichern
-            SendSysMessagePergon(who,items.size()+" Items erkannt.");
+            tar.setprop(CPROP_ITEMS,tempitems); // save filtered serials
+            SendSysMessage(who,items.size()+" Items recognized.");
           Else
-            SendSysMessagePergon(who,"Ungültiges Item gewählt.");
+            SendSysMessage(who,"Invalid Item selected.");
           EndIf
         Else
-          SendSysMessagePergon(who,"Abbruch","Abort");
+          SendSysMessage(who, "Abort");
           items:={};
         EndIf
-      Else // Suche nach beliebigen Items
+      Else // Search for any items
         zstart:=retmodify[MODIFY_Z_START];
         zstart[1,6]:="";
         zstart:=CInt(zstart);
@@ -1047,13 +1054,13 @@ Function ModifyItemsManual(who) // {{{
         zend:=CInt(zend);
         datamodify_M[ZSTARTPOS]:=zstart;
         datamodify_M[ZENDPOS]:=zend;
-        SendSysMessagePergon(who,"Erste Ecke des Bereiches anvisieren");
+        SendSysMessage(who,"Target the first corner of the area");
         tar1:=TargetCoordinates(who);
         If (tar1)
-          SendSysMessagePergon(who,"Zweite Ecke des Bereiches anvisieren");
+          SendSysMessage(who,"Target the second corner of the area");
           tar2:=TargetCoordinates(who);
           If (tar2)
-            If (tar1.x>tar2.x)  // Sortierung des Bereiches
+            If (tar1.x>tar2.x)  // Sorting the area
               x1:=tar2.x;
               x2:=tar1.x;
             Else
@@ -1070,28 +1077,28 @@ Function ModifyItemsManual(who) // {{{
             items:={};
             ForEach item in ListObjectsInBox(x1,y1,zstart,x2,y2,zend,tar2.realm)
               If (item.isA(POLCLASS_ITEM))
-                If (!item.invisible)  // Unsichtbarer Kram wie Spawnrunen nicht mitnehmen
+                If (!item.invisible)  // Don't take invisible stuff like spawn runes
                   items.append(item);
                 EndIf
               EndIf
               SleepMS(5);
             EndForEach
             If (items<>{})
-              SendSysMessagePergon(who,items.size()+" Items erkannt.");
+              SendSysMessage(who,items.size()+" Items recognized.");
               If (retmodify[MODIFY_MARK])
-                // Itemserials speichern
+                // Save item series
                 itemserials:={};
                 ForEach item in items
                   itemserials.append(item.serial);
                   SleepMS(2);
                 EndForEach
-                SendSysMessagePergon(who,"Wähle das Ursprungsitem.");
+                SendSysMessage(who,"Choose the original item.");
                 breakflag:=0;
                 While (who.connected)
                   tar:=Target(who,TGTOPT_NOCHECK_LOS);
                   If (tar)
                   	i := tar.serial in itemserials;
-                    If (i) //Gewähltes Item an erste Stelle schieben
+                    If (i) //Move the selected item to the first position
                       temp:=itemserials[1];
                       itemserials[i]:=temp;
                       itemserials[1]:=tar.serial;
@@ -1103,35 +1110,35 @@ Function ModifyItemsManual(who) // {{{
                       tar.setprop(CPROP_ITEMS,itemserials);
                       Break;
                     Else
-                      SendSysMessagePergon(who,"Item befindet sich nicht unter den Erkannten!");
+                      SendSysMessage(who,"Item is not among those recognized!");
                     EndIf
                   Else
-                    SendSysMessagePergon(who,"Abbruch", "Abort");
+                    SendSysMessage(who, "Abort");
                     breakflag:=1;
                     Break;
                   EndIf
                 EndWhile
                 items:={};
                 If (!breakflag)
-                  ForEach item in itemserials  // Neusortierung und letzter Check
+                  ForEach item in itemserials  // Reordering and final check
                     obj:=SystemFindObjectBySerial(item);
                     If (obj)
                       items.append(obj);
                     EndIf
                     SleepMS(5);
                   EndForEach
-                  SendSysMessagePergon(who,".. und gebrandmarkt.");
+                  SendSysMessage(who,".. and branded.");
                 EndIf
               EndIf
             Else
-              SendSysMessagePergon(who,"Keine Items erkannt.");
+              SendSysMessage(who,"No items recognized.");
             EndIf
           Else
-            SendSysMessagePergon(who,"Abbruch","Abort");
+            SendSysMessage(who, "Abort");
             items:={};
           EndIf
         Else
-          SendSysMessagePergon(who,"Abbruch","Abort");
+          SendSysMessage(who, "Abort");
           items:={};
         EndIf
       EndIf
@@ -1218,8 +1225,8 @@ Function ModifyItemsManual(who) // {{{
               SleepMS(2);
             EndForEach
             dupe[1].setprop(CPROP_ITEMS,dupeserials);
-            SendSysMessagePergon(who,dupe.size()+" Items erfolgreich dupliziert.");
-            items:=dupe; // Mit Kopie weiterarbeiten
+            SendSysMessage(who,dupe.size()+" Items successfully duplicated.");
+            items:=dupe; // Continue working with a copy
           ElseIf (retmodify[MODIFY_X])
             temp:=retmodify[MODIFY_X_ENTRY];
             temp[1,6]:="";
@@ -1246,12 +1253,12 @@ Function ModifyItemsManual(who) // {{{
             EndForEach
           EndIf
         Else
-          SendSysMessagePergon(who,"Keine Items ausgewählt.");
+          SendSysMessage(who,"No items selected.");
         EndIf
       ElseIf (retmodify[MODIFY_MARKEDIT])
         MarkEdit(who);
-      Else  // Gump geschlossen
-        SendSysMessagePergon(who,"Abbruch","Abort");
+      Else  // Gump closed
+        SendSysMessage(who, "Abort");
         Break;
       EndIf
     EndIf
@@ -1259,7 +1266,7 @@ Function ModifyItemsManual(who) // {{{
 EndFunction // }}}
 
 ///////////////////////////////////
-// MarkEdit - Möglichkeit die Gruppen zu ändern
+// MarkEdit - Possibility to change the groups
 ///////////////////////////////////
 
 Function MarkEdit(who) // {{{
@@ -1269,13 +1276,13 @@ Function MarkEdit(who) // {{{
     ret:=SendDialogGump(who,layoutmark,datamark,10,50);
 
     If (ret[MARK_SHOW])
-      SendSysMessagePergon(who,"Erste Ecke des Bereiches anvisieren");
+      SendSysMessage(who,"Target the first corner of the area");
       tar1:=TargetCoordinates(who);
       If (tar1)
-        SendSysMessagePergon(who,"Zweite Ecke des Bereiches anvisieren");
+        SendSysMessage(who,"Target the second corner of the area");
         tar2:=TargetCoordinates(who);
         If (tar2)
-          If (tar1.x>tar2.x)  // Sortierung des Bereiches
+          If (tar1.x>tar2.x)  // Sorting the area
             x1:=tar2.x;
             x2:=tar1.x;
           Else
@@ -1299,7 +1306,7 @@ Function MarkEdit(who) // {{{
             SleepMS(5);
           EndForEach
           If (items<>{})
-            ForEach item in items  // Färben nach Gruppen
+            ForEach item in items  // Coloring by groups
               ForEach slaveitem in (item.getprop(CPROP_ITEMS))
                 itemref:=SystemFindObjectBySerial(slaveitem);
                 If (itemref)
@@ -1316,13 +1323,13 @@ Function MarkEdit(who) // {{{
       EndIf
 
     ElseIf (ret[MARK_HIDE])
-      SendSysMessagePergon(who,"Erste Ecke des Bereiches anvisieren");
+      SendSysMessage(who,"Target the first corner of the area");
       tar1:=TargetCoordinates(who);
       If (tar1)
-        SendSysMessagePergon(who,"Zweite Ecke des Bereiches anvisieren");
+        SendSysMessage(who,"Target the second corner of the area");
         tar2:=TargetCoordinates(who);
         If (tar2)
-          If (tar1.x>tar2.x)  // Sortierung des Bereiches
+          If (tar1.x>tar2.x)  // Sorting the area
             x1:=tar2.x;
             x2:=tar1.x;
           Else
@@ -1346,7 +1353,7 @@ Function MarkEdit(who) // {{{
             SleepMS(5);
           EndForEach
           If (items<>{})
-            ForEach item in items  // Färben nach Gruppen
+            ForEach item in items  // Coloring by groups
               ForEach slaveitem in (item.getprop(CPROP_ITEMS))
                 itemref:=SystemFindObjectBySerial(slaveitem);
                 If (itemref)
@@ -1360,7 +1367,7 @@ Function MarkEdit(who) // {{{
             EndForEach
           EndIf
 
-          ForEach item in ListObjectsInBox(x1,y1,-128,x2,y2,127,tar2.realm)  // Farbe zurücksetzen
+          ForEach item in ListObjectsInBox(x1,y1,-128,x2,y2,127,tar2.realm)  // Freset work
             If (item.isA(POLCLASS_ITEM))
               If ((item.getprop(CPROP_ITEMS)) && (!item.getprop(CPROP_COLOR).errortext))
                 ForEach slaveitem in (item.getprop(CPROP_ITEMS))
@@ -1381,7 +1388,7 @@ Function MarkEdit(who) // {{{
       EndIf
 
     ElseIf (ret[MARK_EDIT])
-      SendSysMessagePergon(who,"Wählt die Itemgruppe.");
+      SendSysMessage(who,"Selects the item group.");
       tar1:=Target(who,TGTOPT_NOCHECK_LOS);
       items:={};
       tempitems:={};
@@ -1392,7 +1399,7 @@ Function MarkEdit(who) // {{{
           ForEach item in itemserials
             obj:=SystemFindObjectBySerial(item);
             If (obj)
-              If ((CInt(obj.getprop(CPROP_INIT))==CInt(inititem.serial)) && (!(obj.serial in tempitems)))// gehört es noch der selben Gruppe an
+              If ((CInt(obj.getprop(CPROP_INIT))==CInt(inititem.serial)) && (!(obj.serial in tempitems)))// it belongs to the same group
                 items.append(obj);
                 tempitems.append(obj.serial);
                 If (obj.getprop(CPROP_COLOR).errortext)
@@ -1403,22 +1410,23 @@ Function MarkEdit(who) // {{{
             EndIf
             SleepMS(5);
           EndForEach
-          inititem.setprop(CPROP_ITEMS,tempitems); // gefilterte Serials speichern
+          inititem.setprop(CPROP_ITEMS,tempitems); // save filtered serials
           If ((!items) || (items=={}))
-            SendSysMessagePergon(who,"Items konnten nicht gefunden werden. Abbruch");
+            SendSysMessage(who,"Items could not be found. ");
           Else
-            SendSysMessagePergon(who,items.size()+" Items erkannt.");
+            SendSysMessage(who,items.size()+" Items recognized.");
           EndIf
         Else
-          SendSysMessagePergon(who,"Init-Item nicht gefunden. Bestimme neues Init-Item ...");
+          SendSysMessage(who,"Init item not found. ");
           items := RecoverInitItem(tar1);
+          // items:={};
         EndIf
       ElseIf (tar1.getprop(CPROP_ITEMS))
         itemserials:=tar1.getprop(CPROP_ITEMS);
         ForEach item in itemserials
           obj:=SystemFindObjectBySerial(item);
           If (obj)
-            If (CInt(obj.getprop(CPROP_INIT))==CInt(tar1.serial)) // gehört es noch der selben Gruppe an
+            If (CInt(obj.getprop(CPROP_INIT))==CInt(tar1.serial)) // it belongs to the same group
               items.append(obj);
               tempitems.append(obj.serial);
               If (obj.getprop(CPROP_COLOR).errortext)
@@ -1429,21 +1437,21 @@ Function MarkEdit(who) // {{{
           EndIf
           SleepMS(5);
         EndForEach
-        tar1.setprop(CPROP_ITEMS,tempitems); // gefilterte Serials speichern
-        SendSysMessagePergon(who,items.size()+" Items erkannt.");
+        tar1.setprop(CPROP_ITEMS,tempitems); // save filtered serials
+        SendSysMessage(who,items.size()+" Items recognized.");
       Else
-        SendSysMessagePergon(who,"Keine Items erkannt.");
+        SendSysMessage(who,"No items recognized.");
       EndIf
       If (items<>{})
         While (who.connected)
-          SendSysMessagePergon(who,"Wählt das Item das hinzugefügt/entfernt werden soll.");
+          SendSysMessage(who,"Selects the item to be added / removed.");
           tar1:=Target(who,TGTOPT_NOCHECK_LOS);
           If ((!tar1) && (!tar1.isA(POLCLASS_ITEM)))
-            SendSysMessagePergon(who,"Abbruch", "Abort");
+            SendSysMessage(who, "Abort");
             Break;
           EndIf
           i := tar1.serial in tempitems;
-          If (i)  // Aus Gruppe entfernen
+          If (i)  // Remove from group
           	tempitems.erase(i);
             items.erase(i);
             tar1.eraseprop(CPROP_INIT);
@@ -1452,7 +1460,7 @@ Function MarkEdit(who) // {{{
               tar1.color:=CInt(tar1.getprop(CPROP_COLOR));
               tar1.eraseprop(CPROP_COLOR);
             EndIf
-          Else  // Hinzufügen
+          Else  // Add
             If (tar1.getprop(CPROP_COLOR).errortext)
               tar1.setprop(CPROP_COLOR,tar1.color);
             EndIf
@@ -1476,8 +1484,8 @@ Function MarkEdit(who) // {{{
         EndForEach
       EndIf
     Else
-      If (x1)  // Falls etwas gemacht wurde Farbe wieder zurücksetzen
-        ForEach item in ListObjectsInBox(x1,y1,-128,x2,y2,127,tar2.realm)  // Farbe zurücksetzen
+      If (x1)  // If something has been done, reset the color
+        ForEach item in ListObjectsInBox(x1,y1,-128,x2,y2,127,tar2.realm)  // Freset work
           If (item.isA(POLCLASS_ITEM))
             If ((item.getprop(CPROP_ITEMS)) && (!item.getprop(CPROP_COLOR).errortext))
               ForEach slaveitem in (item.getprop(CPROP_ITEMS))
@@ -1495,7 +1503,7 @@ Function MarkEdit(who) // {{{
           SleepMS(5);
         EndForEach
       EndIf
-      SendSysMessagePergon(who,"Abbruch", "Abort");
+      SendSysMessage(who, "Abort");
       Return;
     EndIf
   EndWhile
@@ -1503,7 +1511,7 @@ EndFunction // }}}
 
 
 ///////////////////////////////////
-// ModifyItems - Position/Farbänderung nach dem Createn
+// ModifyItems - Position / color change after creation
 ///////////////////////////////////
 
 Function ModifyItems(who,byref items) // {{{
@@ -1516,9 +1524,9 @@ Function ModifyItems(who,byref items) // {{{
   EndIf
   While (who.connected)
     datamodify[COLORDATAPOS]:=items[1].color;
-    datamodify[XKOORDSPOS]:="<basefont color="+HTML_LIGHTGRAY+"><p align=right>"+items[1].x+"</p></basefont>";
-    datamodify[YKOORDSPOS]:="<basefont color="+HTML_LIGHTGRAY+"><p align=right>"+items[1].y+"</p></basefont>";
-    datamodify[ZKOORDSPOS]:="<basefont color="+HTML_LIGHTGRAY+"><p align=right>"+items[1].z+"</p></basefont>";
+    datamodify[XKOORDSPOS]:="<basefont color="+HTML_WHITE+"><p align=right>"+items[1].x+"</p></basefont>";
+    datamodify[YKOORDSPOS]:="<basefont color="+HTML_WHITE+"><p align=right>"+items[1].y+"</p></basefont>";
+    datamodify[ZKOORDSPOS]:="<basefont color="+HTML_WHITE+"><p align=right>"+items[1].z+"</p></basefont>";
     datamodify[XENTRY]:=items[1].x;
     datamodify[YENTRY]:=items[1].y;
     datamodify[ZENTRY]:=items[1].z;
@@ -1603,8 +1611,8 @@ Function ModifyItems(who,byref items) // {{{
         SleepMS(2);
       EndForEach
       dupe[1].setprop(CPROP_ITEMS,dupeserials);
-      SendSysMessagePergon(who,dupe.size()+" Items erfolgreich dupliziert.");
-      items:=dupe; // Kopie weiterbearbeiten
+      SendSysMessage(who,dupe.size()+" Items successfully duplicated.");
+      items:=dupe; // Edit copy further
     ElseIf (retmodify[MODIFY_X])
       temp:=retmodify[MODIFY_X_ENTRY];
       temp[1,6]:="";
@@ -1640,13 +1648,13 @@ EndFunction // }}}
 
 
 ///////////////////////////////////
-// ChooseRandom - Zufallsbestimmung der Items
+// ChooseRandom - Random determination of the items
 ///////////////////////////////////
 
 Function ChooseRandom(byref liste) // {{{
   Var verteilung:=0,i;
   Var rand:=RandomInt(100)+1;
-  If (Find(liste[1],"%",1)) //Verteilung laut Cfg
+  If (Find(liste[1],"%",1)) //Distribution according to Cfg
     For (i:=1;i<=liste.size();i+=1)
       verteilung+=CInt(SplitWords(liste[i],"%")[2]);
       If (rand<=verteilung)
@@ -1656,22 +1664,22 @@ Function ChooseRandom(byref liste) // {{{
   Else //Gleichverteilt
     verteilung:=CInt(100/liste.size());
     For(i:=1;i<=liste.size();i+=1)
-      If (rand<=(i*verteilung))//innerhalb der wahrscheinlichkeit?
-        Return(liste[i]);// Husch husch
+      If (rand<=(i*verteilung))//within the probability?
+        Return(liste[i]);// Shoo Shoo
       EndIf
     EndFor
   EndIf
-  Return(liste.randomentry()); //naja dann halt so
+  Return(liste.randomentry()); //well then just like that
 EndFunction // }}}
 
 
 ///////////////////////////////////
-// MenuBar - Erzeugt die NavBar
+// MenuBar - Creates the NavBar
 ///////////////////////////////////
 
 Function MenuBar(byref layout, byref data, byref datadict) // {{{
   Var i, page:=1,y:=66,nextpagebreak:=MAXBUTTON+1;
-  If (TypeOfInt(datadict)==OT_DICTIONARY)  // Daten in Dictionary oder Array
+  If (TypeOfInt(datadict)==OT_DICTIONARY)  // Data in dictionary or array
     For (i:=1;i<=datadict.keys().size();i+=1)
       If (i==nextpagebreak)
         nextpagebreak+=MAXBUTTON;
@@ -1682,16 +1690,16 @@ Function MenuBar(byref layout, byref data, byref datadict) // {{{
         layout.append("button 580 287 5600 5604 0 "+(page-1));
       EndIf
       layout.append("button 525 "+(y)+" 2440 2440 1 0 "+(MENUSTART+i));
-      layout.append("resizepic 525 "+(y)+" 9250 166 25");
-      layout.append("htmlgump 525 "+(4+y)+" 166 20 "+data.size()+" 0 0");
+      //layout.append("resizepic 525 "+(y)+" 9250 166 25");
+      layout.append("htmlgump 525 "+(y)+" 166 25 "+data.size()+" 1 0");
       If ((cfgrandom[datadict.keys()[i]]) && (cfgrandom[datadict.keys()[i]].name))
-        data.append("<basefont color="+HTML_WHITE+"><center>"+cfgrandom[datadict.keys()[i]].name+"</center>");
+        data.append("<basefont color="+HTML_DARKGRAY+"><center>"+cfgrandom[datadict.keys()[i]].name+"</center>");
       ElseIf ((cfgeinzel[datadict.keys()[i]]) && (cfgeinzel[datadict.keys()[i]].name))
-        data.append("<basefont color="+HTML_LIGHTGRAY+"><center>"+cfgeinzel[datadict.keys()[i]].name+"</center>");
+        data.append("<basefont color="+HTML_DARKBLUE+"><center>"+cfgeinzel[datadict.keys()[i]].name+"</center>");
       ElseIf (cfgset[datadict.keys()[i]].name)
-        data.append("<basefont color="+HTML_LIGHTGRAY+"><center>"+cfgset[datadict.keys()[i]].name+"</center>");
+        data.append("<basefont color="+HTML_DARKBLUE+"><center>"+cfgset[datadict.keys()[i]].name+"</center>");
       Else
-        data.append("<basefont color="+HTML_WHITE+"><center>"+datadict.keys()[i]+"</center>");
+        data.append("<basefont color="+HTML_DARKGRAY+"><center>"+datadict.keys()[i]+"</center>");
       EndIf
       y+=30;
     EndFor
@@ -1706,20 +1714,20 @@ Function MenuBar(byref layout, byref data, byref datadict) // {{{
         layout.append("button 580 287 5600 5604 0 "+(page-1)+" 0");
       EndIf
       layout.append("button 525 "+(y)+" 2440 2440 1 0 "+(MENUSTART+i));
-      layout.append("resizepic 525 "+(y)+" 9250 166 25");
-      layout.append("htmlgump 525 "+(4+y)+" 166 20 "+data.size()+" 0 0");
+      //layout.append("resizepic 525 "+(y)+" 9250 166 25");
+      layout.append("htmlgump 525 "+(y)+" 166 25 "+data.size()+" 1 0");
       If (TypeOfInt(datadict[i])==OT_ARRAY) //Typebezeichnung im Array
         If ((cfgrandom[datadict[i][1]].name) || (cfgeinzel[datadict[i][1]].name) || (cfgset[datadict[i][1]].name))
           Case (datadict[i][2])
             "Random":
-              data.append("<basefont color="+HTML_WHITE+"><center>"+cfgrandom[datadict[i][1]].name+"</center>");
+              data.append("<basefont color="+HTML_SADDLEBROWN+"><center>"+cfgrandom[datadict[i][1]].name+"</center>");
             "Einzel":
-              data.append("<basefont color="+HTML_LIGHTGRAY+"><center>"+cfgeinzel[datadict[i][1]].name+"</center>");
+              data.append("<basefont color="+HTML_SADDLEBROWN+"><center>"+cfgeinzel[datadict[i][1]].name+"</center>");
             "Set":
-              data.append("<basefont color="+HTML_LIGHTGRAY+"><center>"+cfgset[datadict[i][1]].name+"</center>");
+              data.append("<basefont color="+HTML_SADDLEBROWN+"><center>"+cfgset[datadict[i][1]].name+"</center>");
           EndCase
         Else
-          data.append("<basefont color="+HTML_WHITE+"><center>"+datadict[i][1]+"</center>");
+          data.append("<basefont color="+HTML_SADDLEBROWN+"><center>"+datadict[i][1]+"</center>");
         EndIf
       EndIf
       y+=30;
@@ -1729,17 +1737,21 @@ EndFunction // }}}
 
 
 ///////////////////////////////////
-// Init - Erzeugt layout&data in einer Datafile (Serverrestart/Eremit)
+// Init - Generates layout & data in a data file (server restart / hermit)
 ///////////////////////////////////
 
 Function Init() // {{{
   Var layoutraw:={"nodispose",
                   "page 0",
-                  "resizepic 500 0 3600 215 390",  // Background
-                  "resizepic 515 15 5054 185 30",  // Titel
-                  "htmlgump 515 22 185 30 0 0 0",  // Titeltext
-                  "resizepic 516 47 83 183 328",   // Einträge
-                  "checkertrans 524 57 168 308",
+                  //"resizepic 500 0 3600 215 390",  // Background
+                  //"resizepic 515 15 5054 185 30",  // title
+				  "resizepic 500 0 9200 215 390",
+                  "resizepic 515 15 3000 185 30",
+				  "htmlgump 515 22 185 30 0 0 0",  // Title text
+                  //"gumppictiled 516 47 183 328 2624",
+				  //"resizepic 516 47 83 183 328",   // Posts
+				  "resizepic 516 47 3000 183 328",
+                  //"checkertrans 524 57 168 308",
                   "htmlgump 610 285 50 20 1 0 0",
                   "button 660 280 9726 9728 1 0 "+BACKBUTTON,
                   "gumppictiled 525 320 166 2 30002",
@@ -1747,8 +1759,8 @@ Function Init() // {{{
                   "htmlgump 572 335 100 30 2 0 0",
                   "page 1"};
   Var dataraw:={"", //Titel
-                "<basefont color="+HTML_LIGHTGRAY+">Zurück",
-                "<basefont color="+HTML_LIGHTGRAY+">Item Modify"};
+                "<basefont color="+HTML_DARKBLUE+">Back",
+                "<basefont color="+HTML_DARKBLUE+">Item Modify"};
 
   SysLog(".BAUTOOL Datafile begin");
   SetGlobalProperty("bautoolinit",1);
@@ -1759,29 +1771,29 @@ Function Init() // {{{
 
   DFPurgeFile(datafile);
 
-  //Layout bauen
+  //Layout to build
   dataelement:=datafile.CreateElement("menu");
 
-  // cfgmenu auslesen und die 3 cfgs einfügen
-  ForEach key in (GetConfigStringArray(cfgmenu["Rootlist"],"sublist"))  //1. Ebene
+  // Read out the cfgmenu and insert the 3 cfgs
+  ForEach key in (GetConfigStringArray(cfgmenu["Rootlist"],"sublist"))  //1. level
     element[key]:=dictionary;
 
     If (cfgmenu[key].list) //Items
       ForEach itemlist in (GetConfigStringArray(cfgmenu[key],"list"))
         element[key][itemlist]:=array;
-        ForEach itemkey in (GetConfigStringKeys(cfgrandom))  // Mögliche Random einfügen
+        ForEach itemkey in (GetConfigStringKeys(cfgrandom))  // Insert possible random
           If (cfgrandom[itemkey].list==itemlist)
             element[key][itemlist].append({itemkey,"Random",cfgrandom[itemkey].name});
           EndIf
           SleepMS(2);
         EndForEach
-        ForEach itemkey in (GetConfigStringKeys(cfgeinzel))  // Mögliche Einzel einfügen
+        ForEach itemkey in (GetConfigStringKeys(cfgeinzel))  // Insert possible single
           If (cfgeinzel[itemkey].list==itemlist)
             element[key][itemlist].append({itemkey,"Einzel",cfgeinzel[itemkey].name});
           EndIf
           SleepMS(2);
         EndForEach
-        ForEach itemkey in (GetConfigStringKeys(cfgset))  // Mögliche Sets einfügen
+        ForEach itemkey in (GetConfigStringKeys(cfgset))  // Insert possible sets
           If (cfgset[itemkey].list==itemlist)
             element[key][itemlist].append({itemkey,"Set",cfgset[itemkey].name});
           EndIf
@@ -1792,25 +1804,25 @@ Function Init() // {{{
     EndIf
 
     If (cfgmenu[key].sublist)
-      ForEach sub1key in (GetConfigStringArray(cfgmenu[key],"sublist"))  //2. Ebene
+      ForEach sub1key in (GetConfigStringArray(cfgmenu[key],"sublist"))  //2. level
         element[key][sub1key]:=dictionary;
 
         If (cfgmenu[sub1key].list) //Items
           ForEach itemlist in (GetConfigStringArray(cfgmenu[sub1key],"list"))
             element[key][sub1key][itemlist]:=array;
-            ForEach itemkey in (GetConfigStringKeys(cfgrandom))  // Mögliche Random einfügen
+            ForEach itemkey in (GetConfigStringKeys(cfgrandom))  // Insert possible random
               If (cfgrandom[itemkey].list==itemlist)
                 element[key][sub1key][itemlist].append({itemkey,"Random",cfgrandom[itemkey].name});
               EndIf
               SleepMS(2);
             EndForEach
-            ForEach itemkey in (GetConfigStringKeys(cfgeinzel))  // Mögliche Einzel einfügen
+            ForEach itemkey in (GetConfigStringKeys(cfgeinzel))  // Insert possible single
               If (cfgeinzel[itemkey].list==itemlist)
                 element[key][sub1key][itemlist].append({itemkey,"Einzel",cfgeinzel[itemkey].name});
               EndIf
               SleepMS(2);
             EndForEach
-            ForEach itemkey in (GetConfigStringKeys(cfgset))  // Mögliche Sets einfügen
+            ForEach itemkey in (GetConfigStringKeys(cfgset))  // Insert possible sets
               If (cfgset[itemkey].list==itemlist)
                 element[key][sub1key][itemlist].append({itemkey,"Set",cfgset[itemkey].name});
               EndIf
@@ -1821,25 +1833,25 @@ Function Init() // {{{
         EndIf
 
         If (cfgmenu[sub1key].sublist)
-          ForEach sub2key in (GetConfigStringArray(cfgmenu[sub1key],"sublist"))  //3. Ebene
+          ForEach sub2key in (GetConfigStringArray(cfgmenu[sub1key],"sublist"))  //3. level
             element[key][sub1key][sub2key]:=dictionary;
 
             If (cfgmenu[sub2key].list) //Items
               ForEach itemlist in (GetConfigStringArray(cfgmenu[sub2key],"list"))
                 element[key][sub1key][sub2key][itemlist]:=array;
-                ForEach itemkey in (GetConfigStringKeys(cfgrandom))  // Mögliche Random einfügen
+                ForEach itemkey in (GetConfigStringKeys(cfgrandom))  // Insert possible random
                   If (cfgrandom[itemkey].list==itemlist)
                     element[key][sub1key][sub2key][itemlist].append({itemkey,"Random",cfgrandom[itemkey].name});
                   EndIf
                   SleepMS(2);
                 EndForEach
-                ForEach itemkey in (GetConfigStringKeys(cfgeinzel))  // Mögliche Einzel einfügen
+                ForEach itemkey in (GetConfigStringKeys(cfgeinzel))  // Insert possible single
                   If (cfgeinzel[itemkey].list==itemlist)
                     element[key][sub1key][sub2key][itemlist].append({itemkey,"Einzel",cfgeinzel[itemkey].name});
                   EndIf
                   SleepMS(2);
                 EndForEach
-                ForEach itemkey in (GetConfigStringKeys(cfgset))  // Mögliche Sets einfügen
+                ForEach itemkey in (GetConfigStringKeys(cfgset))  // Insert possible sets
                   If (cfgset[itemkey].list==itemlist)
                     element[key][sub1key][sub2key][itemlist].append({itemkey,"Set",cfgset[itemkey].name});
                   EndIf
@@ -1850,25 +1862,25 @@ Function Init() // {{{
             EndIf
 
             If (cfgmenu[sub2key].sublist)
-              ForEach sub3key in (GetConfigStringArray(cfgmenu[sub2key],"sublist"))  //4. Ebene
+              ForEach sub3key in (GetConfigStringArray(cfgmenu[sub2key],"sublist"))  //4. level
                 element[key][sub1key][sub2key][sub3key]:=dictionary;
 
                 If (cfgmenu[sub3key].list) //Items
                   ForEach itemlist in (GetConfigStringArray(cfgmenu[sub3key],"list"))
                     element[key][sub1key][sub2key][sub3key][itemlist]:=array;
-                    ForEach itemkey in (GetConfigStringKeys(cfgrandom))  // Mögliche Random einfügen
+                    ForEach itemkey in (GetConfigStringKeys(cfgrandom))  // Insert possible random
                       If (cfgrandom[itemkey].list==itemlist)
                         element[key][sub1key][sub2key][sub3key][itemlist].append({itemkey,"Random",cfgrandom[itemkey].name});
                       EndIf
                       SleepMS(2);
                     EndForEach
-                    ForEach itemkey in (GetConfigStringKeys(cfgeinzel))  // Mögliche Einzel einfügen
+                    ForEach itemkey in (GetConfigStringKeys(cfgeinzel))  // Insert possible single
                       If (cfgeinzel[itemkey].list==itemlist)
                         element[key][sub1key][sub2key][sub3key][itemlist].append({itemkey,"Einzel",cfgeinzel[itemkey].name});
                       EndIf
                       SleepMS(2);
                     EndForEach
-                    ForEach itemkey in (GetConfigStringKeys(cfgset))  // Mögliche Sets einfügen
+                    ForEach itemkey in (GetConfigStringKeys(cfgset))  // Insert possible sets
                       If (cfgset[itemkey].list==itemlist)
                         element[key][sub1key][sub2key][sub3key][itemlist].append({itemkey,"Set",cfgset[itemkey].name});
                       EndIf
@@ -1890,24 +1902,24 @@ Function Init() // {{{
   layout:=layoutraw;
   data:=dataraw;
   MenuBar(layout,data,element);
-  data[1]:="<basefont size=8 color="+HTML_WHITE+"><center>BauTool "+VERSION+"</center>"; // Titel
+  data[1]:="<basefont size=8 color="+HTML_DARKGRAY+"><center>BauTool "+VERSION+"</center>"; // Titel
 
   dataelement.setprop("LayoutMenuBar", layout);
   dataelement.setprop("DataMenuBar", data);
 
-  ForEach ebene1 in element //1. Ebene
+  ForEach ebene1 in element //1. level
     layout:=layoutraw;
     data:=dataraw;
     MenuBar(layout,data,ebene1);
-    data[1]:="<basefont size=8 color="+HTML_WHITE+"><center>"+_ebene1_iter+"</center>"; //Titel
+    data[1]:="<basefont size=8 color="+HTML_DARKGRAY+"><center>"+_ebene1_iter+"</center>"; //Titel
     dataelement.setprop("LayoutMain_"+_ebene1_iter, layout);
     dataelement.setprop("DataMain_"+_ebene1_iter, data);
 
-    ForEach ebene2 in ebene1 //2.Ebene
+    ForEach ebene2 in ebene1 //2.level
       layout:=layoutraw;
       data:=dataraw;
       MenuBar(layout,data,ebene2);
-      data[1]:="<basefont size=8 color="+HTML_WHITE+"><center>"+_ebene2_iter+"</center>"; //Titel
+      data[1]:="<basefont size=8 color="+HTML_DARKGRAY+"><center>"+_ebene2_iter+"</center>"; //Titel
       dataelement.setprop("LayoutSub_"+_ebene1_iter+"_"+_ebene2_iter, layout);
       dataelement.setprop("DataSub_"+_ebene1_iter+"_"+_ebene2_iter, data);
 
@@ -1919,11 +1931,11 @@ Function Init() // {{{
           SleepMS(2);
         EndForEach
       Else
-        ForEach ebene3 in ebene2  // 3.Ebene
+        ForEach ebene3 in ebene2  // 3.level
           layout:=layoutraw;
           data:=dataraw;
           MenuBar(layout,data,ebene3);
-          data[1]:="<basefont size=8 color="+HTML_WHITE+"><center>"+_ebene3_iter+"</center>"; //Titel
+          data[1]:="<basefont size=8 color="+HTML_DARKGRAY+"><center>"+_ebene3_iter+"</center>"; //Titel
           dataelement.setprop("LayoutSub_"+_ebene1_iter+"_"+_ebene2_iter+"_"+_ebene3_iter, layout);
           dataelement.setprop("DataSub_"+_ebene1_iter+"_"+_ebene2_iter+"_"+_ebene3_iter, data);
 
@@ -1935,11 +1947,11 @@ Function Init() // {{{
               SleepMS(2);
             EndForEach
           Else
-            ForEach ebene4 in ebene3  // 4.Ebene
+            ForEach ebene4 in ebene3  // 4.level
               layout:=layoutraw;
               data:=dataraw;
               MenuBar(layout,data,ebene4);
-              data[1]:="<basefont size=8 color="+HTML_WHITE+"><center>"+_ebene4_iter+"</center>"; //Titel
+              data[1]:="<basefont size=8 color="+HTML_DARKGRAY+"><center>"+_ebene4_iter+"</center>"; //Titel
               dataelement.setprop("LayoutSub_"+_ebene1_iter+"_"+_ebene2_iter+"_"+_ebene3_iter+"_"+_ebene4_iter, layout);
               dataelement.setprop("DataSub_"+_ebene1_iter+"_"+_ebene2_iter+"_"+_ebene3_iter+"_"+_ebene4_iter, data);
 
@@ -1951,11 +1963,11 @@ Function Init() // {{{
                   SleepMS(2);
                 EndForEach
               Else
-                ForEach ebene5 in ebene4  // 5.Ebene
+                ForEach ebene5 in ebene4  // 5.level
                   layout:=layoutraw;
                   data:=dataraw;
                   MenuBar(layout,data,ebene5);
-                  data[1]:="<basefont size=8 color="+HTML_WHITE+"><center>"+_ebene5_iter+"</center>"; //Titel
+                  data[1]:="<basefont size=8 color="+HTML_DARKGRAY+"><center>"+_ebene5_iter+"</center>"; //Titel
                   dataelement.setprop("LayoutSub_"+_ebene1_iter+"_"+_ebene2_iter+"_"+_ebene3_iter+"_"+_ebene4_iter+"_"+_ebene5_iter, layout);
                   dataelement.setprop("DataSub_"+_ebene1_iter+"_"+_ebene2_iter+"_"+_ebene3_iter+"_"+_ebene4_iter+"_"+_ebene5_iter, data);
 
@@ -1967,7 +1979,7 @@ Function Init() // {{{
                       SleepMS(2);
                     EndForEach
                   Else
-                    ForEach ebene6 in ebene5  // 6.Ebene
+                    ForEach ebene6 in ebene5  // 6.level
                       InitItems(data,layout,ebene6,_ebene6_iter,layoutraw,dataraw);
                       dataelement.setprop("LayoutItem_"+_ebene1_iter+"_"+_ebene2_iter+"_"+_ebene3_iter+"_"+_ebene4_iter+"_"+_ebene5_iter+"_"+_ebene6_iter, layout);
                       dataelement.setprop("DataItem_"+_ebene1_iter+"_"+_ebene2_iter+"_"+_ebene3_iter+"_"+_ebene4_iter+"_"+_ebene5_iter+"_"+_ebene6_iter, data);
@@ -1988,11 +2000,11 @@ Function Init() // {{{
   layout:={"nodispose",
            "page 0",
            "resizepic 500 0 3600 215 280",  // Background
-           "resizepic 515 15 5054 185 30",  // Titel
-           "htmlgump 515 22 185 30 0 0 0",  // Titeltext
-           "resizepic 515 47 83 185 218",   // Einträge
+           "resizepic 515 15 5054 185 30",  // title
+           "htmlgump 515 22 185 30 0 0 0",  // Title text
+           "resizepic 515 47 83 185 218",   // Posts
            "checkertrans 523 57 170 198",
-           "htmlgump 610 225 50 20 1 0 0",  // Weiter
+           "htmlgump 610 225 50 20 1 0 0",  // Continue
            "htmlgump 555 79 50 20 2 0 0",   // X/Y
            "htmlgump 624 79 50 20 3 0 0",   // Z
            "button 660 220 9721 9724 1 0 "+BACKBUTTON,
@@ -2014,8 +2026,8 @@ Function Init() // {{{
            "resizepic 610 125 2620 58 30",
            "textentry 616 130 40 20 1000 "+ITEMCOLOR+" 6",
            "button 530 125 9727 9728 1 0 "+MODIFY_COLOR,
-           "htmlgump 630 60 50 20 7 0 0",  // x/y/z KoordsAngabe des ersten Items
-           "tooltip 3000561", // Koords.:
+           "htmlgump 630 60 50 20 7 0 0",  // x / y / z Coord Specification of the first item
+           "tooltip 3000561", // Coords.:
            "htmlgump 630 80 50 20 8 0 0",
            "tooltip 3000561",
            "htmlgump 630 100 50 20 9 0 0",
@@ -2024,17 +2036,17 @@ Function Init() // {{{
            "button 681 84 2103 2104 0 3 0",
            "button 681 104 2103 2104 0 4 0"};
 
-  data:={"<basefont size=8 color="+HTML_WHITE+"><center>Modify Position</center>", //Titel
-         "<basefont color="+HTML_LIGHTGRAY+">Weiter",
-         "<basefont color="+HTML_LIGHTGRAY+">X/Y",
-         "<basefont color="+HTML_LIGHTGRAY+">Z",
-         "<basefont color="+HTML_LIGHTGRAY+">Destroy",
-         "<basefont color="+HTML_LIGHTGRAY+">Color",
+  data:={"<basefont size=8 color="+HTML_DARKGREEN+"><center>Modify Position</center>", //title
+         "<basefont color="+HTML_DARKBLUE+">Continue",
+         "<basefont color="+HTML_DARKBLUE+">X/Y",
+         "<basefont color="+HTML_DARKBLUE+">Z",
+         "<basefont color="+HTML_DARKBLUE+">Destroy",
+         "<basefont color="+HTML_DARKBLUE+">Color",
          "0",
-         "<basefont color="+HTML_LIGHTGRAY+"><p align=right>x</p></basefont>",
-         "<basefont color="+HTML_LIGHTGRAY+"><p align=right>y</p></basefont>",
-         "<basefont color="+HTML_LIGHTGRAY+"><p align=right>z</p></basefont>",
-         "<basefont color="+HTML_LIGHTGRAY+">Dupe",
+         "<basefont color="+HTML_DARKBLUE+"><p align=right>x</p></basefont>",
+         "<basefont color="+HTML_DARKBLUE+"><p align=right>y</p></basefont>",
+         "<basefont color="+HTML_DARKBLUE+"><p align=right>z</p></basefont>",
+         "<basefont color="+HTML_DARKBLUE+">Dupe",
          "0",
          "0",
          "0"};
@@ -2059,16 +2071,16 @@ Function Init() // {{{
   dataelement.setprop("DataMenu", data);
 
 
-  // Manuelles Modify
-  layout[3]:="resizepic 500 0 3600 215 440"; //Background erweitern
+  // manual Modify
+  layout[3]:="resizepic 500 0 3600 215 440"; //Background expand
   layout[6]:="resizepic 516 47 83 183 377";
   layout[7]:="checkertrans 524 57 168 358";
-  layout.erase(8);  //Weiterbuttontext
-  layout.erase(10); //Weiterbutton
+  layout.erase(8);  //Next ButtonText
+  layout.erase(10); //Next button
   layout.append("gumppictiled 525 235 165 2 30002");
   layout.append("htmlgump 595 255 100 20 1 0 0");
   layout.append("button 560 250 9721 9724 1 0 "+MODIFY_START);
-  data[2]:="<basefont color="+HTML_LIGHTGRAY+">Items wählen";
+  data[2]:="<basefont color="+HTML_DARKBLUE+">Choose Items";
   layout.append("resizepic 530 285 2620 48 30");
   layout.append("textentry 536 290 30 20 1000 "+MODIFY_Z_START+" 14");
   data.append("-20");
@@ -2076,17 +2088,17 @@ Function Init() // {{{
   layout.append("textentry 641 290 30 20 1000 "+MODIFY_Z_END+" 15");
   data.append("20");
   layout.append("htmlgump 585 290 50 20 16 0 0");
-  data.append("<basefont color="+HTML_LIGHTGRAY+">Z-Range");
+  data.append("<basefont color="+HTML_DARKBLUE+">Z-Range");
   layout.append("checkbox 530 320 9720 9723 0 "+MODIFY_CUSTOM);
   layout.append("htmlgump 565 325 50 20 17 0 0");
-  data.append("<basefont color="+HTML_LIGHTGRAY+">Custom");
+  data.append("<basefont color="+HTML_DARKBLUE+">Custom");
   layout.append("checkbox 616 320 9720 9723 0 "+MODIFY_MARK);
   layout.append("htmlgump 651 325 50 20 18 0 0");
-  data.append("<basefont color="+HTML_LIGHTGRAY+">Mark");
+  data.append("<basefont color="+HTML_DARKBLUE+">Mark");
   layout.append("gumppictiled 525 360 165 2 30002");
   layout.append("button 530 375 9721 9724 1 0 "+MODIFY_MARKEDIT);
   layout.append("htmlgump 570 380 100 20 19 0 0");
-  data.append("<basefont color="+HTML_LIGHTGRAY+">Mark Edit");
+  data.append("<basefont color="+HTML_DARKBLUE+">Mark Edit");
   dataelement.setprop("LayoutMenuManual", layout+layoutp);
   dataelement.setprop("DataMenuManual", data);
 
@@ -2095,9 +2107,9 @@ Function Init() // {{{
   layout:={"nodispose",
            "page 0",
            "resizepic 500 0 3600 215 213",  // Background
-           "resizepic 515 15 5054 185 30",  // Titel
-           "htmlgump 515 22 185 30 0 0 0",  // Titeltext
-           "resizepic 515 47 83 185 150",   // Einträge-20
+           "resizepic 515 15 5054 185 30",  // title
+           "htmlgump 515 22 185 30 0 0 0",  // Title text
+           "resizepic 515 47 83 185 150",   // Posts-20
            "checkertrans 523 57 170 130",
            "button 530 70 9721 9724 1 0 "+MARK_SHOW,
            "htmlgump 570 75 50 20 1 0 0",
@@ -2106,15 +2118,15 @@ Function Init() // {{{
            "button 530 140 9721 9724 1 0 "+MARK_EDIT,
            "htmlgump 570 145 50 20 3 0 0"
           };
-  data:={"<basefont size=8 color="+HTML_WHITE+"><center>Mark Edit</center>",
-         "<basefont color="+HTML_LIGHTGRAY+">Show",
-         "<basefont color="+HTML_LIGHTGRAY+">Hide",
-         "<basefont color="+HTML_LIGHTGRAY+">Edit"
+  data:={"<basefont size=8 color="+HTML_DARKGRAY+"><center>Mark Edit</center>",
+         "<basefont color="+HTML_DARKBLUE+">Show",
+         "<basefont color="+HTML_DARKBLUE+">Hide",
+         "<basefont color="+HTML_DARKBLUE+">Edit"
         };
   dataelement.setprop("LayoutMenuMark", layout);
   dataelement.setprop("DataMenuMark", data);
 
-  // Dict der Menüs/Items speichern
+  // Save the dict of the menus / items
   dataelement:=datafile.CreateElement("elemente");
   dataelement.setprop("dictionary", element);
 
@@ -2124,7 +2136,7 @@ Function Init() // {{{
 EndFunction // }}}
 
 ///////////////////////////////////
-// InitItems - Auslagerung für die Initfunktion
+// InitItems - Outsourcing for the init function
 ///////////////////////////////////
 
 Function InitItems(byref data,byref layout,byref element, name:=0, layoutraw, dataraw) // {{{
@@ -2133,7 +2145,7 @@ Function InitItems(byref data,byref layout,byref element, name:=0, layoutraw, da
     "Random":   // Random
       layout:=layoutraw;
       data:=dataraw;
-      data[1]:="<basefont size=8 color="+HTML_WHITE+"><center>"+name+"</center>";
+      data[1]:="<basefont size=8 color="+HTML_DARKGRAY+"><center>"+name+"</center>"; // TESTTESTTEST
       layout:=layout+{"page 0","resizepic 70 0 3600 404 170",
                       "resizepic 85 15 5054 374 30","htmlgump 85 22 374 30 "+data.size()+" 0 0",
                       "resizepic 85 47 83 374 108","checkertrans 93 57 359 88"};
@@ -2141,61 +2153,63 @@ Function InitItems(byref data,byref layout,byref element, name:=0, layoutraw, da
       tile:=GetConfigStringArray(cfgrandom[element[1]],"tile")[1];
       layout.append("tilepic 95 60 "+CInt(SplitWords(tile,",")[1]));
       layout.append("htmlgump 160 70 50 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">Color");
+      data.append("<basefont color="+HTML_DARKBLUE+">Color");
       layout.append("resizepic 200 65 2620 48 30");
       layout.append("textentry 206 70 30 20 1000 "+ITEMCOLOR+" "+data.size());
       data.append("0");
-      If  ((GetConfigString(cfgrandom[element[1]],"n"))  // Option für Randteile nötig?
+      If  ((GetConfigString(cfgrandom[element[1]],"n"))  // Option necessary for edge parts?
         || (GetConfigString(cfgrandom[element[1]],"s"))
-        || (GetConfigString(cfgrandom[element[1]],"o"))
+        || (GetConfigString(cfgrandom[element[1]],"e"))
         || (GetConfigString(cfgrandom[element[1]],"w")))
         layout.append("htmlgump 360 60 50 40 "+data.size()+" 0 0");
-        data.append("<basefont color="+HTML_LIGHTGRAY+">Randtiles erzeugen");
+        data.append("<basefont color="+HTML_DARKBLUE+">Produce Random Tiles");
         layout.append("checkbox 420 65 9720 9723 0 "+ITEMRAND);
       EndIf
       layout.append("htmlgump 260 70 50 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">z-Koord");
+      data.append("<basefont color="+HTML_DARKBLUE+">z-Coord");
       layout.append("resizepic 310 65 2620 38 30");
       layout.append("textentry 316 70 20 20 1000 "+ITEMPOS+" "+data.size());
       data.append("0");
       layout.append("checkbox 420 110 9720 9723 1 "+ITEMMODIFY);
       layout.append("htmlgump 360 105 50 40 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">Modify Position");
+      data.append("<basefont color="+HTML_DARKBLUE+">Modify Position");
       layout.append("button 103 116 9721 9724 1 0 "+ITEMCREATE);
       layout.append("htmlgump 140 121 50 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">Create");
+      data.append("<basefont color="+HTML_DARKBLUE+">Create");
 
     "Einzel":
-      itemdesc:=ReadConfigFile(":*:itemdesc");  // Einlesen aller Itemdesc's für Namensbestimmung
+      itemdesc:=ReadConfigFile(":*:itemdesc");  // Reading of all Itemdesc's for name determination
       layout:=layoutraw;
       data:=dataraw;
-      data[1]:="<basefont size=8 color="+HTML_WHITE+"><center>"+name+"</center>";
-      layout:=layout+{"page 0","resizepic 70 0 3600 425 400",
-                      "resizepic 85 15 5054 395 30","htmlgump 85 22 395 30 "+data.size()+" 0 0",
+      data[1]:="<basefont size=8 color="+HTML_DARKGRAY+"><center>"+name+"</center>";
+      layout:=layout+{"page 0",
+					  "resizepic 70 0 3600 425 400",
+                      "resizepic 85 15 5054 395 30",
+					  "htmlgump 85 22 395 30 "+data.size()+" 0 0",
                       "resizepic 85 47 83 395 343"};
       data.append("<basefont size=5><center>"+cfgeinzel[element[1]].name+"</center>");
       layout.append("htmlgump 530 70 50 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">Color");
+      data.append("<basefont color="+HTML_DARKBLUE+">Color");
       layout.append("resizepic 570 65 2620 48 30");
       layout.append("textentry 576 70 30 20 1000 "+ITEMCOLOR+" "+data.size());
       data.append("0");
       layout.append("htmlgump 530 110 50 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">z-Koord");
+      data.append("<basefont color="+HTML_DARKBLUE+">z-Coord");
       layout.append("resizepic 580 105 2620 38 30");
       layout.append("textentry 586 110 20 20 1000 "+ITEMPOS+" "+data.size());
       data.append("0");
       layout.append("checkbox 530 150 9720 9723 1 "+ITEMMODIFY);
       layout.append("htmlgump 572 155 100 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">Modify Position");
+      data.append("<basefont color="+HTML_DARKBLUE+">Modify Position");
       layout.append("checkbox 530 185 9720 9723 0 "+ITEMMMULTICREATE);
       layout.append("htmlgump 572 190 100 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">Mark All");
+      data.append("<basefont color="+HTML_DARKBLUE+">Mark All");
       layout.append("button 570 225 9721 9724 1 0 "+ITEMCREATE);
       layout.append("htmlgump 612 230 50 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">Create");
+      data.append("<basefont color="+HTML_DARKBLUE+">Create");
 
       tile:={};
-      // Array der Items aufbauen
+      // Build an array of items
       ForEach tiles in (GetConfigStringArray(cfgeinzel[element[1]],"tile"))
         If (!tile)
           tile:={tiles};
@@ -2204,7 +2218,7 @@ Function InitItems(byref data,byref layout,byref element, name:=0, layoutraw, da
         EndIf
         SleepMS(2);
       EndForEach
-      // Pages der Items erzeugen
+      // Generate pages of the items
       nextpagebreak:=MAXLINEITEM*2+1;
       nextlinebreak:=MAXLINEITEM+1;
       x:=100;y:=60;page:=1;
@@ -2230,7 +2244,7 @@ Function InitItems(byref data,byref layout,byref element, name:=0, layoutraw, da
 
         layout.append("radio "+(x)+" "+(y+35)+" 9720 9723 0 "+m);
         layout.append("tilepic "+(x+35)+" "+(y+35)+" "+CInt(SplitWords(tile[m],",")[1]));
-        If (itemdesc[Hex(tile[m])].desc)  // Name einfügen .desc oder CliLoc-Eintrag
+        If (itemdesc[Hex(tile[m])].desc)  // Insert name .desc or CliLoc entry
           layout.append("htmlgump "+(x+5)+" "+(y)+" 90 40 "+data.size()+" 0 0");
           data.append("<basefont color="+HTML_GRAY+">"+itemdesc[Hex(tile[m])].desc);
         Else
@@ -2246,30 +2260,71 @@ Function InitItems(byref data,byref layout,byref element, name:=0, layoutraw, da
     "Set":
       layout:=layoutraw;
       data:=dataraw;
-      data[1]:="<basefont size=8 color="+HTML_WHITE+"><center>"+name+"</center>";
+      data[1]:="<basefont size=8 color="+HTML_DARKGRAY+"><center>"+name+"</center>";
       layout.append("htmlgump 515 60 185 30 "+data.size()+" 0 0");
-      data.append("<basefont size=5 color="+HTML_LIGHTGRAY+"><center>"+cfgset[element[1]].name+"</center>");
+      data.append("<basefont size=5 color="+HTML_DARKGRAY+"><center>"+cfgset[element[1]].name+"</center>");
       layout.append("htmlgump 530 100 50 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">Color");
+      data.append("<basefont color="+HTML_DARKBLUE+">Color");
       layout.append("resizepic 570 95 2620 48 30");
       layout.append("textentry 576 100 30 20 1000 "+ITEMCOLOR+" "+data.size());
       data.append("0");
       layout.append("htmlgump 530 140 50 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">z-Koord");
+      data.append("<basefont color="+HTML_DARKBLUE+">z-Coord");
       layout.append("resizepic 580 135 2620 38 30");
       layout.append("textentry 586 140 20 20 1000 "+ITEMPOS+" "+data.size());
       data.append("0");
       layout.append("checkbox 530 180 9720 9723 1 "+ITEMMODIFY);
       layout.append("htmlgump 572 185 100 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">Modify Position");
+      data.append("<basefont color="+HTML_DARKBLUE+">Modify Position");
       layout.append("checkbox 530 215 9720 9723 0 "+ITEMMMULTICREATE);
       layout.append("htmlgump 572 220 100 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">Mark All");
+      data.append("<basefont color="+HTML_DARKBLUE+">Mark All");
 
       layout.append("button 570 255 9721 9724 1 0 "+ITEMCREATE);
       layout.append("htmlgump 612 260 50 30 "+data.size()+" 0 0");
-      data.append("<basefont color="+HTML_LIGHTGRAY+">Create");
+      data.append("<basefont color="+HTML_DARKBLUE+">Create");
   EndCase
+EndFunction // }}}
+
+///////////////////////////////////
+// RecoverInitItem - in the event of a non-existent init item attempt to restore
+///////////////////////////////////
+
+Function RecoverInitItem(newinit) // {{{
+  // Serial of the old, removed init item
+  var oldinit := newinit.getprop(CPROP_INIT);
+
+  // List of items found that also include the
+  // have entered old serial as init item
+  var found   := array{newinit};
+  // List of the serials of these items (for a new initiative)
+  var serials := array{newinit.serial};
+
+  // Search region for items ...
+  ForEach item in (ListItemsNearLocation(
+      newinit.x, newinit.y, LIST_IGNORE_Z, MAXAREASIZE, newinit.realm
+  ))
+    SleepMs(2);
+    If (item.serial == newinit.serial)
+      // do not enter twice
+      continue;
+    EndIf
+    // ... who also entered the old serial
+    If (item.getprop(CPROP_INIT) == oldinit)
+      // pack in lists and ...
+      found.append(item);
+      serials.append(item.serial);
+      // ... Enter new init item
+      item.setprop(CPROP_INIT, newinit.serial);
+    EndIf
+  EndForEach
+
+  // complete new initiative
+  newinit.setprop(CPROP_INIT,  newinit.serial);
+  newinit.setprop(CPROP_ITEMS, serials);
+
+  // return list last
+  return found;
 EndFunction // }}}
 
 // vim: sw=2 sts=2
