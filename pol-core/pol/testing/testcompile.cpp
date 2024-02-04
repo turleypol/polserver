@@ -29,8 +29,11 @@ void ast_test()
   Compiler::ConsoleReporter c( true, true );
   Compiler::Report report( c );
   for ( int i = 0; i < 10; ++i )
+  {
     auto res = compiler->build_ast( "bautool.srcb", report, false );
-  // INFO_PRINTLN( res );
+    if ( i == 0 )
+      INFO_PRINTLN( res );
+  }
 }
 
 }  // namespace Testing

@@ -59,9 +59,7 @@ antlrcpp::Any JsonAstFileProcessor::defaultResult()
 antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::array*/ aggregate,
                                                      antlrcpp::Any /*picojson::array*/ nextResult )
 {
-  // std::any_cast<picojson::array>( aggregate )
   auto* accum = std::any_cast<picojson::value>( &aggregate );
-  // .push_back( std::any_cast<picojson::array>( nextResult ) );
 
   if ( accum->is<picojson::array>() )
   {
@@ -77,7 +75,7 @@ antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::a
     }
   }
 
-  return std::move( aggregate );
+  return aggregate;
 }
 
 void add( picojson::value* )
