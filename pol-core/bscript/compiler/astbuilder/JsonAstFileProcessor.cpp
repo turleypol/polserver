@@ -80,9 +80,9 @@ antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::a
   return aggregate;
 }
 
-picojson::value add( picojson::value* v )
+void add( picojson::value* )
 {
-  return *v;
+  return;
 }
 
 template <typename T>
@@ -106,20 +106,20 @@ picojson::value to_value( antlrcpp::Any& arg )
 }
 
 template <typename T1, typename... Types>
-picojson::value add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var3 )
+void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var3 )
 {
   if ( v->is<picojson::object>() )
   {
     v->get<picojson::object>().emplace( std::make_pair( var1, to_value( var2 ) ) );
   }
-  return add( v, var3... );
+  add( v, var3... );
 }
 
 template <typename T1, typename... Types>
-picojson::value add( antlrcpp::Any&& any_v, const std::string& var1, T1&& var2, Types&&... var3 )
+void add( antlrcpp::Any&& any_v, const std::string& var1, T1&& var2, Types&&... var3 )
 {
   auto* v = std::any_cast<picojson::value>( &any_v );
-  return add( v, var1, var2, var3... );
+  add( v, var1, var2, var3... );
 }
 
 template <typename Rangeable, typename... Types>
@@ -141,7 +141,8 @@ picojson::value new_node( Rangeable* ctx, const std::string& type, Types&&... va
       { "token_index", picojson::value( static_cast<double>( range.end.token_index ) ) },
   } ) );
 
-  return std::move( add( &w, var3... ) );
+  add( &w, var3... );
+  return w;
 };
 
 antlrcpp::Any JsonAstFileProcessor::visitCompilationUnit(
@@ -488,15 +489,19 @@ antlrcpp::Any JsonAstFileProcessor::visitForStatement(
 
   if ( auto basicForStatement = forGroup->basicForStatement() )
   {
-    return add( visitBasicForStatement( basicForStatement ),  //
-                "label", label                                //
+    auto node = visitBasicForStatement( basicForStatement );
+    add( node,           //
+         "label", label  //
     );
+    return node;
   }
   else if ( auto cstyleForStatement = forGroup->cstyleForStatement() )
   {
-    return add( visitCstyleForStatement( cstyleForStatement ),  //
-                "label", label                                  //
+    auto node = visitCstyleForStatement( cstyleForStatement );
+    add( node,           //
+         "label", label  //
     );
+    return node;
   }
 
   return antlrcpp::Any();
