@@ -490,7 +490,8 @@ antlrcpp::Any JsonAstFileProcessor::visitForStatement(
   if ( auto basicForStatement = forGroup->basicForStatement() )
   {
     auto node = visitBasicForStatement( basicForStatement );
-    add( node,           //
+    auto* v = std::any_cast<picojson::value>( &node );
+    add( v,              //
          "label", label  //
     );
     return node;
@@ -498,7 +499,8 @@ antlrcpp::Any JsonAstFileProcessor::visitForStatement(
   else if ( auto cstyleForStatement = forGroup->cstyleForStatement() )
   {
     auto node = visitCstyleForStatement( cstyleForStatement );
-    add( node,           //
+    auto* v = std::any_cast<picojson::value>( &node );
+    add( v,              //
          "label", label  //
     );
     return node;
