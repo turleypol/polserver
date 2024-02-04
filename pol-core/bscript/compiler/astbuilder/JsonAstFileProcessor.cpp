@@ -68,7 +68,7 @@ antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::a
     {
       auto& a = accum->get<picojson::array>();
       auto& b = next_res->get<picojson::array>();
-      std::move( b.begin(), b.end(), std::back_inserter( a ) );
+      a.insert( a.end(), std::make_move_iterator( b.begin() ), std::make_move_iterator( b.end() ) );
     }
     else
     {
