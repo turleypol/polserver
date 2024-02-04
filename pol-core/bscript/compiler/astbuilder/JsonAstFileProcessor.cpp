@@ -64,19 +64,15 @@ antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::a
   if ( accum->is<picojson::array>() )
   {
     auto* next_res = std::any_cast<picojson::value>( &nextResult );
+    auto& a = accum->get<picojson::array>();
     if ( next_res->is<picojson::array>() )
     {
-      /*      auto& a = accum->get<picojson::array>();
-            auto& b = next_res->get<picojson::array>();
-            a.insert( a.end(), std::make_move_iterator( b.begin() ), std::make_move_iterator(
-         b.end() ) );*/
-      for ( auto const& v : next_res->get<picojson::array>() )
-        accum->get<picojson::array>().push_back( v );
+      auto& b = next_res->get<picojson::array>();
+      a.insert( a.end(), std::make_move_iterator( b.begin() ), std::make_move_iterator( b.end() ) );
     }
     else
     {
-      //      accum->get<picojson::array>().emplace_back( std::move( *next_res ) );
-      accum->get<picojson::array>().push_back( *next_res );
+      a.emplace_back( std::move( *next_res ) );
     }
   }
 
@@ -89,23 +85,24 @@ void add( picojson::value* )
 }
 
 template <typename T>
-picojson::value to_value( T& arg )
+void insert_value( picojson::value* v, T& arg )
 {
-  return picojson::value( arg );
+  *v = picojson::value( arg );
 }
 
 template <>
-picojson::value to_value( int& arg )
+void insert_value( picojson::value* v, int& arg )
 {
-  return picojson::value( static_cast<double>( arg ) );
+  *v = picojson::value( static_cast<double>( arg ) );
 }
 
 template <>
-picojson::value to_value( antlrcpp::Any& arg )
+void insert_value( picojson::value* v, antlrcpp::Any& arg )
 {
   if ( arg.has_value() )
-    return std::any_cast<picojson::value>( arg );
-  return picojson::value();
+    *v = std::any_cast<picojson::value>( arg );
+  else
+    *v = picojson::value();
 }
 
 template <typename T1, typename... Types>
@@ -131,7 +128,8 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
           o[var1] = picojson::value( var2 );
         }
         */
-    o.emplace( std::make_pair( var1, to_value( var2 ) ) );
+    insert_value( &o[var1], var2 );
+    //    o.emplace( std::make_pair( var1, to_value( var2 ) ) );
   }
   add( v, var3... );
 }
