@@ -27,14 +27,14 @@ Use os;
 Use uo;
 Use util;
 
-Include "include/client";
+Include "client";
 Include ":datafile:datafile";
 include ":gumps:textConsts";
 //Include "include/itemnpc";
 //Include "include/msgs";
 //Include "include/server";
 //Include "include/set";
-Include "include/string";
+Include "string";
 
 Const VERSION:="<basefont color="+HTML_DARKBLUE+">V4.2a";
 
