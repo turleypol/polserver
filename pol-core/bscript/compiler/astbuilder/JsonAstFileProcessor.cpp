@@ -91,7 +91,7 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
   {
     auto& o = v->get<picojson::object>();
     if constexpr ( std::is_same<std::decay_t<T1>, int>::value )
-      o[var1] = picojson::value( static_cast<double>( var2 ) );
+      o[var1].set( static_cast<double>( var2 ) );
     else if constexpr ( std::is_same<std::decay_t<T1>, antlrcpp::Any>::value )
     {
       if ( var2.has_value() )
@@ -104,7 +104,7 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
     }
     else
     {
-      o[var1] = picojson::value( var2 );
+      o[var1].set( var2 );
     }
   }
   add( v, var3... );
