@@ -104,7 +104,7 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
     }
     else
     {
-      o[var1].set( var2 );
+      o[var1].set<std::decay_t<T1>>( std::move( var2 ) );
     }
   }
   add( v, var3... );
