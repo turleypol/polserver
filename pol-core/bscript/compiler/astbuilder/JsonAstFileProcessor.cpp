@@ -53,7 +53,7 @@ antlrcpp::Any JsonAstFileProcessor::process_module_unit( SourceFile& sf )
 
 antlrcpp::Any JsonAstFileProcessor::defaultResult()
 {
-  return picojson::value( picojson::array() );
+  return picojson::value( picojson::array_type, false );
 }
 
 antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::array*/ aggregate,
