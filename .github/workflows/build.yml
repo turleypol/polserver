@@ -29,7 +29,7 @@ jobs:
             cxx-compiler: clang++
             c-compiler: clang
             compiler-version: 14
-            build-type: RelWithDebInfo
+            build-type: Debug
             nopch: 0
             name: Linux Clang
 
