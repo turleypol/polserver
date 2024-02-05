@@ -102,7 +102,7 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
         o[var1] = std::move( *v );
       }
       else
-        o[var1] = picojson::value();
+        o[var1];
     }
     else if constexpr ( std::is_same<std::decay_t<T1>, picojson::value>::value )
     {
