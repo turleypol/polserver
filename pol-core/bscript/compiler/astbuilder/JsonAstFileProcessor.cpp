@@ -126,24 +126,24 @@ void add( antlrcpp::Any* any_v, const std::string& var1, T1&& var2, Types&&... v
 template <typename Rangeable, typename... Types>
 picojson::value new_node( Rangeable* ctx, const std::string& type, Types&&... var3 )
 {
-  auto w = picojson::value( picojson::object_type, false );
+  auto value = picojson::value( picojson::object_type, false );
   Range range( *ctx );
-
-  w.get<picojson::object>()["type"] = picojson::value( type );
-  w.get<picojson::object>()["start"] = picojson::value( picojson::object_type, false );
-  auto& start = w.get<picojson::object>()["start"].get<picojson::object>();
+  auto& obj = value.get<picojson::object>();
+  obj["type"] = picojson::value( type );
+  obj["start"] = picojson::value( picojson::object_type, false );
+  auto& start = obj["start"].get<picojson::object>();
   start["line_number"] = picojson::value( static_cast<double>( range.start.line_number ) );
   start["character_column"] =
       picojson::value( static_cast<double>( range.start.character_column ) );
   start["token_index"] = picojson::value( static_cast<double>( range.start.token_index ) );
 
-  w.get<picojson::object>()["end"] = picojson::value( picojson::object_type, false );
-  auto& end = w.get<picojson::object>()["end"].get<picojson::object>();
+  obj["end"] = picojson::value( picojson::object_type, false );
+  auto& end = obj["end"].get<picojson::object>();
   end["line_number"] = picojson::value( static_cast<double>( range.end.line_number ) );
   end["character_column"] = picojson::value( static_cast<double>( range.end.character_column ) );
   end["token_index"] = picojson::value( static_cast<double>( range.end.token_index ) );
 
-  add( &w, var3... );
+  add( &value, var3... );
   return w;
 };
 
