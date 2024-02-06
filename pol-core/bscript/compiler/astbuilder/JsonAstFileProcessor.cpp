@@ -98,8 +98,8 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
     {
       if ( var2.has_value() )
       {
-        auto* v = std::any_cast<picojson::value>( &var2 );
-        o[var1] = std::move( *v );
+        auto* v2 = std::any_cast<picojson::value>( &var2 );
+        o[var1] = std::move( *v2 );
       }
       else
         o[var1];
