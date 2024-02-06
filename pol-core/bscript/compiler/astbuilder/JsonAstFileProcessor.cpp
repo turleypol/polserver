@@ -37,7 +37,9 @@ antlrcpp::Any JsonAstFileProcessor::process_compilation_unit( SourceFile& sf )
 {
   if ( auto compilation_unit = sf.get_compilation_unit( report, source_file_identifier ) )
   {
-    return compilation_unit->accept( this );
+    auto a = compilation_unit->accept( this );
+    INFO_PRINTLN( "AGGREGATE {}", _aggregate );
+    return a;
   }
   throw std::runtime_error( "No compilation unit in source file" );
 }
@@ -59,6 +61,7 @@ antlrcpp::Any JsonAstFileProcessor::defaultResult()
 antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::array*/ aggregate,
                                                      antlrcpp::Any /*picojson::array*/ nextResult )
 {
+  ++_aggregate;
   auto* accum = std::any_cast<picojson::value>( &aggregate );
 
   if ( accum->is<picojson::array>() )
@@ -575,7 +578,7 @@ antlrcpp::Any JsonAstFileProcessor::visitSwitchBlockStatementGroup(
   auto labels = defaultResult();
   for ( const auto& switchLabel : ctx->switchLabel() )
   {
-    labels = aggregateResult( labels, visitSwitchLabel( switchLabel ) );
+    labels = aggregateResult( std::move( labels ), visitSwitchLabel( switchLabel ) );
   }
 
   auto body = visitBlock( ctx->block() );
@@ -626,7 +629,8 @@ antlrcpp::Any JsonAstFileProcessor::visitCaseStatement(
   auto cases = defaultResult();
   for ( const auto& switchBlockStatementGroup : ctx->switchBlockStatementGroup() )
   {
-    cases = aggregateResult( cases, visitSwitchBlockStatementGroup( switchBlockStatementGroup ) );
+    cases = aggregateResult( std::move( cases ),
+                             visitSwitchBlockStatementGroup( switchBlockStatementGroup ) );
   }
 
   return new_node( ctx, "case-statement",  //
