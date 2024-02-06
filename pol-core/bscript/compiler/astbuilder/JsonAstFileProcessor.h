@@ -194,9 +194,6 @@ private:
   antlrcpp::Any make_bool_literal( antlr4::tree::TerminalNode* );
   antlrcpp::Any make_integer_literal( antlr4::tree::TerminalNode* );
   antlrcpp::Any make_float_literal( antlr4::tree::TerminalNode* );
-
-
-  size_t _aggregate = 0;
 };
 
 }  // namespace Pol::Bscript::Compiler

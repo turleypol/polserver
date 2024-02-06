@@ -37,9 +37,7 @@ antlrcpp::Any JsonAstFileProcessor::process_compilation_unit( SourceFile& sf )
 {
   if ( auto compilation_unit = sf.get_compilation_unit( report, source_file_identifier ) )
   {
-    auto a = compilation_unit->accept( this );
-    INFO_PRINTLN( "AGGREGATE {}", _aggregate );
-    return a;
+    return compilation_unit->accept( this );
   }
   throw std::runtime_error( "No compilation unit in source file" );
 }
@@ -61,7 +59,6 @@ antlrcpp::Any JsonAstFileProcessor::defaultResult()
 antlrcpp::Any JsonAstFileProcessor::aggregateResult( antlrcpp::Any /*picojson::array*/ aggregate,
                                                      antlrcpp::Any /*picojson::array*/ nextResult )
 {
-  ++_aggregate;
   auto* accum = std::any_cast<picojson::value>( &aggregate );
 
   if ( accum->is<picojson::array>() )
