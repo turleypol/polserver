@@ -195,7 +195,7 @@ private:
   antlrcpp::Any make_integer_literal( antlr4::tree::TerminalNode* );
   antlrcpp::Any make_float_literal( antlr4::tree::TerminalNode* );
 };
-
+size_t _movej = 0;
 }  // namespace Pol::Bscript::Compiler
 
 #endif  // POLSERVER_JSONASTFILEPROCESSOR_H

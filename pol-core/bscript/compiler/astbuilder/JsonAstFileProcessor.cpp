@@ -37,7 +37,9 @@ antlrcpp::Any JsonAstFileProcessor::process_compilation_unit( SourceFile& sf )
 {
   if ( auto compilation_unit = sf.get_compilation_unit( report, source_file_identifier ) )
   {
-    return compilation_unit->accept( this );
+    auto a = compilation_unit->accept( this );
+    INFO_PRINTLN( "MOVE {}", _movej );
+    return a;
   }
   throw std::runtime_error( "No compilation unit in source file" );
 }
@@ -106,6 +108,7 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
     }
     else if constexpr ( std::is_same<std::decay_t<T1>, picojson::value>::value )
     {
+      ++_movej;
       o[var1] = std::move( var2 );
     }
     else
