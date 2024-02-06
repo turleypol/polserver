@@ -27,6 +27,7 @@ using EscriptGrammar::EscriptParser;
 
 namespace Pol::Bscript::Compiler
 {
+size_t _movej = 0;
 JsonAstFileProcessor::JsonAstFileProcessor( const SourceFileIdentifier& source_file_identifier,
                                             Profile& profile, Report& report )
     : source_file_identifier( source_file_identifier ), profile( profile ), report( report )
@@ -196,7 +197,7 @@ antlrcpp::Any JsonAstFileProcessor::visitVariableDeclaration(
       init = visitExpression( expression );
     }
 
-    else if ( auto array = variable_declaration_initializer->ARRAY() )
+    else if ( variable_declaration_initializer->ARRAY() )
     {
       init = new_node( ctx, "array-expression",     //
                        "elements", defaultResult()  //
@@ -224,7 +225,7 @@ antlrcpp::Any JsonAstFileProcessor::visitConstStatement(
       init = visitExpression( expression );
     }
 
-    else if ( auto array = variable_declaration_initializer->ARRAY() )
+    else if ( variable_declaration_initializer->ARRAY() )
     {
       init = new_node( ctx, "array-expression",     //
                        "elements", defaultResult()  //
@@ -899,7 +900,7 @@ antlrcpp::Any JsonAstFileProcessor::visitModuleFunctionDeclaration(
 
   if ( auto moduleFunctionParameterList = ctx->moduleFunctionParameterList() )
   {
-    parameters = visitModuleFunctionParameterList( ctx->moduleFunctionParameterList() );
+    parameters = visitModuleFunctionParameterList( moduleFunctionParameterList );
   }
   else
   {
