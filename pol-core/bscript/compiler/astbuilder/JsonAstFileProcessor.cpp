@@ -143,8 +143,8 @@ picojson::value new_node( Rangeable* ctx, const std::string& type, Types&&... va
   end["character_column"] = picojson::value( static_cast<double>( range.end.character_column ) );
   end["token_index"] = picojson::value( static_cast<double>( range.end.token_index ) );
 
-  add( &value, var3... );
-  return w;
+  add( &value, std::forward<Types>( var3 )... );
+  return value;
 };
 
 antlrcpp::Any JsonAstFileProcessor::visitCompilationUnit(
