@@ -85,7 +85,7 @@ void add( picojson::value* )
 }
 
 template <typename T1, typename... Types>
-void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var3 )
+void add( picojson::value* v, std::string&& var1, T1&& var2, Types&&... var3 )
 {
   if ( v->is<picojson::object>() )
   {
@@ -117,14 +117,15 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
 }
 
 template <typename T1, typename... Types>
-void add( antlrcpp::Any* any_v, const std::string& var1, T1&& var2, Types&&... var3 )
+void add( antlrcpp::Any* any_v, std::string&& var1, T1&& var2, Types&&... var3 )
 {
   auto* v = std::any_cast<picojson::value>( any_v );
-  add( v, var1, var2, var3... );
+  add( v, std::forward<std::string>( var1 ), std::forward<T1>( var2 ),
+       std::forward<Types>( var3 )... );
 }
 
 template <typename Rangeable, typename... Types>
-picojson::value new_node( Rangeable* ctx, const std::string& type, Types&&... var3 )
+picojson::value new_node( Rangeable* ctx, const std::string&& type, Types&&... var3 )
 {
   auto value = picojson::value( picojson::object_type, false );
   Range range( *ctx );
