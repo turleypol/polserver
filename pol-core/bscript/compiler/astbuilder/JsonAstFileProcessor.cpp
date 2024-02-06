@@ -176,10 +176,10 @@ antlrcpp::Any JsonAstFileProcessor::visitWhileStatement(
   auto body = visitBlock( ctx->block() );
   auto test = visitExpression( ctx->parExpression()->expression() );
 
-  return new_node( ctx, "while-statement",  //
-                   "label", label,          //
-                   "test", test,            //
-                   "body", body             //
+  return new_node( ctx, "while-statement",       //
+                   "label", std::move( label ),  //
+                   "test", std::move( test ),    //
+                   "body", std::move( body )     //
   );
 }
 
