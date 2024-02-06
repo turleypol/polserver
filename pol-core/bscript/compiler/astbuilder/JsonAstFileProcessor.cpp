@@ -113,7 +113,7 @@ void add( picojson::value* v, const std::string& var1, T1&& var2, Types&&... var
       o[var1] = picojson::value( var2 );
     }
   }
-  add( v, std::forward( var3 )... );
+  add( v, std::forward<Types>( var3 )... );
 }
 
 template <typename T1, typename... Types>
