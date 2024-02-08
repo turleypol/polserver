@@ -54,7 +54,7 @@ std::string JsonAstBuilder::build( const std::string& pathname, bool is_module )
   auto* json_ast = std::any_cast<picojson::value>( &json_ast_any );
   timerproc.stop();
   Tools::Timer<Tools::DebugT> timers( "serialize" );
-  auto res = json_ast->serialize();
+  auto res = json_ast->serialize( true );
   timers.stop();
   return res;
   // SourceFileProcessor src_processor( *ident, workspace, true, user_function_inclusion );
