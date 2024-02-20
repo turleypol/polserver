@@ -16,7 +16,6 @@ public:
 
   void accept( NodeVisitor& ) override;
   void describe_to( std::string& ) const override;
-  std::string type() const override;
 
   std::unique_ptr<Expression> take_entity();
 

@@ -17,12 +17,7 @@ void EmptyStatement::accept( NodeVisitor& visitor )
 
 void EmptyStatement::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string EmptyStatement::type() const
-{
-  return "empty-statement";
+  w += "empty-statement";
 }
 
 }  // namespace Pol::Bscript::Compiler

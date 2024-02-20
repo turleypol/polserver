@@ -6,7 +6,7 @@
 namespace Pol::Bscript::Compiler
 {
 UninitializedValue::UninitializedValue( const SourceLocation& source_location )
-    : Expression( source_location )
+    : Value( source_location )
 {
 }
 
@@ -17,12 +17,7 @@ void UninitializedValue::accept( NodeVisitor& visitor )
 
 void UninitializedValue::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string UninitializedValue::type() const
-{
-  return "uninitialized-value";
+  w += "uninitialized-value";
 }
 
 }  // namespace Pol::Bscript::Compiler

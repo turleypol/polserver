@@ -17,12 +17,7 @@ void IntegerValue::accept( NodeVisitor& visitor )
 
 void IntegerValue::describe_to( std::string& w ) const
 {
-  fmt::format_to( std::back_inserter( w ), "{}({})", type(), value );
-}
-
-std::string IntegerValue::type() const
-{
-  return "integer-value";
+  fmt::format_to( std::back_inserter( w ), "integer-value({})", value );
 }
 
 }  // namespace Pol::Bscript::Compiler

@@ -1431,7 +1431,8 @@ class GeneralInfoPacket(Packet):
     self.eushort(self.sub)
 
     if self.sub == self.SUB_LOGIN:
-      self.eushort(0x0000)
+      self.estring("ha", 2)
+      #self.eushort(0x0000)
 
     elif self.sub == self.SUB_LANG:
       self.estring(self.lang, len(self.lang)+1)

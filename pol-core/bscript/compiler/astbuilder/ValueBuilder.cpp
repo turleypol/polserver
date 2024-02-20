@@ -8,6 +8,7 @@
 #include "bscript/compiler/ast/FunctionReference.h"
 #include "bscript/compiler/ast/IntegerValue.h"
 #include "bscript/compiler/ast/StringValue.h"
+#include "bscript/compiler/ast/UninitializedValue.h"
 #include "bscript/compiler/astbuilder/BuilderWorkspace.h"
 #include "bscript/compiler/file/SourceLocation.h"
 #include "bscript/compiler/model/FunctionLink.h"
@@ -185,6 +186,14 @@ std::unique_ptr<Value> ValueBuilder::value( EscriptParser::LiteralContext* ctx )
   {
     return float_value( float_literal );
   }
+  else if ( auto bool_literal = ctx->boolLiteral() )
+  {
+    return bool_value( bool_literal );
+  }
+  else if ( ctx->UNINIT() )
+  {
+    return std::make_unique<UninitializedValue>( location_for( *ctx ) );
+  }
   else
   {
     location_for( *ctx ).internal_error( "unhandled literal" );
@@ -215,15 +224,11 @@ int ValueBuilder::to_int( EscriptParser::IntegerLiteralContext* ctx )
   catch ( std::invalid_argument& )
   {
     report.error( location_for( *ctx ), "unable to convert integer value '{}'.", ctx->getText() );
-    if ( workspace.continue_on_error )
-      return 0;
     throw;
   }
   catch ( std::out_of_range& )
   {
     report.error( location_for( *ctx ), "integer value '{}' out of range.", ctx->getText() );
-    if ( workspace.continue_on_error )
-      return 0;
     throw;
   }
 

@@ -27,12 +27,7 @@ void CstyleForLoop::accept( NodeVisitor& visitor )
 
 void CstyleForLoop::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string CstyleForLoop::type() const
-{
-  return "c-style-for-loop";
+  w += "c-style-for-loop";
 }
 
 Expression& CstyleForLoop::initializer()

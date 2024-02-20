@@ -23,12 +23,7 @@ void DictionaryEntry::accept( NodeVisitor& visitor )
 
 void DictionaryEntry::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string DictionaryEntry::type() const
-{
-  return "dictionary-entry";
+  w += "dictionary-entry";
 }
 
 }  // namespace Pol::Bscript::Compiler

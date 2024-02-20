@@ -23,12 +23,7 @@ void DoWhileLoop::accept( NodeVisitor& visitor )
 
 void DoWhileLoop::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string DoWhileLoop::type() const
-{
-  return "do-while-loop";
+  w += "do-while-loop";
 }
 
 Block& DoWhileLoop::block()

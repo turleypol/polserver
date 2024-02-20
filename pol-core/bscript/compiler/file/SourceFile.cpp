@@ -8,9 +8,6 @@
 
 #include "bscript/compiler/Report.h"
 #include "bscript/compiler/file/SourceFileIdentifier.h"
-#include "bscript/compiler/file/SourceFileLoader.h"
-#include "bscript/compiler/model/ScopeTree.h"
-#include "bscript/compiler/model/SemanticTokens.h"
 #include "compilercfg.h"
 #include <EscriptGrammar/EscriptParserVisitor.h>
 
@@ -85,14 +82,15 @@ bool SourceFile::enforced_case_sensitivity_mismatch( const SourceLocation&, cons
 }
 #endif
 
-std::shared_ptr<SourceFile> SourceFile::load( const SourceFileIdentifier& ident,
-                                              const SourceFileLoader& source_loader,
-                                              Profile& profile, Report& report )
+std::shared_ptr<SourceFile> SourceFile::load( const SourceFileIdentifier& ident, Profile& profile,
+                                              Report& report )
 {
   const std::string& pathname = ident.pathname;
   try
   {
-    auto contents = source_loader.get_contents( pathname );
+    Clib::FileContents fc( pathname.c_str(), true );
+    std::string contents( fc.contents() );
+
     Clib::sanitizeUnicodeWithIso( &contents );
 
     if ( is_web_script( pathname.c_str() ) )
@@ -106,18 +104,6 @@ std::shared_ptr<SourceFile> SourceFile::load( const SourceFileIdentifier& ident,
   {
     report.error( ident, "Unable to read file '{}'.", pathname );
     return {};
-  }
-}
-
-void SourceFile::accept( EscriptParserVisitor& visitor )
-{
-  if ( compilation_unit )
-  {
-    visitor.visit( compilation_unit );
-  }
-  else if ( module_unit )
-  {
-    visitor.visit( module_unit );
   }
 }
 
@@ -149,7 +135,8 @@ EscriptGrammar::EscriptParser::ModuleUnitContext* SourceFile::get_module_unit(
   return module_unit;
 }
 
-EscriptGrammar::EscriptParser::EvaluateUnitContext* SourceFile::get_evaluate_unit( Report& report )
+EscriptGrammar::EscriptParser::EvaluateUnitContext* SourceFile::get_evaluate_unit(
+    Report& report )
 {
   if ( !evaluate_unit )
   {
@@ -188,27 +175,7 @@ std::vector<antlr4::Token*> SourceFile::get_hidden_tokens_before( const Position
 
 std::vector<antlr4::Token*> SourceFile::get_hidden_tokens_before( size_t tokenIndex )
 {
-  //  token_stream.reset();
   return token_stream.getHiddenTokensToLeft( tokenIndex );
-}
-std::vector<antlr4::Token*> SourceFile::get_hidden_tokens()
-{
-  // token_stream.reset();
-  return token_stream.getHiddenTokensToRight( 0 );
-}
-
-std::vector<antlr4::Token*> SourceFile::get_comment_tokens()
-{
-  token_stream.reset();
-  auto originalVector = token_stream.getTokens();
-  auto isComment = []( antlr4::Token* token )
-  { return token && token->getChannel() == EscriptGrammar::EscriptLexer::COMMENTS; };
-
-  std::vector<antlr4::Token*> filteredVector;
-  std::copy_if( originalVector.begin(), originalVector.end(), std::back_inserter( filteredVector ),
-                isComment );
-
-  return filteredVector;
 }
 
 antlr4::Token* SourceFile::get_token_at( const Position& position )
@@ -233,22 +200,6 @@ antlr4::Token* SourceFile::get_token_at( const Position& position )
 std::vector<antlr4::Token*> SourceFile::get_all_tokens()
 {
   return token_stream.getTokens();
-}
-
-SemanticTokens SourceFile::get_tokens()
-{
-  SemanticTokens tokens;
-  for ( auto* lexer_token : token_stream.getTokens() )
-  {
-    auto semantic_token = SemanticToken::from_lexer_token( *lexer_token );
-    if ( semantic_token )
-    {
-      auto& t = *semantic_token;
-      tokens.insert( tokens.end(), std::make_move_iterator( t.begin() ),
-                     std::make_move_iterator( t.end() ) );
-    }
-  }
-  return tokens;
 }
 
 /**

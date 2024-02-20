@@ -22,14 +22,10 @@ void JumpStatement::accept( NodeVisitor& visitor )
 
 void JumpStatement::describe_to( std::string& w ) const
 {
-  fmt::format_to( std::back_inserter( w ), "{}", type() );
+  fmt::format_to( std::back_inserter( w ), "{}",
+                  ( jump_type == Break ? "break-statement" : "continue-statement" ) );
   if ( !label.empty() )
     fmt::format_to( std::back_inserter( w ), "({})", label );
-}
-
-std::string JumpStatement::type() const
-{
-  return ( jump_type == Break ? "break-statement" : "continue-statement" );
 }
 
 }  // namespace Pol::Bscript::Compiler

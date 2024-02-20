@@ -19,7 +19,6 @@ public:
 
   void accept( NodeVisitor& visitor ) override;
   void describe_to( std::string& ) const override;
-  std::string type() const override;
 
   BranchSelector& branch_selector();
   Block& consequent();

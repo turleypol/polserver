@@ -17,12 +17,7 @@ void CaseDispatchDefaultSelector::accept( NodeVisitor& visitor )
 
 void CaseDispatchDefaultSelector::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string CaseDispatchDefaultSelector::type() const
-{
-  return "case-dispatch-default-selector";
+  w += "case-dispatch-default-selector";
 }
 
 }  // namespace Pol::Bscript::Compiler

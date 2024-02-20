@@ -27,12 +27,7 @@ void UserFunction::accept( NodeVisitor& visitor )
 
 void UserFunction::describe_to( std::string& w ) const
 {
-  fmt::format_to( std::back_inserter( w ), "{}({})", type(), name );
-}
-
-std::string UserFunction::type() const
-{
-  return "user-function";
+  fmt::format_to( std::back_inserter( w ), "user-function({})", name );
 }
 
 FunctionBody& UserFunction::body()

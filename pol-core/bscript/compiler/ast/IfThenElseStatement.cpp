@@ -37,12 +37,7 @@ void IfThenElseStatement::accept( NodeVisitor& visitor )
 
 void IfThenElseStatement::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string IfThenElseStatement::type() const
-{
-  return "if-then-else-statement";
+  w += "if-then-else-statement";
 }
 
 BranchSelector& IfThenElseStatement::branch_selector()

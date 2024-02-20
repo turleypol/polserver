@@ -19,12 +19,7 @@ void InterpolateString::accept( NodeVisitor& visitor )
 
 void InterpolateString::describe_to( std::string& w ) const
 {
-  fmt::format_to( std::back_inserter( w ), "{} ({} parts)", type(), children.size() );
-}
-
-std::string InterpolateString::type() const
-{
-  return "interpolate-string";
+  fmt::format_to( std::back_inserter( w ), "interpolate-string ({} parts)", children.size() );
 }
 
 }  // namespace Pol::Bscript::Compiler

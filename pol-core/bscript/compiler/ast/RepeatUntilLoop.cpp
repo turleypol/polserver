@@ -24,14 +24,9 @@ void RepeatUntilLoop::accept( NodeVisitor& visitor )
 
 void RepeatUntilLoop::describe_to( std::string& w ) const
 {
-  w += type();
+  w += "repeat-until-loop";
   if ( !get_label().empty() )
     fmt::format_to( std::back_inserter( w ), "(label:{})", get_label() );
-}
-
-std::string RepeatUntilLoop::type() const
-{
-  return "repeat-until-loop";
 }
 
 Block& RepeatUntilLoop::block()

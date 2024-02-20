@@ -31,14 +31,9 @@ void CaseStatement::accept( NodeVisitor& visitor )
 
 void CaseStatement::describe_to( std::string& w ) const
 {
-  w += type();
+  w += "case-statement";
   if ( !get_label().empty() )
     fmt::format_to( std::back_inserter( w ), "(label:{})", get_label() );
-}
-
-std::string CaseStatement::type() const
-{
-  return "case-statement";
 }
 
 Expression& CaseStatement::expression()

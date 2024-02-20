@@ -9,7 +9,6 @@
 #include "bscript/compiler/astbuilder/ExpressionBuilder.h"
 #include "bscript/compiler/file/SourceFileCache.h"
 #include "bscript/compiler/file/SourceFileIdentifier.h"
-#include "bscript/compiler/file/SourceFileLoader.h"
 #include "bscript/compiler/model/CompilerWorkspace.h"
 
 #include <memory>
@@ -85,12 +84,10 @@ public:
 
 private:
   Profile _profile;
-  ConsoleReporter _consoleReporter;
   Report _report;
 
   SourceFileIdentifier _ident;
   CompilerWorkspace _compiler_workspace;
-  SourceFileLoader _loader;
   SourceFileCache _cache;
   BuilderWorkspace _builder_workspace;
   ExpressionBuilder _expression_builder;

@@ -26,13 +26,10 @@ std::unique_ptr<Program> ProgramBuilder::program( EscriptParser::ProgramDeclarat
     {
       for ( auto param : param_list->programParameter() )
       {
-        if ( auto identifier = param->IDENTIFIER() )
-        {
-          auto name = text( identifier );
-          bool unused = param->UNUSED() != nullptr;
-          parameter_declarations.push_back( std::make_unique<ProgramParameterDeclaration>(
-              location_for( *param ), std::move( name ), unused ) );
-        }
+        auto name = text( param->IDENTIFIER() );
+        bool unused = param->UNUSED() != nullptr;
+        parameter_declarations.push_back( std::make_unique<ProgramParameterDeclaration>(
+            location_for( *param ), std::move( name ), unused ) );
       }
     }
   }
@@ -42,8 +39,8 @@ std::unique_ptr<Program> ProgramBuilder::program( EscriptParser::ProgramDeclarat
   auto body =
       std::make_unique<FunctionBody>( location_for( *ctx ), block_statements( ctx->block() ) );
 
-  return std::make_unique<Program>( location_for( *ctx ), text( ctx->IDENTIFIER() ),
-                                    std::move( parameter_list ), std::move( body ) );
+  return std::make_unique<Program>( location_for( *ctx ), std::move( parameter_list ),
+                                    std::move( body ) );
 }
 
 }  // namespace Pol::Bscript::Compiler

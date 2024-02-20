@@ -61,6 +61,25 @@ void CompilerConfig::Read( const std::string& path )
   EmParseTreeCacheSize = elem.remove_int( "EmParseTreeCacheSize", 25 );
   IncParseTreeCacheSize = elem.remove_int( "IncParseTreeCacheSize", 50 );
 
+
+  FormatterLineWidth = elem.remove_unsigned( "FormatterLineWidth", 80 );
+  FormatterKeepKeywords = elem.remove_bool( "FormatterKeepKeywords", false );
+  FormatterIdentLevel = elem.remove_ushort( "FormatterIdentLevel", 2 );
+  FormatterMergeEmptyLines = elem.remove_bool( "FormatterMergeEmptyLines", true );
+  FormatterEmptyParenthesisSpacing = elem.remove_bool( "FormatterEmptyParenthesisSpacing", false );
+  FormatterEmptyBracketSpacing = elem.remove_bool( "FormatterEmptyBracketSpacing", false );
+  FormatterConditionalParenthesisSpacing =
+      elem.remove_bool( "FormatterConditionalParenthesisSpacing", true );
+  FormatterParenthesisSpacing = elem.remove_bool( "FormatterParenthesisSpacing", true );
+  FormatterBracketSpacing = elem.remove_bool( "FormatterBracketSpacing", true );
+  FormatterDelimiterSpacing = elem.remove_bool( "FormatterDelimiterSpacing", true );
+  FormatterAssignmentSpacing = elem.remove_bool( "FormatterAssignmentSpacing", true );
+  FormatterComparisonSpacing = elem.remove_bool( "FormatterComparisonSpacing", true );
+  FormatterOperatorSpacing = elem.remove_bool( "FormatterOperatorSpacing", true );
+  FormatterWindowsLineEndings = elem.remove_bool( "FormatterWindowsLineEndings", false );
+  FormatterUseTabs = elem.remove_bool( "FormatterUseTabs", false );
+  FormatterTabWidth = elem.remove_ushort( "FormatterTabWidth", 4 );
+
 // This is where we TRY to validate full paths from what was provided in the
 // ecompile.cfg. Maybe Turley or Shini can find the best way to do this in *nix.
 #ifdef WIN32

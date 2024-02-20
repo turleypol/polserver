@@ -23,12 +23,7 @@ void Block::accept( NodeVisitor& visitor )
 
 void Block::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string Block::type() const
-{
-  return "block";
+  w += "block";
 }
 
 }  // namespace Pol::Bscript::Compiler

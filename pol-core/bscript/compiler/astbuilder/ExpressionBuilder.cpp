@@ -185,8 +185,6 @@ BTokenId ExpressionBuilder::binary_operator_token(
     return TOK_CHKMEMBER;
   else if ( ctx->DELMEMBER() )
     return TOK_DELMEMBER;
-  else if ( workspace.continue_on_error )
-    return RSV_FUTURE;
   else
     location_for( *ctx ).internal_error( "unrecognized binary operator" );
 }
@@ -248,10 +246,9 @@ std::unique_ptr<ConditionalOperator> ExpressionBuilder::conditional_operator(
 {
   auto source_location = location_for( *ctx );
   auto expressions = ctx->expression();
-  auto size = expressions.size();
-  auto conditional = expression( size > 0 ? expressions[0] : nullptr );
-  auto consequent = expression( size > 1 ? expressions[1] : nullptr );
-  auto alternate = expression( size > 2 ? expressions[2] : nullptr );
+  auto conditional = expression( expressions[0] );
+  auto consequent = expression( expressions[1] );
+  auto alternate = expression( expressions[2] );
 
   return std::make_unique<ConditionalOperator>( source_location, std::move( conditional ),
                                                 std::move( consequent ), std::move( alternate ) );
@@ -282,8 +279,9 @@ std::unique_ptr<ErrorInitializer> ExpressionBuilder::error(
           expression_source_ctx.internal_error(
               "Unable to determine identifier for struct initializer" );
 
-        auto value = expression_ctx->expression() ? expression( expression_ctx->expression() )
-                                                  : std::unique_ptr<Expression>();
+        auto value = expression_ctx->expression()
+                         ? expression( expression_ctx->expression() )
+                         : std::make_unique<UninitializedValue>( expression_source_ctx );
 
         identifiers.push_back( std::move( identifier ) );
         expressions.push_back( std::move( value ) );
@@ -343,7 +341,7 @@ std::vector<std::unique_ptr<Expression>> ExpressionBuilder::expressions(
     {
       expressions.push_back( string_value( escaped, false ) );
     }
-    else if ( !workspace.continue_on_error )
+    else
     {
       location_for( *interstringPart_ctx )
           .internal_error( "unhandled context in interpolated string part" );
@@ -370,10 +368,7 @@ std::unique_ptr<Expression> ExpressionBuilder::expression( EscriptParser::Expres
                                                            bool consume )
 {
   std::unique_ptr<Expression> result;
-  if ( ctx == nullptr )
-    result =
-        std::make_unique<UninitializedValue>( SourceLocation( &source_file_identifier, 0, 0 ) );
-  else if ( auto prim = ctx->primary() )
+  if ( auto prim = ctx->primary() )
     result = primary( prim );
   else if ( ctx->prefix )
     result = prefix_unary_operator( ctx );
@@ -393,11 +388,6 @@ std::unique_ptr<Expression> ExpressionBuilder::expression( EscriptParser::Expres
   else if ( ctx->QUESTION() )
   {
     result = conditional_operator( ctx );
-  }
-  else if ( workspace.continue_on_error )
-  {
-    // Should probably be something else like InvalidValue
-    result = std::make_unique<UninitializedValue>( location_for( *ctx ) );
   }
   else
   {
@@ -469,10 +459,6 @@ std::unique_ptr<Expression> ExpressionBuilder::expression_suffix(
   else if ( auto method = ctx->methodCallSuffix() )
   {
     return method_call( std::move( lhs ), method );
-  }
-  else if ( workspace.continue_on_error )
-  {
-    return expression( nullptr );
   }
   else
   {
@@ -578,18 +564,6 @@ std::unique_ptr<Expression> ExpressionBuilder::primary( EscriptParser::PrimaryCo
   else if ( auto inter_string = ctx->interpolatedString() )
   {
     return interpolate_string( inter_string );
-  }
-  else if ( ctx->UNINIT() )
-  {
-    return std::make_unique<UninitializedValue>( location_for( *ctx ) );
-  }
-  else if ( ctx->BOOL_TRUE() )
-  {
-    return std::make_unique<BooleanValue>( location_for( *ctx ), true );
-  }
-  else if ( ctx->BOOL_FALSE() )
-  {
-    return std::make_unique<BooleanValue>( location_for( *ctx ), false );
   }
 
   location_for( *ctx ).internal_error( "unhandled primary expression" );

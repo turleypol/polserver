@@ -19,12 +19,7 @@ void ElementIndexes::accept( NodeVisitor& visitor )
 
 void ElementIndexes::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string ElementIndexes::type() const
-{
-  return "element-indexes";
+  w += "element-indexes";
 }
 
 }  // namespace Pol::Bscript::Compiler

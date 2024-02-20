@@ -18,12 +18,7 @@ void BooleanValue::accept( NodeVisitor& visitor )
 
 void BooleanValue::describe_to( std::string& w ) const
 {
-  fmt::format_to( std::back_inserter( w ), "{}({})", type(), value );
-}
-
-std::string BooleanValue::type() const
-{
-  return "boolean-value";
+  fmt::format_to( std::back_inserter( w ), "boolean-value({})", value );
 }
 
 }  // namespace Pol::Bscript::Compiler

@@ -40,12 +40,8 @@ void MemberAssignmentByOperator::accept( NodeVisitor& visitor )
 
 void MemberAssignmentByOperator::describe_to( std::string& w ) const
 {
-  fmt::format_to( std::back_inserter( w ), "{}({}, {})", type(), name, token_id );
-}
-
-std::string MemberAssignmentByOperator::type() const
-{
-  return "member-assignment-by-operator";
+  fmt::format_to( std::back_inserter( w ), "member-assignment-by-operator({}, {})", name,
+                  token_id );
 }
 
 }  // namespace Pol::Bscript::Compiler

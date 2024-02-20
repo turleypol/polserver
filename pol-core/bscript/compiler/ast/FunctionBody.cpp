@@ -19,12 +19,7 @@ void FunctionBody::accept( NodeVisitor& visitor )
 
 void FunctionBody::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string FunctionBody::type() const
-{
-  return "user-function-body";
+  w += "user-function-body";
 }
 
 Statement* FunctionBody::last_statement()

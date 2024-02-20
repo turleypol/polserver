@@ -29,16 +29,7 @@ void FunctionCall::accept( NodeVisitor& visitor )
 
 void FunctionCall::describe_to( std::string& w ) const
 {
-  fmt::format_to( std::back_inserter( w ), "{}({})", type(), method_name );
-}
-
-void FunctionCall::describe_to( picojson::object& o ) const {
-  o["method_name"] = picojson::value( method_name );
-}
-
-std::string FunctionCall::type() const
-{
-  return "function-call";
+  fmt::format_to( std::back_inserter( w ), "function-call({})", method_name );
 }
 
 std::vector<std::unique_ptr<Argument>> FunctionCall::take_arguments()
@@ -52,14 +43,12 @@ std::vector<std::unique_ptr<Argument>> FunctionCall::take_arguments()
   return args;
 }
 
-std::unique_ptr<std::vector<std::reference_wrapper<FunctionParameterDeclaration>>>
-FunctionCall::parameters() const
+std::vector<std::reference_wrapper<FunctionParameterDeclaration>> FunctionCall::parameters() const
 {
   if ( auto fn = function_link->function() )
-    return std::make_unique<std::vector<std::reference_wrapper<FunctionParameterDeclaration>>>(
-        fn->parameters() );
+    return fn->parameters();
   else
-    return {};
+    internal_error( "function has not been resolved" );
 }
 
 }  // namespace Pol::Bscript::Compiler

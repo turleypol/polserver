@@ -19,12 +19,10 @@ public:
 
   void accept( NodeVisitor& visitor ) override;
   void describe_to( std::string& ) const override;
-  void describe_to( picojson::object& ) const override;
-  std::string type() const override;
 
   std::vector<std::unique_ptr<Argument>> take_arguments();
-  [[nodiscard]] std::unique_ptr<std::vector<std::reference_wrapper<FunctionParameterDeclaration>>>
-  parameters() const;
+  [[nodiscard]] std::vector<std::reference_wrapper<FunctionParameterDeclaration>> parameters()
+      const;
 
   const std::shared_ptr<FunctionLink> function_link;
 

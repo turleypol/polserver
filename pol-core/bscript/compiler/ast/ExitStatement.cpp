@@ -16,12 +16,7 @@ void ExitStatement::accept( NodeVisitor& visitor )
 
 void ExitStatement::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string ExitStatement::type() const
-{
-  return "exit-statement";
+  w += "exit-statement";
 }
 
 }  // namespace Pol::Bscript::Compiler

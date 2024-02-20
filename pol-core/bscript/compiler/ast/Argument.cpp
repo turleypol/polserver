@@ -19,12 +19,7 @@ void Argument::accept( NodeVisitor& visitor )
 
 void Argument::describe_to( std::string& w ) const
 {
-  fmt::format_to( std::back_inserter( w ), "{}({})", type(), identifier );
-}
-
-std::string Argument::type() const
-{
-  return "argument";
+  fmt::format_to( std::back_inserter( w ), "argument({})", identifier );
 }
 
 std::unique_ptr<Expression> Argument::take_expression()

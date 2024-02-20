@@ -14,7 +14,6 @@ public:
 
   void accept( NodeVisitor& ) override;
   void describe_to( std::string& ) const override;
-  std::string type() const override;
 
   const std::string name;
   const std::shared_ptr<FunctionLink> function_link;

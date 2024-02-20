@@ -20,12 +20,7 @@ void ProgramParameterList::accept( NodeVisitor& visitor )
 
 void ProgramParameterList::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string ProgramParameterList::type() const
-{
-  return "program-parameter-list";
+  w += "program-parameter-list";
 }
 
 }  // namespace Pol::Bscript::Compiler

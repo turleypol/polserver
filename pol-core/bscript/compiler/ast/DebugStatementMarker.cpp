@@ -18,12 +18,7 @@ void DebugStatementMarker::accept( NodeVisitor& visitor )
 
 void DebugStatementMarker::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string DebugStatementMarker::type() const
-{
-  return "debug-statement-marker";
+  w += "debug-statement-marker";
 }
 
 }  // namespace Pol::Bscript::Compiler

@@ -1,6 +1,6 @@
-#ifndef POLSERVER_JSONASTFILEPROCESSOR_H
-#define POLSERVER_JSONASTFILEPROCESSOR_H
+#pragma once
 
+#include "bscript/compiler/file/PrettifyLineBuilder.h"
 #include "bscript/compiler/file/SourceLocation.h"
 #include <EscriptGrammar/EscriptParserBaseVisitor.h>
 
@@ -8,58 +8,32 @@
 #include <optional>
 #include <string>
 
-#include <picojson/picojson.h>
-
-
 namespace Pol::Bscript::Compiler
 {
 class Profile;
 class Report;
 class SourceFileIdentifier;
 class SourceFile;
-struct CommentInfo
-{
-  std::string text;
-  Position pos;
-  Position pos_end;
-};
-struct TokenPart
-{
-  enum Style
-  {
-    ATTACHED = 1,
-    SPACE = 2,
-    BREAKPOINT = 4,
-  };
-  std::string text = {};
-  size_t tokenid = 0;
-  int lineno = 0;
-  int style = 0;
-  TokenPart(){};
-  TokenPart( std::string&& text, const Position& pos, int style )
-      : text( std::move( text ) ),
-        tokenid( pos.token_index ),
-        lineno( pos.line_number ),
-        style( style ){};
-};
-class JsonAstFileProcessor : public EscriptGrammar::EscriptParserBaseVisitor
+
+class PrettifyFileProcessor : public EscriptGrammar::EscriptParserBaseVisitor
 {
 public:
-  JsonAstFileProcessor( const SourceFileIdentifier&, Profile&, Report& );
+  PrettifyFileProcessor( const SourceFileIdentifier&, Profile&, Report& );
+
+  std::string prettify() const;
 
 public:
   // antlrcpp::Any visitChildren( antlr4::tree::ParseTree* node ) override;
-  std::string pretty();
-  antlrcpp::Any defaultResult() override;
-  antlrcpp::Any aggregateResult( antlrcpp::Any aggregate, antlrcpp::Any nextResult ) override;
+  //  antlrcpp::Any defaultResult() override;
+  //  antlrcpp::Any aggregateResult( antlrcpp::Any aggregate, antlrcpp::Any nextResult ) override;
 
-  // antlrcpp::Any visitArrayInitializer(EscriptGrammar::EscriptParser::ArrayInitializerContext
-  // *ctx) override;
+  antlrcpp::Any visitArrayInitializer(
+      EscriptGrammar::EscriptParser::ArrayInitializerContext* ctx ) override;
   antlrcpp::Any visitBareArrayInitializer(
       EscriptGrammar::EscriptParser::BareArrayInitializerContext* ctx ) override;
   antlrcpp::Any visitBasicForStatement(
       EscriptGrammar::EscriptParser::BasicForStatementContext* ctx ) override;
-  // antlrcpp::Any visitBlock(EscriptGrammar::EscriptParser::BlockContext *ctx) override;
+  antlrcpp::Any visitBlock( EscriptGrammar::EscriptParser::BlockContext* ctx ) override;
   antlrcpp::Any visitBoolLiteral( EscriptGrammar::EscriptParser::BoolLiteralContext* ctx ) override;
   antlrcpp::Any visitBreakStatement(
       EscriptGrammar::EscriptParser::BreakStatementContext* ctx ) override;
@@ -73,15 +47,14 @@ public:
       EscriptGrammar::EscriptParser::ContinueStatementContext* ctx ) override;
   antlrcpp::Any visitCstyleForStatement(
       EscriptGrammar::EscriptParser::CstyleForStatementContext* ctx ) override;
-  // antlrcpp::Any visitDictInitializer(EscriptGrammar::EscriptParser::DictInitializerContext *ctx)
-  // override;
+  antlrcpp::Any visitDictInitializer(
+      EscriptGrammar::EscriptParser::DictInitializerContext* ctx ) override;
   antlrcpp::Any visitDictInitializerExpression(
       EscriptGrammar::EscriptParser::DictInitializerExpressionContext* ctx ) override;
-  // antlrcpp::Any
-  // visitDictInitializerExpressionList(EscriptGrammar::EscriptParser::DictInitializerExpressionListContext
-  // *ctx) override;
+  antlrcpp::Any visitDictInitializerExpressionList(
+      EscriptGrammar::EscriptParser::DictInitializerExpressionListContext* ctx ) override;
   antlrcpp::Any visitDoStatement( EscriptGrammar::EscriptParser::DoStatementContext* ctx ) override;
-  // antlrcpp::Any visitEnumList(EscriptGrammar::EscriptParser::EnumListContext *ctx) override;
+  antlrcpp::Any visitEnumList( EscriptGrammar::EscriptParser::EnumListContext* ctx ) override;
   antlrcpp::Any visitEnumListEntry(
       EscriptGrammar::EscriptParser::EnumListEntryContext* ctx ) override;
   antlrcpp::Any visitEnumStatement(
@@ -101,8 +74,8 @@ public:
   antlrcpp::Any visitExpression( EscriptGrammar::EscriptParser::ExpressionContext* ctx ) override;
   antlrcpp::Any visitExpressionList(
       EscriptGrammar::EscriptParser::ExpressionListContext* ctx ) override;
-  // antlrcpp::Any
-  // visitExpressionSuffix(EscriptGrammar::EscriptParser::ExpressionSuffixContext *ctx) override;
+  //  antlrcpp::Any visitExpressionSuffix(
+  //      EscriptGrammar::EscriptParser::ExpressionSuffixContext* ctx ) override;
   antlrcpp::Any visitFloatLiteral(
       EscriptGrammar::EscriptParser::FloatLiteralContext* ctx ) override;
   antlrcpp::Any visitForeachIterableExpression(
@@ -118,11 +91,10 @@ public:
       EscriptGrammar::EscriptParser::FunctionDeclarationContext* ctx ) override;
   antlrcpp::Any visitFunctionParameter(
       EscriptGrammar::EscriptParser::FunctionParameterContext* ctx ) override;
-  // antlrcpp::Any
-  // visitFunctionParameterList(EscriptGrammar::EscriptParser::FunctionParameterListContext *ctx)
-  // override; antlrcpp::Any
-  // visitFunctionParameters(EscriptGrammar::EscriptParser::FunctionParametersContext *ctx)
-  // override;
+  antlrcpp::Any visitFunctionParameterList(
+      EscriptGrammar::EscriptParser::FunctionParameterListContext* ctx ) override;
+  antlrcpp::Any visitFunctionParameters(
+      EscriptGrammar::EscriptParser::FunctionParametersContext* ctx ) override;
   antlrcpp::Any visitFunctionReference(
       EscriptGrammar::EscriptParser::FunctionReferenceContext* ctx ) override;
   antlrcpp::Any visitGotoStatement(
@@ -149,22 +121,22 @@ public:
       EscriptGrammar::EscriptParser::ModuleFunctionDeclarationContext* ctx ) override;
   antlrcpp::Any visitModuleFunctionParameter(
       EscriptGrammar::EscriptParser::ModuleFunctionParameterContext* ctx ) override;
-  // antlrcpp::Any
-  // visitModuleFunctionParameterList(EscriptGrammar::EscriptParser::ModuleFunctionParameterListContext
-  // *ctx) override;
+  antlrcpp::Any visitModuleFunctionParameterList(
+      EscriptGrammar::EscriptParser::ModuleFunctionParameterListContext* ctx ) override;
   antlrcpp::Any visitModuleUnit( EscriptGrammar::EscriptParser::ModuleUnitContext* ctx ) override;
   // antlrcpp::Any visitNavigationSuffix(EscriptGrammar::EscriptParser::NavigationSuffixContext
-  // *ctx) override; antlrcpp::Any
-  // visitParExpression(EscriptGrammar::EscriptParser::ParExpressionContext *ctx) override;
+  // *ctx) override;
+  antlrcpp::Any visitParExpression(
+      EscriptGrammar::EscriptParser::ParExpressionContext* ctx ) override;
   antlrcpp::Any visitPrimary( EscriptGrammar::EscriptParser::PrimaryContext* ctx ) override;
   antlrcpp::Any visitProgramDeclaration(
       EscriptGrammar::EscriptParser::ProgramDeclarationContext* ctx ) override;
   antlrcpp::Any visitProgramParameter(
       EscriptGrammar::EscriptParser::ProgramParameterContext* ctx ) override;
-  // antlrcpp::Any
-  // visitProgramParameterList(EscriptGrammar::EscriptParser::ProgramParameterListContext *ctx)
-  // override; antlrcpp::Any
-  // visitProgramParameters(EscriptGrammar::EscriptParser::ProgramParametersContext *ctx) override;
+  antlrcpp::Any visitProgramParameterList(
+      EscriptGrammar::EscriptParser::ProgramParameterListContext* ctx ) override;
+  antlrcpp::Any visitProgramParameters(
+      EscriptGrammar::EscriptParser::ProgramParametersContext* ctx ) override;
   antlrcpp::Any visitRepeatStatement(
       EscriptGrammar::EscriptParser::RepeatStatementContext* ctx ) override;
   antlrcpp::Any visitReturnStatement(
@@ -176,13 +148,12 @@ public:
   // override;
   antlrcpp::Any visitStringIdentifier(
       EscriptGrammar::EscriptParser::StringIdentifierContext* ctx ) override;
-  // antlrcpp::Any visitStructInitializer(EscriptGrammar::EscriptParser::StructInitializerContext
-  // *ctx) override;
+  antlrcpp::Any visitStructInitializer(
+      EscriptGrammar::EscriptParser::StructInitializerContext* ctx ) override;
   antlrcpp::Any visitStructInitializerExpression(
       EscriptGrammar::EscriptParser::StructInitializerExpressionContext* ctx ) override;
-  // antlrcpp::Any
-  // visitStructInitializerExpressionList(EscriptGrammar::EscriptParser::StructInitializerExpressionListContext
-  // *ctx) override;
+  antlrcpp::Any visitStructInitializerExpressionList(
+      EscriptGrammar::EscriptParser::StructInitializerExpressionListContext* ctx ) override;
   antlrcpp::Any visitSwitchBlockStatementGroup(
       EscriptGrammar::EscriptParser::SwitchBlockStatementGroupContext* ctx ) override;
   antlrcpp::Any visitSwitchLabel( EscriptGrammar::EscriptParser::SwitchLabelContext* ctx ) override;
@@ -205,20 +176,20 @@ public:
 
   antlrcpp::Any process_compilation_unit( SourceFile& );
   antlrcpp::Any process_module_unit( SourceFile& );
-  // SourceLocation location_for( antlr4::ParserRuleContext& ) const;
-  std::vector<CommentInfo> _comments;
 
 private:
   const SourceFileIdentifier& source_file_identifier;
-  Profile& profile;
-  Report& report;
-  std::vector<std::string> _lines = {};
-  std::vector<TokenPart> _line_parts = {};
-  int _last_line = 0;
+  PrettifyLineBuilder linebuilder;
   size_t _currident = 0;
-  void mergeComments();
-  void buildLine();
-  void collectComments( SourceFile& sf );
+  size_t _currentgroup = 0;
+  // Profile& profile;
+  Report& report;
+  void addToken( std::string&& text, const Position& pos, int style, int token_type );
+  void addToken( std::string&& text, antlr4::tree::TerminalNode* terminal, int style );
+  void addToken( std::string&& text, antlr4::Token* token, int style );
+  void preprocess( SourceFile& sf );
+  std::vector<FmtToken> collectComments( SourceFile& sf );
+  std::vector<std::string> load_raw_file();
 
   antlrcpp::Any expression_suffix( EscriptGrammar::EscriptParser::ExpressionContext*,
                                    EscriptGrammar::EscriptParser::ExpressionSuffixContext* );
@@ -226,11 +197,8 @@ private:
   antlrcpp::Any make_statement_label( EscriptGrammar::EscriptParser::StatementLabelContext* );
   antlrcpp::Any make_identifier( antlr4::tree::TerminalNode* );
   antlrcpp::Any make_string_literal( antlr4::tree::TerminalNode* );
-  antlrcpp::Any make_string_literal( antlr4::tree::TerminalNode*, const std::string& text );
   antlrcpp::Any make_bool_literal( antlr4::tree::TerminalNode* );
   antlrcpp::Any make_integer_literal( antlr4::tree::TerminalNode* );
   antlrcpp::Any make_float_literal( antlr4::tree::TerminalNode* );
 };
 }  // namespace Pol::Bscript::Compiler
-
-#endif  // POLSERVER_JSONASTFILEPROCESSOR_H

@@ -19,19 +19,10 @@ void ProgramParameterDeclaration::accept( NodeVisitor& visitor )
 
 void ProgramParameterDeclaration::describe_to( std::string& w ) const
 {
-  fmt::format_to( std::back_inserter( w ), "{}({}", type(), name );
+  fmt::format_to( std::back_inserter( w ), "program-parameter-declaration({}", name );
   if ( unused )
     w += ", unused";
   w += ")";
-}
-
-std::string ProgramParameterDeclaration::type() const
-{
-  return "program-parameter-declaration";
-}
-
-void ProgramParameterDeclaration::describe_to( picojson::object& o ) const {
-  o["name"] = picojson::value( name );
 }
 
 }  // namespace Pol::Bscript::Compiler

@@ -20,12 +20,7 @@ void FunctionParameterList::accept( NodeVisitor& visitor )
 
 void FunctionParameterList::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string FunctionParameterList::type() const
-{
-  return "function-parameter-list";
+  w += "function-parameter-list";
 }
 
 }  // namespace Pol::Bscript::Compiler

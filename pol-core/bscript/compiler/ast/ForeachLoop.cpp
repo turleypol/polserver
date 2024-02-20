@@ -27,14 +27,9 @@ void ForeachLoop::accept( NodeVisitor& visitor )
 
 void ForeachLoop::describe_to( std::string& w ) const
 {
-  w += type();
+  w += "foreach-loop";
   if ( !get_label().empty() )
     fmt::format_to( std::back_inserter( w ), "(label:{})", get_label() );
-}
-
-std::string ForeachLoop::type() const
-{
-  return "foreach-loop";
 }
 
 Expression& ForeachLoop::expression()

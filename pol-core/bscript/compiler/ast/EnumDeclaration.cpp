@@ -24,12 +24,7 @@ void EnumDeclaration::accept( NodeVisitor& visitor )
 
 void EnumDeclaration::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string EnumDeclaration::type() const
-{
-  return "enum-declaration";
+  w += "enum-declaration";
 }
 
 }  // namespace Pol::Bscript::Compiler

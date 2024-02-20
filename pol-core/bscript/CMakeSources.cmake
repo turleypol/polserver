@@ -22,8 +22,6 @@ set (bscript_sources    # sorted !
   compiler/analyzer/LocalVariableScopes.h
   compiler/analyzer/SemanticAnalyzer.cpp
   compiler/analyzer/SemanticAnalyzer.h
-  compiler/analyzer/SemanticTokensBuilder.cpp
-  compiler/analyzer/SemanticTokensBuilder.h
   compiler/analyzer/Variables.cpp
   compiler/analyzer/Variables.h
   compiler/ast/Argument.cpp
@@ -36,7 +34,6 @@ set (bscript_sources    # sorted !
   compiler/ast/BinaryOperator.h
   compiler/ast/Block.cpp
   compiler/ast/Block.h
-  compiler/ast/BooleanValue.cpp
   compiler/ast/BooleanValue.cpp
   compiler/ast/BooleanValue.h
   compiler/ast/BranchSelector.cpp
@@ -51,10 +48,6 @@ set (bscript_sources    # sorted !
   compiler/ast/CaseDispatchSelectors.h
   compiler/ast/CaseStatement.cpp
   compiler/ast/CaseStatement.h
-  compiler/ast/Comment.cpp
-  compiler/ast/Comment.cpp
-  compiler/ast/Comments.cpp
-  compiler/ast/Comments.h
   compiler/ast/ConditionalOperator.cpp
   compiler/ast/ConditionalOperator.h
   compiler/ast/ConstDeclaration.cpp
@@ -87,14 +80,12 @@ set (bscript_sources    # sorted !
   compiler/ast/ExitStatement.h
   compiler/ast/Expression.cpp
   compiler/ast/Expression.h
-  compiler/ast/File.cpp
-  compiler/ast/File.h
   compiler/ast/FloatValue.cpp
   compiler/ast/FloatValue.h
   compiler/ast/ForeachLoop.cpp
   compiler/ast/ForeachLoop.h
-  compiler/ast/FormatExpression.cpp
   compiler/ast/FormatExpression.h
+  compiler/ast/FormatExpression.cpp
   compiler/ast/Function.cpp
   compiler/ast/Function.h
   compiler/ast/FunctionBody.cpp
@@ -119,8 +110,6 @@ set (bscript_sources    # sorted !
   compiler/ast/JumpStatement.h
   compiler/ast/LabelableStatement.cpp
   compiler/ast/LabelableStatement.h
-  compiler/ast/LineComment.cpp
-  compiler/ast/LineComment.h
   compiler/ast/LoopStatement.cpp
   compiler/ast/LoopStatement.h
   compiler/ast/MemberAccess.cpp
@@ -186,10 +175,6 @@ set (bscript_sources    # sorted !
   compiler/astbuilder/ExpressionBuilder.h
   compiler/astbuilder/FunctionResolver.cpp
   compiler/astbuilder/FunctionResolver.h
-  compiler/astbuilder/JsonAstBuilder.cpp
-  compiler/astbuilder/JsonAstBuilder.h
-  compiler/astbuilder/JsonAstFileProcessor.cpp
-  compiler/astbuilder/JsonAstFileProcessor.h
   compiler/astbuilder/ModuleDeclarationBuilder.cpp
   compiler/astbuilder/ModuleDeclarationBuilder.h
   compiler/astbuilder/ModuleProcessor.cpp
@@ -232,14 +217,18 @@ set (bscript_sources    # sorted !
   compiler/file/ConformingCharStream.h
   compiler/file/ErrorListener.cpp
   compiler/file/ErrorListener.h
+  compiler/file/PrettifyBuilder.cpp
+  compiler/file/PrettifyBuilder.h
+  compiler/file/PrettifyFileProcessor.cpp
+  compiler/file/PrettifyFileProcessor.h
+  compiler/file/PrettifyLineBuilder.cpp
+  compiler/file/PrettifyLineBuilder.h
   compiler/file/SourceFile.cpp
   compiler/file/SourceFile.h
   compiler/file/SourceFileCache.cpp
   compiler/file/SourceFileCache.h
   compiler/file/SourceFileIdentifier.cpp
   compiler/file/SourceFileIdentifier.h
-  compiler/file/SourceFileLoader.cpp
-  compiler/file/SourceFileLoader.h
   compiler/file/SourceLocation.cpp
   compiler/file/SourceLocation.h
   compiler/format/CompiledScriptSerializer.cpp
@@ -256,13 +245,7 @@ set (bscript_sources    # sorted !
   compiler/model/FlowControlLabel.h
   compiler/model/FunctionLink.cpp
   compiler/model/FunctionLink.h
-  compiler/model/JsonAst.cpp
-  compiler/model/JsonAst.h
   compiler/model/LocalVariableScopeInfo.h
-  compiler/model/SemanticTokens.cpp
-  compiler/model/SemanticTokens.h
-  compiler/model/ScopeTree.cpp
-  compiler/model/ScopeTree.h
   compiler/model/SimpleTypes.h
   compiler/model/UserFunctionInclusion.h
   compiler/model/Variable.cpp

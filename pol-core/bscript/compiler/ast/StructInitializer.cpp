@@ -22,12 +22,7 @@ void StructInitializer::accept( NodeVisitor& visitor )
 
 void StructInitializer::describe_to( std::string& w ) const
 {
-  w += type();
-}
-
-std::string StructInitializer::type() const
-{
-  return "struct-initializer";
+  w += "struct-initializer";
 }
 
 }  // namespace Pol::Bscript::Compiler

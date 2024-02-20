@@ -23,14 +23,9 @@ void WhileLoop::accept( NodeVisitor& visitor )
 
 void WhileLoop::describe_to( std::string& w ) const
 {
-  w += type();
+  w += "while-loop";
   if ( !get_label().empty() )
     fmt::format_to( std::back_inserter( w ), "(label:{})", get_label() );
-}
-
-std::string WhileLoop::type() const
-{
-  return "while-loop";
 }
 
 Expression& WhileLoop::predicate()
