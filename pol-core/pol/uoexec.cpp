@@ -75,7 +75,6 @@ UOExecutor::~UOExecutor()
 
   pParent = nullptr;
   pChild = nullptr;
-  Clib::delete_all( availmodules );
 }
 
 bool UOExecutor::suspend()
