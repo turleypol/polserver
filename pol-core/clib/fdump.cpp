@@ -6,6 +6,7 @@
 
 #include "fdump.h"
 #include <fmt/format.h>
+#include <memory>
 
 namespace Pol::Clib
 {
@@ -28,7 +29,7 @@ void dump16( std::back_insert_iterator<std::string> buffer, const unsigned char*
     if ( i >= len || !isprint( s[i] ) )
       buffer = '.';
     else
-      fmt::format_to( buffer, "{}", &(char*)s[i] );
+      fmt::format_to( buffer, "{}", (char)s[i] );
 
     if ( i == 7 )
       buffer = ' ';
