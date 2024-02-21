@@ -1,3 +1,6 @@
+function funcref()
+
+endfunction
 program main()
     var expr := struct{
         "a" := "hello there",
@@ -18,4 +21,5 @@ program main()
     print(obj.d.size() == 1);
     print(obj.d.key == "value");
     print(PackJSON(expr, 1) != json);
+    print(PackJson(@funcref));
 endprogram
