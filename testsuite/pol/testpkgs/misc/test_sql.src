@@ -39,7 +39,7 @@ exported function sqlquery()
   print(query);
   query:=mysql_query(conn,"INSERT INTO db_test (key, val) VALUES (2,'two')");
   print(query);
-  query:=mysql_query(conn,"SELECT val FROM db_test");
+  var res:=mysql_query(conn,"SELECT val FROM db_test");
   For i:=1 To (mysql_num_rows(res))
     print( mysql_fetch_row(res));
   EndFor
