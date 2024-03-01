@@ -35,9 +35,9 @@ exported function sqlquery()
 
   var query:=mysql_query(conn,"CREATE TABLE IF NOT EXISTS db_test (`key` int(11) NOT NULL, `val` varchar(128) NOT NULL, PRIMARY KEY (`key`))");
   print(query);
-  query:=mysql_query(conn,"INSERT INTO db_test (key,val) VALUES (1,'one')");
+  query:=mysql_query(conn,"INSERT INTO db_test VALUES (1,'one');");
   print(query);
-  query:=mysql_query(conn,"INSERT INTO db_test (key,val) VALUES (2,'two')");
+  query:=mysql_query(conn,"INSERT INTO db_test VALUES (2,'two');");
   print(query);
   var res:=mysql_query(conn,"SELECT val FROM db_test");
   For i:=1 To (mysql_num_rows(res))
