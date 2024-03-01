@@ -134,6 +134,11 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
+      - name: Start MySQL
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -e "CREATE DATABASE IF NOT EXISTS poltest;" -uuser -ppwd
       - name: Test (Shard Fixtures)
         if: matrix.config.nopch == 0
         run: |

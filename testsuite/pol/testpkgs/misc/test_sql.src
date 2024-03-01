@@ -1,0 +1,18 @@
+use uo;
+use os;
+use sql;
+
+include "testutil";
+
+program testsql()
+  return 1;
+endprogram
+
+exported function sqlconnect()
+  var conn:=mysql_connect("localhost","user","pwd");
+  print(conn);
+  var db:=mysql_select_db(conn,"poltest");
+  print(db);
+
+  return 1;
+endfunction
