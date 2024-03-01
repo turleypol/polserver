@@ -33,13 +33,13 @@ exported function sqlquery()
     return ret_error($"failed to select db: {db}");
   endif
 
-  var query:=mysql_query("CREATE TABLE IF NOT EXISTS db_test (`key` int(11) NOT NULL, `val` varchar(128) NOT NULL, PRIMARY KEY (`int`))");
+  var query:=mysql_query(conn,"CREATE TABLE IF NOT EXISTS db_test (`key` int(11) NOT NULL, `val` varchar(128) NOT NULL, PRIMARY KEY (`int`))");
   print(query);
-  query:=mysql_query("INSERT INTO db_test (key, val) VALUES (1,'one')");
+  query:=mysql_query(conn,"INSERT INTO db_test (key, val) VALUES (1,'one')");
   print(query);
-  query:=mysql_query("INSERT INTO db_test (key, val) VALUES (2,'two')");
+  query:=mysql_query(conn,"INSERT INTO db_test (key, val) VALUES (2,'two')");
   print(query);
-  query:=mysql_query("SELECT val FROM db_test");
+  query:=mysql_query(conn,"SELECT val FROM db_test");
   For i:=1 To (mysql_num_rows(res))
     print( mysql_fetch_row(res));
   EndFor
