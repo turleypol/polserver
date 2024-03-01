@@ -138,7 +138,7 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           sudo /etc/init.d/mysql start
-          mysql -e "CREATE DATABASE IF NOT EXISTS poltest;" -uuser -ppwd
+          mysql -e "CREATE DATABASE IF NOT EXISTS poltest;" -uroot -proot
       - name: Test (Shard Fixtures)
         if: matrix.config.nopch == 0
         run: |

@@ -9,7 +9,7 @@ program testsql()
 endprogram
 
 exported function sqlconnect()
-  var conn:=mysql_connect("localhost","user","pwd");
+  var conn:=mysql_connect("localhost","root","root");
   print(conn);
   var db:=mysql_select_db(conn,"poltest");
   print(db);
