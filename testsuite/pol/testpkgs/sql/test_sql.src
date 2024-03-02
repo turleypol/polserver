@@ -47,19 +47,27 @@ exported function sqlquery()
 endfunction
 
 exported function sqlquery_param()
-  var res := mysql_query( conn, "SELECT ? FROM db_test", { "val" } );
+  var query := mysql_query( conn, "INSERT INTO db_test VALUES (3,?), (4,?);", { "three",
+                                                                                "four" }
+                            );
+  if ( !query )
+    return ret_error( $"failed to add values {query}" );
+  endif
+  var res := mysql_query( conn, "SELECT val FROM db_test" );
   var num := mysql_num_rows( res );
-  if ( num != 2 )
-    return ret_error( $"failed to get values {num}!=2 - {res}" );
+  if ( num != 4 )
+    return ret_error( $"failed to get values {num}!=4 - {res}" );
   endif
   for i := 1 to ( mysql_num_rows( res ) )
     var val := mysql_fetch_row( res )[1];
-    print(val);
-    print(mysql_fetch_row(res)[2]);
     if ( i == 1 && val != "one" )
       return ret_error( $"wrong value {val}!=one" );
     elseif ( i == 2 && val != "two" )
       return ret_error( $"wrong value {val}!=two" );
+    elseif ( i == 3 && val != "three" )
+      return ret_error( $"wrong value {val}!=three" );
+    elseif ( i == 4 && val != "four" )
+      return ret_error( $"wrong value {val}!=four" );
     endif
   endfor
   return 1;
