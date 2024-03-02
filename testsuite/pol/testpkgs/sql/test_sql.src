@@ -54,6 +54,8 @@ exported function sqlquery_param()
   endif
   for i := 1 to ( mysql_num_rows( res ) )
     var val := mysql_fetch_row( res )[1];
+    print(val);
+    print(mysql_fetch_row(res)[2]);
     if ( i == 1 && val != "one" )
       return ret_error( $"wrong value {val}!=one" );
     elseif ( i == 2 && val != "two" )
