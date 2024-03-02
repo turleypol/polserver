@@ -39,11 +39,11 @@ exported function sqlquery()
   print(query);
   var res:=mysql_query(conn,"SELECT val FROM db_test");
   For i:=1 To (mysql_num_rows(res))
-    print( mysql_fetch_row(res[1]));
+    print( mysql_fetch_row(res)[1]);
   EndFor
   res:=mysql_query(conn,"SELECT ? FROM db_test",{"val"});
   For i:=1 To (mysql_num_rows(res))
-    print( mysql_fetch_row(res[1]));
+    print( mysql_fetch_row(res)[1]);
   EndFor
   mysql_close(conn);
   return 1;
