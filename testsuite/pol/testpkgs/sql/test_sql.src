@@ -60,7 +60,7 @@ exported function sqlquery_param()
   endif
   for i := 1 to ( mysql_num_rows( res ) )
     var val := mysql_fetch_row( res )[1];
-    elseif ( i == 1 && val != "three" )
+    if ( i == 1 && val != "three" )
       return ret_error( $"wrong value {val}!=three" );
     elseif ( i == 2 && val != "four" )
       return ret_error( $"wrong value {val}!=four" );
