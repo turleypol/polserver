@@ -73,7 +73,7 @@ jobs:
         if: matrix.config.os != 'ubuntu-latest'
         uses: shogo82148/actions-setup-mysql@v1
         with:
-          mysql-version: "8.0"
+          mysql-version: "5.7"
           root-password: root
       - name: Install Compiler and Dependencies
         if: matrix.config.os == 'ubuntu-latest'
