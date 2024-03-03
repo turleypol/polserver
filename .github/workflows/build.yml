@@ -70,8 +70,10 @@ jobs:
           path: lib/cppdap-2a4c7cf
           key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-cppdap-2a4c7cf
       - name: MySQL
+        if: matrix.config.os != 'ubuntu-latest'
         uses: shogo82148/actions-setup-mysql@v1
         with:
+          mysql-version: "8.0"
           root-password: root
       - name: Install Compiler and Dependencies
         if: matrix.config.os == 'ubuntu-latest'
@@ -138,11 +140,11 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
-          #      - name: Start MySQL
-          #        if: matrix.config.os == 'ubuntu-latest'
-          #        shell: pwsh
-          #        run: |
-          #          sudo /etc/init.d/mysql start
+      - name: Start MySQL
+        if: matrix.config.os == 'ubuntu-latest'
+        shell: pwsh
+        run: |
+          sudo /etc/init.d/mysql start
           #          mysql -e "CREATE DATABASE IF NOT EXISTS poltest;" -uroot -proot
           #          echo "POLCORE_TESTSQL=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Prepare MySQL
