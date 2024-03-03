@@ -69,6 +69,10 @@ jobs:
         with:
           path: lib/cppdap-2a4c7cf
           key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-cppdap-2a4c7cf
+      - name: MySQL
+        uses: shogo82148/actions-setup-mysql@v1
+        with:
+          root-password: root
       - name: Install Compiler and Dependencies
         if: matrix.config.os == 'ubuntu-latest'
         shell: pwsh
@@ -143,9 +147,6 @@ jobs:
           echo "POLCORE_TESTSQL=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Start MySQL (windows)
         if: matrix.config.os == 'windows-latest'
-        uses: shogo82148/actions-setup-mysql@v1
-        with:
-          root-password: root
         shell: pwsh
         run: |
           mysql -e "CREATE DATABASE IF NOT EXISTS poltest;" -uroot -proot
