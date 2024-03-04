@@ -114,7 +114,6 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
       - name: Start MySQL
-        if: matrix.config.os == 'ubuntu-latest'
         shell: pwsh
         run: |
           sudo /etc/init.d/mysql start
