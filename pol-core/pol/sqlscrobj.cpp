@@ -357,8 +357,7 @@ std::string BSQLConnection::escape_string( const std::string& text ) const
   {
     return text;
   }
-  std::string res;
-  res.reserve( text.size() * 2 + 1 );
+  std::string res( text.size() * 2 + 1, '\0' );
   INFO_PRINTLN( "ESCAPE: '{}' - {}", text,
                 mysql_real_escape_string( _conn->ptr(), &res[0], text.data(), text.size() ) );
   INFO_PRINTLN( "RES {}", res );
