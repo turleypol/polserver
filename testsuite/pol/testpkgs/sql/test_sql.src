@@ -47,8 +47,8 @@ exported function sqlquery()
 endfunction
 
 exported function sqlquery_param()
-  var query := mysql_query( conn, "INSERT INTO db_test VALUES (3,?), (4,?);",
-    { "three", "four" } );
+  var query := mysql_query( conn, "INSERT INTO db_test VALUES (3,"three"), (4,?);",
+    { "four" } );
   if ( !query )
     return ret_error( $"failed to add values {query}" );
   endif
