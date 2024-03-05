@@ -238,7 +238,7 @@ Bscript::BObjectImp* SQLExecutorModule::mf_mysql_connect()
   const String* username = getStringParam( 1 );
   const String* password = getStringParam( 2 );
   int port;
-  if ( !host || !username || !password || !getParam( 4, port ) )
+  if ( !host || !username || !password || !getParam( 3, port ) )
   {
     return new BError( "Invalid parameters" );
   }
