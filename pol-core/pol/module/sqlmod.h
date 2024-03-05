@@ -50,7 +50,7 @@ public:
   [[nodiscard]] Bscript::BObjectImp* mf_mysql_num_rows();
   [[nodiscard]] Bscript::BObjectImp* mf_mysql_select_db();
   [[nodiscard]] Bscript::BObjectImp* mf_mysql_field_name();
-  [[nodiscard]] Bscript::BObjectImp* mysql_escape_string();
+  [[nodiscard]] Bscript::BObjectImp* mf_mysql_escape_string();
 
   static Bscript::BObjectImp* background_connect( weak_ptr<Core::UOExecutor> uoexec,
                                                   const std::string host,

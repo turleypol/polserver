@@ -348,7 +348,7 @@ Bscript::BObjectImp* SQLExecutorModule::mf_mysql_fetch_row()
   }
   return new Core::BSQLRow( result );
 }
-Bscript::BObjectImp* SQLExecutorModule::mysql_escape_string()
+Bscript::BObjectImp* SQLExecutorModule::mf_mysql_escape_string()
 {
   Core::BSQLConnection* sql =
       static_cast<Core::BSQLConnection*>( getParamImp( 0, Bscript::BObjectImp::OTSQLConnection ) );
@@ -375,7 +375,7 @@ MF_NO_MYSQL( mf_mysql_affected_rows )
 MF_NO_MYSQL( mf_mysql_num_rows )
 MF_NO_MYSQL( mf_mysql_close )
 MF_NO_MYSQL( mf_mysql_fetch_row )
-MF_NO_MYSQL( mysql_escape_string )
+MF_NO_MYSQL( mf_mysql_escape_string )
 #endif
 }  // namespace Module
 }  // namespace Pol
