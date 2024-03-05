@@ -361,6 +361,7 @@ std::string BSQLConnection::escape_string( const std::string& text ) const
   INFO_PRINTLN( "ESCAPE: '{}' - {}", text,
                 mysql_real_escape_string( _conn->ptr(), &res[0], text.data(), text.size() ) );
   INFO_PRINTLN( "RES {}", res );
+  INFO_PRINTLN( "text {}", text );
   res.shrink_to_fit();
 
   INFO_PRINTLN( "RES {}", res );
