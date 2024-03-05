@@ -353,7 +353,7 @@ Bscript::BObjectImp* SQLExecutorModule::mysql_escape_string()
   Core::BSQLConnection* sql =
       static_cast<Core::BSQLConnection*>( getParamImp( 0, Bscript::BObjectImp::OTSQLConnection ) );
   const String* text;
-  if ( !result || !getStringParam( 1, text ) )
+  if ( !sql || !getStringParam( 1, text ) )
     return new BError( "Invalid parameters" );
 
   return new String( sql->escape_string( text->value() ) );
