@@ -10,4 +10,4 @@ mysql_num_rows(result);
 mysql_select_db(connection,database);
 mysql_field_name(result,column_index);
 mysql_close(connection);
-mysql_escape_string(connection, string);
+mysql_escape_string(connection, str);
