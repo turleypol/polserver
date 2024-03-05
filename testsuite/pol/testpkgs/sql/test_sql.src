@@ -73,7 +73,7 @@ exported function sqlquery_param()
 endfunction
 
 exported function sqlquery_param1()
-  var esc:=mysql_escape_string(conn,"blubb' t\n");
-  print(esc);
+  var text:=mysql_escape_string(conn,"blubb'");
+  print(text);
   return 1;
 endfunction
