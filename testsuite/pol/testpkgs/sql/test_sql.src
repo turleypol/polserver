@@ -47,8 +47,8 @@ exported function sqlquery()
 endfunction
 
 exported function sqlquery_param()
-  var query := mysql_query( conn, "INSERT INTO db_test VALUES (3,'three'), (4,?);",
-    { "four" } );
+  var query := mysql_query( conn, "INSERT INTO db_test VALUES (3,?), (4,?);",
+    { "three", "four" } );
   if ( !query )
     return ret_error( $"failed to add values {query}" );
   endif
@@ -72,8 +72,10 @@ exported function sqlquery_param()
   return 1;
 endfunction
 
-exported function sqlquery_param1()
+exported function sql_escape_string()
   var text:=mysql_escape_string(conn,"blubb'");
-  print(text);
+  if (text != "blubb\'")
+    return ret_error( $"wrong value: {text}!=blubb\'");
+  endif
   return 1;
 endfunction
