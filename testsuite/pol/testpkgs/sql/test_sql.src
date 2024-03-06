@@ -74,8 +74,8 @@ endfunction
 
 exported function sql_escape_string()
   var text:=mysql_escape_string(conn,"blubb'");
-  if (text != "blubb\'")
-    return ret_error( $"wrong value: {text}!=blubb\'");
+  if (text != "blubb\\'")
+    return ret_error( $"wrong value: {text}!=blubb\\'");
   endif
   return 1;
 endfunction

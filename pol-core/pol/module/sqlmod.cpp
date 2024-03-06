@@ -348,6 +348,7 @@ Bscript::BObjectImp* SQLExecutorModule::mf_mysql_fetch_row()
   }
   return new Core::BSQLRow( result );
 }
+
 Bscript::BObjectImp* SQLExecutorModule::mf_mysql_escape_string()
 {
   Core::BSQLConnection* sql =
