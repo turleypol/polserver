@@ -139,7 +139,6 @@ function(set_compile_flags target is_executable)
     target_link_libraries(${target} PRIVATE
       -LARGEADDRESSAWARE # more then 2gb for 32bit
       -DEBUG # include debug information (otherwise attach to process does not work)
-      /verbose:lib
     )
     if (${release})
       target_link_libraries(${target} PRIVATE
