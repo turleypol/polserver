@@ -7,9 +7,9 @@ set (EFSW_SOURCE_DIR "${POL_EXT_LIB_DIR}/efsw-${EFSW_VERSION_REF}")
 set (EFSW_INSTALL_DIR "${EFSW_SOURCE_DIR}/build")
 
 if (${windows})
-  set (EFSW_LIB "${EFSW_INSTALL_DIR}/lib/efsw-static.lib" )
+  set (EFSW_LIB "${EFSW_SOURCE_DIR}/efsw-static.lib" )
 else()
-  set (EFSW_LIB "${EFSW_INSTALL_DIR}/lib/libefsw-static.a" )
+  set (EFSW_LIB "${EFSW_SOURCE_DIR}/libefsw-static.a" )
 endif()
 
 if (${windows})
