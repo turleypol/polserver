@@ -41,6 +41,7 @@ if(NOT EXISTS ${EFSW_LIB})
     CMAKE_ARGS       ${EFSW_ARGS}
     SOURCE_DIR       "${EFSW_SOURCE_DIR}"
     BUILD_IN_SOURCE  1
+    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
     INSTALL_COMMAND  ${CMAKE_COMMAND} --build . --config Release --target install
     BUILD_BYPRODUCTS ${EFSW_LIB}
     EXCLUDE_FROM_ALL 1
