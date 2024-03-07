@@ -112,8 +112,12 @@ antlrcpp::Any PrettifyFileProcessor::visitModuleUnit( EscriptParser::ModuleUnitC
 
 std::string PrettifyFileProcessor::prettify() const
 {
-  return fmt::format( "{}", fmt::join( linebuilder.formattedLines(),
-                                       compilercfg.FormatterWindowsLineEndings ? "\r\n" : "\n" ) );
+  auto result =
+      fmt::format( "{}", fmt::join( linebuilder.formattedLines(),
+                                    compilercfg.FormatterWindowsLineEndings ? "\r\n" : "\n" ) );
+  if ( compilercfg.FormatterInsertNewlineAtEOF && !result.empty() && result.back() != '\n' )
+    result += compilercfg.FormatterWindowsLineEndings ? "\r\n" : "\n";
+  return result;
 }
 
 
@@ -216,7 +220,8 @@ antlrcpp::Any PrettifyFileProcessor::visitDictInitializerExpression(
 
   if ( ctx->expression().size() > 1 )
   {
-    addToken( "->", ctx->ARROW(), linebuilder.delimiterStyle() & ~FmtToken::BREAKPOINT );
+    addToken( "->", ctx->ARROW(),
+              linebuilder.delimiterStyle() & ~FmtToken::BREAKPOINT & ~FmtToken::ATTACHED );
     visitExpression( ctx->expression( 1 ) );
   }
   return {};
@@ -1238,7 +1243,7 @@ antlrcpp::Any PrettifyFileProcessor::make_bool_literal( antlr4::tree::TerminalNo
 }
 
 void PrettifyFileProcessor::addToken( std::string&& text, const Position& pos, int style,
-                                      int token_type )
+                                      size_t token_type )
 {
   linebuilder.addPart(
       { std::forward<std::string>( text ), pos, style, _currentgroup, token_type } );
@@ -1280,6 +1285,7 @@ void PrettifyFileProcessor::preprocess( SourceFile& sf )
     if ( skiplines.back().start.line_number == skiplines.back().end.line_number )
       skiplines.back().end.line_number = rawlines.size() + 1;
   }
+
   // remove all comments between noformat ranges
   comments.erase( std::remove_if( comments.begin(), comments.end(),
                                   [&]( auto& c )
@@ -1336,8 +1342,8 @@ std::vector<FmtToken> PrettifyFileProcessor::collectComments( SourceFile& sf )
     if ( comment->getType() == EscriptLexer::COMMENT ||
          comment->getType() == EscriptLexer::LINE_COMMENT )
     {
-      Range startpos( &*comment );
-      Range endpos( &*comment );
+      Range startpos( comment );
+      Range endpos( comment );
 
       // use whitespace token as start if its on the same line
       // so that the tokenid of a comment is always the next tokenid after a "actual" token
@@ -1376,8 +1382,18 @@ std::vector<FmtToken> PrettifyFileProcessor::collectComments( SourceFile& sf )
           }
           else
           {
-            info.text.erase( 0, firstchar );  // remove remaining whitespace
-            info.text = std::string( "// " ) + info.text;
+            // if its at the line start and line before was also a comment dont trim whitespaces
+            // (could be a header comment)
+            if ( startpos.start.character_column == 1 && !comments.empty() &&
+                 comments.back().pos.line_number == startpos.start.line_number - 1 )
+            {
+              info.text = std::string( "//" ) + info.text;
+            }
+            else
+            {
+              info.text.erase( 0, firstchar );  // remove remaining whitespace
+              info.text = std::string( "// " ) + info.text;
+            }
           }
         }
         auto lastchar = info.text.find_last_not_of( ' ' );
@@ -1396,7 +1412,31 @@ std::vector<FmtToken> PrettifyFileProcessor::collectComments( SourceFile& sf )
         if ( info.text.empty() || ( info.text.front() == '*' && info.text.back() == '*' ) )
           info.text = std::string( "/*" ) + info.text + "*/";
         else
-          info.text = std::string( "/* " ) + info.text + " */";
+        {
+          std::string text = "/*";
+          if ( info.text.front() != '\n' && info.text.front() != '\r' )
+            text += ' ';
+          text += info.text;
+          if ( info.text.back() != '\n' && info.text.back() != '\r' )
+            text += ' ';
+          text += "*/";
+          info.text = text;
+        }
+        // split lines to use correct linenendings
+        std::string rawtext = std::move( info.text );
+        info.text.clear();
+        for ( size_t i = 0; i < rawtext.size(); ++i )
+        {
+          if ( rawtext[i] == '\r' && i + 1 < rawtext.size() && rawtext[i + 1] == '\n' )
+          {
+            ++i;
+            info.text += compilercfg.FormatterWindowsLineEndings ? "\r\n" : "\n";
+          }
+          else if ( rawtext[i] == '\r' || rawtext[i] == '\n' )
+            info.text += compilercfg.FormatterWindowsLineEndings ? "\r\n" : "\n";
+          else
+            info.text += rawtext[i];
+        }
       }
       info.pos = startpos.start;
       info.pos_end = endpos.end;

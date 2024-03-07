@@ -9,7 +9,7 @@
 #include <iostream>
 #include <utility>
 
-#define DEBUG_FORMAT_BREAK
+// #define DEBUG_FORMAT_BREAK
 
 namespace Pol::Bscript::Compiler
 {
@@ -45,8 +45,8 @@ void PrettifyLineBuilder::addPart( FmtToken part )
 
 bool PrettifyLineBuilder::finalize()
 {
-  mergeEOFComments();
-  return _line_parts.empty();
+  mergeEOFNonTokens();
+  return _line_parts.empty() && _comments.empty() && _skiplines.empty();
 }
 
 const std::vector<FmtToken>& PrettifyLineBuilder::currentTokens() const
@@ -54,7 +54,7 @@ const std::vector<FmtToken>& PrettifyLineBuilder::currentTokens() const
   return _line_parts;
 }
 
-void PrettifyLineBuilder::mergeRawContent( int nextlineno )
+void PrettifyLineBuilder::mergeRawContent( size_t nextlineno )
 {
   for ( auto itr = _skiplines.begin(); itr != _skiplines.end(); )
   {
@@ -75,7 +75,7 @@ void PrettifyLineBuilder::mergeRawContent( int nextlineno )
   }
 }
 
-void PrettifyLineBuilder::mergeCommentsBefore( int nextlineno )
+void PrettifyLineBuilder::mergeCommentsBefore( size_t nextlineno )
 {
   // add comments before current line
   while ( !_comments.empty() )
@@ -142,69 +142,77 @@ void PrettifyLineBuilder::buildLine( size_t current_ident )
 
   // fill lines with final strings splitted at breakpoints
   // <splitted string, forcenewline, groupid>
-  std::vector<std::tuple<std::string, bool, size_t>> lines;
-  std::string line;
-  for ( size_t i = 0; i < _line_parts.size(); ++i )
+  std::vector<std::tuple<std::string, bool, size_t, size_t>> lines;
   {
-    line += _line_parts[i].text;
-    // add space if set, but not if the following part is attached
-    if ( _line_parts[i].style & FmtToken::SPACE )
+    std::string line;
+    size_t firstgroup = 0;
+    for ( size_t i = 0; i < _line_parts.size(); ++i )
     {
-      if ( i + 1 < _line_parts.size() )
+      if ( line.empty() )
+        firstgroup = _line_parts[i].group;
+      line += _line_parts[i].text;
+      // add space if set, but not if the following part is attached
+      if ( _line_parts[i].style & FmtToken::SPACE )
       {
-        if ( !( _line_parts[i + 1].style & FmtToken::ATTACHED ) )
+        if ( i + 1 < _line_parts.size() )
+        {
+          if ( !( _line_parts[i + 1].style & FmtToken::ATTACHED ) )
+            line += ' ';
+        }
+        else
           line += ' ';
       }
-      else
-        line += ' ';
-    }
-    if ( _line_parts[i].style & FmtToken::FORCED_BREAK )
-    {
-      lines.emplace_back( std::make_tuple( std::move( line ), true, _line_parts[i].group ) );
-      line.clear();
-    }
-    // start a new line if breakpoint
-    else if ( _line_parts[i].style & FmtToken::BREAKPOINT )
-    {
-      // if the next part is attached, dont break now and instead later
-      // eg dont split blubb[1]()
-      bool skip = false;
-      if ( i + 1 < _line_parts.size() )
+      if ( _line_parts[i].style & FmtToken::FORCED_BREAK )
       {
-        // next one is attached
-        if ( _line_parts[i + 1].style & FmtToken::ATTACHED )
+        lines.emplace_back(
+            std::make_tuple( std::move( line ), true, _line_parts[i].group, firstgroup ) );
+        line.clear();
+      }
+      // start a new line if breakpoint
+      else if ( _line_parts[i].style & FmtToken::BREAKPOINT )
+      {
+        // if the next part is attached, dont break now and instead later
+        // eg dont split blubb[1]()
+        bool skip = false;
+        if ( i + 1 < _line_parts.size() )
         {
-          // search for space or breakpoint
-          for ( size_t j = i + 1; j < _line_parts.size(); ++j )
+          // next one is attached
+          if ( _line_parts[i + 1].style & FmtToken::ATTACHED )
           {
-            if ( _line_parts[j].style & FmtToken::ATTACHED )
-              skip = true;
-            if ( _line_parts[j].style & FmtToken::SPACE ||
-                 _line_parts[j].style & FmtToken::BREAKPOINT )
+            // search for space or breakpoint
+            for ( size_t j = i + 1; j < _line_parts.size(); ++j )
             {
-              _line_parts[j].style |= FmtToken::BREAKPOINT;
-              skip = true;
-              break;
+              if ( _line_parts[j].style & FmtToken::ATTACHED )
+                skip = true;
+              if ( _line_parts[j].style & FmtToken::SPACE ||
+                   _line_parts[j].style & FmtToken::BREAKPOINT )
+              {
+                _line_parts[j].style |= FmtToken::BREAKPOINT;
+                skip = true;
+                break;
+              }
             }
           }
         }
+        if ( skip )
+          continue;
+        lines.emplace_back(
+            std::make_tuple( std::move( line ), false, _line_parts[i].group, firstgroup ) );
+        line.clear();
       }
-      if ( skip )
-        continue;
-      lines.emplace_back( std::make_tuple( std::move( line ), false, _line_parts[i].group ) );
+    }
+    // add remainings
+    if ( !line.empty() )
+    {
+      lines.emplace_back( std::make_tuple( std::move( line ), false, _line_parts.back().group,
+                                           _line_parts.back().group ) );
       line.clear();
     }
   }
-  // add remainings
-  if ( !line.empty() )
-  {
-    lines.emplace_back( std::make_tuple( std::move( line ), false, _line_parts.back().group ) );
-    line.clear();
-  }
 #ifdef DEBUG_FORMAT_BREAK
   INFO_PRINTLN( "BREAK " );
-  for ( auto& [l, forced, group] : lines )
-    INFO_PRINTLN( "\"{}\" {}", l, group );
+  for ( auto& [l, forced, group, firstgroup] : lines )
+    INFO_PRINTLN( "\"{}\" {}-{}", l, group, firstgroup );
 #endif
   // add newline from original sourcecode
   addEmptyLines( _line_parts.front().pos.line_number );
@@ -212,89 +220,125 @@ void PrettifyLineBuilder::buildLine( size_t current_ident )
   // sum up linelength, are groups inside
   bool groups = false;
   size_t linelength = 0;
-  for ( auto& [l, forced, group] : lines )
+  for ( auto& [l, forced, group, firstgroup] : lines )
   {
     if ( group != 0 )
       groups = true;
     linelength += l.size();
   }
 
+  std::string line;
   // split based on groups
   if ( groups && linelength > compilercfg.FormatterLineWidth )
   {
-    std::vector<size_t> alignmentspace = {};
+    // store for each group thr alignment
+    std::map<size_t, size_t> alignmentspace = {};
     size_t lastgroup = 0xffffFFFF;
     bool newline = false;
-    for ( auto& [l, forced, group] : lines )
+    auto ident = identSpacing();
+    line = ident;
+    bool groupdiffered = false;
+    for ( auto& [l, forced, group, firstgroup] : lines )
     {
       if ( forced )
       {
         line += l;
         stripline( line );
         _lines.emplace_back( std::move( line ) );
+        line = ident;
         continue;
       }
       if ( lastgroup == 0xffffFFFF )
       {
         line += l;  // first part
-        alignmentspace.push_back( line.size() );
+        alignmentspace[firstgroup] = line.size() - ident.size();
+        alignmentspace[group] = line.size() - ident.size();
+        newline = true;
+#ifdef DEBUG_FORMAT_BREAK
+        INFO_PRINTLN( "first {}", line );
+#endif
       }
-      else if ( lastgroup < group )  // new group
+      else if ( lastgroup < firstgroup )  // new group
       {
-        if ( !newline )
+        groupdiffered = true;
+        bool newgroup = false;
+        if ( !alignmentspace.count( firstgroup ) )
         {
-          // keep the current line
-          // store current size as alignment
-          alignmentspace.push_back( line.size() );
+          newgroup = true;
+          alignmentspace[firstgroup] = line.size() - ident.size();
+        }
+        // if its not a new group and not a fresh line start a new one
+        // nested structs eg should start at the same line
+        if ( !newgroup && !newline )
+        {
+          stripline( line );
+          if ( !line.empty() )
+            _lines.emplace_back( std::move( line ) );
+          line = alignmentSpacing( alignmentspace[firstgroup] );
+          line += ident;
           line += l;
+          newline = true;
+#ifdef DEBUG_FORMAT_BREAK
+          INFO_PRINTLN( "!new {} - {}", line, alignmentspace );
+#endif
         }
         else
         {
-          // first newline of group
-          // push current line as new line
+          line += l;
+#ifdef DEBUG_FORMAT_BREAK
+          INFO_PRINTLN( "new {} - {}", line, alignmentspace );
+#endif
+        }
+        if ( !alignmentspace.count( group ) )
+          alignmentspace[group] = line.size() - ident.size();
+      }
+      else if ( lastgroup > firstgroup )  // descending
+      {
+        newline = true;
+        stripline( line );
+        if ( !line.empty() )
+          _lines.emplace_back( std::move( line ) );
+        line = alignmentSpacing( alignmentspace[firstgroup] );
+        line += ident;
+        line += l;
+#ifdef DEBUG_FORMAT_BREAK
+        INFO_PRINTLN( "desc {} - {}", line, alignmentspace );
+#endif
+      }
+      else  // same group
+      {
+        // only if we already had a different group split the line
+        if ( groupdiffered )
+        {
           newline = false;
           stripline( line );
           if ( !line.empty() )
             _lines.emplace_back( std::move( line ) );
-          // use last group alignment
-          if ( !alignmentspace.empty() )
-            line = alignmentSpacing( alignmentspace.back() );
-          line += l;
+          line = alignmentSpacing( alignmentspace[firstgroup] );
+          line += ident;
         }
-      }
-      else if ( lastgroup > group )  // descending
-      {
-        stripline( line );
-        if ( !line.empty() )
-          _lines.emplace_back( std::move( line ) );
-        // use last group alignment
-        if ( !alignmentspace.empty() )
+        line += l;
+#ifdef DEBUG_FORMAT_BREAK
+        INFO_PRINTLN( "same {} - {}", line, alignmentspace );
+#endif
+        if ( line.size() > compilercfg.FormatterLineWidth )
         {
-          line = alignmentSpacing( alignmentspace.back() );
-          // remove last group alignment
-          alignmentspace.pop_back();
+          stripline( line );
+          if ( !line.empty() )
+            _lines.emplace_back( std::move( line ) );
+          line = alignmentSpacing( alignmentspace[firstgroup] );
+          line += ident;
         }
-        line += l;
-        newline = true;  // started a new line due to lower group
-      }
-      else  // same group
-      {
-        stripline( line );
-        if ( !line.empty() )
-          _lines.emplace_back( std::move( line ) );
-        // use current group alignment
-        line = alignmentSpacing( alignmentspace.back() );
-        line += l;
       }
 
-      lastgroup = group;
+      lastgroup = firstgroup;
     }
   }
   else  // split based on parts
   {
     // build final lines
     size_t alignmentspace = 0;
-    for ( auto& [l, forced, group] : lines )
+    for ( auto& [l, forced, group, firstgroup] : lines )
     {
       // following lines need to be aligned
       if ( line.empty() && alignmentspace )
@@ -326,7 +370,7 @@ void PrettifyLineBuilder::buildLine( size_t current_ident )
 }
 
 
-void PrettifyLineBuilder::addEmptyLines( int line_number )
+void PrettifyLineBuilder::addEmptyLines( size_t line_number )
 {
   if ( compilercfg.FormatterMergeEmptyLines )
   {
@@ -438,7 +482,7 @@ std::string PrettifyLineBuilder::alignmentSpacing( size_t count )
   return std::string( tabs, '\t' ) + std::string( remaining, ' ' );
 }
 
-void PrettifyLineBuilder::mergeEOFComments()
+void PrettifyLineBuilder::mergeEOFNonTokens()
 {
   mergeRawContent( _last_line );
   while ( !_comments.empty() )
@@ -449,6 +493,11 @@ void PrettifyLineBuilder::mergeEOFComments()
     mergeRawContent( _last_line );
     _comments.erase( _comments.begin() );
   }
+  // purge raw content
+  mergeRawContent( std::numeric_limits<size_t>::max() );
+  // if the original file ends with a newline, make sure to also end
+  if ( !_lines.empty() && !_lines.back().empty() && !_rawlines.empty() && _rawlines.back().empty() )
+    _lines.push_back( "" );
 }
 
 }  // namespace Pol::Bscript::Compiler

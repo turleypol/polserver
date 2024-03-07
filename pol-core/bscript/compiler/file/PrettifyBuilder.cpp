@@ -6,6 +6,8 @@
 #include "bscript/compiler/file/SourceFile.h"
 #include "bscript/compiler/file/SourceFileIdentifier.h"
 #include "bscript/compiler/file/SourceLocation.h"
+#include "clib/timer.h"
+#include <fmt/chrono.h>
 
 namespace Pol::Bscript::Compiler
 {
@@ -19,7 +21,7 @@ std::string PrettifyBuilder::build( const std::string& pathname, bool is_module 
   auto ident = std::make_unique<SourceFileIdentifier>( 0, pathname );
 
   SourceLocation source_location( ident.get(), 0, 0 );
-
+  Tools::HighPerfTimer load_timer;
   auto sf = SourceFile::load( *ident, profile, report );
 
   if ( !sf || report.error_count() )
@@ -27,15 +29,21 @@ std::string PrettifyBuilder::build( const std::string& pathname, bool is_module 
     report.error( *ident, "Unable to load '{}'.", pathname );
     return {};
   }
+  INFO_PRINTLN( "load {}", load_timer.ellapsed() );
   PrettifyFileProcessor prettify_processor( *ident, profile, report );
+  Tools::HighPerfTimer process_timer;
   if ( is_module )
     prettify_processor.process_module_unit( *sf );
   else
     prettify_processor.process_compilation_unit( *sf );
 
+  INFO_PRINTLN( "process {}", process_timer.ellapsed() );
   if ( report.error_count() )
     return {};
-  return prettify_processor.prettify();
+  Tools::HighPerfTimer pretty_timer;
+  auto res = prettify_processor.prettify();
+  INFO_PRINTLN( "prettify {}", pretty_timer.ellapsed() );
+  return res;
 }
 
 }  // namespace Pol::Bscript::Compiler
