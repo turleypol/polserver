@@ -157,6 +157,12 @@ jobs:
         with:
           name: Testdir-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin-build/coretest/
+      - name: Upload ewsf folder
+        if: matrix.config.nopch == 0 && always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ewsf-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
+          path: lib/efsw-3419347
 
       - name: Create Artefact
         if: matrix.config.nopch == 0
