@@ -80,6 +80,7 @@ function(set_compile_flags target is_executable)
       /EHa # exception handling
       /W4
       /w45038
+      /verbose:lib
     >
     $<$<AND:$<BOOL:${GCOV}>,${linux}>:
       -g
