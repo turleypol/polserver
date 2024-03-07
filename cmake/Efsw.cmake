@@ -23,7 +23,7 @@ set(EFSW_ARGS ${EFSW_FLAGS}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
   -DCMAKE_OSX_ARCHITECTURES=${PIPED_OSX_ARCHITECTURES}
   -DBUILD_TEST_APP=OFF
-  -DBUILD_SHARED_LIBS=ON # The -static file isn't installed unless this is enabled?
+  -DBUILD_SHARED_LIBS=OFF # The -static file isn't installed unless this is enabled?
   -DBUILD_STATIC_LIBS=ON
   -DCMAKE_USER_MAKE_RULES_OVERRIDE_CXX=${CMAKE_CURRENT_LIST_DIR}/cxx_flag_overrides.cmake
   -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake
