@@ -80,7 +80,6 @@ function(set_compile_flags target is_executable)
       /EHa # exception handling
       /W4
       /w45038
-      /verbose:lib
     >
     $<$<AND:$<BOOL:${GCOV}>,${linux}>:
       -g
@@ -140,6 +139,7 @@ function(set_compile_flags target is_executable)
     target_link_libraries(${target} PRIVATE
       -LARGEADDRESSAWARE # more then 2gb for 32bit
       -DEBUG # include debug information (otherwise attach to process does not work)
+      /verbose:lib
     )
     if (${release})
       target_link_libraries(${target} PRIVATE
