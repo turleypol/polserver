@@ -40,9 +40,6 @@ ExternalProject_Add(libantlr_ext
   LOG_OUTPUT_ON_FAILURE 1
   EXCLUDE_FROM_ALL 1
 )
-if (NOT EXISTS ${ANTLR_LIB})
-  file(MAKE_DIRECTORY ${ANTLR_INCLUDE_DIR}) #directory has to exist during configure
-endif()
 
 # imported target to add include/lib dir and additional dependencies
 add_library(libantlr STATIC IMPORTED)
@@ -53,4 +50,7 @@ set_target_properties(libantlr PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS ANTLR4CPP_STATIC
   FOLDER 3rdParty
 )
-add_dependencies(libantlr libantlr_ext)
+if (NOT EXISTS ${ANTLR_LIB})
+  file(MAKE_DIRECTORY ${ANTLR_INCLUDE_DIR}) #directory has to exist during configure
+  add_dependencies(libantlr libantlr_ext)
+endif()
