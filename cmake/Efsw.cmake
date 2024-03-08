@@ -7,13 +7,9 @@ set (EFSW_SOURCE_DIR "${POL_EXT_LIB_DIR}/efsw-${EFSW_VERSION_REF}")
 set (EFSW_INSTALL_DIR "${EFSW_SOURCE_DIR}/build")
 
 if (${windows})
-  set (EFSW_LIB "${EFSW_SOURCE_DIR}/efsw-static.lib" )
+  set (EFSW_LIB "${EFSW_INSTALL_DIR}/lib/efsw-static.lib" )
 else()
-  set (EFSW_LIB "${EFSW_SOURCE_DIR}/libefsw-static.a" )
-endif()
-
-if (${windows})
- # set(EFSW_FLAGS -DCMAKE_CXX_FLAGS_RELEASE="/MT" -DCMAKE_C_FLAGS_RELEASE="/MT")
+  set (EFSW_LIB "${EFSW_INSTALL_DIR}/lib/libefsw-static.a" )
 endif()
 
 set(EFSW_ARGS ${EFSW_FLAGS}
@@ -23,7 +19,7 @@ set(EFSW_ARGS ${EFSW_FLAGS}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
   -DCMAKE_OSX_ARCHITECTURES=${PIPED_OSX_ARCHITECTURES}
   -DBUILD_TEST_APP=OFF
-  -DBUILD_SHARED_LIBS=OFF # The -static file isn't installed unless this is enabled?
+  -DBUILD_SHARED_LIBS=ON # The -static file isn't installed unless this is enabled?
   -DBUILD_STATIC_LIBS=ON
   -DCMAKE_USER_MAKE_RULES_OVERRIDE_CXX=${CMAKE_CURRENT_LIST_DIR}/cxx_flag_overrides.cmake
   -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake
