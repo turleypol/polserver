@@ -29,7 +29,6 @@ std::string PrettifyBuilder::build( const std::string& pathname, bool is_module 
     report.error( *ident, "Unable to load '{}'.", pathname );
     return {};
   }
-  INFO_PRINTLN( "load {}", load_timer.ellapsed() );
   PrettifyFileProcessor prettify_processor( *ident, profile, report );
   Tools::HighPerfTimer process_timer;
   if ( is_module )
@@ -37,12 +36,10 @@ std::string PrettifyBuilder::build( const std::string& pathname, bool is_module 
   else
     prettify_processor.process_compilation_unit( *sf );
 
-  INFO_PRINTLN( "process {}", process_timer.ellapsed() );
   if ( report.error_count() )
     return {};
   Tools::HighPerfTimer pretty_timer;
   auto res = prettify_processor.prettify();
-  INFO_PRINTLN( "prettify {}", pretty_timer.ellapsed() );
   return res;
 }
 
