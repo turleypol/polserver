@@ -357,7 +357,7 @@ bool BSQLConnection::escape_string( const std::string& text, std::string* escape
   if ( !_conn->ptr() )
     return false;
   *escaped = std::string( text.size() * 2 + 1, '\0' );
-  if ( mysql_real_escape_string( _conn->ptr(), escape->data(), text.data(), text.size() ) ==
+  if ( mysql_real_escape_string( _conn->ptr(), escaped->data(), text.data(), text.size() ) ==
        (unsigned long)-1 )
     return false;
   escaped->resize( escaped->find_first_of( '\0' ) );
