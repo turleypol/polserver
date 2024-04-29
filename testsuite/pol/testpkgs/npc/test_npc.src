@@ -261,3 +261,19 @@ exported function npc_warmodeinhibitsregen()
   endif
   return 1;
 endfunction
+
+exported function npc_listnpcs()
+  var npc:=CreateNPCFromTemplate(":testnpc:load_npc",100,100,0);
+  if (!npc)
+    return ret_error("Could not create NPC: "+npc);
+  endif
+
+  var res:=ListMobilesNearLocationEx(100,100,LIST_IGNORE_Z,20,LISTEX_FLAG_NORMAL | LISTEX_FLAG_NPC_ONLY);
+  print(res);
+  npc.kill();
+
+  if (damaged_health != waited_health)
+    return ret_error($"NPC health changed between sleeping: {damaged_health} -> {waited_health}");
+  endif
+  return 1;
+endfunction
