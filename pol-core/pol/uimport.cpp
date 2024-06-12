@@ -1083,6 +1083,8 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                   write_system_data( sc.pol );
                   write_global_properties( sc.pol );
                   write_shadow_realms( sc.pol );
+                  int* p = 0;
+                  *p = 7;
                 }
                 catch ( ... )
                 {

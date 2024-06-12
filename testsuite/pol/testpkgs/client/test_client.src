@@ -20,6 +20,7 @@ program chartests()
   if (!char2)
     return ret_error("Could not find char2 at slot 1");
   endif
+  SaveWorldState();
 endprogram
 
 exported function test_client_properties()
