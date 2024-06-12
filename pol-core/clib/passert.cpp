@@ -47,6 +47,9 @@ void force_backtrace( bool /*complete*/ )
              EXCEPTION_EXECUTE_HANDLER )
   {
   }
+
+  int* p = 0;
+  *p = 7;  // dump the stack
 }
 #else
 void force_backtrace( bool complete )
