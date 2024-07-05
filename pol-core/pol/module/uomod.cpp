@@ -1224,7 +1224,7 @@ BObjectImp* UOExecutorModule::mf_CreateMultiAtLocation( /* x,y,z,objtype,flags,r
   Core::Pos4d pos;
   const ItemDesc* descriptor;
   int flags = 0;
-  if ( !( getPos4dParam( 0, 1, 2, 6, &pos ) && getParam( 4, flags ) &&
+  if ( !( getPos4dParam( 0, 1, 2, 5, &pos ) && getParam( 4, flags ) &&
           getObjtypeParam( 3, descriptor ) ) )
   {
     return new BError( "Invalid parameter type" );
