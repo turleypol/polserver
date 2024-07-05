@@ -1279,8 +1279,6 @@ BObjectImp* UOExecutorModule::mf_CreateNpcFromTemplate()
   Core::Pos4d pos;
   int forceInt;
   bool forceLocation;
-  Realms::Realm* realm = find_realm( "britannia" );
-
   if ( !( getStringParam( 0, tmplname ) && getPos4dParam( 1, 2, 3, 5, &pos ) ) )
   {
     return new BError( "Invalid parameter type" );
@@ -1349,7 +1347,7 @@ BObjectImp* UOExecutorModule::mf_CreateNpcFromTemplate()
     // FIXME sanity check
     elem.add_prop( "X", pos.x() );
     elem.add_prop( "Y", pos.y() );
-    elem.add_prop( "Z", pos.z() );
+    elem.add_prop( "Z", (u16)pos.z() );
     elem.add_prop( "Realm", pos.realm()->name() );
     if ( custom_struct != nullptr )
       replace_properties( elem, custom_struct );
