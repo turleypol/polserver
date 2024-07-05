@@ -1281,8 +1281,7 @@ BObjectImp* UOExecutorModule::mf_CreateNpcFromTemplate()
   bool forceLocation;
   Realms::Realm* realm = find_realm( "britannia" );
 
-  if ( !( getStringParam( 0, tmplname ) && getPos4dParam( 1,2,3,5, &pos )
-    )
+  if ( !( getStringParam( 0, tmplname ) && getPos4dParam( 1, 2, 3, 5, &pos ) ) )
   {
     return new BError( "Invalid parameter type" );
   }
@@ -1325,13 +1324,14 @@ BObjectImp* UOExecutorModule::mf_CreateNpcFromTemplate()
   short newz;
   Multi::UMulti* dummy_multi = nullptr;
   Item* dummy_walkon = nullptr;
-  if ( !pos.realm()->walkheight( pos.xy(), pos.z(), &newz, &dummy_multi, &dummy_walkon, true, movemode ) )
+  if ( !pos.realm()->walkheight( pos.xy(), pos.z(), &newz, &dummy_multi, &dummy_walkon, true,
+                                 movemode ) )
   {
     if ( !forceLocation )
       return new BError( "Not a valid location for an NPC!" );
   }
   if ( !forceLocation )
-    pos.z( Clib::clamp_convert<s8>(newz));
+    pos.z( Clib::clamp_convert<s8>( newz ) );
 
 
   NpcRef npc;
