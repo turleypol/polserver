@@ -1276,15 +1276,13 @@ void replace_properties( Clib::ConfigElem& elem, BStruct* custom )
 BObjectImp* UOExecutorModule::mf_CreateNpcFromTemplate()
 {
   const String* tmplname;
-  unsigned short x, y;
-  short z;
-  const String* strrealm;
+  Core::Pos4d pos;
   int forceInt;
   bool forceLocation;
   Realms::Realm* realm = find_realm( "britannia" );
 
-  if ( !( getStringParam( 0, tmplname ) && getParam( 1, x ) && getParam( 2, y ) &&
-          getParam( 3, z, ZCOORD_MIN, ZCOORD_MAX ) ) )
+  if ( !( getStringParam( 0, tmplname ) && getPos4dParam( 1,2,3,5, &pos )
+    )
   {
     return new BError( "Invalid parameter type" );
   }
@@ -1303,18 +1301,6 @@ BObjectImp* UOExecutorModule::mf_CreateNpcFromTemplate()
     return new BError( std::string( "Parameter 4 must be a Struct or Integer(0), got " ) +
                        BObjectImp::typestr( imp->type() ) );
   }
-  if ( exec.hasParams( 6 ) )
-  {
-    if ( !getStringParam( 5, strrealm ) )
-      return new BError( "Realm not found" );
-    realm = find_realm( strrealm->value() );
-  }
-
-  if ( !realm )
-    return new BError( "Realm not found" );
-  if ( !realm->valid( x, y, z ) )
-    return new BError( "Invalid Coordinates for Realm" );
-
   if ( !getParam( 6, forceInt ) )
   {
     forceLocation = false;
@@ -1339,13 +1325,13 @@ BObjectImp* UOExecutorModule::mf_CreateNpcFromTemplate()
   short newz;
   Multi::UMulti* dummy_multi = nullptr;
   Item* dummy_walkon = nullptr;
-  if ( !realm->walkheight( x, y, z, &newz, &dummy_multi, &dummy_walkon, true, movemode ) )
+  if ( !pos.realm()->walkheight( pos.xy(), pos.z(), &newz, &dummy_multi, &dummy_walkon, true, movemode ) )
   {
     if ( !forceLocation )
       return new BError( "Not a valid location for an NPC!" );
   }
   if ( !forceLocation )
-    z = newz;
+    pos.z( Clib::clamp_convert<s8>(newz));
 
 
   NpcRef npc;
@@ -1361,10 +1347,10 @@ BObjectImp* UOExecutorModule::mf_CreateNpcFromTemplate()
 
     elem.add_prop( "Serial", GetNextSerialNumber() );
     // FIXME sanity check
-    elem.add_prop( "X", x );
-    elem.add_prop( "Y", y );
-    elem.add_prop( "Z", z );
-    elem.add_prop( "Realm", realm->name() );
+    elem.add_prop( "X", pos.x() );
+    elem.add_prop( "Y", pos.y() );
+    elem.add_prop( "Z", pos.z() );
+    elem.add_prop( "Realm", pos.realm()->name() );
     if ( custom_struct != nullptr )
       replace_properties( elem, custom_struct );
     npc->readPropertiesForNewNPC( elem );
@@ -1382,7 +1368,7 @@ BObjectImp* UOExecutorModule::mf_CreateNpcFromTemplate()
           if ( zonechr->in_visual_range( npc.get() ) )
             send_char_data( zonechr->client, npc.get() );
         } );
-    realm->notify_entered( *npc );
+    pos.realm()->notify_entered( *npc );
     if ( dummy_multi )
     {
       dummy_multi->register_object( npc.get() );
