@@ -1141,10 +1141,9 @@ BObjectImp* UOExecutorModule::mf_CreateItemInBackpack()
   }
 }
 
-BObjectImp* _complete_create_item_at_location( Item* item, unsigned short x, unsigned short y,
-                                               short z, Realms::Realm* realm )
+BObjectImp* _complete_create_item_at_location( Item* item, const Core::Pos4d& pos )
 {
-  item->setposition( Core::Pos4d( x, y, static_cast<signed char>( z ), realm ) );
+  item->setposition( pos );
 
   // ITEMDESCTODO: use the original descriptor
   const ItemDesc& id = find_itemdesc( item->objtype_ );
@@ -1170,31 +1169,22 @@ BObjectImp* _complete_create_item_at_location( Item* item, unsigned short x, uns
 
 BObjectImp* UOExecutorModule::mf_CreateItemAtLocation( /* x,y,z,objtype,amount,realm */ )
 {
-  unsigned short x, y;
-  short z;
+  Core::Pos4d pos;
   const ItemDesc* itemdesc;
   unsigned short amount;
-  const String* strrealm;
-  if ( getParam( 0, x ) && getParam( 1, y ) && getParam( 2, z, ZCOORD_MIN, ZCOORD_MAX ) &&
-       getObjtypeParam( 3, itemdesc ) && getParam( 4, amount, 1, 60000 ) &&
-       getStringParam( 5, strrealm ) && item_create_params_ok( itemdesc->objtype, amount ) )
+  if ( getPos4dParam( 0, 1, 2, 5, &pos ) && getObjtypeParam( 3, itemdesc ) &&
+       getParam( 4, amount, 1, 60000 ) && item_create_params_ok( itemdesc->objtype, amount ) )
   {
     if ( !( Plib::tile_flags( itemdesc->graphic ) & Plib::FLAG::STACKABLE ) && ( amount != 1 ) )
     {
       return new BError( "That item is not stackable.  Create one at a time." );
     }
 
-    Realms::Realm* realm = find_realm( strrealm->value() );
-    if ( !realm )
-      return new BError( "Realm not found" );
-
-    if ( !realm->valid( x, y, z ) )
-      return new BError( "Invalid Coordinates for Realm" );
     Item* item = Item::create( *itemdesc );
     if ( item != nullptr )
     {
       item->setamount( amount );
-      return _complete_create_item_at_location( item, x, y, z, realm );
+      return _complete_create_item_at_location( item, pos );
     }
     else
     {
@@ -1206,26 +1196,17 @@ BObjectImp* UOExecutorModule::mf_CreateItemAtLocation( /* x,y,z,objtype,amount,r
 
 BObjectImp* UOExecutorModule::mf_CreateItemCopyAtLocation( /* x,y,z,item,realm */ )
 {
-  unsigned short x, y;
-  short z;
+  Core::Pos4d pos;
   Item* origitem;
-  const String* strrealm;
-  if ( getParam( 0, x ) && getParam( 1, y ) && getParam( 2, z, ZCOORD_MIN, ZCOORD_MAX ) &&
-       getItemParam( 3, origitem ) && getStringParam( 4, strrealm ) )
+  if ( getPos4dParam( 0, 1, 2, 4, &pos ) && getItemParam( 3, origitem ) )
   {
     if ( origitem->script_isa( POLCLASS_MULTI ) )
       return new BError( "This function does not work with Multi objects." );
 
-    Realms::Realm* realm = find_realm( strrealm->value() );
-    if ( !realm )
-      return new BError( "Realm not found" );
-
-    if ( !realm->valid( x, y, z ) )
-      return new BError( "Invalid Coordinates for Realm" );
     Item* item = origitem->clone();
     if ( item != nullptr )
     {
-      return _complete_create_item_at_location( item, x, y, z, realm );
+      return _complete_create_item_at_location( item, pos );
     }
     else
     {
