@@ -103,7 +103,7 @@ BObjectImp* UOExecutorModule::internal_MoveBoat( Multi::UBoat* boat, const Core:
     send_remove_object_to_inrange( boat );
   }
   s8 deltaz = newpos.z() - boat->z();
-  boat->setposition( Core::Pos4d( boat->pos().xy(), newpos.z(), newrealm ) );
+  boat->setposition( Core::Pos4d( boat->pos().xy(), newpos.z(), newpos.realm() ) );
 
   boat->adjust_traveller_z( deltaz );
   boat->realm_changed();
