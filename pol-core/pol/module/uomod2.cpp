@@ -2856,10 +2856,8 @@ BObjectImp* UOExecutorModule::mf_ListStaticsNearLocationOfType(
   {
     std::unique_ptr<ObjArray> newarr( new ObjArray );
     Core::Vec2d radius( range, range );
-    Core::Pos2d tl = pos - radius;
-    Core::Pos2d br = pos + radius;
-    Core::Range2d range( tl, br, realm );
-    for ( const auto& tile : range )
+    Core::Range2d area( pos - radius, pos + radius, realm );
+    for ( const auto& tile : area )
     {
       if ( !( flags & ITEMS_IGNORE_STATICS ) )
       {
@@ -2924,10 +2922,8 @@ BObjectImp* UOExecutorModule::mf_ListStaticsNearLocationWithFlag(
   {
     std::unique_ptr<ObjArray> newarr( new ObjArray );
     Core::Vec2d radius( range, range );
-    Core::Pos2d tl = pos - radius;
-    Core::Pos2d br = pos + radius;
-    Core::Range2d range( tl, br, realm );
-    for ( const auto& tile : range )
+    Core::Range2d area( pos - radius, pos + radius, realm );
+    for ( const auto& tile : area )
     {
       if ( !( flags & ITEMS_IGNORE_STATICS ) )
       {
