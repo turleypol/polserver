@@ -4598,42 +4598,27 @@ BObjectImp* UOExecutorModule::mf_ListItemsNearLocationWithFlag(
 
 BObjectImp* UOExecutorModule::mf_ListStaticsAtLocation( /* x, y, z, flags, realm */ )
 {
-  unsigned short x, y;
+  Core::Pos2d pos;
   int z, flags;
-  const String* strrealm;
+  Realms::Realm* realm;
 
-  if ( getParam( 0, x ) && getParam( 1, y ) && getParam( 2, z ) && getParam( 3, flags ) &&
-       getStringParam( 4, strrealm ) )
+  if ( getRealmParam( 4, &realm ) && getPos2dParam( 0, 1, &pos, realm ) && getParam( 2, z ) &&
+       getParam( 3, flags ) )
   {
-    Realms::Realm* realm = find_realm( strrealm->value() );
-    if ( !realm )
-      return new BError( "Realm not found" );
-
-    if ( z == LIST_IGNORE_Z )
-    {
-      if ( !realm->valid( x, y, 0 ) )
-        return new BError( "Invalid Coordinates for realm" );
-    }
-    else
-    {
-      if ( !realm->valid( x, y, static_cast<short>( z ) ) )
-        return new BError( "Invalid Coordinates for realm" );
-    }
-
     std::unique_ptr<ObjArray> newarr( new ObjArray );
 
     if ( !( flags & ITEMS_IGNORE_STATICS ) )
     {
       Plib::StaticEntryList slist;
-      realm->getstatics( slist, x, y );
+      realm->getstatics( slist, pos );
 
       for ( unsigned i = 0; i < slist.size(); ++i )
       {
         if ( ( z == LIST_IGNORE_Z ) || ( slist[i].z == z ) )
         {
           std::unique_ptr<BStruct> arr( new BStruct );
-          arr->addMember( "x", new BLong( x ) );
-          arr->addMember( "y", new BLong( y ) );
+          arr->addMember( "x", new BLong( pos.x() ) );
+          arr->addMember( "y", new BLong( pos.y() ) );
           arr->addMember( "z", new BLong( slist[i].z ) );
           arr->addMember( "objtype", new BLong( slist[i].objtype ) );
           arr->addMember( "hue", new BLong( slist[i].hue ) );
@@ -4645,15 +4630,15 @@ BObjectImp* UOExecutorModule::mf_ListStaticsAtLocation( /* x, y, z, flags, realm
     if ( !( flags & ITEMS_IGNORE_MULTIS ) )
     {
       Plib::StaticList mlist;
-      realm->readmultis( mlist, x, y );
+      realm->readmultis( mlist, pos );
 
       for ( unsigned i = 0; i < mlist.size(); ++i )
       {
         if ( ( z == LIST_IGNORE_Z ) || ( mlist[i].z == z ) )
         {
           std::unique_ptr<BStruct> arr( new BStruct );
-          arr->addMember( "x", new BLong( x ) );
-          arr->addMember( "y", new BLong( y ) );
+          arr->addMember( "x", new BLong( pos.x() ) );
+          arr->addMember( "y", new BLong( pos.y() ) );
           arr->addMember( "z", new BLong( mlist[i].z ) );
           arr->addMember( "objtype", new BLong( mlist[i].graphic ) );
           newarr->addElement( arr.release() );
@@ -4669,86 +4654,56 @@ BObjectImp* UOExecutorModule::mf_ListStaticsAtLocation( /* x, y, z, flags, realm
 
 BObjectImp* UOExecutorModule::mf_ListStaticsNearLocation( /* x, y, z, range, flags, realm */ )
 {
-  unsigned short x, y;
+  Core::Pos2d pos;
   int z, flags;
   short range;
-  const String* strrealm;
   Realms::Realm* realm;
 
-  if ( getParam( 0, x ) && getParam( 1, y ) && getParam( 2, z ) && getParam( 3, range ) &&
-       getParam( 4, flags ) && getStringParam( 5, strrealm ) )
+  if ( getRealmParam( 5, &realm ) && getPos2dParam( 0, 1, &pos, realm ) && getParam( 2, z ) &&
+       getParam( 3, range ) && getParam( 4, flags ) )
   {
-    realm = find_realm( strrealm->value() );
-    if ( !realm )
-      return new BError( "Realm not found" );
-
-    if ( z == LIST_IGNORE_Z )
-    {
-      if ( !realm->valid( x, y, 0 ) )
-        return new BError( "Invalid Coordinates for realm" );
-    }
-    else
-    {
-      if ( !realm->valid( x, y, static_cast<short>( z ) ) )
-        return new BError( "Invalid Coordinates for realm" );
-    }
-
     std::unique_ptr<ObjArray> newarr( new ObjArray );
-
-    short wxL, wyL, wxH, wyH;
-    wxL = x - range;
-    if ( wxL < 0 )
-      wxL = 0;
-    wyL = y - range;
-    if ( wyL < 0 )
-      wyL = 0;
-    wxH = x + range;
-    if ( wxH > realm->width() - 1 )
-      wxH = realm->width() - 1;
-    wyH = y + range;
-    if ( wyH > realm->height() - 1 )
-      wyH = realm->height() - 1;
-
-    for ( unsigned short wx = wxL; wx <= wxH; ++wx )
+    Core::Vec2d radius( range, range );
+    Core::Pos2d tl = pos - radius;
+    Core::Pos2d br = pos + radius;
+    Core::Range2d range( tl, br, realm );
+    for ( const auto& tile : range )
     {
-      for ( unsigned short wy = wyL; wy <= wyH; ++wy )
+      if ( !( flags & ITEMS_IGNORE_STATICS ) )
       {
-        if ( !( flags & ITEMS_IGNORE_STATICS ) )
-        {
-          Plib::StaticEntryList slist;
-          realm->getstatics( slist, wx, wy );
+        Plib::StaticEntryList slist;
+        realm->getstatics( slist, tile );
 
-          for ( unsigned i = 0; i < slist.size(); ++i )
+        for ( unsigned i = 0; i < slist.size(); ++i )
+        {
+          if ( ( z == LIST_IGNORE_Z ) || ( abs( slist[i].z - z ) < CONST_DEFAULT_ZRANGE ) )
           {
-            if ( ( z == LIST_IGNORE_Z ) || ( abs( slist[i].z - z ) < CONST_DEFAULT_ZRANGE ) )
-            {
-              std::unique_ptr<BStruct> arr( new BStruct );
-              arr->addMember( "x", new BLong( wx ) );
-              arr->addMember( "y", new BLong( wy ) );
-              arr->addMember( "z", new BLong( slist[i].z ) );
-              arr->addMember( "objtype", new BLong( slist[i].objtype ) );
-              arr->addMember( "hue", new BLong( slist[i].hue ) );
-              newarr->addElement( arr.release() );
-            }
+            std::unique_ptr<BStruct> arr( new BStruct );
+            arr->addMember( "x", new BLong( tile.x() ) );
+            arr->addMember( "y", new BLong( tile.y() ) );
+            arr->addMember( "z", new BLong( slist[i].z ) );
+            arr->addMember( "objtype", new BLong( slist[i].objtype ) );
+            arr->addMember( "hue", new BLong( slist[i].hue ) );
+            newarr->addElement( arr.release() );
           }
         }
+      }
 
-        if ( !( flags & ITEMS_IGNORE_MULTIS ) )
+      if ( !( flags & ITEMS_IGNORE_MULTIS ) )
+      {
+        Plib::StaticList mlist;
+        realm->readmultis( mlist, tile );
+
+        for ( unsigned i = 0; i < mlist.size(); ++i )
         {
-          Plib::StaticList mlist;
-          realm->readmultis( mlist, wx, wy );
-
-          for ( unsigned i = 0; i < mlist.size(); ++i )
+          if ( ( z == LIST_IGNORE_Z ) || ( abs( mlist[i].z - z ) < CONST_DEFAULT_ZRANGE ) )
           {
-            if ( ( z == LIST_IGNORE_Z ) || ( abs( mlist[i].z - z ) < CONST_DEFAULT_ZRANGE ) )
-            {
-              std::unique_ptr<BStruct> arr( new BStruct );
-              arr->addMember( "x", new BLong( wx ) );
-              arr->addMember( "y", new BLong( wy ) );
-              arr->addMember( "z", new BLong( mlist[i].z ) );
-              arr->addMember( "objtype", new BLong( mlist[i].graphic ) );
-              newarr->addElement( arr.release() );
-            }
+            std::unique_ptr<BStruct> arr( new BStruct );
+            arr->addMember( "x", new BLong( tile.x() ) );
+            arr->addMember( "y", new BLong( tile.y() ) );
+            arr->addMember( "z", new BLong( mlist[i].z ) );
+            arr->addMember( "objtype", new BLong( mlist[i].graphic ) );
+            newarr->addElement( arr.release() );
           }
         }
       }
