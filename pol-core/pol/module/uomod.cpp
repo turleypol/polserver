@@ -5118,11 +5118,11 @@ BObjectImp* UOExecutorModule::mf_CanWalk(
       dir = static_cast<Core::UFACING>( x2_or_dir & 0x7 );
     else
     {
-      if ( !p.realm()->valid( static_cast<xcoord>( x2_or_dir ), static_cast<ycoord>( y2_ ), 0 ) )
+      auto p1 = Pos2d( static_cast<u16>( x2_or_dir ), static_cast<u16>( y2_ ) );
+      if ( !p.realm()->valid( p1 ) )
         return new BError( "Invalid coordinates for realm." );
 
-      dir = p.xy().direction_toward(
-          Pos2d( static_cast<u16>( x2_or_dir ), static_cast<u16>( y2_ ) ) );
+      dir = p.xy().direction_toward( p1 );
     }
 
     if ( dir & 1 )  // check if diagonal movement is allowed
@@ -5132,22 +5132,21 @@ BObjectImp* UOExecutorModule::mf_CanWalk(
       auto tmp_pos = p.move( static_cast<Core::UFACING>( tmp_facing ) );
 
       // needs to save because if only one direction is blocked, it shouldn't block ;)
-      bool walk1 = p.realm()->walkheight( tmp_pos.x(), tmp_pos.y(), tmp_pos.z(), &new_z, nullptr,
-                                          nullptr, true, movemode, nullptr );
+      bool walk1 = p.realm()->walkheight( tmp_pos.xy(), tmp_pos.z(), &new_z, nullptr, nullptr, true,
+                                          movemode, nullptr );
 
       tmp_facing = ( dir - 1 ) & 0x7;
       tmp_pos = p.move( static_cast<Core::UFACING>( tmp_facing ) );
 
-      if ( !walk1 && !p.realm()->walkheight( tmp_pos.x(), tmp_pos.y(), tmp_pos.z(), &new_z, nullptr,
-                                             nullptr, true, movemode, nullptr ) )
+      if ( !walk1 && !p.realm()->walkheight( tmp_pos.xy(), tmp_pos.z(), &new_z, nullptr, nullptr,
+                                             true, movemode, nullptr ) )
         return new BError( "Cannot walk there" );
     }
 
     p.move_to( dir );
     short newz;
 
-    if ( !p.realm()->walkheight( p.x(), p.y(), p.z(), &newz, nullptr, nullptr, true, movemode,
-                                 nullptr ) )
+    if ( !p.realm()->walkheight( p.xy(), p.z(), &newz, nullptr, nullptr, true, movemode, nullptr ) )
       return new BError( "Cannot walk there" );
 
     return new BLong( newz );
