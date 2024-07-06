@@ -911,7 +911,8 @@ BObjectImp* NPCExecutorModule::mf_MakeBoundingBox( /* areastring */ )
   // FIXME this is a terrible data format.
   while ( is >> tlx >> tly >> brx >> bry )
   {
-    ( *bbox )->addarea( Core::Range2d( { tlx, tly, nullptr }, { brx, bry, nullptr } ) );
+    ( *bbox )->addarea(
+        Core::Range2d( Core::Pos2d{ tlx, tly }, Core::Pos2d{ brx, bry }, npc.realm() ) );
   }
 
   return bbox_owner.release();
