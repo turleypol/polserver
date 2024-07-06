@@ -526,7 +526,7 @@ BObjectImp* NPCExecutorModule::mf_TurnAwayFrom()
 BObjectImp* NPCExecutorModule::mf_WalkTowardLocation()
 {
   Core::Pos2d pos;
-  if ( exec.getPos2dParam( 0, 1, &pos, npc.realm() ) )
+  if ( getPos2dParam( 0, 1, &pos, npc.realm() ) )
   {
     Core::UFACING fac = npc.direction_toward( pos );
     return move_self( fac, false, true );
@@ -537,7 +537,7 @@ BObjectImp* NPCExecutorModule::mf_WalkTowardLocation()
 BObjectImp* NPCExecutorModule::mf_RunTowardLocation()
 {
   Core::Pos2d pos;
-  if ( exec.getPos2dParam( 0, 1, &pos, npc.realm() ) )
+  if ( getPos2dParam( 0, 1, &pos, npc.realm() ) )
   {
     Core::UFACING fac = npc.direction_toward( pos );
     return move_self( fac, true, true );
@@ -548,7 +548,7 @@ BObjectImp* NPCExecutorModule::mf_RunTowardLocation()
 BObjectImp* NPCExecutorModule::mf_WalkAwayFromLocation()
 {
   Core::Pos2d pos;
-  if ( exec.getPos2dParam( 0, 1, &pos, npc.realm() ) )
+  if ( getPos2dParam( 0, 1, &pos, npc.realm() ) )
   {
     Core::UFACING fac = npc.direction_away( pos );
     return move_self( fac, false, true );
@@ -559,7 +559,7 @@ BObjectImp* NPCExecutorModule::mf_WalkAwayFromLocation()
 BObjectImp* NPCExecutorModule::mf_RunAwayFromLocation()
 {
   Core::Pos2d pos;
-  if ( exec.getPos2dParam( 0, 1, &pos, npc.realm() ) )
+  if ( getPos2dParam( 0, 1, &pos, npc.realm() ) )
   {
     Core::UFACING fac = npc.direction_away( pos );
     return move_self( fac, true, true );
@@ -572,7 +572,7 @@ BObjectImp* NPCExecutorModule::mf_TurnTowardLocation()
   Core::Pos2d pos;
   int flags;
 
-  if ( !exec.getPos2dParam( 0, 1, &pos, npc.realm() ) || !exec.getParam( 2, flags ) )
+  if ( !getPos2dParam( 0, 1, &pos, npc.realm() ) || !exec.getParam( 2, flags ) )
   {
     return new BError( "Invalid parameter type" );
   }
@@ -593,7 +593,7 @@ BObjectImp* NPCExecutorModule::mf_TurnAwayFromLocation()
   Core::Pos2d pos;
   int flags;
 
-  if ( !exec.getPos2dParam( 0, 1, &pos, npc.realm() ) || !exec.getParam( 2, flags ) )
+  if ( !getPos2dParam( 0, 1, &pos, npc.realm() ) || !exec.getParam( 2, flags ) )
   {
     return new BError( "Invalid parameter type" );
   }
