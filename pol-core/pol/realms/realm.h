@@ -81,10 +81,6 @@ public:
 
   unsigned season() const;
 
-  bool valid( unsigned short x, unsigned short y, short /*z*/ ) const
-  {
-    return valid( Core::Pos2d( x, y ) );
-  };  // TODO Pos
   bool valid( const Core::Pos2d& p ) const;
   bool valid( const Core::Pos3d& p ) const;
   const std::string name() const;
