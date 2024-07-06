@@ -77,7 +77,6 @@ public:
   Core::Range2d gridarea() const;
 
   Core::Zone& getzone_grid( const Core::Pos2d& pos ) const;
-  Core::Zone& getzone( unsigned short x, unsigned short y ) const;
   Core::Zone& getzone( const Core::Pos2d& p ) const;
 
   unsigned season() const;
@@ -337,10 +336,6 @@ inline Core::Range2d Realm::gridarea() const
 inline Core::Zone& Realm::getzone_grid( const Core::Pos2d& p ) const
 {
   return zone[p.y()][p.x()];
-}
-inline Core::Zone& Realm::getzone( unsigned short x, unsigned short y ) const
-{
-  return getzone_grid( x >> Plib::WGRID_SHIFT, y >> Plib::WGRID_SHIFT );
 }
 inline Core::Zone& Realm::getzone( const Core::Pos2d& p ) const
 {
