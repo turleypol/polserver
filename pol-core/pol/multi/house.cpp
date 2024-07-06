@@ -714,7 +714,7 @@ bool multis_exist_in( const Core::Pos4d& minpos, const Core::Pos4d& maxpos )
                           Core::zone_convert( maxpos + Core::Vec2d( 100, 100 ) ), nullptr );
   for ( const auto& gpos : gridarea )
   {
-    for ( const auto& multi : realm->getzone_grid( gpos ).multis )
+    for ( const auto& multi : minpos.realm()->getzone_grid( gpos ).multis )
     {
       // find out if any of our walls would fall within its footprint.
       auto otherbox = multi->current_box().range();
@@ -731,19 +731,19 @@ bool objects_exist_in( const Core::Pos4d& p1, const Core::Pos4d& p2 )
   Core::Range2d worldarea( p1, p2 );
   for ( const auto& gpos : gridarea )
   {
-    for ( const auto& chr : realm->getzone_grid( gpos ).characters )
+    for ( const auto& chr : p1.realm()->getzone_grid( gpos ).characters )
     {
-      if ( worldarea.contains(chr->pos2d())
+      if ( worldarea.contains( chr->pos2d() ) )
         return true;
     }
-    for ( const auto& chr : realm->getzone_grid( gpos ).npcs )
+    for ( const auto& chr : p1.realm()->getzone_grid( gpos ).npcs )
     {
-      if ( worldarea.contains(chr->pos2d())
+      if ( worldarea.contains( chr->pos2d() ) )
         return true;
     }
-    for ( const auto& item : realm->getzone_grid( gpos ).items )
+    for ( const auto& item : p1.realm()->getzone_grid( gpos ).items )
     {
-      if ( worldarea.contains(chr->pos2d())
+      if ( worldarea.contains( chr->pos2d() ) )
         return true;
     }
   }
