@@ -17,7 +17,7 @@ namespace Mobile
 class BoundingBox
 {
 public:
-  bool contains( const Core::Point2d& pos ) const;
+  bool contains( const Core::Pos2d& pos ) const;
   void addarea( Core::Range2d area );
 
 private:
