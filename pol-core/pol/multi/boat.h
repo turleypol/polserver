@@ -129,7 +129,7 @@ public:
   bool move( Core::UFACING dir, u8 speed, bool relative );
   bool move_xy( const Core::Pos2d& newp, int flags, Realms::Realm* oldrealm );
 
-  enum RELATIVE_DIR
+  enum RELATIVE_DIR  // order matters! facing = ( ( dir * 2 ) + facing ) & 7;
   {
     NO_TURN,
     RIGHT,
@@ -191,7 +191,6 @@ protected:
                         unsigned short x = USHRT_MAX, unsigned short y = USHRT_MAX,
                         Realms::Realm* oldrealm = nullptr );
   void turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation );
-  void turn_traveller_coords( Mobile::Character* chr, RELATIVE_DIR dir );
   static bool on_ship( const BoatContext& bc, const Core::UObject* obj );
   void move_offline_mobiles( const Core::Pos4d& newpos );
   const MultiDef& multi_ifturn( RELATIVE_DIR dir );
@@ -225,6 +224,7 @@ protected:
   friend struct BoatMoveGuard;
 
 private:
+  Core::Pos4d turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) const;
   void create_components();
   typedef Core::UObjectRef Traveller;
   typedef std::vector<Traveller> Travellers;

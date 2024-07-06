@@ -876,30 +876,24 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
     remove_orphans();
 }
 
-void UBoat::turn_traveller_coords( Mobile::Character* chr, RELATIVE_DIR dir )
+Core::Pos4d UBoat::turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) const
 {
-  chr->lastpos = chr->pos();
-
-  s16 xd = chr->x() - x();
-  s16 yd = chr->y() - y();
-
+  Core::Vec2d delta = pos.xy() - pos2d();
   switch ( dir )
   {
   case LEFT:
-    chr->setposition( Core::Pos4d( x() + yd, y() - xd, chr->z(), chr->realm() ) );
-    chr->facing = static_cast<Core::UFACING>( ( chr->facing + 6 ) & 7 );
+    delta.y( -delta.y() );
     break;
   case AROUND:
-    chr->setposition( Core::Pos4d( x() - xd, y() - yd, chr->z(), chr->realm() ) );
-    chr->facing = static_cast<Core::UFACING>( ( chr->facing + 4 ) & 7 );
+    delta.x( -delta.x() ).y( -delta.y() );
     break;
   case RIGHT:
-    chr->setposition( Core::Pos4d( x() - yd, y() + xd, chr->z(), chr->realm() ) );
-    chr->facing = static_cast<Core::UFACING>( ( chr->facing + 2 ) & 7 );
+    delta.x( -delta.x() );
     break;
   case NO_TURN:
-    break;
+    return oldpos;
   }
+  return oldpos + delta;
 }
 
 void UBoat::turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation )
@@ -919,16 +913,16 @@ void UBoat::turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation )
     }
 
     obj->set_dirty();
+    Core::Pos4d oldpos = obj->pos();
+    obj->setposition( turn_coords( oldpos, dir ) );
     if ( obj->ismobile() )
     {
       Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
+      chr->lastpos = oldpos;
+      chr->setfacing( ( ( dir * 2 ) + chr->facing ) & 7 );
       if ( chr->logged_in() )
       {
         // send_remove_character_to_nearby( chr );
-
-        Core::Pos4d oldpos = chr->pos();
-        turn_traveller_coords( chr, dir );
-
 
         Core::MoveCharacterWorldPosition( oldpos, chr );
         chr->position_changed();
@@ -958,41 +952,10 @@ void UBoat::turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation )
         // deletes.
         // chr->lasty = ~ (unsigned short) 0;
       }
-      else
-      {
-        turn_traveller_coords( chr, dir );
-      }
     }
     else
     {
       Items::Item* item = static_cast<Items::Item*>( obj );
-      s16 xd = item->x() - x();
-      s16 yd = item->y() - y();
-      u16 newx( 0 );
-      u16 newy( 0 );
-      switch ( dir )
-      {
-      case NO_TURN:
-        newx = item->x();
-        newy = item->y();
-        break;
-      case LEFT:
-        newx = x() + yd;
-        newy = y() - xd;
-        break;
-      case AROUND:
-        newx = x() - xd;
-        newy = y() - yd;
-        break;
-      case RIGHT:
-        newx = x() - yd;
-        newy = y() + xd;
-        break;
-      }
-      item->set_dirty();
-
-      Core::Pos4d oldpos = item->pos();
-      item->setposition( Core::Pos4d( item->pos() ).x( newx ).y( newy ) );
 
       if ( Core::settingsManager.ssopt.refresh_decay_after_boat_moves )
         item->restart_decay_timer();
