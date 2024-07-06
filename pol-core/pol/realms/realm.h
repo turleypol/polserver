@@ -135,23 +135,9 @@ public:
   Plib::MAPTILE_CELL getmaptile( const Core::Pos2d& pos ) const;
   void getmapshapes( Plib::MapShapeList& shapes, const Core::Pos2d& pos,
                      unsigned int anyflags ) const;
-  void readmultis( Plib::MapShapeList& vec, unsigned short x, unsigned short y,
-                   unsigned int flags ) const  // TODO Pos
-  {
-    return readmultis( vec, Core::Pos2d( x, y ), flags );
-  }
   void readmultis( Plib::MapShapeList& vec, const Core::Pos2d& pos, unsigned int flags ) const;
-  void readmultis( Plib::MapShapeList& vec, unsigned short x, unsigned short y, unsigned int flags,
-                   MultiList& mvec ) const  // TODO Pos
-  {
-    return readmultis( vec, Core::Pos2d( x, y ), flags, mvec );
-  }
   void readmultis( Plib::MapShapeList& vec, const Core::Pos2d& pos, unsigned int flags,
                    MultiList& mvec ) const;
-  void readmultis( Plib::StaticList& vec, unsigned short x, unsigned short y ) const  // TODO Pos
-  {
-    return readmultis( vec, Core::Pos2d( x, y ) );
-  }
   void readmultis( Plib::StaticList& vec, const Core::Pos2d& pos ) const;
 
   void readdynamics( Plib::MapShapeList& vec, const Core::Pos2d& pos,
@@ -167,7 +153,6 @@ public:
   unsigned getUOMapID() const;
   unsigned getNumStaticPatches() const;
   unsigned getNumMapPatches() const;
-  static unsigned int encode_global_hull( unsigned short ax, unsigned short ay );  // TODO Pos
   static unsigned int encode_global_hull( const Core::Pos2d& pos );
 
 protected:
@@ -264,10 +249,6 @@ inline unsigned Realm::getNumMapPatches() const
 {
   return _descriptor.num_map_patches;
 };
-inline unsigned int Realm::encode_global_hull( unsigned short ax, unsigned short ay )
-{
-  return ( static_cast<unsigned int>( ax ) << 16 ) | ay;
-}
 inline unsigned int Realm::encode_global_hull( const Core::Pos2d& pos )
 {
   return ( static_cast<unsigned int>( pos.x() ) << 16 ) | pos.y();
