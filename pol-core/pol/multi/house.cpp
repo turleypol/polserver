@@ -750,7 +750,7 @@ bool objects_exist_in( const Core::Pos4d& p1, const Core::Pos4d& p2 )
   return false;
 }
 
-bool statics_cause_problems( const Pos4d& p1, const Pos4d& p2, int /*flags*/ )
+bool statics_cause_problems( const Core::Pos4d& p1, const Core::Pos4d& p2, int /*flags*/ )
 {
   Core::Range2d area( p1, p2 );
   for ( const auto& p : area )
@@ -758,9 +758,9 @@ bool statics_cause_problems( const Pos4d& p1, const Pos4d& p2, int /*flags*/ )
     short newz;
     UMulti* multi;
     Items::Item* item;
-    if ( !realm->walkheight( p, p1.z(), &newz, &multi, &item, true, Plib::MOVEMODE_LAND ) )
+    if ( !p1.realm()->walkheight( p, p1.z(), &newz, &multi, &item, true, Plib::MOVEMODE_LAND ) )
     {
-      POLLOGLN( "Refusing to place house at {},{}: can't stand there", p, z );
+      POLLOGLN( "Refusing to place house at {},{}: can't stand there", p, p1.z() );
       return true;
     }
     if ( labs( p1.z() - newz ) > 2 )
