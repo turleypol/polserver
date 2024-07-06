@@ -760,7 +760,7 @@ bool UBoat::on_ship( const BoatContext& bc, const UObject* obj )
     if ( item->container != nullptr )
       return false;
   }
-  Core::Vec2d rxy = obj->pos2d() - bc.xy();
+  Core::Vec2d rxy = obj->pos2d() - bc.oldpos.xy();
 
   return bc.mdef.body_contains( rxy );
 }
