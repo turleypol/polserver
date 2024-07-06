@@ -16,12 +16,12 @@
 #include <string>
 #include <vector>
 
+#include "plib/mapcell.h"
 #include "plib/mapshape.h"
 #include "plib/maptile.h"
 #include "plib/realmdescriptor.h"
 #include "plib/uconst.h"
 #include "plib/udatfile.h"
-#include "plib/mapcell.h"
 
 #include "base/position.h"
 #include "base/range.h"
@@ -112,32 +112,12 @@ public:
   unsigned int toplevel_item_count() const;
   unsigned int multi_count() const;
 
-  bool walkheight( unsigned short x, unsigned short y, short oldz, short* newz,
-                   Multi::UMulti** pmulti, Items::Item** pwalkon, bool doors_block,
-                   Plib::MOVEMODE movemode, short* gradual_boost = nullptr )  // TODO Pos
-  {
-    return walkheight( Core::Pos2d( x, y ), oldz, newz, pmulti, pwalkon, doors_block, movemode,
-                       gradual_boost );
-  }
   bool walkheight( const Core::Pos2d& p, short oldz, short* newz, Multi::UMulti** pmulti,
                    Items::Item** pwalkon, bool doors_block, Plib::MOVEMODE movemode,
                    short* gradual_boost = nullptr );
-  bool walkheight( const Mobile::Character* chr, unsigned short x, unsigned short y, short oldz,
-                   short* newz, Multi::UMulti** pmulti, Items::Item** pwalkon,
-                   short* gradual_boost = nullptr )  // TODO Pos
-  {
-    return walkheight( chr, Core::Pos2d( x, y ), oldz, newz, pmulti, pwalkon, gradual_boost );
-  }
   bool walkheight( const Mobile::Character* chr, const Core::Pos2d& p, short oldz, short* newz,
                    Multi::UMulti** pmulti, Items::Item** pwalkon, short* gradual_boost = nullptr );
 
-  bool lowest_walkheight( unsigned short x, unsigned short y, short oldz, short* newz,
-                          Multi::UMulti** pmulti, Items::Item** pwalkon, bool doors_block,
-                          Plib::MOVEMODE movemode, short* gradual_boost = nullptr )  // TODO Pos
-  {
-    return lowest_walkheight( Core::Pos2d( x, y ), oldz, newz, pmulti, pwalkon, doors_block,
-                              movemode, gradual_boost );
-  }
   bool lowest_walkheight( const Core::Pos2d& p, short oldz, short* newz, Multi::UMulti** pmulti,
                           Items::Item** pwalkon, bool doors_block, Plib::MOVEMODE movemode,
                           short* gradual_boost = nullptr );
@@ -223,7 +203,7 @@ public:
                      Core::ItemsVector& walkon_items, bool doors_block, unsigned int flags ) const;
 
   void read_walkable_dynamics( Plib::MapShapeList& vec, const Core::Pos2d& pos,
-                     Core::ItemsVector& walkon_items, bool doors_block ) const
+                               Core::ItemsVector& walkon_items, bool doors_block ) const
   {
     return readdynamics( vec, pos, walkon_items, doors_block, Plib::FLAG::WALKBLOCK );
   }
@@ -251,7 +231,7 @@ protected:
                                   bool* result, short* newz, short* gradual_boost = nullptr );
 
   static Plib::MapShapeList get_standheights( Plib::MOVEMODE movemode, Plib::MapShapeList shapes,
-                                           short minz, short maxz );
+                                              short minz, short maxz );
 
   static bool dropheight( Plib::MapShapeList& shapes, short dropz, short chrz, short* newz );
 
