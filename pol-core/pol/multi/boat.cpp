@@ -878,7 +878,7 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
 
 Core::Pos4d UBoat::turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) const
 {
-  Core::Vec2d delta = pos.xy() - pos2d();
+  Core::Vec2d delta = oldpos.xy() - pos2d();
   switch ( dir )
   {
   case LEFT:
