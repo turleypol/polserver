@@ -120,11 +120,6 @@ public:
       const Core::Pos2d& pos, short minz, short maxz, Plib::MOVEMODE movemode,
       bool doors_block ) const;
 
-  bool dropheight( unsigned short dropx, unsigned short dropy, short dropz, short chrz, short* newz,
-                   Multi::UMulti** pmulti )  // TODO Pos
-  {
-    return dropheight( Core::Pos3d( dropx, dropy, (s8)dropz ), chrz, newz, pmulti );
-  }
   bool dropheight( const Core::Pos3d& drop, short chrz, short* newz, Multi::UMulti** pmulti );
 
   bool has_los( const Core::ULWObject& att, const Core::ULWObject& tgt ) const;
