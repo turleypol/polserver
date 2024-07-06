@@ -124,10 +124,6 @@ public:
 
   bool has_los( const Core::ULWObject& att, const Core::ULWObject& tgt ) const;
 
-  bool navigable( unsigned short x, unsigned short y, short z, short height ) const  // TODO Pos
-  {
-    return navigable( Core::Pos3d( x, y, (s8)z ), height );
-  }
   bool navigable( const Core::Pos3d& p, short height ) const;
 
   Multi::UMulti* find_supporting_multi( unsigned short x, unsigned short y,
