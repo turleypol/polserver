@@ -126,11 +126,6 @@ public:
 
   bool navigable( const Core::Pos3d& p, short height ) const;
 
-  Multi::UMulti* find_supporting_multi( unsigned short x, unsigned short y,
-                                        short z ) const  // TODO Pos
-  {
-    return find_supporting_multi( Core::Pos3d( x, y, (s8)z ) );
-  }
   Multi::UMulti* find_supporting_multi( const Core::Pos3d& pos ) const;
 
   bool lowest_standheight( unsigned short x, unsigned short y, short* z ) const  // TODO Pos
