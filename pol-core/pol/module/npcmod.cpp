@@ -92,7 +92,7 @@ BObjectImp* NPCExecutorModule::mf_IsLegalMove()
 
   auto pos = npc.pos().move( facing );
 
-  return new BLong( bbox.contains( pos.x(), pos.y() ) );
+  return new BLong( bbox.contains( pos.xy() ) );
 }
 
 /* CanMove: parameters (facing)*/
@@ -230,10 +230,8 @@ BObjectImp* NPCExecutorModule::move_self( Core::UFACING facing, bool run, bool a
   }
 
   // int delay = 1000 - npc.dexterity() * 3;
-  int delay = std::max<int>(
-    1000 - npc.run_speed * 3,
-    Core::settingsManager.ssopt.npc_minimum_movement_delay
-  );
+  int delay = std::max<int>( 1000 - npc.run_speed * 3,
+                             Core::settingsManager.ssopt.npc_minimum_movement_delay );
   u32 sleep = static_cast<u32>( delay );
   os_module->SleepForMs( run ? ( sleep / 2 ) : sleep );
 
@@ -352,7 +350,7 @@ BObjectImp* NPCExecutorModule::mf_Move()
       Core::UFACING facing = Mobile::GetRandomFacing();
 
       auto pos = npc.pos().move( facing );
-      if ( bbox.contains( pos.x(), pos.y() ) || !bbox.contains( npc.x(), npc.y() ) )
+      if ( bbox.contains( pos.xy() ) || !bbox.contains( npc.xy() ) )
       {
         npc.move( static_cast<unsigned char>( facing ) );
         npc.tellmove();
@@ -527,13 +525,10 @@ BObjectImp* NPCExecutorModule::mf_TurnAwayFrom()
 
 BObjectImp* NPCExecutorModule::mf_WalkTowardLocation()
 {
-  Core::xcoord x;
-  Core::ycoord y;
-  if ( exec.getParam( 0, x ) && exec.getParam( 1, y ) )
+  Core::Pos2d pos;
+  if ( exec.getParam( 0, 1, &pos, npc->realm() ) )
   {
-    if ( !npc.realm()->valid( x, y, npc.z() ) )
-      return new BError( "Invalid Coordinates for Realm" );
-    Core::UFACING fac = npc.direction_toward( Core::Pos2d( x, y ) );
+    Core::UFACING fac = npc.direction_toward( pos );
     return move_self( fac, false, true );
   }
   else
@@ -544,14 +539,10 @@ BObjectImp* NPCExecutorModule::mf_WalkTowardLocation()
 
 BObjectImp* NPCExecutorModule::mf_RunTowardLocation()
 {
-  Core::xcoord x;
-  Core::ycoord y;
-
-  if ( exec.getParam( 0, x ) && exec.getParam( 1, y ) )
+  Core::Pos2d pos;
+  if ( exec.getParam( 0, 1, &pos, npc->realm() ) )
   {
-    if ( !npc.realm()->valid( x, y, npc.z() ) )
-      return new BError( "Invalid Coordinates for Realm" );
-    Core::UFACING fac = npc.direction_toward( Core::Pos2d( x, y ) );
+    Core::UFACING fac = npc.direction_toward( pos );
     return move_self( fac, true, true );
   }
   else
@@ -562,13 +553,10 @@ BObjectImp* NPCExecutorModule::mf_RunTowardLocation()
 
 BObjectImp* NPCExecutorModule::mf_WalkAwayFromLocation()
 {
-  Core::xcoord x;
-  Core::ycoord y;
-  if ( exec.getParam( 0, x ) && exec.getParam( 1, y ) )
+  Core::Pos2d pos;
+  if ( exec.getParam( 0, 1, &pos, npc->realm() ) )
   {
-    if ( !npc.realm()->valid( x, y, npc.z() ) )
-      return new BError( "Invalid Coordinates for Realm" );
-    Core::UFACING fac = npc.direction_away( Core::Pos2d( x, y ) );
+    Core::UFACING fac = npc.direction_away( pos );
     return move_self( fac, false, true );
   }
   else
@@ -579,13 +567,10 @@ BObjectImp* NPCExecutorModule::mf_WalkAwayFromLocation()
 
 BObjectImp* NPCExecutorModule::mf_RunAwayFromLocation()
 {
-  Core::xcoord x;
-  Core::ycoord y;
-  if ( exec.getParam( 0, x ) && exec.getParam( 1, y ) )
+  Core::Pos2d pos;
+  if ( exec.getParam( 0, 1, &pos, npc->realm() ) )
   {
-    if ( !npc.realm()->valid( x, y, npc.z() ) )
-      return new BError( "Invalid Coordinates for Realm" );
-    Core::UFACING fac = npc.direction_away( Core::Pos2d( x, y ) );
+    Core::UFACING fac = npc.direction_away( pos );
     return move_self( fac, true, true );
   }
   else
@@ -596,18 +581,15 @@ BObjectImp* NPCExecutorModule::mf_RunAwayFromLocation()
 
 BObjectImp* NPCExecutorModule::mf_TurnTowardLocation()
 {
-  Core::xcoord x;
-  Core::ycoord y;
+  Core::Pos2d pos;
   int flags;
 
-  if ( !exec.getParam( 0, x ) || !exec.getParam( 1, y ) || !exec.getParam( 2, flags ) )
+  if ( !exec.getPos2dParam( 0, 1, &pos, npc->realm() ) || !exec.getParam( 2, flags ) )
   {
     return new BError( "Invalid parameter type" );
   }
 
-  if ( !npc.realm()->valid( x, y, npc.z() ) )
-    return new BError( "Invalid Coordinates for Realm" );
-  Core::UFACING fac = npc.direction_toward( Core::Pos2d( x, y ) );
+  Core::UFACING fac = npc.direction_toward( pos );
   if ( npc.facing == fac )
     return new BLong( 0 );  // nothing to do here
 
@@ -620,18 +602,15 @@ BObjectImp* NPCExecutorModule::mf_TurnTowardLocation()
 
 BObjectImp* NPCExecutorModule::mf_TurnAwayFromLocation()
 {
-  Core::xcoord x;
-  Core::ycoord y;
+  Core::Pos2d pos;
   int flags;
 
-  if ( !exec.getParam( 0, x ) || !exec.getParam( 1, y ) || !exec.getParam( 2, flags ) )
+  if ( !exec.getPos2dParam( 0, 1, &pos, npc->realm() ) || !exec.getParam( 2, flags ) )
   {
     return new BError( "Invalid parameter type" );
   }
 
-  if ( !npc.realm()->valid( x, y, npc.z() ) )
-    return new BError( "Invalid Coordinates for Realm" );
-  Core::UFACING fac = npc.direction_away( Core::Pos2d( x, y ) );
+  Core::UFACING fac = npc.direction_away( pos );
   if ( npc.facing == fac )
     return new BLong( 0 );  // nothing to do here
 
@@ -938,15 +917,13 @@ BObjectImp* NPCExecutorModule::mf_MakeBoundingBox( /* areastring */ )
   BoundingBoxObjImp* bbox = new BoundingBoxObjImp;
   std::unique_ptr<BoundingBoxObjImp> bbox_owner( bbox );
 
-  //    const std::string& areas = arealist->value();
-
   ISTRINGSTREAM is( arealist->value() );
 
-  Mobile::Area a;
+  u16 tlx, tly, brx, bry;
   // FIXME this is a terrible data format.
-  while ( is >> a.topleft.x >> a.topleft.y >> a.bottomright.x >> a.bottomright.y )
+  while ( is >> tlx >> tly >> brx >> bry )
   {
-    ( *bbox )->addarea( a );
+    ( *bbox )->addarea( Core::Range2d( { tlx, tly, nullptr }, { brx, bry, nullptr } ) );
   }
 
   return bbox_owner.release();
