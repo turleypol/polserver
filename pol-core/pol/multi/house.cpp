@@ -743,14 +743,14 @@ bool objects_exist_in( const Core::Pos4d& p1, const Core::Pos4d& p2 )
     }
     for ( const auto& item : p1.realm()->getzone_grid( gpos ).items )
     {
-      if ( worldarea.contains( chr->pos2d() ) )
+      if ( worldarea.contains( item->pos2d() ) )
         return true;
     }
   }
   return false;
 }
 
-bool statics_cause_problems( const Core::Pos4d& p1, const Core::Pos4d& p2, int /*flags*/ )
+bool statics_cause_problems( const Core::Pos4d& p1, const Core::Pos4d& p2 )
 {
   Core::Range2d area( p1, p2 );
   for ( const auto& p : area )
@@ -770,8 +770,7 @@ bool statics_cause_problems( const Core::Pos4d& p1, const Core::Pos4d& p2, int /
       return true;
     }
   }
-}
-return false;
+  return false;
 }
 
 Bscript::BObjectImp* UHouse::scripted_create( const Items::ItemDesc& descriptor,
@@ -807,7 +806,7 @@ Bscript::BObjectImp* UHouse::scripted_create( const Items::ItemDesc& descriptor,
   if ( ~flags & CRMULTI_IGNORE_FLATNESS )
   {
     if ( statics_cause_problems( pos + md->minrxyz - Core::Vec2d( 1, 1 ),
-                                 pos + md->maxrxyz + Core::Vec2d( 1, 1 ), flags ) )
+                                 pos + md->maxrxyz + Core::Vec2d( 1, 1 ) ) )
 
     {
       return new Bscript::BError( "That location is not suitable" );
