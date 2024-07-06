@@ -760,7 +760,7 @@ bool UBoat::on_ship( const BoatContext& bc, const UObject* obj )
     if ( item->container != nullptr )
       return false;
   }
-  Core::Vec2d rxy = obj->pos2d() - Core::Pos2d( bc.x, bc.y );
+  Core::Vec2d rxy = obj->pos2d() - bc.xy();
 
   return bc.mdef.body_contains( rxy );
 }
@@ -768,6 +768,7 @@ bool UBoat::on_ship( const BoatContext& bc, const UObject* obj )
 void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocation,
                              unsigned short newx, unsigned short newy, Realms::Realm* oldrealm )
 {
+  Core::Pos2d newpos2d{ newx, newy };
   bool any_orphans = false;
 
   for ( auto& travellerRef : travellers_ )
@@ -783,28 +784,27 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
     }
 
     obj->set_dirty();
+    auto oldpos = obj->pos();
+    auto newtravellerpos = obj->pos();
+    if ( newx != USHRT_MAX &&
+         newy != USHRT_MAX )  // dave added 3/27/3, if move_xy was used, dont use facing
+    {
+      // keeps relative distance from boat mast
+      auto delta = newtravellerpos.xy() - oldlocation.oldpos.xy();
+      newtravellerpos.xy( newpos2d + delta );
+    }
+    else
+    {
+      newtravellerpos.move_to( move_dir );
+    }
     if ( obj->ismobile() )
     {
       Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
+      chr->lastpos = oldpos;
+      chr->setposition( newtravellerpos );
 
       if ( chr->logged_in() )
       {
-        Core::Pos4d oldpos = chr->pos();
-        chr->lastpos = oldpos;
-
-        if ( newx != USHRT_MAX &&
-             newy != USHRT_MAX )  // dave added 3/27/3, if move_xy was used, dont use facing
-        {
-          s16 dx, dy;
-          dx = chr->x() - oldlocation.x;  // keeps relative distance from boat mast
-          dy = chr->y() - oldlocation.y;
-          chr->setposition( Core::Pos4d( chr->pos() ).x( newx + dx ).y( newy + dy ) );
-        }
-        else
-        {
-          chr->setposition( chr->pos().move( move_dir ) );
-        }
-
         MoveCharacterWorldPosition( oldpos, chr );
         chr->position_changed();
         if ( chr->client != nullptr )
@@ -836,57 +836,16 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
         }
         chr->move_reason = Mobile::Character::MULTIMOVE;
       }
-      else
-      {
-        // characters that are logged out move with the boat
-        // they aren't in the worldzones so this is real easy.
-        chr->lastpos = chr->pos();  // I think in this case setting last? isn't
-                                    // necessary, but I'll do it anyway.
-
-        if ( newx != USHRT_MAX &&
-             newy != USHRT_MAX )  // dave added 3/27/3, if move_xy was used, dont use facing
-        {
-          s16 dx, dy;
-          dx = chr->x() - oldlocation.x;  // keeps relative distance from boat mast
-          dy = chr->y() - oldlocation.y;
-          chr->setposition( Core::Pos4d( chr->pos() ).x( newx + dx ).y( newy + dy ) );
-        }
-        else
-        {
-          chr->setposition( chr->pos().move( move_dir ) );
-        }
-      }
     }
     else
     {
       Items::Item* item = static_cast<Items::Item*>( obj );
-      Core::Pos4d oldpos = item->pos();
 
-      if ( newx != USHRT_MAX &&
-           newy != USHRT_MAX )  // dave added 4/9/3, if move_xy was used, dont use facing
-      {
-        s16 dx, dy;
-        dx = item->x() - oldlocation.x;  // keeps relative distance from boat mast
-        dy = item->y() - oldlocation.y;
+      item->setposition( newtravellerpos );
 
-        item->set_dirty();
-
-        item->setposition( Core::Pos4d( item->pos() ).x( newx + dx ).y( newy + dy ) );
-
-        if ( Core::settingsManager.ssopt.refresh_decay_after_boat_moves )
-          item->restart_decay_timer();
-        MoveItemWorldPosition( oldpos, item );
-      }
-      else
-      {
-        item->set_dirty();
-
-        item->setposition( item->pos().move( move_dir ) );
-
-        if ( Core::settingsManager.ssopt.refresh_decay_after_boat_moves )
-          item->restart_decay_timer();
-        MoveItemWorldPosition( oldpos, item );
-      }
+      if ( Core::settingsManager.ssopt.refresh_decay_after_boat_moves )
+        item->restart_decay_timer();
+      MoveItemWorldPosition( oldpos, item );
 
       Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
           item,

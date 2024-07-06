@@ -99,10 +99,9 @@ class UBoat final : public UMulti
   class BoatContext
   {
     const MultiDef& mdef;
-    unsigned short x;  // TODO Pos2d
-    unsigned short y;
+    Core::Pos4d oldpos;
 
-    explicit BoatContext( const UBoat& ub ) : mdef( ub.multidef() ), x( ub.x() ), y( ub.y() ){};
+    explicit BoatContext( const UBoat& ub ) : mdef( ub.multidef() ), oldpos( pos() ){};
     friend class UBoat;
     BoatContext& operator=( const BoatContext& ) { return *this; }
   };
