@@ -787,30 +787,26 @@ Bscript::BObjectImp* UHouse::scripted_create( const Items::ItemDesc& descriptor,
   if ( !pos.can_move_to( md->minrxyz.xy() ) || !pos.can_move_to( md->maxrxyz.xy() ) )
     return new Bscript::BError( "That location is out of bounds" );
 
+  auto corner_ne = pos + md->minrxyz;
+  auto corner_sw = pos + md->maxrxyz;
   if ( ~flags & CRMULTI_IGNORE_MULTIS )
   {
-    if ( multis_exist_in( pos + md->minrxyz - Core::Vec2d( 1, 5 ),
-                          pos + md->maxrxyz + Core::Vec2d( 1, 5 ) ) )
-    {
+    const auto additional_gap = Core::Vec2d( 1, 5 );
+    if ( multis_exist_in( corner_ne - additional_gap, corner_sw + additional_gap ) )
       return new Bscript::BError( "Location intersects with another structure" );
-    }
   }
 
   if ( ~flags & CRMULTI_IGNORE_OBJECTS )
   {
-    if ( objects_exist_in( pos + md->minrxyz, pos + md->maxrxyz ) )
-    {
+    if ( objects_exist_in( corner_ne, corner_sw ) )
       return new Bscript::BError( "Something is blocking that location" );
-    }
   }
   if ( ~flags & CRMULTI_IGNORE_FLATNESS )
   {
-    if ( statics_cause_problems( pos + md->minrxyz - Core::Vec2d( 1, 1 ),
-                                 pos + md->maxrxyz + Core::Vec2d( 1, 1 ) ) )
+    const auto additional_gap = Core::Vec2d( 1, 1 );
+    if ( statics_cause_problems( corner_ne - additional_gap, corner_sw + additional_gap ) )
 
-    {
       return new Bscript::BError( "That location is not suitable" );
-    }
   }
 
   UHouse* house = new UHouse( descriptor );
