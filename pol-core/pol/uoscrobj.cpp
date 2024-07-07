@@ -4174,7 +4174,7 @@ BObjectImp* UBoat::script_method_id( const int id, Core::UOExecutor& ex )
       multiid = new_multiid + multioffset;
     }
     transform_components( boatshape(), nullptr );
-    send_display_boat_to_inrange();
+    send_display_boat_to_inrange( {} );
     return new BLong( 1 );
   }
   default:

@@ -11,6 +11,7 @@
 #define BOAT_H
 
 #include <climits>
+#include <optional>
 #include <stddef.h>
 #include <string>
 #include <vector>
@@ -141,7 +142,7 @@ public:
   Core::UFACING boat_facing() const;
 
   void send_display_boat( Network::Client* client );
-  void send_display_boat_to_inrange( u16 oldx = USHRT_MAX, u16 oldy = USHRT_MAX );
+  void send_display_boat_to_inrange( const std::optional<Core::Pos4d>& oldpos );
   void send_boat( Network::Client* client );
   void send_boat_old( Network::Client* client );
   void send_boat_newly_inrange( Network::Client* client );

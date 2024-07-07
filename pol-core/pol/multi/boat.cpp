@@ -558,7 +558,7 @@ void UBoat::send_boat_newly_inrange( Network::Client* client )
   }
 }
 
-void UBoat::send_display_boat_to_inrange( u16 oldx, u16 oldy )
+void UBoat::send_display_boat_to_inrange( const std::optional<Core::Posd4>& oldpos )
 {
   Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
       this,
@@ -576,16 +576,18 @@ void UBoat::send_display_boat_to_inrange( u16 oldx, u16 oldy )
           send_boat_old( client );
       } );
 
-  const Core::Pos2d oldpos = Core::Pos2d( oldx, oldy );
-  Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-      oldpos, realm(),
-      [&]( Mobile::Character* zonechr )
-      {
-        if ( !zonechr->in_visual_range( this, oldpos ) )
-          return;
-        if ( !zonechr->in_visual_range( this ) )  // send remove to chrs only seeing the old loc
-          send_remove_boat( zonechr->client );
-      } );
+  if ( oldpos )
+  {
+    Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+        oldpos.value,
+        [&]( Mobile::Character* zonechr )
+        {
+          if ( !zonechr->in_visual_range( this, oldpos.value ) )
+            return;
+          if ( !zonechr->in_visual_range( this ) )  // send remove to chrs only seeing the old loc
+            send_remove_boat( zonechr->client );
+        } );
+  }
 }
 
 void UBoat::send_boat( Network::Client* client )
@@ -1078,20 +1080,21 @@ void UBoat::move_offline_mobiles( const Core::Pos4d& newpos )
 
 void UBoat::adjust_traveller_z( s8 delta_z )
 {
+  const auto delta = Core::Vec3d( 0, 0, delta_z );
   for ( auto& travellerRef : travellers_ )
   {
     UObject* obj = travellerRef.get();
-    obj->setposition( obj->pos() + Core::Vec3d( 0, 0, delta_z ) );
+    obj->setposition( obj->pos() + delta );
   }
   for ( auto& component : Components )
   {
-    component->setposition( component->pos() + Core::Vec3d( 0, 0, delta_z ) );
+    component->setposition( component->pos() + delta );
   }
 }
 
 void UBoat::on_color_changed()
 {
-  send_display_boat_to_inrange();
+  send_display_boat_to_inrange( {} );
 }
 
 void UBoat::realm_changed()
@@ -1168,7 +1171,6 @@ void UBoat::do_tellmoves()
 bool UBoat::move_xy( const Core::Pos2d& newp, int flags,
                      Realms::Realm* oldrealm )  // Todo Pos refactor oldrealm??
 {
-  bool result;
   BoatMoveGuard registerguard( this );
   Core::Pos4d newpos{ newp, z(), realm() };
   if ( ( flags & Core::MOVEITEM_FORCELOCATION ) || navigable( multidef(), newpos ) )
@@ -1178,27 +1180,20 @@ bool UBoat::move_xy( const Core::Pos2d& newp, int flags,
     set_dirty();
     move_multi_in_world( x(), y(), newpos.x(), newpos.y(), this, oldrealm );
 
-    u16 oldx = x();
-    u16 oldy = y();
+    // Todo: bc already holds oldpos, but due to oldrealm not usable
+    auto oldpos = Core::Pos4d( pos3d(), oldrealm );
     setposition( newpos );
 
     move_travellers( Core::FACING_N, bc, newpos.x(), newpos.y(),
                      oldrealm );  // facing is ignored if params 3 & 4 are not USHRT_MAX
     move_components( oldrealm );
-    // NOTE, send_boat_to_inrange pauses those it sends to.
-    send_display_boat_to_inrange( oldx, oldy );
-    // send_boat_to_inrange( this, oldx, oldy );
+    send_display_boat_to_inrange( oldpos );
     do_tellmoves();
     unpause_paused();
 
-    result = true;
+    return true;
   }
-  else
-  {
-    result = false;
-  }
-
-  return result;
+  return false;
 }
 
 bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
@@ -1228,8 +1223,6 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
   const Core::Pos4d oldpos = pos();
   setposition( newpos );
 
-  // NOTE, send_boat_to_inrange pauses those it sends to.
-  // send_boat_to_inrange( this, oldx, oldy );
   move_travellers( move_dir, bc, x(), y(), realm() );
   move_components( realm() );
 
@@ -1434,7 +1427,6 @@ void UBoat::move_components( Realms::Realm* /*oldrealm*/ )
 
 bool UBoat::turn( RELATIVE_DIR dir )
 {
-  bool result;
   BoatMoveGuard registerguard( this );
 
   const MultiDef& newmd = multi_ifturn( dir );
@@ -1447,20 +1439,15 @@ bool UBoat::turn( RELATIVE_DIR dir )
     set_dirty();
     multiid = multiid_ifturn( dir );
 
-    // send_boat_to_inrange( this, x ,y, false ); // pauses those it sends to
     turn_travellers( dir, bc );
     transform_components( old_boatshape, nullptr );
-    send_display_boat_to_inrange( x(), y() );
+    send_display_boat_to_inrange( {} );
     do_tellmoves();
     unpause_paused();
     facing = turn_facing( facing, dir );
-    result = true;
+    return true;
   }
-  else
-  {
-    result = false;
-  }
-  return result;
+  return false;
 }
 
 void UBoat::register_object( UObject* obj )
@@ -1674,8 +1661,7 @@ Bscript::BObjectImp* UBoat::scripted_create( const Items::ItemDesc& descriptor,
   boat->setposition( pos );
   boat->facing = facing;
   add_multi_to_world( boat );
-  boat->send_display_boat_to_inrange( pos.x(), pos.y() );
-  // send_boat_to_inrange( boat, x, y, false );
+  boat->send_display_boat_to_inrange( {} );
   boat->create_components();
   boat->rescan_components();
   unpause_paused();
