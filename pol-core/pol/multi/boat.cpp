@@ -558,7 +558,7 @@ void UBoat::send_boat_newly_inrange( Network::Client* client )
   }
 }
 
-void UBoat::send_display_boat_to_inrange( const std::optional<Core::Posd4>& oldpos )
+void UBoat::send_display_boat_to_inrange( const std::optional<Core::Pos4d>& oldpos )
 {
   Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
       this,
