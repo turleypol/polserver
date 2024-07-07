@@ -764,8 +764,8 @@ bool UBoat::on_ship( const BoatContext& bc, const UObject* obj )
   return bc.mdef.body_contains( rxy );
 }
 
-void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocation,
-                             unsigned short newx, unsigned short newy, Realms::Realm* oldrealm )
+void UBoat::move_travellers( const BoatContext& oldlocation, unsigned short newx,
+                             unsigned short newy, Realms::Realm* oldrealm )
 {
   Core::Pos2d newpos2d{ newx, newy };
   bool any_orphans = false;
@@ -784,17 +784,10 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
 
     obj->set_dirty();
     auto newtravellerpos = obj->pos();
-    if ( newx != USHRT_MAX &&
-         newy != USHRT_MAX )  // dave added 3/27/3, if move_xy was used, dont use facing
-    {
-      // keeps relative distance from boat mast
-      auto delta = newtravellerpos.xy() - oldlocation.oldpos.xy();
-      newtravellerpos.xy( newpos2d + delta );
-    }
-    else
-    {
-      newtravellerpos.move_to( move_dir );
-    }
+    // keeps relative distance from boat mast
+    auto delta = newtravellerpos.xy() - oldlocation.oldpos.xy();
+    // TODO: newtravellerpos = newpos + delta when newpos is Pos4d
+    newtravellerpos.xy( newpos2d + delta );
     if ( obj->ismobile() )
     {
       Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
@@ -1142,8 +1135,7 @@ bool UBoat::move_xy( const Core::Pos2d& newp, int flags,
     auto oldpos = Core::Pos4d( pos3d(), oldrealm );
     setposition( newpos );
 
-    move_travellers( Core::FACING_N, bc, newpos.x(), newpos.y(),
-                     oldrealm );  // facing is ignored if params 3 & 4 are not USHRT_MAX
+    move_travellers( bc, newpos.x(), newpos.y(), oldrealm );
     move_components( oldrealm );
     send_display_boat_to_inrange( oldpos );
     do_tellmoves();
@@ -1178,10 +1170,9 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
 
   move_multi_in_world( x(), y(), newpos.x(), newpos.y(), this, realm() );
 
-  const Core::Pos4d oldpos = pos();
   setposition( newpos );
 
-  move_travellers( move_dir, bc, x(), y(), realm() );
+  move_travellers( bc, x(), y(), realm() );
   move_components( realm() );
 
   Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
@@ -1193,7 +1184,7 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
           return;
         if ( client->ClientType & Network::CLIENTTYPE_7090 )
         {
-          if ( zonechr->in_visual_range( this, oldpos ) )
+          if ( zonechr->in_visual_range( this, bc.oldpos ) )
             return;  // TODO POS: better place for smooth move
           else
             send_boat_newly_inrange( client );  // send HSA packet only for newly inrange
@@ -1208,10 +1199,10 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
       } );
 
   Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-      oldpos,
+      bc.oldpos,
       [&]( Mobile::Character* zonechr )
       {
-        if ( zonechr->in_visual_range( this, oldpos ) &&
+        if ( zonechr->in_visual_range( this, bc.oldpos ) &&
              !zonechr->in_visual_range( this ) )  // send remove to chrs only seeing the old loc
           send_remove_boat( zonechr->client );
       } );
