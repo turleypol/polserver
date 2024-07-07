@@ -77,9 +77,7 @@ struct BoatShape
     unsigned int objtype;
     unsigned short graphic;
     unsigned short altgraphic;
-    unsigned short xdelta;
-    unsigned short ydelta;
-    signed short zdelta;
+    Core::Vec3d delta;
     ComponentShape( const std::string& str, const std::string& altstr, unsigned char type );
     ComponentShape( const std::string& str, unsigned char type );
   };

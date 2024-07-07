@@ -85,12 +85,10 @@ BoatShape::ComponentShape::ComponentShape( const std::string& str, unsigned char
       unsigned short xd, yd;
       if ( is >> xd >> yd )
       {
-        xdelta = xd;
-        ydelta = yd;
-        zdelta = 0;
+        delta = Core::Vec3d( Clib::clamp_convert<s16>( xd ), Clib::clamp_convert<s16>( yd ), 0 );
         signed short zd;
         if ( is >> zd )
-          zdelta = zd;
+          delta.z( zd );
         return;
       }
     }
@@ -116,12 +114,10 @@ BoatShape::ComponentShape::ComponentShape( const std::string& str, const std::st
       unsigned short xd, yd;
       if ( is >> xd >> yd )
       {
-        xdelta = xd;
-        ydelta = yd;
-        zdelta = 0;
+        delta = Core::Vec3d( Clib::clamp_convert<s16>( xd ), Clib::clamp_convert<s16>( yd ), 0 );
         signed short zd;
         if ( is >> zd )
-          zdelta = zd;
+          delta.z( zd );
         ok = true;
       }
     }
@@ -1348,7 +1344,7 @@ void UBoat::transform_components( const BoatShape& old_boatshape, Realms::Realm*
       Core::Pos4d oldpos = item->pos();
 
       item->setposition(
-          pos() + Core::Vec3d( itr2->xdelta, itr2->ydelta, static_cast<s8>( itr2->zdelta ) ) );
+          pos() + itr2->delta;
 
       MoveItemWorldPosition( oldpos, item );
 
@@ -1356,23 +1352,23 @@ void UBoat::transform_components( const BoatShape& old_boatshape, Realms::Realm*
           item,
           [&]( Mobile::Character* zonechr )
           {
-            if ( !zonechr->in_visual_range( item ) )
-              return;
-            Network::Client* client = zonechr->client;
+        if ( !zonechr->in_visual_range( item ) )
+          return;
+        Network::Client* client = zonechr->client;
 
-            if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
-              send_item( client, item );
+        if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
+          send_item( client, item );
           } );
 
       Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
           oldpos,
           [&]( Mobile::Character* zonechr )
           {
-            if ( !zonechr->in_visual_range( item, oldpos ) )
-              return;
-            if ( !zonechr->in_visual_range(
-                     item ) )  // not in range.  If old loc was in range, send a delete.
-              send_remove_object( zonechr->client, item );
+        if ( !zonechr->in_visual_range( item, oldpos ) )
+          return;
+        if ( !zonechr->in_visual_range(
+                 item ) )  // not in range.  If old loc was in range, send a delete.
+          send_remove_object( zonechr->client, item );
           } );
     }
   }
@@ -1412,8 +1408,7 @@ void UBoat::move_components( Realms::Realm* /*oldrealm*/ )
       item->set_dirty();
       Core::Pos4d oldpos = item->pos();
 
-      item->setposition(
-          pos() + Core::Vec3d( itr2->xdelta, itr2->ydelta, static_cast<s8>( itr2->zdelta ) ) );
+      item->setposition( pos() + itr2->delta );
 
       MoveItemWorldPosition( oldpos, item );
 
@@ -1759,8 +1754,7 @@ void UBoat::create_components()
     component->graphic = itr->graphic;
     // component itemdesc entries generally have graphic=1, so they don't get their height set.
     component->height = Plib::tileheight( component->graphic );
-    component->setposition(
-        pos() + Core::Vec3d( itr->xdelta, itr->ydelta, static_cast<s8>( itr->zdelta ) ) );
+    component->setposition( pos() + itr->delta );
     component->disable_decay();
     component->movable( false );
     add_item_to_world( component );
