@@ -224,8 +224,7 @@ private:
   void send_smooth_move_to_inrange( Core::UFACING move_dir, u8 speed, const Core::Pos4d& newpos,
                                     bool relative ) const;
 
-  static Core::Pos4d turn_coords( const BoatContext& oldlocation, const Core::Pos4d& oldpos,
-                                  RELATIVE_DIR dir );
+  Core::Pos4d turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) const;
   u8 turn_facing( u8 oldfacing, RELATIVE_DIR dir ) const;
   void create_components();
   void move_boat_item( Items::Item* item, const Core::Pos4d& newpos );

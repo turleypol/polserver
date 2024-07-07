@@ -579,10 +579,10 @@ void UBoat::send_display_boat_to_inrange( const std::optional<Core::Pos4d>& oldp
   if ( oldpos )
   {
     Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-        oldpos.value,
+        oldpos.value(),
         [&]( Mobile::Character* zonechr )
         {
-          if ( !zonechr->in_visual_range( this, oldpos.value ) )
+          if ( !zonechr->in_visual_range( this, oldpos.value() ) )
             return;
           if ( !zonechr->in_visual_range( this ) )  // send remove to chrs only seeing the old loc
             send_remove_boat( zonechr->client );
@@ -889,10 +889,9 @@ void UBoat::move_boat_mobile( Mobile::Character* chr, const Core::Pos4d& newpos,
   chr->move_reason = Mobile::Character::MULTIMOVE;
 }
 
-Core::Pos4d UBoat::turn_coords( const BoatContext& oldlocation, const Core::Pos4d& oldpos,
-                                RELATIVE_DIR dir )
+Core::Pos4d UBoat::turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) const
 {
-  Core::Vec2d delta = oldpos.xy() - oldlocation.oldpos.xy();
+  Core::Vec2d delta = oldpos.xy() - pos2d();
   switch ( dir )
   {
   case LEFT:
@@ -932,7 +931,7 @@ void UBoat::turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation )
     }
 
     obj->set_dirty();
-    auto newpos = turn_coords( oldlocation, oldpos, dir );
+    auto newpos = turn_coords( oldpos, dir );
     if ( obj->ismobile() )
     {
       Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
