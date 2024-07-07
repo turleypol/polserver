@@ -283,7 +283,7 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
 {
   Network::PktHelper::PacketOut<Network::PktOut_F6> msg;
 
-  auto posdelta = newpos - pos();
+  auto posdelta = newpos.xyz() - pos3d();
   Core::UFACING b_facing = boat_facing();
 
   if ( relative == false )

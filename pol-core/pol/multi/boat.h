@@ -140,10 +140,6 @@ public:
   virtual void unregister_object( Core::UObject* obj ) override;
   Core::UFACING boat_facing() const;
 
-  void send_smooth_move( Network::Client* client, Core::UFACING move_dir, u8 speed,
-                         const Core::Pos4d& newpos, bool relative ) const;
-  void send_smooth_move_to_inrange( Core::UFACING move_dir, u8 speed, const Core::Pos4d& newpos,
-                                    bool relative ) const;
   void send_display_boat( Network::Client* client );
   void send_display_boat_to_inrange( u16 oldx = USHRT_MAX, u16 oldy = USHRT_MAX );
   void send_boat( Network::Client* client );
@@ -222,6 +218,11 @@ protected:
   friend struct BoatMoveGuard;
 
 private:
+  void send_smooth_move( Network::Client* client, Core::UFACING move_dir, u8 speed,
+                         const Core::Pos4d& newpos, bool relative ) const;
+  void send_smooth_move_to_inrange( Core::UFACING move_dir, u8 speed, const Core::Pos4d& newpos,
+                                    bool relative ) const;
+
   Core::Pos4d turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) const;
   u8 turn_facing( u8 oldfacing, RELATIVE_DIR dir ) const;
   void create_components();
