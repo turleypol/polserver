@@ -280,18 +280,27 @@ exported function test_boat_turn()
     DestroyMulti(boat);
     return ret_error($"Failed to create item {item}");
   endif
-  var res:=TurnBoat(boat,1);
-  if (!res)
-    DestroyMulti(boat);
-    DestroyItem(item);
-    return ret_error($"Failed to turn east {res}");
-  endif
-  if (boat.facing !=4 || item.x != 9 || item.y != 50)
-    var msg := $"Wrong pos for east turn: facing {boat.facing} item {item.x},{item.y}";
-    DestroyMulti(boat);
-    DestroyItem(item);
-    return ret_error(msg);
-  endif
+  var steps:={
+    {1,4,9,50},//right
+    {3,6,10,51},//left
+    {2,2,10,49}// around
+  };
+  foreach step in steps
+    var res:=TurnBoat(boat,step[1]);
+    if (!res)
+      DestroyItem(item);
+      DestroyMulti(boat);
+      return ret_error($"Failed to turn {step} {res}");
+    endif
+    if (boat.facing != step[2] || item.x != step[3] || item.y != step[4])
+      var msg := $"Wrong pos for turn {step}: facing {boat.facing} item {item.x},{item.y}";
+      DestroyItem(item);
+      DestroyMulti(boat);
+      return ret_error(msg);
+    endif
+  endforeach
+  DestroyItem(item);
+  DestroyMulti(boat);
   return 1;
 endfunction
 
