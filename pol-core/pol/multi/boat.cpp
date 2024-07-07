@@ -882,13 +882,13 @@ Core::Pos4d UBoat::turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) co
   switch ( dir )
   {
   case LEFT:
-    delta.y( -delta.y() );
+    delta = Core::Vec2d( delta.y(), -delta.x() );
     break;
   case AROUND:
     delta.x( -delta.x() ).y( -delta.y() );
     break;
   case RIGHT:
-    delta.x( -delta.x() );
+    delta = Core::Vec2d( -delta.y(), delta.x() );
     break;
   case NO_TURN:
     return oldpos;
