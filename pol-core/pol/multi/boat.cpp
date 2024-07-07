@@ -297,7 +297,7 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
   msg->Write<u8>( b_facing );
 
   msg->WriteFlipped<u16>( newpos.x() );
-  msg->WriteFlipped<u16>( newpos.z() );
+  msg->WriteFlipped<u16>( newpos.y() );
   msg->WriteFlipped<u16>( ( newpos.z() < 0 ) ? static_cast<u16>( 0x10000 + newpos.z() )
                                              : static_cast<u16>( newpos.z() ) );
 
