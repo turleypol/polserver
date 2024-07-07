@@ -278,6 +278,7 @@ bool BoatShapeExists( u16 multiid )
   return Core::gamestate.boatshapes.count( multiid ) != 0;
 }
 
+// TODO: why not send after actual movement like the other pkts
 void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u8 speed,
                               const Core::Pos4d& newpos, bool relative ) const
 {
@@ -1213,64 +1214,60 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
 
   auto newpos = pos().move( move_dir );
 
-  if ( navigable( multidef(), newpos ) )
-  {
-    BoatContext bc( *this );
-
-    send_smooth_move_to_inrange( move_dir, speed, newpos, relative );
-
-    set_dirty();
-
-    move_multi_in_world( x(), y(), newpos.x(), newpos.y(), this, realm() );
-
-    const Core::Pos4d oldpos = pos();
-    setposition( newpos );
-
-    // NOTE, send_boat_to_inrange pauses those it sends to.
-    // send_boat_to_inrange( this, oldx, oldy );
-    move_travellers( move_dir, bc, x(), y(), realm() );
-    move_components( realm() );
-
-    Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-        this,
-        [&]( Mobile::Character* zonechr )
-        {
-          Network::Client* client = zonechr->client;
-          if ( !zonechr->in_visual_range( this ) )
-            return;
-          if ( client->ClientType & Network::CLIENTTYPE_7090 )
-          {
-            if ( zonechr->in_visual_range( this, oldpos ) )
-              return;
-            else
-              send_boat_newly_inrange( client );  // send HSA packet only for newly inrange
-          }
-          else
-          {
-            if ( client->ClientType & Network::CLIENTTYPE_7000 )
-              send_boat( client );  // Send
-            else
-              send_boat_old( client );
-          }
-        } );
-
-    Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-        oldpos,
-        [&]( Mobile::Character* zonechr )
-        {
-          if ( zonechr->in_visual_range( this, oldpos ) &&
-               !zonechr->in_visual_range( this ) )  // send remove to chrs only seeing the old loc
-            send_remove_boat( zonechr->client );
-        } );
-
-    do_tellmoves();
-    unpause_paused();
-    return true;
-  }
-  else
-  {
+  if ( !navigable( multidef(), newpos ) )
     return false;
-  }
+
+  BoatContext bc( *this );
+
+  send_smooth_move_to_inrange( move_dir, speed, newpos, relative );
+
+  set_dirty();
+
+  move_multi_in_world( x(), y(), newpos.x(), newpos.y(), this, realm() );
+
+  const Core::Pos4d oldpos = pos();
+  setposition( newpos );
+
+  // NOTE, send_boat_to_inrange pauses those it sends to.
+  // send_boat_to_inrange( this, oldx, oldy );
+  move_travellers( move_dir, bc, x(), y(), realm() );
+  move_components( realm() );
+
+  Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+      this,
+      [&]( Mobile::Character* zonechr )
+      {
+        Network::Client* client = zonechr->client;
+        if ( !zonechr->in_visual_range( this ) )
+          return;
+        if ( client->ClientType & Network::CLIENTTYPE_7090 )
+        {
+          if ( zonechr->in_visual_range( this, oldpos ) )
+            return;  // TODO POS: better place for smooth move
+          else
+            send_boat_newly_inrange( client );  // send HSA packet only for newly inrange
+        }
+        else
+        {
+          if ( client->ClientType & Network::CLIENTTYPE_7000 )
+            send_boat( client );  // Send
+          else
+            send_boat_old( client );
+        }
+      } );
+
+  Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+      oldpos,
+      [&]( Mobile::Character* zonechr )
+      {
+        if ( zonechr->in_visual_range( this, oldpos ) &&
+             !zonechr->in_visual_range( this ) )  // send remove to chrs only seeing the old loc
+          send_remove_boat( zonechr->client );
+      } );
+
+  do_tellmoves();
+  unpause_paused();
+  return true;
 }
 
 inline unsigned short UBoat::multiid_ifturn( RELATIVE_DIR dir )
