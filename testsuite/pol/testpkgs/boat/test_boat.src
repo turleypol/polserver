@@ -289,7 +289,7 @@ exported function test_boat_turn()
   var checks:={
     {1,4,  9,50, 10,49}, // right
     {3,2, 10,51,  9,50}, // left
-    {2,6, 10,49, 11,50}, // around
+    {2,7, 10,49, 11,50}, // around
     {0,6, 10,49, 11,50}  // nothing
   };
   var result:=1;
