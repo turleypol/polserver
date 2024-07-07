@@ -280,7 +280,6 @@ exported function test_boat_turn()
     DestroyMulti(boat);
     return ret_error($"Failed to create item {item}");
   endif
-  var boatfacing:=boat.facing;
   var res:=TurnBoat(boat,1);
   if (!res)
     DestroyMulti(boat);
@@ -297,4 +296,3 @@ exported function test_boat_turn()
 endfunction
 
 
-endfunction
