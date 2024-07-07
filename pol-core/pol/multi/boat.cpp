@@ -896,6 +896,11 @@ Core::Pos4d UBoat::turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) co
   return oldpos + delta;
 }
 
+Core::UFACING UBoat::turn_facing( Core::UFACING oldfacing, RELATIVE_DIR dir ) const
+{
+  return ( ( dir * 2 ) + oldfacing ) & 7;
+}
+
 void UBoat::turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation )
 {
   bool any_orphans = false;
@@ -919,7 +924,7 @@ void UBoat::turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation )
     {
       Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
       chr->lastpos = oldpos;
-      chr->setfacing( ( ( dir * 2 ) + chr->facing ) & 7 );
+      chr->setfacing( turn_facing( chr->facing, dir ) );
       if ( chr->logged_in() )
       {
         // send_remove_character_to_nearby( chr );
@@ -1457,7 +1462,7 @@ bool UBoat::turn( RELATIVE_DIR dir )
     send_display_boat_to_inrange( x(), y() );
     do_tellmoves();
     unpause_paused();
-    facing = ( ( dir * 2 ) + facing ) & 7;
+    facing = turn_facing( facing, dir );
     result = true;
   }
   else
