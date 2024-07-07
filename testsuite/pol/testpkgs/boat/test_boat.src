@@ -287,7 +287,7 @@ exported function test_boat_turn()
     return ret_error( $"Failed to create npc: {npc}" );
   endif
   var checks:={
-    {1,4,9,50, 10,51},//right
+    {1,4,9,51, 10,51},//right
     {3,6,10,51, 9,50},//left
     {2,2,10,49, 11,50}// around
   };
@@ -300,8 +300,8 @@ exported function test_boat_turn()
       DestroyMulti(boat);
       return ret_error($"Failed to turn {check} {res}");
     endif
-    if (boat.facing != check[2] || item.x != check[3] || item.y != check[4])
-      var msg := $"Wrong pos for turn {check}: facing {boat.facing} item {item.x},{item.y}";
+    if (boat.facing != check[2] || item.x != check[3] || item.y != check[4] || npc.x != check[5] || npc.y != check[6])
+      var msg := $"Wrong pos for turn {check}: facing {boat.facing} item {item.x},{item.y} npc {npc.x},{npc.y}";
       MoveObjectToLocation( npc, 100, 100, 0, flags := MOVEOBJECT_FORCELOCATION );
       npc.kill();
       DestroyItem(item);
