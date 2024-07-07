@@ -875,9 +875,10 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
     remove_orphans();
 }
 
-Core::Pos4d UBoat::turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) const
+Core::Pos4d UBoat::turn_coords( const BoatContext& oldlocation, const Core::Pos4d& oldpos,
+                                RELATIVE_DIR dir )
 {
-  Core::Vec2d delta = oldpos.xy() - pos2d();
+  Core::Vec2d delta = oldpos.xy() - oldlocation.oldpos.xy();
   switch ( dir )
   {
   case LEFT:
@@ -918,7 +919,7 @@ void UBoat::turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation )
 
     obj->set_dirty();
     Core::Pos4d oldpos = obj->pos();
-    obj->setposition( turn_coords( oldpos, dir ) );
+    obj->setposition( turn_coords( oldlocation, oldpos, dir ) );
     if ( obj->ismobile() )
     {
       Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
@@ -1287,7 +1288,7 @@ const BoatShape& UBoat::boatshape() const
 }
 
 
-void UBoat::transform_components( const BoatShape& old_boatshape, Realms::Realm* /*oldrealm*/ )
+void UBoat::transform_components( const BoatShape& old_boatshape )
 {
   const BoatShape& bshape = boatshape();
   auto end = Components.end();
@@ -1440,7 +1441,7 @@ bool UBoat::turn( RELATIVE_DIR dir )
     multiid = multiid_ifturn( dir );
 
     turn_travellers( dir, bc );
-    transform_components( old_boatshape, nullptr );
+    transform_components( old_boatshape );
     send_display_boat_to_inrange( {} );
     do_tellmoves();
     unpause_paused();

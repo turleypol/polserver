@@ -196,7 +196,7 @@ protected:
   const BoatShape& boatshape() const;
   void rescan_components();
   void reread_components();
-  void transform_components( const BoatShape& old_boatshape, Realms::Realm* oldrealm );
+  void transform_components( const BoatShape& old_boatshape );
   void move_components( Realms::Realm* oldrealm );
 
   explicit UBoat( const Items::ItemDesc& descriptor );
@@ -224,7 +224,8 @@ private:
   void send_smooth_move_to_inrange( Core::UFACING move_dir, u8 speed, const Core::Pos4d& newpos,
                                     bool relative ) const;
 
-  Core::Pos4d turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) const;
+  static Core::Pos4d turn_coords( const BoatContext& oldlocation, const Core::Pos4d& oldpos,
+                                  RELATIVE_DIR dir );
   u8 turn_facing( u8 oldfacing, RELATIVE_DIR dir ) const;
   void create_components();
   typedef Core::UObjectRef Traveller;
