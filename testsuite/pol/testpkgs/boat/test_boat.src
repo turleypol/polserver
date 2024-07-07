@@ -20,6 +20,12 @@ exported function create()
     DestroyMulti(res);
     return ret_error(er);
   endif
+  if (res.portplank.x != 10 || res.portplank.y != 48 || res.portplank.z != -4)
+    var er:="Wrong portplank pos: {},{},{}".format(res.portplank.x, res.portplank.y, res.portplank.z);
+    DestroyMulti(res);
+    return ret_error(er);
+  endif
+
   for i:=1 to 5
     sleepms(10);
     if (res.getprop("started"))
