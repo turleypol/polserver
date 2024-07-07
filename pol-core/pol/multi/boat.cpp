@@ -278,13 +278,12 @@ bool BoatShapeExists( u16 multiid )
   return Core::gamestate.boatshapes.count( multiid ) != 0;
 }
 
-void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u8 speed, u16 newx,
-                              u16 newy, bool relative )
+void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u8 speed,
+                              const Core::Pos4d& newpos, bool relative ) const
 {
   Network::PktHelper::PacketOut<Network::PktOut_F6> msg;
 
-  u16 xmod = newx - x();
-  u16 ymod = newy - y();
+  auto posdelta = newpos - pos();
   Core::UFACING b_facing = boat_facing();
 
   if ( relative == false )
@@ -297,10 +296,10 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
   msg->Write<u8>( move_dir );
   msg->Write<u8>( b_facing );
 
-  msg->WriteFlipped<u16>( newx );
-  msg->WriteFlipped<u16>( newy );
-  msg->WriteFlipped<u16>( ( z() < 0 ) ? static_cast<u16>( 0x10000 + z() )
-                                      : static_cast<u16>( z() ) );
+  msg->WriteFlipped<u16>( newpos.x() );
+  msg->WriteFlipped<u16>( newpos.z() );
+  msg->WriteFlipped<u16>( ( newpos.z() < 0 ) ? static_cast<u16>( 0x10000 + newpos.z() )
+                                             : static_cast<u16>( newpos.z() ) );
 
   // 0xf000 encoding room, huffman can take more space then the maximum of 0xffff
   const u16 max_count = ( 0xf000 - 18 ) / 10;
@@ -318,10 +317,11 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
     if ( component == nullptr || component->orphan() )
       continue;
     msg->Write<u32>( component->serial_ext );
-    msg->WriteFlipped<u16>( static_cast<u16>( component->x() + xmod ) );
-    msg->WriteFlipped<u16>( static_cast<u16>( component->y() + ymod ) );
-    msg->WriteFlipped<u16>( static_cast<u16>( ( component->z() < 0 ) ? ( 0x10000 + component->z() )
-                                                                     : ( component->z() ) ) );
+    const auto comppos = component->pos() + posdelta;
+    msg->WriteFlipped<u16>( comppos.x() );
+    msg->WriteFlipped<u16>( comppos.y() );
+    msg->WriteFlipped<u16>(
+        static_cast<u16>( ( comppos.z() < 0 ) ? ( 0x10000 + comppos.z() ) : ( comppos.z() ) ) );
     ++object_count;
   }
   for ( auto& travellerRef : travellers_ )
@@ -349,10 +349,11 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
         continue;
     }
     msg->Write<u32>( obj->serial_ext );
-    msg->WriteFlipped<u16>( static_cast<u16>( obj->x() + xmod ) );
-    msg->WriteFlipped<u16>( static_cast<u16>( obj->y() + ymod ) );
+    const auto objpos = obj->pos() + posdelta;
+    msg->WriteFlipped<u16>( objpos.x() );
+    msg->WriteFlipped<u16>( objpos.y() );
     msg->WriteFlipped<u16>(
-        static_cast<u16>( ( obj->z() < 0 ) ? ( 0x10000 + obj->z() ) : ( obj->z() ) ) );
+        static_cast<u16>( ( objpos.z() < 0 ) ? ( 0x10000 + objpos.z() ) : ( objpos.z() ) ) );
     ++object_count;
   }
   u16 len = msg->offset;
@@ -364,12 +365,11 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
   msg.Send( client, len );
 }
 
-void UBoat::send_smooth_move_to_inrange( Core::UFACING move_dir, u8 speed, u16 newx, u16 newy,
-                                         bool relative )
+void UBoat::send_smooth_move_to_inrange( Core::UFACING move_dir, u8 speed,
+                                         const Core::Pos4d& newpos, bool relative ) const
 {
-  const Core::Pos2d newpos = Core::Pos2d( newx, newy );
   Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-      newpos, realm(),
+      newpos,
       [&]( Mobile::Character* zonechr )
       {
         Network::Client* client = zonechr->client;
@@ -377,7 +377,7 @@ void UBoat::send_smooth_move_to_inrange( Core::UFACING move_dir, u8 speed, u16 n
         if ( zonechr->in_visual_range( this, newpos ) && zonechr->in_visual_range( this ) &&
              client->ClientType & Network::CLIENTTYPE_7090 )  // send this only to those who see the
                                                               // old location aswell
-          send_smooth_move( client, move_dir, speed, newx, newy, relative );
+          send_smooth_move( client, move_dir, speed, newpos, relative );
       } );
 }
 
@@ -1217,7 +1217,7 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
   {
     BoatContext bc( *this );
 
-    send_smooth_move_to_inrange( move_dir, speed, newpos.x(), newpos.y(), relative );
+    send_smooth_move_to_inrange( move_dir, speed, newpos, relative );
 
     set_dirty();
 
