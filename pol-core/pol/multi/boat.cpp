@@ -931,7 +931,7 @@ void UBoat::turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation )
     }
 
     obj->set_dirty();
-    auto newpos = turn_coords( oldpos, dir );
+    auto newpos = turn_coords( obj->pos(), dir );
     if ( obj->ismobile() )
     {
       Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
