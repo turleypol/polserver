@@ -895,7 +895,7 @@ Core::Pos4d UBoat::turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) co
     return oldpos;
   }
   INFO_PRINTLN( "turn newpos {} delta {}", oldpos + delta, delta );
-  return oldpos + delta;
+  return pos() + delta;
 }
 
 u8 UBoat::turn_facing( u8 oldfacing, RELATIVE_DIR dir ) const

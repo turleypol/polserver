@@ -270,6 +270,17 @@ endfunction
   return 1;
 endfunction*/
 
+/*
+ NX-
+  I
+
+  N
+ IX
+  |
+  I
+ -XN
+
+*/
 exported function test_boat_turn()
   var boat:=CreateMultiAtLocation(10,50,-4,0x11000, CRMULTI_FACING_EAST);
   if (!boat)
@@ -287,9 +298,10 @@ exported function test_boat_turn()
     return ret_error( $"Failed to create npc: {npc}" );
   endif
   var checks:={
-    {1,4,  9,51,  9,49}, // right
-    {3,2, 10,52,  8,50}, // left
-    {2,6, 10,49, 11,50}  // around
+    {1,4,  9,50, 10,49}, // right
+    {3,2, 10,51,  9,50}, // left
+    {2,6, 10,49, 11,50}, // around
+    {0,6, 10,49, 11,50}  // nothing
   };
   foreach check in checks
     var res:=TurnBoat(boat,check[1]);
