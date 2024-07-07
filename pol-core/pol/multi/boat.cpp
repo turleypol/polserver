@@ -82,11 +82,11 @@ BoatShape::ComponentShape::ComponentShape( const std::string& str, unsigned char
     graphic = static_cast<unsigned short>( strtoul( tmp.c_str(), nullptr, 0 ) );
     if ( graphic )
     {
-      unsigned short xd, yd;
+      s16 xd, yd;
       if ( is >> xd >> yd )
       {
-        delta = Core::Vec3d( Clib::clamp_convert<s16>( xd ), Clib::clamp_convert<s16>( yd ), 0 );
-        signed short zd;
+        delta = Core::Vec3d( xd, yd, 0 );
+        s16 zd;
         if ( is >> zd )
           delta.z( zd );
         return;
@@ -111,11 +111,11 @@ BoatShape::ComponentShape::ComponentShape( const std::string& str, const std::st
     graphic = static_cast<unsigned short>( strtoul( tmp.c_str(), nullptr, 0 ) );
     if ( graphic )
     {
-      unsigned short xd, yd;
+      s16 xd, yd;
       if ( is >> xd >> yd )
       {
-        delta = Core::Vec3d( Clib::clamp_convert<s16>( xd ), Clib::clamp_convert<s16>( yd ), 0 );
-        signed short zd;
+        delta = Core::Vec3d( xd, yd, 0 );
+        s16 zd;
         if ( is >> zd )
           delta.z( zd );
         ok = true;
