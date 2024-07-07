@@ -269,3 +269,32 @@ endfunction
   DestroyMulti(boat);
   return 1;
 endfunction*/
+
+exported function test_boat_turn()
+  var boat:=CreateMultiAtLocation(10,50,-4,0x11000, CRMULTI_FACING_EAST);
+  if (!boat)
+    return ret_error("Failed to create boat "+boat);
+  endif
+  var item:=CreateItemAtLocation(10,51,0,0xf3f);
+  if (!item)
+    DestroyMulti(boat);
+    return ret_error($"Failed to create item {item}");
+  endif
+  var boatfacing:=boat.facing;
+  var res:=TurnBoat(boat,1);
+  if (!res)
+    DestroyMulti(boat);
+    DestroyItem(item);
+    return ret_error($"Failed to turn east {res}");
+  endif
+  if (boat.facing !=4 || item.x != 9 || item.y != 50)
+    var msg := $"Wrong pos for east turn: facing {boat.facing} item {item.x},{item.y}";
+    DestroyMulti(boat);
+    DestroyItem(item);
+    return ret_error(msg);
+  endif
+  return 1;
+endfunction
+
+
+endfunction
