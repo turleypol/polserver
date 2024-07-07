@@ -787,6 +787,8 @@ Bscript::BObjectImp* UHouse::scripted_create( const Items::ItemDesc& descriptor,
   if ( !pos.can_move_to( md->minrxyz.xy() ) || !pos.can_move_to( md->maxrxyz.xy() ) )
     return new Bscript::BError( "That location is out of bounds" );
 
+  // TODO: it seems to be more restrictive then original server (the 1,5 gap
+  // see https://uo.stratics.com/homes/betterhomes/bhc_placing.shtml
   auto corner_ne = pos + md->minrxyz;
   auto corner_sw = pos + md->maxrxyz;
   if ( ~flags & CRMULTI_IGNORE_MULTIS )

@@ -225,7 +225,7 @@ protected:
 
 private:
   Core::Pos4d turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) const;
-  Core::UFACING turn_facing( Core::UFACING oldfacing, RELATIVE_DIR dir ) const;
+  u8 turn_facing( u8 oldfacing, RELATIVE_DIR dir ) const;
   void create_components();
   typedef Core::UObjectRef Traveller;
   typedef std::vector<Traveller> Travellers;

@@ -896,7 +896,7 @@ Core::Pos4d UBoat::turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) co
   return oldpos + delta;
 }
 
-Core::UFACING UBoat::turn_facing( Core::UFACING oldfacing, RELATIVE_DIR dir ) const
+u8 UBoat::turn_facing( u8 oldfacing, RELATIVE_DIR dir ) const
 {
   return ( ( dir * 2 ) + oldfacing ) & 7;
 }
