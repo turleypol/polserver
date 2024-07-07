@@ -875,7 +875,6 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
 Core::Pos4d UBoat::turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) const
 {
   Core::Vec2d delta = oldpos.xy() - pos2d();
-  INFO_PRINTLN( "turn {} oldpos {} delta {}", (int)dir, oldpos, delta );
   switch ( dir )
   {
   case LEFT:
@@ -890,7 +889,6 @@ Core::Pos4d UBoat::turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) co
   case NO_TURN:
     return oldpos;
   }
-  INFO_PRINTLN( "turn newpos {} delta {}", oldpos + delta, delta );
   return pos() + delta;
 }
 
@@ -1343,8 +1341,7 @@ void UBoat::transform_components( const BoatShape& old_boatshape, Realms::Realm*
 
       Core::Pos4d oldpos = item->pos();
 
-      item->setposition(
-          pos() + itr2->delta;
+      item->setposition( pos() + itr2->delta );
 
       MoveItemWorldPosition( oldpos, item );
 
@@ -1352,23 +1349,23 @@ void UBoat::transform_components( const BoatShape& old_boatshape, Realms::Realm*
           item,
           [&]( Mobile::Character* zonechr )
           {
-        if ( !zonechr->in_visual_range( item ) )
-          return;
-        Network::Client* client = zonechr->client;
+            if ( !zonechr->in_visual_range( item ) )
+              return;
+            Network::Client* client = zonechr->client;
 
-        if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
-          send_item( client, item );
+            if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
+              send_item( client, item );
           } );
 
       Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
           oldpos,
           [&]( Mobile::Character* zonechr )
           {
-        if ( !zonechr->in_visual_range( item, oldpos ) )
-          return;
-        if ( !zonechr->in_visual_range(
-                 item ) )  // not in range.  If old loc was in range, send a delete.
-          send_remove_object( zonechr->client, item );
+            if ( !zonechr->in_visual_range( item, oldpos ) )
+              return;
+            if ( !zonechr->in_visual_range(
+                     item ) )  // not in range.  If old loc was in range, send a delete.
+              send_remove_object( zonechr->client, item );
           } );
     }
   }
