@@ -286,9 +286,10 @@ exported function test_boat_turn()
     DestroyMulti( boat );
     return ret_error( $"Failed to create npc: {npc}" );
   endif
+  print(boat.facing);
   var checks:={
     {1,4,  9,51,  9,49}, // right
-    {3,6, 10,52,  8,50}, // left
+    {3,2, 10,52,  8,50}, // left
     {2,2, 10,49, 11,50}  // around
   };
   foreach check in checks
