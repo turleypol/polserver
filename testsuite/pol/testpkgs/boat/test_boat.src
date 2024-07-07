@@ -270,17 +270,6 @@ endfunction
   return 1;
 endfunction*/
 
-/*
- NX-
-  I
-
-  N
- IX
-  |
-  I
- -XN
-
-*/
 exported function test_boat_turn()
   var boat:=CreateMultiAtLocation(10,50,-4,0x11000, CRMULTI_FACING_EAST);
   if (!boat)
@@ -303,29 +292,23 @@ exported function test_boat_turn()
     {2,6, 10,49, 11,50}, // around
     {0,6, 10,49, 11,50}  // nothing
   };
+  var result:=1;
   foreach check in checks
     var res:=TurnBoat(boat,check[1]);
     if (!res)
-      DestroyItem(item);
-      MoveObjectToLocation( npc, 100, 100, 0, flags := MOVEOBJECT_FORCELOCATION );
-      npc.kill();
-      DestroyMulti(boat);
-      return ret_error($"Failed to turn {check} {res}");
+      result:=ret_error($"Failed to turn {check} {res}");
+      break;
     endif
     if (boat.facing != check[2] || item.x != check[3] || item.y != check[4] || npc.x != check[5] || npc.y != check[6])
-      var msg := $"Wrong pos for turn {check}: facing {boat.facing} item {item.x},{item.y} npc {npc.x},{npc.y}";
-      MoveObjectToLocation( npc, 100, 100, 0, flags := MOVEOBJECT_FORCELOCATION );
-      npc.kill();
-      DestroyItem(item);
-      DestroyMulti(boat);
-      return ret_error(msg);
+      result := ret_error($"Check failed {check}: facing {boat.facing} item {item.x},{item.y} npc {npc.x},{npc.y}");
+      break;
     endif
   endforeach
   MoveObjectToLocation( npc, 100, 100, 0, flags := MOVEOBJECT_FORCELOCATION );
   npc.kill();
   DestroyItem(item);
   DestroyMulti(boat);
-  return 1;
+  return result;
 endfunction
 
 
