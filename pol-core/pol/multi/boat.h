@@ -228,6 +228,9 @@ private:
                                   RELATIVE_DIR dir );
   u8 turn_facing( u8 oldfacing, RELATIVE_DIR dir ) const;
   void create_components();
+  void move_boat_item( Items::Item* item, const Core::Pos4d& newpos );
+  void move_boat_mobile( Mobile::Character* chr, const Core::Pos4d& newpos,
+                         Realms::Realm* oldrealm );
   typedef Core::UObjectRef Traveller;
   typedef std::vector<Traveller> Travellers;
   Travellers travellers_;

@@ -783,7 +783,6 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
     }
 
     obj->set_dirty();
-    auto oldpos = obj->pos();
     auto newtravellerpos = obj->pos();
     if ( newx != USHRT_MAX &&
          newy != USHRT_MAX )  // dave added 3/27/3, if move_xy was used, dont use facing
@@ -799,80 +798,95 @@ void UBoat::move_travellers( Core::UFACING move_dir, const BoatContext& oldlocat
     if ( obj->ismobile() )
     {
       Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
-      chr->lastpos = oldpos;
-      chr->setposition( newtravellerpos );
-
-      if ( chr->logged_in() )
-      {
-        MoveCharacterWorldPosition( oldpos, chr );
-        chr->position_changed();
-        if ( chr->client != nullptr )
-        {
-          if ( oldrealm != chr->realm() )
-          {
-            Core::send_new_subserver( chr->client );
-            Core::send_owncreate( chr->client, chr );
-          }
-
-          if ( chr->client->ClientType & Network::CLIENTTYPE_7090 )
-          {
-            Core::send_objects_newly_inrange_on_boat( chr->client, this->serial );
-
-            if ( chr->poisoned() )  // if poisoned send 0x17 for newer clients
-              send_poisonhealthbar( chr->client, chr );
-
-            if ( chr->invul() )  // if invul send 0x17 for newer clients
-              send_invulhealthbar( chr->client, chr );
-          }
-          else
-          {
-            Core::send_goxyz( chr->client, chr );
-            // lastpos are set above so these two calls will work right.
-            // FIXME these are also called, in this order, in MOVEMENT.CPP.
-            // should be consolidated.
-            Core::send_objects_newly_inrange_on_boat( chr->client, this->serial );
-          }
-        }
-        chr->move_reason = Mobile::Character::MULTIMOVE;
-      }
+      move_boat_mobile( chr, newtravellerpos, oldrealm );
     }
     else
     {
       Items::Item* item = static_cast<Items::Item*>( obj );
-
-      item->setposition( newtravellerpos );
+      move_boat_item( item, newtravellerpos );
 
       if ( Core::settingsManager.ssopt.refresh_decay_after_boat_moves )
         item->restart_decay_timer();
-      MoveItemWorldPosition( oldpos, item );
-
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-          item,
-          [&]( Mobile::Character* zonechr )
-          {
-            if ( !zonechr->in_visual_range( item ) )
-              return;
-            Network::Client* client = zonechr->client;
-
-            if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
-              send_item( client, item );
-          } );
-
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-          oldpos,
-          [&]( Mobile::Character* zonechr )
-          {
-            if ( !zonechr->in_visual_range( item, oldpos ) )
-              return;
-            if ( !zonechr->in_visual_range(
-                     item ) )  // not in range.  If old loc was in range, send a delete.
-              send_remove_object( zonechr->client, item );
-          } );
     }
   }
 
   if ( any_orphans )
     remove_orphans();
+}
+
+void UBoat::move_boat_item( Items::Item* item, const Core::Pos4d& newpos )
+{
+  item->set_dirty();
+  const Core::Pos4d oldpos = item->pos();
+  item->setposition( newpos );
+  MoveItemWorldPosition( oldpos, item );
+
+  Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+      item,
+      [&]( Mobile::Character* zonechr )
+      {
+        if ( !zonechr->in_visual_range( item ) )
+          return;
+        Network::Client* client = zonechr->client;
+
+        if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
+          send_item( client, item );
+      } );
+
+  Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
+      oldpos,
+      [&]( Mobile::Character* zonechr )
+      {
+        if ( !zonechr->in_visual_range( item, oldpos ) )
+          return;
+        if ( !zonechr->in_visual_range(
+                 item ) )  // not in range.  If old loc was in range, send a delete.
+          send_remove_object( zonechr->client, item );
+      } );
+}
+
+// TODO: oldrealm is a hack until move is rewritten
+void UBoat::move_boat_mobile( Mobile::Character* chr, const Core::Pos4d& newpos,
+                              Realms::Realm* oldrealm )
+{
+  const auto oldpos = chr->pos();
+  chr->lastpos = oldpos;
+  chr->setposition( newpos );
+
+  if ( !chr->logged_in() )
+    return;
+
+  MoveCharacterWorldPosition( oldpos, chr );
+  chr->position_changed();
+  if ( chr->client != nullptr )
+  {
+    // TODO realm_changed stuff
+    if ( oldrealm != nullptr && oldrealm != chr->realm() )
+    {
+      Core::send_new_subserver( chr->client );
+      Core::send_owncreate( chr->client, chr );
+    }
+
+    if ( chr->client->ClientType & Network::CLIENTTYPE_7090 )
+    {
+      Core::send_objects_newly_inrange_on_boat( chr->client, this->serial );
+
+      if ( chr->poisoned() )  // if poisoned send 0x17 for newer clients
+        send_poisonhealthbar( chr->client, chr );
+
+      if ( chr->invul() )  // if invul send 0x17 for newer clients
+        send_invulhealthbar( chr->client, chr );
+    }
+    else
+    {
+      Core::send_goxyz( chr->client, chr );
+      // lastpos are set above so these two calls will work right.
+      // FIXME these are also called, in this order, in MOVEMENT.CPP.
+      // should be consolidated.
+      Core::send_objects_newly_inrange_on_boat( chr->client, this->serial );
+    }
+  }
+  chr->move_reason = Mobile::Character::MULTIMOVE;
 }
 
 Core::Pos4d UBoat::turn_coords( const BoatContext& oldlocation, const Core::Pos4d& oldpos,
@@ -918,76 +932,20 @@ void UBoat::turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation )
     }
 
     obj->set_dirty();
-    Core::Pos4d oldpos = obj->pos();
-    obj->setposition( turn_coords( oldlocation, oldpos, dir ) );
+    auto newpos = turn_coords( oldlocation, oldpos, dir );
     if ( obj->ismobile() )
     {
       Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
-      chr->lastpos = oldpos;
       chr->setfacing( turn_facing( chr->facing, dir ) );
-      if ( chr->logged_in() )
-      {
-        // send_remove_character_to_nearby( chr );
-
-        Core::MoveCharacterWorldPosition( oldpos, chr );
-        chr->position_changed();
-        if ( chr->client != nullptr )
-        {
-          if ( chr->client->ClientType & Network::CLIENTTYPE_7090 )
-          {
-            if ( chr->poisoned() )  // if poisoned send 0x17 for newer clients
-              send_poisonhealthbar( chr->client, chr );
-
-            if ( chr->invul() )  // if invul send 0x17 for newer clients
-              send_invulhealthbar( chr->client, chr );
-
-            Core::send_objects_newly_inrange_on_boat( chr->client, this->serial );
-          }
-          else
-          {
-            Core::send_goxyz( chr->client, chr );
-            // lastx and lasty are set above so these two calls will work right.
-            // FIXME these are also called, in this order, in MOVEMENT.CPP.
-            // should be consolidated.
-            Core::send_objects_newly_inrange_on_boat( chr->client, this->serial );
-          }
-        }
-        chr->move_reason = Mobile::Character::MULTIMOVE;
-        // chr->lastx = ~ (unsigned short) 0; // force tellmove() to send "owncreate" and not send
-        // deletes.
-        // chr->lasty = ~ (unsigned short) 0;
-      }
+      move_boat_mobile( chr, newpos, nullptr );
     }
     else
     {
       Items::Item* item = static_cast<Items::Item*>( obj );
 
+      move_boat_item( item, newpos );
       if ( Core::settingsManager.ssopt.refresh_decay_after_boat_moves )
         item->restart_decay_timer();
-      MoveItemWorldPosition( oldpos, item );
-
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-          item,
-          [&]( Mobile::Character* zonechr )
-          {
-            if ( !zonechr->in_visual_range( item ) )
-              return;
-            Network::Client* client = zonechr->client;
-
-            if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
-              send_item( client, item );
-          } );
-
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-          oldpos,
-          [&]( Mobile::Character* zonechr )
-          {
-            if ( !zonechr->in_visual_range( item, oldpos ) )
-              return;
-            if ( !zonechr->in_visual_range(
-                     item ) )  // not in range.  If old loc was in range, send a delete.
-              send_remove_object( zonechr->client, item );
-          } );
     }
   }
 
@@ -1320,7 +1278,6 @@ void UBoat::transform_components( const BoatShape& old_boatshape )
         continue;
       }
 
-      item->set_dirty();
       if ( item->objtype_ == Core::settingsManager.extobj.port_plank &&
            item->graphic == old_itr->altgraphic )
         item->graphic = itr2->altgraphic;
@@ -1330,34 +1287,7 @@ void UBoat::transform_components( const BoatShape& old_boatshape )
       else
         item->graphic = itr2->graphic;
 
-      Core::Pos4d oldpos = item->pos();
-
-      item->setposition( pos() + itr2->delta );
-
-      MoveItemWorldPosition( oldpos, item );
-
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-          item,
-          [&]( Mobile::Character* zonechr )
-          {
-            if ( !zonechr->in_visual_range( item ) )
-              return;
-            Network::Client* client = zonechr->client;
-
-            if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
-              send_item( client, item );
-          } );
-
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-          oldpos,
-          [&]( Mobile::Character* zonechr )
-          {
-            if ( !zonechr->in_visual_range( item, oldpos ) )
-              return;
-            if ( !zonechr->in_visual_range(
-                     item ) )  // not in range.  If old loc was in range, send a delete.
-              send_remove_object( zonechr->client, item );
-          } );
+      move_boat_item( item, pos() + itr2->delta );
     }
   }
 }
@@ -1392,36 +1322,7 @@ void UBoat::move_components( Realms::Realm* /*oldrealm*/ )
             item->serial, item->graphic, containerSerial );
         continue;
       }
-
-      item->set_dirty();
-      Core::Pos4d oldpos = item->pos();
-
-      item->setposition( pos() + itr2->delta );
-
-      MoveItemWorldPosition( oldpos, item );
-
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-          item,
-          [&]( Mobile::Character* zonechr )
-          {
-            if ( !zonechr->in_visual_range( item ) )
-              return;
-            Network::Client* client = zonechr->client;
-
-            if ( !( client->ClientType & Network::CLIENTTYPE_7090 ) )
-              send_item( client, item );
-          } );
-
-      Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-          oldpos,
-          [&]( Mobile::Character* zonechr )
-          {
-            if ( !zonechr->in_visual_range( item, oldpos ) )
-              return;
-            if ( !zonechr->in_visual_range(
-                     item ) )  // not in range.  If old loc was in range, send a delete.
-              send_remove_object( zonechr->client, item );
-          } );
+      move_boat_item( item, pos() + itr2->delta );
     }
   }
 }
