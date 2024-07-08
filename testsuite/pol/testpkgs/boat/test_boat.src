@@ -340,6 +340,42 @@ exported function test_boat_move_travellers()
   else
     if ( item.x != 10 || item.y != 50 || npc.x != 9 || npc.y != 49)
       result := ret_error($"Move failed: item {item.x},{item.y} npc {npc.x},{npc.y}");
+    elseif (boat.portplank.x != 10 || boat.portplank.y != 47 || boat.portplank.z != -4)
+      result:=ret_error("Wrong portplank pos: {},{},{}".format(res.portplank.x, res.portplank.y, res.portplank.z);
+    endif
+  endif
+  MoveObjectToLocation( npc, 100, 100, 0, flags := MOVEOBJECT_FORCELOCATION );
+  npc.kill();
+  DestroyItem(item);
+  DestroyMulti(boat);
+  return result;
+endfunction
+
+exported function test_boat_moveloc_travellers()
+  var boat:=CreateMultiAtLocation(10,50,-4,0x11000, CRMULTI_FACING_EAST);
+  if (!boat)
+    return ret_error("Failed to create boat "+boat);
+  endif
+  var item:=CreateItemAtLocation(10,51,0,0xf3f);
+  if (!item)
+    DestroyMulti(boat);
+    return ret_error($"Failed to create item {item}");
+  endif
+  var npc := CreateNPCFromTemplate( ":testnpc:probe_npc", 9, 50, 0 );
+  if ( !npc )
+    DestroyItem(item);
+    DestroyMulti(boat);
+    return ret_error( $"Failed to create npc: {npc}" );
+  endif
+  var result:=1;
+  var res:=MoveObjectToLocation(boat,110,150,10,flags:=MOVEOBJECT_FORCELOCATION);
+  if (!res)
+    result:=ret_error($"Failed to move {res}");
+  else
+    if ( item.x != 110 || item.y != 150 || item.z!=14 || npc.x != 109 || npc.y != 149 || npc.z!=14)
+      result := ret_error($"Move failed: item {item.x},{item.y},{item.z} npc {npc.x},{npc.y},{npc.z}");
+    elseif (boat.portplank.x != 110 || boat.portplank.y != 147 || boat.portplank.z != 10)
+      result:=ret_error("Wrong portplank pos: {},{},{}".format(res.portplank.x, res.portplank.y, res.portplank.z);
     endif
   endif
   MoveObjectToLocation( npc, 100, 100, 0, flags := MOVEOBJECT_FORCELOCATION );
