@@ -81,15 +81,12 @@ struct BoatShape
     Core::Vec3d delta;
     ComponentShape( const std::string& str, const std::string& altstr, unsigned char type );
     ComponentShape( const std::string& str, unsigned char type );
-
-  private:
-    bool read( const std::string& str, u8 type );
   };
   std::vector<ComponentShape> Componentshapes;
 
   static bool objtype_is_component( unsigned int objtype );
   BoatShape( Clib::ConfigElem& elem );
-  BoatShape();
+  BoatShape() = default;
   size_t estimateSize() const;
 };
 
