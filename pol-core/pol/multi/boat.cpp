@@ -73,27 +73,8 @@ std::vector<Network::Client*> boat_sent_to;
 
 BoatShape::ComponentShape::ComponentShape( const std::string& str, unsigned char type )
 {
-  altgraphic = 0;
-  objtype = get_component_objtype( type );
-  ISTRINGSTREAM is( str );
-  std::string tmp;
-  if ( is >> tmp )
-  {
-    graphic = static_cast<unsigned short>( strtoul( tmp.c_str(), nullptr, 0 ) );
-    if ( graphic )
-    {
-      s16 xd, yd;
-      if ( is >> xd >> yd )
-      {
-        delta = Core::Vec3d( xd, yd, 0 );
-        s16 zd;
-        if ( is >> zd )
-          delta.z( zd );
-        return;
-      }
-    }
-  }
-
+  if ( read( str, type ) )
+    return;
   ERROR_PRINTLN( "Boat component definition '{}' is poorly formed.", str );
   throw std::runtime_error( "Poorly formed boat.cfg component definition" );
 }
@@ -101,28 +82,7 @@ BoatShape::ComponentShape::ComponentShape( const std::string& str, unsigned char
 BoatShape::ComponentShape::ComponentShape( const std::string& str, const std::string& altstr,
                                            unsigned char type )
 {
-  altgraphic = 0;
-  bool ok = false;
-  objtype = get_component_objtype( type );
-  ISTRINGSTREAM is( str );
-  std::string tmp;
-  if ( is >> tmp )
-  {
-    graphic = static_cast<unsigned short>( strtoul( tmp.c_str(), nullptr, 0 ) );
-    if ( graphic )
-    {
-      s16 xd, yd;
-      if ( is >> xd >> yd )
-      {
-        delta = Core::Vec3d( xd, yd, 0 );
-        s16 zd;
-        if ( is >> zd )
-          delta.z( zd );
-        ok = true;
-      }
-    }
-  }
-
+  bool ok = read( str, type );
   ISTRINGSTREAM altis( altstr );
   std::string alttmp;
   if ( ok && altis >> alttmp )
@@ -140,7 +100,30 @@ BoatShape::ComponentShape::ComponentShape( const std::string& str, const std::st
   }
 }
 
-
+bool BoatShape::ComponentShape::read( const std::string& str, u8 type )
+{
+  altgraphic = 0;
+  objtype = get_component_objtype( type );
+  ISTRINGSTREAM is( str );
+  std::string tmp;
+  if ( is >> tmp )
+  {
+    graphic = static_cast<unsigned short>( strtoul( tmp.c_str(), nullptr, 0 ) );
+    if ( graphic )
+    {
+      s16 xd, yd;
+      if ( is >> xd >> yd )
+      {
+        delta = Core::Vec3d( xd, yd, 0 );
+        s16 zd;
+        if ( is >> zd )
+          delta.z( zd );
+        return true;
+      }
+    }
+  }
+  return false;
+}
 BoatShape::BoatShape() {}
 BoatShape::BoatShape( Clib::ConfigElem& elem )
 {
