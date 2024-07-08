@@ -126,7 +126,7 @@ public:
   virtual size_t estimatedSize() const override;
 
   bool move( Core::UFACING dir, u8 speed, bool relative );
-  bool move_xy( const Core::Pos2d& newp, int flags, Realms::Realm* oldrealm );
+  bool move_to( const Core::Pos4d& newpos, int flags );
 
   enum RELATIVE_DIR  // order matters! facing = ( ( dir * 2 ) + facing ) & 7;
   {
@@ -165,8 +165,6 @@ public:
                                 Core::ExportScript** hook, unsigned int* PC ) const override;
   static bool navigable( const MultiDef& md, const Core::Pos4d& desired_pos );
   static bool objtype_passable( unsigned short graphic );
-  void realm_changed();
-  void adjust_traveller_z( s8 delta_z );
 
   virtual void on_color_changed() override;
 
@@ -196,7 +194,7 @@ protected:
   void rescan_components();
   void reread_components();
   void transform_components( const BoatShape& old_boatshape );
-  void move_components( Realms::Realm* oldrealm );
+  void move_components();
 
   explicit UBoat( const Items::ItemDesc& descriptor );
   virtual void fixInvalidGraphic() override;
@@ -227,8 +225,7 @@ private:
   u8 turn_facing( u8 oldfacing, RELATIVE_DIR dir ) const;
   void create_components();
   void move_boat_item( Items::Item* item, const Core::Pos4d& newpos );
-  void move_boat_mobile( Mobile::Character* chr, const Core::Pos4d& newpos,
-                         Realms::Realm* oldrealm );
+  void move_boat_mobile( Mobile::Character* chr, const Core::Pos4d& newpos );
   typedef Core::UObjectRef Traveller;
   typedef std::vector<Traveller> Travellers;
   Travellers travellers_;
