@@ -338,8 +338,9 @@ exported function test_boat_move_travellers()
   if (!res)
     result:=ret_error($"Failed to move {res}");
   else
-    if ( item.x != 10 || item.y != 50 || npc.x != 9 || npc.y != 49)
-      result := ret_error($"Move failed: item {item.x},{item.y} npc {npc.x},{npc.y}");
+    if ( item.x != 10 || item.y != 50 || item.z != 0 || 
+         npc.x != 9 || npc.y != 49 || npc.z != -1 )
+      result := ret_error($"Move failed: item {item.x},{item.y},{item.z} npc {npc.x},{npc.y},{npc.z}");
     elseif (boat.portplank.x != 10 || boat.portplank.y != 47 || boat.portplank.z != -4)
       result:=ret_error("Wrong portplank pos: {},{},{}".format(res.portplank.x, res.portplank.y, res.portplank.z));
     endif
@@ -372,7 +373,8 @@ exported function test_boat_moveloc_travellers()
   if (!res)
     result:=ret_error($"Failed to move {res}");
   else
-    if ( item.x != 180 || item.y != 150 || item.z!=14 || npc.x != 179 || npc.y != 149 || npc.z!=14)
+    if ( item.x != 180 || item.y != 151 || item.z != 14 || 
+         npc.x != 179 || npc.y != 150 || npc.z != 13 )
       result := ret_error($"Move failed: item {item.x},{item.y},{item.z} npc {npc.x},{npc.y},{npc.z}");
     elseif (boat.portplank.x != 180 || boat.portplank.y != 147 || boat.portplank.z != 10)
       result:=ret_error("Wrong portplank pos: {},{},{}".format(res.portplank.x, res.portplank.y, res.portplank.z));
