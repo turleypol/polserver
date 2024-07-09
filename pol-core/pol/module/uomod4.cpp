@@ -96,6 +96,10 @@ BObjectImp* UOExecutorModule::internal_MoveBoat( Multi::UBoat* boat, const Core:
     if ( !boat->navigable( boat->multidef(), newpos ) )
       return new BError( "Position indicated is impassable" );
   }
+  // always check if boat would fit into realm
+  else if ( !newpos.can_move_to( boat->multidef().minrxyz.xy() ) ||
+            !newpos.can_move_to( boat->multidef().maxrxyz.xy() ) )
+    return new BError( "Boat does not fit into map" );
   bool ok = boat->move_to( newpos, flags );
   return new BLong( ok );
 }
