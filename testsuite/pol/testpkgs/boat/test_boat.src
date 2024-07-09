@@ -251,8 +251,7 @@ function RestoreConfiguration( newConf )
   return ReloadConfiguration();
 endfunction
 
-/*exported function test_boat_realm_move()
-  // crashed by wrongly converting coordinates between realms
+exported function test_boat_realm_move()
   var boat:=CreateMultiAtLocation(10,50,-4,0x11000, CRMULTI_FACING_EAST);
   if (!boat)
     return ret_error("Failed to create boat "+boat);
@@ -274,7 +273,7 @@ endfunction
 
   DestroyMulti(boat);
   return 1;
-endfunction*/
+endfunction
 
 exported function test_boat_turn_travellers()
   var boat:=CreateMultiAtLocation(10,50,-4,0x11000, CRMULTI_FACING_EAST);
