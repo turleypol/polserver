@@ -1092,7 +1092,7 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
         if ( client->ClientType & Network::CLIENTTYPE_7090 )
         {
           if ( zonechr->in_visual_range( this, bc.oldpos ) )
-            send_smooth_move( move_dir, speed, relative );
+            send_smooth_move( client, move_dir, speed, relative );
           else
             send_boat_newly_inrange( client );  // send HSA packet only for newly inrange
         }
