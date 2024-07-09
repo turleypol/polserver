@@ -164,7 +164,7 @@ public:
   virtual bool get_method_hook( const char* methodname, Bscript::Executor* ex,
                                 Core::ExportScript** hook, unsigned int* PC ) const override;
   bool navigable( const MultiDef& md, const Core::Pos4d& desired_pos ) const;
-  bool can_fit_at_location( const Core::Pos4d& desired_pos, const MultiDef* md ) const;
+  bool can_fit_at_location( const Core::Pos4d& desired_pos, const MultiDef* md = nullptr ) const;
   static bool objtype_passable( unsigned short graphic );
 
   virtual void on_color_changed() override;
