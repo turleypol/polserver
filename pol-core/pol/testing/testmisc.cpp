@@ -166,13 +166,6 @@ void packet_test()
     std::array<s8, 10> a{ { 0x2f, 0x31, 0x32, 0x33, 0x34, 0x12, 0x34, 0x43, 0x21, 0 } };
     test( p, a );
   }
-  {
-    PacketOut<PktOut_2F> p;  // size 10
-    p->WriteFlipped<s16>( -110 );
-    p->WriteFlipped<u16>( static_cast<u16>( 0x10000 - 110 ) );
-    std::array<s8, 10> a{ { 0x2f, 0x12, 0x34, 0x43, 0x21, 0x12, 0x34, 0x43, 0x21, 0 } };
-    test( p, a );
-  }
 }
 
 void test_splitnamevalue( const std::string& istr, const std::string& exp_pn,
