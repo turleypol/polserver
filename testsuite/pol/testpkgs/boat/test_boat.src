@@ -256,23 +256,54 @@ exported function test_boat_realm_move()
   if (!boat)
     return ret_error("Failed to create boat "+boat);
   endif
-
-  var res:=MoveObjectToLocation(boat,1580,150,0,"britannia2",MOVEOBJECT_FORCELOCATION);
-  if (!res || boat.x != 1580 || boat.y != 150 || boat.realm != "britannia2")
-    var err:=$"Failed initial move: {res}:{boat.x},{boat.y},{boat.realm}";
+  var item:=CreateItemAtLocation(10,51,0,0xf3f);
+  if (!item)
     DestroyMulti(boat);
-    return ret_error(err);
+    return ret_error($"Failed to create item {item}");
   endif
-
-  res:=MoveObjectToLocation(boat,10,10,0,"britannia",MOVEOBJECT_FORCELOCATION);
-  if (!res || boat.x != 10 || boat.y != 10 || boat.realm != "britannia")
-    var err:=$"Failed to move: {res}:{boat.x},{boat.y},{boat.realm}";
+  var npc := CreateNPCFromTemplate( ":testnpc:probe_npc", 9, 50, 0 );
+  if ( !npc )
+    DestroyItem(item);
     DestroyMulti(boat);
-    return ret_error(err);
+    return ret_error( $"Failed to create npc: {npc}" );
   endif
+  var result:=1;
+  do
+    var res:=MoveObjectToLocation(boat,1580,150,0,"britannia2",MOVEOBJECT_FORCELOCATION);
+    if (!res || boat.x != 1580 || boat.y != 150 || boat.realm != "britannia2")
+      result := ret_error($"Failed initial move: {res}:{boat.x},{boat.y},{boat.realm}");
+      break;
+    elseif ( item.x != 1580 || item.y != 151 || item.z != 0 || item.realm != "britannia2")
+      result := ret_error($"Initial move failed: item {item.x},{item.y},{item.z},{item.realm}";
+      break;
+    elseif (npc.x != 1579 || npc.y != 150 || npc.z != -1 || npc.realm != "britannia2")
+      result := ret_error($"Initial move failed: npc {npc.x},{npc.y},{npc.z},{npc.realm}";
+      break;
+    elseif (boat.portplank.x != 1580 || boat.portplank.y != 148 || boat.portplank.z != -4 || boat.portplank.realm != "britannia2")
+      result:=ret_error("Initial move failed: portplank {},{},{},{}".format(res.portplank.x, res.portplank.y, res.portplank.z, rea.portplank.realm));
+      break;
+    endif
 
+    res:=MoveObjectToLocation(boat,10,10,0,"britannia",MOVEOBJECT_FORCELOCATION);
+    if (!res || boat.x != 10 || boat.y != 10 || boat.realm != "britannia")
+      result:=ret_error($"Failed to move: {res}:{boat.x},{boat.y},{boat.realm}");
+      break;
+    elseif ( item.x != 10 || item.y != 11 || item.z != 0 || item.realm != "britannia")
+      result := ret_error($"Move failed: item {item.x},{item.y},{item.z},{item.realm}";
+      break;
+    elseif (npc.x != 9 || npc.y != 10 || npc.z != -1 || npc.realm != "britannia")
+      result := ret_error($"Move failed: npc {npc.x},{npc.y},{npc.z},{npc.realm}";
+      break;
+    elseif (boat.portplank.x != 10 || boat.portplank.y != 8 || boat.portplank.z != -4 || boat.portplank.realm != "britannia")
+      result:=ret_error("Move failed: portplank {},{},{},{}".format(res.portplank.x, res.portplank.y, res.portplank.z, rea.portplank.realm));
+      break;
+    endif
+  dowhile(0)
+  MoveObjectToLocation( npc, 100, 100, 0, flags := MOVEOBJECT_FORCELOCATION );
+  npc.kill();
+  DestroyItem(item);
   DestroyMulti(boat);
-  return 1;
+  return result;
 endfunction
 
 exported function test_boat_turn_travellers()
