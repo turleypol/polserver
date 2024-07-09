@@ -24,6 +24,7 @@
 #include "../item/item.h"
 #include "../mobile/charactr.h"
 #include "../multi/boat.h"
+#include "../multi/multidef.h"
 #include "../polclass.h"
 #include "../ufunc.h"
 #include "../uobject.h"
