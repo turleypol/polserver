@@ -280,7 +280,7 @@ exported function test_boat_realm_move()
       result := ret_error($"Initial move failed: npc {npc.x},{npc.y},{npc.z},{npc.realm}");
       break;
     elseif (boat.portplank.x != 1580 || boat.portplank.y != 148 || boat.portplank.z != -4 || boat.portplank.realm != "britannia2")
-      result:=ret_error("Initial move failed: portplank {},{},{},{}".format(res.portplank.x, res.portplank.y, res.portplank.z, rea.portplank.realm));
+      result:=ret_error("Initial move failed: portplank {},{},{},{}".format(boat.portplank.x, boat.portplank.y, boat.portplank.z, boat.portplank.realm));
       break;
     endif
 
@@ -295,7 +295,7 @@ exported function test_boat_realm_move()
       result := ret_error($"Move failed: npc {npc.x},{npc.y},{npc.z},{npc.realm}");
       break;
     elseif (boat.portplank.x != 10 || boat.portplank.y != 8 || boat.portplank.z != -4 || boat.portplank.realm != "britannia")
-      result:=ret_error("Move failed: portplank {},{},{},{}".format(res.portplank.x, res.portplank.y, res.portplank.z, rea.portplank.realm));
+      result:=ret_error("Move failed: portplank {},{},{},{}".format(boat.portplank.x, boat.portplank.y, boat.portplank.z, boat.portplank.realm));
       break;
     endif
   dowhile(0);
