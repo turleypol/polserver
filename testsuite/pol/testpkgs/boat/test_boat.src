@@ -416,3 +416,19 @@ exported function test_boat_moveloc_travellers()
   DestroyMulti(boat);
   return result;
 endfunction
+
+exported function test_boat_move_outside_realm()
+  var boat:=CreateMultiAtLocation(180,50,-4,0x11000, CRMULTI_FACING_EAST);
+  if (!boat)
+    return ret_error("Failed to create boat "+boat);
+  endif
+  while (1)
+    var res:=MoveBoatRelative(boat,0);
+    print(boat.x);
+    if (!res)
+      print(res);
+      break;
+    endif
+  endwhile
+  return 1;
+endfunction
