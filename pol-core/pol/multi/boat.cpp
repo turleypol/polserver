@@ -681,9 +681,13 @@ bool UBoat::can_fit_at_location( const MultiDef& md, const Core::Pos4d& desired_
 {
   if ( !desired_pos.can_move_to( md.minrxyz.xy() ) || !desired_pos.can_move_to( md.maxrxyz.xy() ) )
   {
-#ifdef DEBUG_BOATS
+    // #ifdef DEBUG_BOATS
     INFO_PRINTLN( "Location {} impassable, location is off the map", desired_pos );
-#endif
+    INFO_PRINTLN( "Location {} impassable, location is off the map", md.minrxyz );
+    INFO_PRINTLN( "Location {} impassable, location is off the map", md.maxrxyz );
+
+    INFO_PRINTLN( "Location {} impassable, location is off the map", desired_pos.realm()->area() );
+    // #endif
     return false;
   }
   return true;
