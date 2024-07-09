@@ -677,7 +677,7 @@ void UBoat::unregself()
   }
 }
 
-bool UBoat::can_fit_at_location( const Core::Pos4d& desired_pos, const MultiDef& md )
+bool UBoat::can_fit_at_location( const MultiDef& md, const Core::Pos4d& desired_pos )
 {
   if ( !desired_pos.can_move_to( md.minrxyz.xy() ) || !desired_pos.can_move_to( md.maxrxyz.xy() ) )
   {
@@ -692,13 +692,8 @@ bool UBoat::can_fit_at_location( const Core::Pos4d& desired_pos, const MultiDef&
 // navigable: Can the ship sit here?  ie is every point on the hull on water,and not blocked?
 bool UBoat::navigable( const MultiDef& md, const Core::Pos4d& desired_pos )
 {
-  if ( !can_fit_at_location( desired_pos, md ) )
-  {
-#ifdef DEBUG_BOATS
-    INFO_PRINTLN( "Location {} impassable, location is off the map", desired_pos );
-#endif
+  if ( !can_fit_at_location( md, desired_pos ) )
     return false;
-  }
 
   /* Test the external hull to make sure it's on water */
 
