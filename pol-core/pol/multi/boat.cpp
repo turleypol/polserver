@@ -821,7 +821,7 @@ void UBoat::move_boat_mobile( Mobile::Character* chr, const Core::Pos4d& newpos 
     oldpos.realm()->notify_left( *chr );
     send_remove_character_to_nearby( chr );
     if ( chr->client != nullptr )
-      remove_objects_inrange( chr->client );
+      Core::remove_objects_inrange( chr->client );
   }
 
   chr->setposition( newpos );

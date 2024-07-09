@@ -180,8 +180,7 @@ public:
 
 protected:
   Core::ItemRef mountpiece;
-  void move_travellers( const BoatContext& oldlocation, unsigned short x, unsigned short y,
-                        Realms::Realm* oldrealm = nullptr );
+  void move_travellers( const BoatContext& oldlocation );
   void turn_travellers( RELATIVE_DIR dir, const BoatContext& oldlocation );
   static bool on_ship( const BoatContext& bc, const Core::UObject* obj );
   void move_offline_mobiles( const Core::Pos4d& newpos );
