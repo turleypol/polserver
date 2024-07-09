@@ -422,15 +422,15 @@ exported function test_boat_move_outside_realm()
   if (!boat)
     return ret_error("Failed to create boat "+boat);
   endif
-  var res:=ret_error("didnt stop moving");
+  var result:=ret_error("didnt stop moving");
   while (boat.x < 190)
     var res:=MoveBoatRelative(boat,0);
     if (!res)
       if (boat.x == 186)
-        res := 1;
+        result := 1;
         break;
       else
-        res := ret_error($"moved to far: {boat.x}");
+        result := ret_error($"moved to far: {boat.x}");
         break;
       endif
     endif

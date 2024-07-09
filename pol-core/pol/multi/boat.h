@@ -217,9 +217,7 @@ protected:
 
 private:
   void send_smooth_move( Network::Client* client, Core::UFACING move_dir, u8 speed,
-                         const Core::Pos4d& newpos, bool relative ) const;
-  void send_smooth_move_to_inrange( Core::UFACING move_dir, u8 speed, const Core::Pos4d& newpos,
-                                    bool relative ) const;
+                         bool relative ) const;
 
   Core::Pos4d turn_coords( const Core::Pos4d& oldpos, RELATIVE_DIR dir ) const;
   u8 turn_facing( u8 oldfacing, RELATIVE_DIR dir ) const;

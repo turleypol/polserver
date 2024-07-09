@@ -250,15 +250,12 @@ bool BoatShapeExists( u16 multiid )
   return Core::gamestate.boatshapes.count( multiid ) != 0;
 }
 
-// TODO: why not send after actual movement like the other pkts
 void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u8 speed,
-                              const Core::Pos4d& newpos, bool relative ) const
+                              bool relative ) const
 {
   Network::PktHelper::PacketOut<Network::PktOut_F6> msg;
 
-  auto posdelta = newpos.xyz() - pos3d();
   Core::UFACING b_facing = boat_facing();
-
   if ( relative == false )
     move_dir = static_cast<Core::UFACING>( ( b_facing + move_dir ) * 7 );
 
@@ -269,10 +266,9 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
   msg->Write<u8>( move_dir );
   msg->Write<u8>( b_facing );
 
-  msg->WriteFlipped<u16>( newpos.x() );
-  msg->WriteFlipped<u16>( newpos.y() );
-  msg->WriteFlipped<u16>( ( newpos.z() < 0 ) ? static_cast<u16>( 0x10000 + newpos.z() )
-                                             : static_cast<u16>( newpos.z() ) );
+  msg->WriteFlipped<u16>( x() );
+  msg->WriteFlipped<u16>( y() );
+  msg->WriteFlipped<s16>( z() );
 
   // 0xf000 encoding room, huffman can take more space then the maximum of 0xffff
   const u16 max_count = ( 0xf000 - 18 ) / 10;
@@ -290,11 +286,9 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
     if ( component == nullptr || component->orphan() )
       continue;
     msg->Write<u32>( component->serial_ext );
-    const auto comppos = component->pos() + posdelta;
-    msg->WriteFlipped<u16>( comppos.x() );
-    msg->WriteFlipped<u16>( comppos.y() );
-    msg->WriteFlipped<u16>(
-        static_cast<u16>( ( comppos.z() < 0 ) ? ( 0x10000 + comppos.z() ) : ( comppos.z() ) ) );
+    msg->WriteFlipped<u16>( component->x() );
+    msg->WriteFlipped<u16>( component->y() );
+    msg->WriteFlipped<s16>( component->z() );
     ++object_count;
   }
   for ( auto& travellerRef : travellers_ )
@@ -322,11 +316,9 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
         continue;
     }
     msg->Write<u32>( obj->serial_ext );
-    const auto objpos = obj->pos() + posdelta;
-    msg->WriteFlipped<u16>( objpos.x() );
-    msg->WriteFlipped<u16>( objpos.y() );
-    msg->WriteFlipped<u16>(
-        static_cast<u16>( ( objpos.z() < 0 ) ? ( 0x10000 + objpos.z() ) : ( objpos.z() ) ) );
+    msg->WriteFlipped<u16>( obj->x() );
+    msg->WriteFlipped<u16>( obj->y() );
+    msg->WriteFlipped<s16>( obj->z() );
     ++object_count;
   }
   u16 len = msg->offset;
@@ -336,22 +328,6 @@ void UBoat::send_smooth_move( Network::Client* client, Core::UFACING move_dir, u
   msg->WriteFlipped<u16>( len );
 
   msg.Send( client, len );
-}
-
-void UBoat::send_smooth_move_to_inrange( Core::UFACING move_dir, u8 speed,
-                                         const Core::Pos4d& newpos, bool relative ) const
-{
-  Core::WorldIterator<Core::OnlinePlayerFilter>::InMaxVisualRange(
-      newpos,
-      [&]( Mobile::Character* zonechr )
-      {
-        Network::Client* client = zonechr->client;
-
-        if ( zonechr->in_visual_range( this, newpos ) && zonechr->in_visual_range( this ) &&
-             client->ClientType & Network::CLIENTTYPE_7090 )  // send this only to those who see the
-                                                              // old location aswell
-          send_smooth_move( client, move_dir, speed, newpos, relative );
-      } );
 }
 
 void UBoat::send_display_boat( Network::Client* client )
@@ -681,13 +657,9 @@ bool UBoat::can_fit_at_location( const MultiDef& md, const Core::Pos4d& desired_
 {
   if ( !desired_pos.can_move_to( md.minrxyz.xy() ) || !desired_pos.can_move_to( md.maxrxyz.xy() ) )
   {
-    // #ifdef DEBUG_BOATS
+#ifdef DEBUG_BOATS
     INFO_PRINTLN( "Location {} impassable, location is off the map", desired_pos );
-    INFO_PRINTLN( "Location {} impassable, location is off the map", md.minrxyz );
-    INFO_PRINTLN( "Location {} impassable, location is off the map", md.maxrxyz );
-
-    INFO_PRINTLN( "Location {} impassable, location is off the map", desired_pos.realm()->area() );
-    // #endif
+#endif
     return false;
   }
   return true;
@@ -1103,14 +1075,10 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
 
   BoatContext bc( *this );
 
-  send_smooth_move_to_inrange( move_dir, speed, newpos, relative );
-
   set_dirty();
 
   move_multi_in_world( this, newpos );
-
   setposition( newpos );
-
   move_travellers( bc );
   move_components();
 
@@ -1124,7 +1092,7 @@ bool UBoat::move( Core::UFACING dir, u8 speed, bool relative )
         if ( client->ClientType & Network::CLIENTTYPE_7090 )
         {
           if ( zonechr->in_visual_range( this, bc.oldpos ) )
-            return;  // TODO POS: better place for smooth move
+            send_smooth_move( move_dir, speed, relative );
           else
             send_boat_newly_inrange( client );  // send HSA packet only for newly inrange
         }
