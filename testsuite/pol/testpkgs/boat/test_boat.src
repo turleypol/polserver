@@ -436,5 +436,5 @@ exported function test_boat_move_outside_realm()
     endif
   endwhile
   DestroyMulti(boat);
-  return res;
+  return result;
 endfunction
