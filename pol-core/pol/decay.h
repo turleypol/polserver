@@ -21,8 +21,9 @@ public:
 
 private:
   void threadloop();
-  void check();
-  bool should_switch_realm();
+  void step();
+  bool should_switch_realm() const;
+  bool switch_realm();
   void decay_worldzone();
 
   unsigned sleeptime = 0;

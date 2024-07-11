@@ -31,7 +31,6 @@ namespace fs = std::filesystem;
 bool load_realms()
 {
   Realms::Realm* temprealm;
-  int realm_counter = 0;
   std::error_code ec;
   for ( const auto& dir_entry :
         fs::directory_iterator( Plib::systemstate.config.realm_data_path, ec ) )
@@ -50,19 +49,13 @@ bool load_realms()
     temprealm = new Realms::Realm( realm_name, dir_entry.path().u8string() );
     POLLOG_INFOLN( "Completed in {} ms.", timer.ellapsed() );
     gamestate.Realms.push_back( temprealm );
-    ++realm_counter;
 
     // To-Fix - Nasty kludge assuming 'britannia' is the default realm
     // May want to make this configurable in later core releases.
     if ( realm_name == "britannia" )
       gamestate.main_realm = temprealm;
   }
-  //  main_realm = new DummyRealm();
-  gamestate.baserealm_count = realm_counter;
-  if ( realm_counter > 0 )
-    return true;
-  else
-    return false;
+  return !gamestate.Realms.empty();
 }
 
 Realms::Realm* find_realm( const std::string& name )

@@ -108,55 +108,51 @@ void Decay::decay_worldzone()
   }
 }
 
-bool Decay::should_switch_realm()
+// check if realm_index is still valid and if y is still in valid range
+bool Decay::should_switch_realm() const
 {
   if ( realm_index >= gamestate.Realms.size() )
     return true;
-  Realms::Realm* realm = gamestate.Realms[realm_index];
-  if ( realm == nullptr )
+  if ( gamestate.Realms[realm_index] == nullptr )
     return true;
-
-  ++area_itr;
-
   if ( area_itr == area.end() )
     return true;
   return false;
 }
 
-void Decay::check()
+void Decay::switch_realm()
 {
-  // check if realm_index is still valid and if y is still in valid range
-  if ( should_switch_realm() )
+  ++realm_index;
+  if ( realm_index >= gamestate.Realms.size() )
   {
-    ++realm_index;
-    if ( realm_index >= gamestate.Realms.size() )
+    realm_index = 0;
+    if ( /*!init &&*/ Plib::systemstate.config.thread_decay_statistics )
     {
-      realm_index = 0;
-      if ( !init && Plib::systemstate.config.thread_decay_statistics )
-      {
-        stateManager.decay_statistics.decayed.update(
-            stateManager.decay_statistics.temp_count_decayed );
-        stateManager.decay_statistics.active_decay.update(
-            stateManager.decay_statistics.temp_count_active );
-        stateManager.decay_statistics.temp_count_decayed = 0;
-        stateManager.decay_statistics.temp_count_active = 0;
-        POLLOG_INFOLN(
-            "DECAY STATISTICS: decayed: max {} mean {} variance {} runs {} active max {} mean "
-            "{} variance {} runs {}",
-            stateManager.decay_statistics.decayed.max(),
-            stateManager.decay_statistics.decayed.mean(),
-            stateManager.decay_statistics.decayed.variance(),
-            stateManager.decay_statistics.decayed.count(),
-            stateManager.decay_statistics.active_decay.max(),
-            stateManager.decay_statistics.active_decay.mean(),
-            stateManager.decay_statistics.active_decay.variance(),
-            stateManager.decay_statistics.active_decay.count() );
-      }
-      init = false;
+      auto& stat = stateManager.decay_statistics;
+      stat.decayed.update( stat.temp_count_decayed );
+      stat.active_decay.update( stat.temp_count_active );
+      stat.temp_count_decayed = 0;
+      stat.temp_count_active = 0;
+      POLLOG_INFOLN(
+          "DECAY STATISTICS: decayed: max {} mean {} variance {} runs {} active max {} mean "
+          "{} variance {} runs {}",
+          stat.decayed.max(), stat.decayed.mean(), stat.decayed.variance(), stat.decayed.count(),
+          stat.active_decay.max(), stat.active_decay.mean(), stat.active_decay.variance(),
+          stat.active_decay.count() );
     }
-    area = gamestate.Realms[realm_index]->gridarea();
-    area_itr = area.begin();
+    POLLOG_INFOLN( "DECAY REALM ROLLOVER" );
+    init = false;
   }
+  POLLOG_INFOLN( "DECAY REALM SWITXH" );
+  area = gamestate.Realms[realm_index]->gridarea();
+  area_itr = area.begin();
+}
+
+void Decay::step()
+{
+  ++area_itr;
+  if ( should_switch_realm() )
+    switch_realm();
   decay_worldzone();
 }
 
@@ -205,7 +201,7 @@ void Decay::threadloop()
     {
       PolLock lck;
       polclock_checkin();
-      check();
+      step();
       restart_all_clients();
     }
     pol_sleep_ms( sleeptime );
