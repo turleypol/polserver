@@ -25,6 +25,6 @@ private:
   bool init = false;
   size_t realm_index = ~0u;
   Range2d area;
-  Range2dIter area_itr;
+  Range2dItr area_itr;
 };
 }  // namespace Pol::Core
