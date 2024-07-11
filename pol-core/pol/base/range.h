@@ -15,6 +15,7 @@ private:
   u16 _xstart;
 
 public:
+  Range2dItr() = default;
   Range2dItr( Pos2d v, const Pos2d& v_max );
 
   typedef Pos2d value_type;

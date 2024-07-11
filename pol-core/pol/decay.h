@@ -26,8 +26,8 @@ private:
   unsigned sleeptime = 0;
   bool init = false;
   size_t realm_index = ~0u;
-  Range2d area = Range2d();
-  RangeIter area_itr = area.begin();
+  Range2d area;
+  Range2dIter area_itr;
 };
 }  // namespace Core
 }  // namespace Pol
