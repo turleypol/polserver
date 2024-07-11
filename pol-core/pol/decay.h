@@ -23,7 +23,7 @@ private:
   void threadloop();
   void step();
   bool should_switch_realm() const;
-  bool switch_realm();
+  void switch_realm();
   void decay_worldzone();
 
   unsigned sleeptime = 0;
