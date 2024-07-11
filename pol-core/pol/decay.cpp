@@ -161,10 +161,14 @@ void Decay::check()
 }
 
 
-void Decay::on_realm_delete( Realms::Realm* realm )
+void Decay::on_delete_realm( Realms::Realm* realm )
 {
-  if ( realm == gamestate.Realms[realm_index] )
-    realm_index = ~0u;
+  if ( realm != gamestate.Realms[realm_index] )
+    return;
+  if ( realm_index + 1 >= gamestate.Realms.size() )  // already at the end
+    return;
+  area = gamestate.Realms[realm_index + 1]->gridarea();
+  area_itr = area.begin();
 }
 
 void Decay::calculate_sleeptime()

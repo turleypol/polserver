@@ -17,7 +17,7 @@ public:
   Decay() = default;
   static void decay_thread( void* arg );
   void calculate_sleeptime();
-  void on_realm_delete( Realms::Realm* realm );
+  void on_delete_realm( Realms::Realm* realm );
 
 private:
   void threadloop();

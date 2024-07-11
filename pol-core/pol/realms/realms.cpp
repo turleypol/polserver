@@ -89,6 +89,7 @@ void add_realm( const std::string& name, Realms::Realm* base )
 {
   Realms::Realm* r = new Realms::Realm( name, base );
   gamestate.Realms.push_back( r );
+  gamestate.decay.calculate_sleeptime();
 }
 
 void remove_realm( const std::string& name )
@@ -99,8 +100,10 @@ void remove_realm( const std::string& name )
     if ( ( *itr )->name() == name )
     {
       gamestate.storage.on_delete_realm( *itr );
+      gamestate.decay.on_delete_realm( *itr );
       delete *itr;
       gamestate.Realms.erase( itr );
+      gamestate.decay.calculate_sleeptime();
       break;
     }
   }
