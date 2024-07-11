@@ -73,7 +73,7 @@ private:
   bool check_bool();
   int check_int();
   std::string check_string();
-  BObjectImp* check_imp();
+  Bscript::BObjectImp* check_imp();
 
   ScriptDef sd;
   UOExecutor uoexec;
