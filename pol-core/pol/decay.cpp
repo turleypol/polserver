@@ -78,19 +78,25 @@ void Decay::decay_worldzone()
     if ( item->should_decay( now ) )
     {
       // check the CanDecay syshook first if it returns 1 go over to other checks
+      bool skipchecks = false;
       if ( gamestate.system_hooks.can_decay )
       {
-        if ( !gamestate.system_hooks.can_decay->call( new Module::EItemRefObjImp( item ) ) )
+        auto res =
+            gamestate.system_hooks.can_decay->call_long( new Module::EItemRefObjImp( item ) );
+        if ( !res )
           continue;
+        if ( res == 2 )  // TODO constant
+          skipchecks = true;
       }
 
       const Items::ItemDesc& descriptor = item->itemdesc();
-      Multi::UMulti* multi = realm->find_supporting_multi( item->pos3d() );
-
-      // some things don't decay on multis:
-      if ( multi != nullptr && !descriptor.decays_on_multis )
-        continue;
-
+      if ( !skipchecks )
+      {
+        Multi::UMulti* multi = realm->find_supporting_multi( item->pos3d() );
+        // some things don't decay on multis:
+        if ( multi != nullptr && !descriptor.decays_on_multis )
+          continue;
+      }
       if ( statistics )
         stateManager.decay_statistics.temp_count_decayed++;
 
