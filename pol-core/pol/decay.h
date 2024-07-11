@@ -17,7 +17,7 @@ public:
 
 private:
   Decay() = default;
-  bool init();
+  bool initialize();
   void threadloop();
   void check();
   bool should_switch_realm();

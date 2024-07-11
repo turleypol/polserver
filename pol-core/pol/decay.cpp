@@ -163,7 +163,7 @@ void Decay::check()
 }
 
 
-bool Decay::init()
+bool Decay::initialize()
 {
   // calculate total grid count, based on current realms
   unsigned total_grid_count = 0;
@@ -184,7 +184,7 @@ bool Decay::init()
 void Decay::decay_thread( void* /*arg*/ )
 {
   auto decay = Decay();
-  if ( !decay.init() )
+  if ( !decay.initialize() )
     return;
   decay.threadloop();
 }
