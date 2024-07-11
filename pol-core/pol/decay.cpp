@@ -31,9 +31,7 @@
 #include "uworld.h"
 
 
-namespace Pol
-{
-namespace Core
+namespace Pol::Core
 {
 ///
 /// [1] Item Decay Criteria
@@ -202,5 +200,4 @@ void Decay::threadloop()
     pol_sleep_ms( sleeptime );
   }
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

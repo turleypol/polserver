@@ -6,9 +6,7 @@
 #pragma once
 #include "base/range.h"
 
-namespace Pol
-{
-namespace Core
+namespace Pol::Core
 {
 class Decay
 {
@@ -29,6 +27,4 @@ private:
   Range2d area;
   Range2dIter area_itr;
 };
-}  // namespace Core
-}  // namespace Pol
-#endif
+}  // namespace Pol::Core
