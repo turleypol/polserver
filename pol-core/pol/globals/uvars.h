@@ -163,9 +163,7 @@ public:
 
   Realms::Realm* main_realm;
   std::vector<Realms::Realm*> Realms;
-  std::map<int, Realms::Realm*> shadowrealms_by_id;
   unsigned int baserealm_count;
-  unsigned int shadowrealm_count;
 
   // owned by task_queue
   PeriodicTask* update_rpm_task;

@@ -59,7 +59,6 @@ bool load_realms()
   }
   //  main_realm = new DummyRealm();
   gamestate.baserealm_count = realm_counter;
-  gamestate.shadowrealm_count = 0;
   if ( realm_counter > 0 )
     return true;
   else
@@ -89,8 +88,6 @@ bool defined_realm( const std::string& name )
 void add_realm( const std::string& name, Realms::Realm* base )
 {
   Realms::Realm* r = new Realms::Realm( name, base );
-  r->shadowid = ++gamestate.shadowrealm_count;
-  gamestate.shadowrealms_by_id[r->shadowid] = r;
   gamestate.Realms.push_back( r );
 }
 
@@ -102,7 +99,6 @@ void remove_realm( const std::string& name )
     if ( ( *itr )->name() == name )
     {
       gamestate.storage.on_delete_realm( *itr );
-      gamestate.shadowrealms_by_id[( *itr )->shadowid] = nullptr;  // used inside the decaythread
       delete *itr;
       gamestate.Realms.erase( itr );
       break;

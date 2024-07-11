@@ -98,9 +98,7 @@ GameState::GameState()
       nextguildid( 1 ),
       main_realm( nullptr ),
       Realms(),
-      shadowrealms_by_id(),
       baserealm_count( 0 ),
-      shadowrealm_count( 0 ),
 
       update_rpm_task( new PeriodicTask( update_rpm, 60, "RPM" ) ),
       regen_stats_task( new PeriodicTask( regen_stats, 5, "Regen" ) ),
@@ -359,7 +357,6 @@ void GameState::cleanup_vars()
   clean_resources();
 
   Clib::delete_all( Realms );
-  shadowrealms_by_id.clear();
   main_realm = nullptr;
 
   // delete_all(vitals);
@@ -493,9 +490,6 @@ GameState::Memory GameState::estimateSize() const
     if ( realm != nullptr )
       usage.realm_size += realm->sizeEstimate();
   }
-  usage.realm_size +=
-      ( sizeof( int ) + sizeof( Realms::Realm* ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) *
-      gamestate.shadowrealms_by_id.size();
 
   for ( const auto& attr : attributes )
   {
