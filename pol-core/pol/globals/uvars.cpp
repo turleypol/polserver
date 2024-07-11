@@ -98,7 +98,6 @@ GameState::GameState()
       nextguildid( 1 ),
       main_realm( nullptr ),
       Realms(),
-      baserealm_count( 0 ),
 
       update_rpm_task( new PeriodicTask( update_rpm, 60, "RPM" ) ),
       regen_stats_task( new PeriodicTask( regen_stats, 5, "Regen" ) ),
@@ -171,6 +170,7 @@ GameState::GameState()
       paramtextcmds(),
       uo_skills(),
       task_thread_pool(),
+      decay(),
       max_update_range( Plib::RANGE_VISUAL ),
       max_update_range_client( Plib::RANGE_VISUAL ),
       max_update_range_multi( 0 )

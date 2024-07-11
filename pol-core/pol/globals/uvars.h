@@ -23,6 +23,7 @@
 #include "../../plib/clidata.h"
 #include "../action.h"
 #include "../cmdlevel.h"
+#include "../decay.h"
 #include "../layers.h"
 #include "../menu.h"
 #include "../reftypes.h"
@@ -163,7 +164,6 @@ public:
 
   Realms::Realm* main_realm;
   std::vector<Realms::Realm*> Realms;
-  unsigned int baserealm_count;
 
   // owned by task_queue
   PeriodicTask* update_rpm_task;
@@ -247,6 +247,8 @@ public:
     size_t misc;
   };
   threadhelp::TaskThreadPool task_thread_pool;
+
+  Decay decay;
 
   void update_range_from_multis();
   void update_range_from_client( u16 range );

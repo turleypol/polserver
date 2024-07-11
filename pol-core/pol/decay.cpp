@@ -161,7 +161,13 @@ void Decay::check()
 }
 
 
-bool Decay::initialize()
+void Decay::on_realm_delete( Realms::Realm* realm )
+{
+  if ( realm == gamestate.Realms[realm_index] )
+    realm_index = ~0u;
+}
+
+void Decay::calculate_sleeptime()
 {
   // calculate total grid count, based on current realms
   unsigned total_grid_count = 0;
@@ -171,19 +177,18 @@ bool Decay::initialize()
   }
   if ( !total_grid_count )
   {
+    sleeptime = 0;
     POLLOG_ERRORLN( "No realm grids?!" );
-    return false;
+    return;
   }
   // sweep every realm ~10minutes -> 36ms for 6 realms
   sleeptime = ( 60 * 10L * 1000 ) / total_grid_count;
   sleeptime = std::clamp( sleeptime, 30u, 500u );  // limit to 30ms-500ms
-  return true;
 }
 void Decay::decay_thread( void* /*arg*/ )
 {
-  auto decay = Decay();
-  if ( !decay.initialize() )
-    return;
+  auto& decay = gamestate.decay;
+  decay.calculate_sleeptime();
   decay.threadloop();
 }
 
@@ -191,6 +196,8 @@ void Decay::threadloop()
 {
   while ( !Clib::exit_signalled )
   {
+    if ( !sleeptime )
+      return;
     {
       PolLock lck;
       polclock_checkin();

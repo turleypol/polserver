@@ -5,17 +5,21 @@
 
 #pragma once
 #include "base/range.h"
-
+namespace Pol::Realms
+{
+class Realm;
+}
 namespace Pol::Core
 {
 class Decay
 {
 public:
+  Decay() = default;
   static void decay_thread( void* arg );
+  void calculate_sleeptime();
+  void on_realm_delete( Realms::Realm* realm );
 
 private:
-  Decay() = default;
-  bool initialize();
   void threadloop();
   void check();
   bool should_switch_realm();
