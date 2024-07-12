@@ -17,6 +17,7 @@
 #include "../network/packethelper.h"
 #include "../polclock.h"
 #include "../realms/realm.h"
+#include "../realms/realms.h"
 #include "../uworld.h"
 #include "testenv.h"
 
@@ -384,7 +385,7 @@ void decay_test()
     auto item = Items::Item::create( 0x0eed );
     item->setposition( p );
     Core::add_item_to_world( item );
-    item->set_decay_after( 1 );
+    item->set_decay_after( decay );
   };
   auto* firstrealm = Core::gamestate.Realms[0];
   auto* secondrealm = Core::gamestate.Realms[1];
@@ -392,7 +393,7 @@ void decay_test()
   // create 3 items, two should decay
   createitem( { 0, 0, 0, firstrealm }, 1 );
   createitem( { 0, 0, 0, firstrealm }, 60 );
-  createitem( { firstrealm->area.se() - Core::Vec2d( 1, 1 ), 0, firstrealm }, 1 );
+  createitem( { firstrealm->area().se() - Core::Vec2d( 1, 1 ), 0, firstrealm }, 1 );
   if ( firstrealm->toplevel_item_count() != 3 )
   {
     INFO_PRINTLN( "first realm toplevelcount 3!={}", firstrealm->toplevel_item_count() );
@@ -463,6 +464,56 @@ void decay_test()
   if ( d.realm_index != 0 )
   {
     INFO_PRINTLN( "active realm didnt roll over 0!={}", d.realm_index );
+    UnitTest::inc_failures();
+    return;
+  }
+  UnitTest::inc_successes();
+
+  // test realm add/delete
+  INFO_PRINTLN( "testing decay with added/deleted realms" );
+
+  Core::add_realm( "firstshadow", firstrealm );
+  Core::add_realm( "secondshadow", firstrealm );
+  auto* firstshadow = Core::gamestate.Realms[2];
+  auto* secondshadow = Core::gamestate.Realms[3];
+  INFO_PRINTLN( "SLEEP {}", d.sleeptime );
+  // last shadow realm one item should decay
+  createitem( { 0, 0, 0, secondshadow }, 1 );
+  if ( secondshadow->toplevel_item_count() != 1 )
+  {
+    INFO_PRINTLN( "second shadow toplevelcount 1!={}", secondshadow->toplevel_item_count() );
+    UnitTest::inc_failures();
+    return;
+  }
+  UnitTest::inc_successes();
+  for ( const auto& p : d.area )
+  {
+    (void)p;
+    d.step();
+  }
+  for ( const auto& p : d.area )
+  {
+    (void)p;
+    d.step();
+  }
+  if ( d.realm_index != 2 )
+  {
+    INFO_PRINTLN( "active realm isnt first shadow 2!={}", d.realm_index );
+    UnitTest::inc_failures();
+    return;
+  }
+  UnitTest::inc_successes();
+  Core::remove_realm( firstshadow->name() );
+  d.step();
+  if ( d.realm_index != 2 )
+  {
+    INFO_PRINTLN( "active realm isnt second shadow 2!={}", d.realm_index );
+    UnitTest::inc_failures();
+    return;
+  }
+  if ( secondshadow->toplevel_item_count() != 0 )
+  {
+    INFO_PRINTLN( "second shadow toplevelcount 0!={}", secondshadow->toplevel_item_count() );
     UnitTest::inc_failures();
     return;
   }
