@@ -51,9 +51,7 @@ void restart_polclock()
 polclock_t polclock()
 {
   Clib::SpinLockGuard guard( polclock_lock );
-  return ( std::chrono::duration_cast<polclock_t_unit>( PolClock::now() - polclock_base +
-                                                        unittest_shift )
-               .count() ) /
+  return std::chrono::duration_cast<polclock_t_unit>( PolClock::now() - polclock_base ).count() /
          10;
 }
 
@@ -82,7 +80,9 @@ void restart_poltime()
 poltime_t poltime()
 {
   Clib::SpinLockGuard guard( polclock_lock );
-  return std::chrono::duration_cast<poltime_t_unit>( PolClock::now() - poltime_base ).count();
+  return std::chrono::duration_cast<poltime_t_unit>( PolClock::now() - poltime_base +
+                                                     unittest_shift )
+      .count();
 }
 
 void start_pol_clocks()
