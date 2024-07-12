@@ -373,5 +373,10 @@ void test_curlfeatures()
     UnitTest::inc_successes();
 }
 
+void decay_test()
+{
+  Core::Decay d;
+  d.step();
+}
 }  // namespace Testing
 }  // namespace Pol

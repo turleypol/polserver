@@ -4,7 +4,9 @@
  */
 
 #pragma once
+
 #include "base/range.h"
+
 namespace Pol::Realms
 {
 class Realm;
@@ -31,5 +33,7 @@ private:
   size_t realm_index = ~0u;
   Range2d area;
   Range2dItr area_itr;
+
+  friend void Pol::Testing::decay_test();
 };
 }  // namespace Pol::Core
