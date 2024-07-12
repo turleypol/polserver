@@ -168,6 +168,11 @@ void Decay::step()
 
 void Decay::on_delete_realm( Realms::Realm* realm )
 {
+  if ( realm_index >= gamestate.Realms.size() )
+  {
+    POLLOG_INFOLN( "index bigger {} {}", realm_index, gamestate.Realms.size() );
+    return;
+  }
   if ( realm != gamestate.Realms[realm_index] )
     return;
   if ( realm_index + 1 >= gamestate.Realms.size() )  // already at the end
@@ -183,7 +188,6 @@ void Decay::calculate_sleeptime()
   for ( const auto& realm : gamestate.Realms )
   {
     total_grid_count += ( realm->grid_width() * realm->grid_height() );
-    POLLOG_INFOLN( "Grid {}", total_grid_count );
   }
   if ( !total_grid_count )
   {
