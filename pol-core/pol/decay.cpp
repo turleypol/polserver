@@ -52,10 +52,8 @@ namespace Pol::Core
 
 void Decay::decay_worldzone()
 {
-  POLLOG_INFOLN( "zone pos {}", *area_itr );
   auto* realm = gamestate.Realms[realm_index];
   Zone& zone = realm->getzone_grid( *area_itr );
-  POLLOG_INFOLN( "zone items {}", zone.items.size() );
   gameclock_t now = read_gameclock();
   bool statistics = Plib::systemstate.config.thread_decay_statistics;
 
@@ -183,6 +181,7 @@ void Decay::calculate_sleeptime()
   for ( const auto& realm : gamestate.Realms )
   {
     total_grid_count += ( realm->grid_width() * realm->grid_height() );
+    POLLOG_INFOLN( "Grid {}", total_grid_count );
   }
   if ( !total_grid_count )
   {

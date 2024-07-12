@@ -378,6 +378,10 @@ void test_curlfeatures()
 
 void decay_test()
 {
+  for ( auto* r : Core::gamestate.Realms )
+  {
+    INFO_PRINTLN( "{} - {} - {}", r->name(), r->area(), r->gridarea() );
+  }
   using namespace std::chrono_literals;
   auto item = Items::Item::create( 0x0eed );
   item->setposition( { 0, 0, 0, Core::gamestate.Realms[0] } );
