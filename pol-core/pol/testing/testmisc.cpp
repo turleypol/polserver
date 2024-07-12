@@ -387,6 +387,15 @@ void decay_test()
     Core::add_item_to_world( item );
     item->set_decay_after( decay );
   };
+  auto decay_full_realm_loop = []( Decay& d )
+  {
+    for ( const auto& p : d.area )
+    {
+      (void)p;
+      d.step();
+    }
+  };
+
   auto* firstrealm = Core::gamestate.Realms[0];
   auto* secondrealm = Core::gamestate.Realms[1];
 
@@ -429,11 +438,7 @@ void decay_test()
   }
   UnitTest::inc_successes();
   // since we did already one step, this loop will also switch realm
-  for ( const auto& p : d.area )
-  {
-    (void)p;
-    d.step();
-  }
+  decay_full_realm_loop( d );
   if ( firstrealm->toplevel_item_count() != 1 )
   {
     INFO_PRINTLN( "toplevelcount after complete loop 1!={}", firstrealm->toplevel_item_count() );
@@ -456,11 +461,7 @@ void decay_test()
   }
   UnitTest::inc_successes();
   // loop until active realm should be again 0
-  for ( const auto& p : d.area )
-  {
-    (void)p;
-    d.step();
-  }
+  decay_full_realm_loop( d );
   if ( d.realm_index != 0 )
   {
     INFO_PRINTLN( "active realm didnt roll over 0!={}", d.realm_index );
@@ -486,16 +487,11 @@ void decay_test()
     return;
   }
   UnitTest::inc_successes();
-  for ( const auto& p : d.area )
-  {
-    (void)p;
-    d.step();
-  }
-  for ( const auto& p : d.area )
-  {
-    (void)p;
-    d.step();
-  }
+  // time machine
+  Core::shift_clock_for_unittest( 2s );
+  // current index is 0 so loop 2 times to get to the first shadow realm
+  decay_full_realm_loop( d );
+  decay_full_realm_loop( d );
   if ( d.realm_index != 2 )
   {
     INFO_PRINTLN( "active realm isnt first shadow 2!={}", d.realm_index );
