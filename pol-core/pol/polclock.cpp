@@ -7,6 +7,7 @@
 #include "polclock.h"
 
 #include <atomic>
+#include <chrono>
 #include <thread>
 
 #include "../clib/logfacility.h"
@@ -21,7 +22,7 @@ static PolClock::time_point poltime_base = PolClock::time_point( PolClock::durat
 static PolClock::time_point poltime_paused_at = PolClock::time_point( PolClock::duration( 0 ) );
 static PolClock::time_point polclock_paused_at = PolClock::time_point( PolClock::duration( 0 ) );
 static Clib::SpinLock polclock_lock;
-static unsigned int unittest_shift = 0;
+static std::chrono::milliseconds unittest_shift = 0;
 void pol_sleep_ms( unsigned int millis )
 {
   std::this_thread::sleep_for( std::chrono::milliseconds( millis ) );
@@ -54,7 +55,7 @@ polclock_t polclock()
          10;
 }
 
-void shift_clock_for_unittest( unsigned int milli )
+void shift_clock_for_unittest( std::chrono::milliseconds milli )
 {
   Clib::SpinLockGuard guard( polclock_lock );
   unittest_shift += milli;

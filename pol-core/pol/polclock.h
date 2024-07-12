@@ -37,7 +37,7 @@ void start_pol_clocks();
 void pause_pol_clocks();
 void restart_pol_clocks();
 
-void shift_clock_for_unittest( unsigned int milli );
+void shift_clock_for_unittest( std::chrono::milliseconds milli );
 
 void pol_sleep_ms( unsigned int millis );
 

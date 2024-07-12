@@ -378,13 +378,14 @@ void test_curlfeatures()
 
 void decay_test()
 {
+  using std::chrono_literals;
   Items::Item* item;
   item = Items::Item::create( 0x0eed );
   item->setposition( { 0, 0, 0, Core::gamestate.Realms[0] } );
   Core::add_item_to_world( item );
   INFO_PRINTLN( "top {}", Core::gamestate.Realms[0]->toplevel_item_count() );
   item->set_decay_after( 1 );
-  Core::shift_clock_for_unittest( 2000 );
+  Core::shift_clock_for_unittest( 2s );
   Core::Decay d;
   d.calculate_sleeptime();
   d.step();
