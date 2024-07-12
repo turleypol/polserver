@@ -129,11 +129,13 @@ bool Decay::should_switch_realm() const
 
 void Decay::switch_realm()
 {
+  POLLOG_INFOLN( "index {}", realm_index );
   ++realm_index;
+  POLLOG_INFOLN( "index {}", realm_index );
   if ( realm_index >= gamestate.Realms.size() )
   {
     realm_index = 0;
-    if ( /*!init &&*/ Plib::systemstate.config.thread_decay_statistics )
+    if ( !init && Plib::systemstate.config.thread_decay_statistics )
     {
       auto& stat = stateManager.decay_statistics;
       stat.decayed.update( stat.temp_count_decayed );
