@@ -176,7 +176,8 @@ void Decay::on_delete_realm( Realms::Realm* realm )
     return;
   // since the first realms are not deletable its save to subtract one and go to the end
   // due to the ++itr in step the realm will be switched
-  area = gamestate.Realms[realm_index - 1]->gridarea();
+  --realm_index;
+  area = gamestate.Realms[realm_index]->gridarea();
   area_itr = Range2dItr( area.se(), area.se() );
 }
 
