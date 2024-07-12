@@ -424,7 +424,10 @@ void decay_test()
   // time machine
   Core::shift_clock_for_unittest( 2s );
 
-  Core::Decay d;
+  // decay thread doesnt run, recreate gamestate class
+  // to be able to test realm add/delete the gamestate instance needs to be used
+  gamestate.decay = Core::Decay();
+  auto& d = gamestate.decay;
   d.calculate_sleeptime();
 
   // first step should directly destroy on item
