@@ -52,6 +52,7 @@ namespace Pol::Core
 
 void Decay::decay_worldzone()
 {
+  POLLOG_INFOLN( "zone pos {}", *area_itr );
   auto* realm = gamestate.Realms[realm_index];
   Zone& zone = realm->getzone_grid( *area_itr );
   gameclock_t now = read_gameclock();
