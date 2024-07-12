@@ -380,7 +380,7 @@ void decay_test()
 {
   Items::Item* item;
   item = Items::Item::create( 0x0eed );
-  item->setposition( { 0, 0, 0 Core::gamestate.main_realm } );
+  item->setposition( { 0, 0, 0, Core::gamestate.main_realm } );
   Core::add_item_to_world( item );
   INFO_PRINTLN( "top {}", Core::gamestate.main_realm->toplevel_item_count() );
   item->set_decay_after( 0 );
