@@ -384,7 +384,7 @@ void decay_test()
   Core::add_item_to_world( item );
   INFO_PRINTLN( "top {}", Core::gamestate.main_realm->toplevel_item_count() );
   item->set_decay_after( 0 );
-  Core::pol_sleep_ms( 1000 );
+  Core::pol_sleep_ms( 2000 );
   Core::Decay d;
   d.calculate_sleeptime();
   d.step();

@@ -60,6 +60,7 @@ void Decay::decay_worldzone()
   for ( ZoneItems::size_type idx = 0; idx < zone.items.size(); ++idx )
   {
     Items::Item* item = zone.items[idx];
+    POLLOG_INFOLN( "check item" );
     if ( statistics )
     {
       if ( item->can_decay() )
