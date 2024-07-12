@@ -13,8 +13,10 @@
 #include "../../plib/maptile.h"
 #include "../dynproperties.h"
 #include "../globals/uvars.h"
+#include "../item/item.h"
 #include "../network/packethelper.h"
 #include "../realms/realm.h"
+#include "../uworld.h"
 #include "testenv.h"
 
 #include <curl/curl.h>
@@ -375,11 +377,18 @@ void test_curlfeatures()
 
 void decay_test()
 {
+  Item* item;
+  item = Item::create( 0x0eed );
+  item->setposition( { 0, 0, 0 Core::gamestate.main_realm } );
+  add_item_to_world( item );
+  INFO_PRINTLN( "top {}", Core::gamestate.main_realm->toplevel_item_count() );
+  item->set_decay_after( 0 );
   Core::Decay d;
   d.calculate_sleeptime();
   d.step();
   INFO_PRINTLN( "active realm {}", d.realm_index );
   INFO_PRINTLN( "Area {} Pos {}", d.area, *d.area_itr );
+  INFO_PRINTLN( "top {}", Core::gamestate.main_realm->toplevel_item_count() );
 }
 }  // namespace Testing
 }  // namespace Pol
