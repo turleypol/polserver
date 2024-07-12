@@ -21,7 +21,7 @@ static PolClock::time_point poltime_base = PolClock::time_point( PolClock::durat
 static PolClock::time_point poltime_paused_at = PolClock::time_point( PolClock::duration( 0 ) );
 static PolClock::time_point polclock_paused_at = PolClock::time_point( PolClock::duration( 0 ) );
 static Clib::SpinLock polclock_lock;
-
+static unsigned int unittest_shift = 0;
 void pol_sleep_ms( unsigned int millis )
 {
   std::this_thread::sleep_for( std::chrono::milliseconds( millis ) );
@@ -49,8 +49,15 @@ void restart_polclock()
 polclock_t polclock()
 {
   Clib::SpinLockGuard guard( polclock_lock );
-  return std::chrono::duration_cast<polclock_t_unit>( PolClock::now() - polclock_base ).count() /
+  return ( std::chrono::duration_cast<polclock_t_unit>( PolClock::now() - polclock_base ).count() +
+           unittest_shift ) /
          10;
+}
+
+void shift_clock_for_unittest( unsigned int milli )
+{
+  Clib::SpinLockGuard guard( polclock_lock );
+  unittest_shift += milli;
 }
 
 void start_poltime()
@@ -101,5 +108,5 @@ bool is_polclock_paused_at_zero()
   Clib::SpinLockGuard guard( polclock_lock );
   return polclock_paused_at == PolClock::time_point( PolClock::duration( 0 ) );
 }
-}
-}
+}  // namespace Core
+}  // namespace Pol

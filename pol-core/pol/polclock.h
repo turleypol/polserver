@@ -23,8 +23,8 @@ namespace Pol
 {
 namespace Core
 {
-typedef std::chrono::milliseconds polclock_t_unit; // in 10ms
-typedef polclock_t_unit::rep polclock_t; // in 10ms
+typedef std::chrono::milliseconds polclock_t_unit;  // in 10ms
+typedef polclock_t_unit::rep polclock_t;            // in 10ms
 
 typedef std::chrono::seconds poltime_t_unit;
 typedef poltime_t_unit::rep poltime_t;
@@ -37,11 +37,13 @@ void start_pol_clocks();
 void pause_pol_clocks();
 void restart_pol_clocks();
 
+void shift_clock_for_unittest( unsigned int milli );
+
 void pol_sleep_ms( unsigned int millis );
 
 inline bool timer_expired( polclock_t timer_until, polclock_t now )
 {
-  return ( (timer_until - now) < 0 );
+  return ( ( timer_until - now ) < 0 );
 }
 inline polclock_t earliest_timer( polclock_t timer1_until, polclock_t timer2_until )
 {
@@ -52,8 +54,8 @@ inline polclock_t earliest_timer( polclock_t timer1_until, polclock_t timer2_unt
     return timer2_until;
 }
 
-polclock_t polclock(); //unit 10ms
-poltime_t poltime(); //unit seconds
+polclock_t polclock();  // unit 10ms
+poltime_t poltime();    // unit seconds
 
 bool is_polclock_paused_at_zero();
 
@@ -70,6 +72,6 @@ public:
 };
 
 void polclock_checkin();
-}
-}
+}  // namespace Core
+}  // namespace Pol
 #endif
