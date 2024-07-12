@@ -1115,6 +1115,7 @@ bool Item::can_decay() const
 
 bool Item::should_decay( unsigned int gameclock ) const
 {
+  INFO_PRINTLN( "decay {} clock {} decayclock {}", can_decay(), gameclock, decayat_gameclock_ );
   return can_decay() && ( gameclock > decayat_gameclock_ );
 }
 
