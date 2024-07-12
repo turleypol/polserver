@@ -382,7 +382,7 @@ void decay_test()
   auto item = Items::Item::create( 0x0eed );
   item->setposition( { 0, 0, 0, Core::gamestate.Realms[0] } );
   Core::add_item_to_world( item );
-  if ( Core::gamestate.Realms[0]->toplevel_item_count != 1 )
+  if ( Core::gamestate.Realms[0]->toplevel_item_count() != 1 )
   {
     INFO_PRINTLN( "Toplevelcount 1!={}", Core::gamestate.Realms[0]->toplevel_item_count() );
     UnitTest::inc_failures();
@@ -393,7 +393,7 @@ void decay_test()
   Core::Decay d;
   d.calculate_sleeptime();
   d.step();
-  if ( Core::gamestate.Realms[0]->toplevel_item_count != 0 )
+  if ( Core::gamestate.Realms[0]->toplevel_item_count() != 0 )
   {
     INFO_PRINTLN( "Toplevelcount 0!={}", Core::gamestate.Realms[0]->toplevel_item_count() );
     INFO_PRINTLN( "active realm {}", d.realm_index );
@@ -403,7 +403,10 @@ void decay_test()
   }
   auto area = d.area;
   for ( const auto& p : area )
+  {
+    (void)p;
     d.step();
+  }
   INFO_PRINTLN( "active realm {}", d.realm_index );
   INFO_PRINTLN( "Area {} Pos {}", d.area, *d.area_itr );
   INFO_PRINTLN( "top {}", Core::gamestate.Realms[0]->toplevel_item_count() );
