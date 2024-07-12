@@ -378,48 +378,95 @@ void test_curlfeatures()
 
 void decay_test()
 {
-  for ( auto* r : Core::gamestate.Realms )
-  {
-    INFO_PRINTLN( "{} - {} - {}", r->name(), r->area(), r->gridarea() );
-  }
   using namespace std::chrono_literals;
-  auto item = Items::Item::create( 0x0eed );
-  item->setposition( { 0, 0, 0, Core::gamestate.Realms[0] } );
-  Core::add_item_to_world( item );
-  item->set_decay_after( 1 );
-  item = Items::Item::create( 0x0eed );
-  item->setposition( { Core::gamestate.Realms[0]->area().se() - Core::Vec2d( 1, 1 ), 0,
-                       Core::gamestate.Realms[0] } );
-  Core::add_item_to_world( item );
-  item->set_decay_after( 1 );
-  if ( Core::gamestate.Realms[0]->toplevel_item_count() != 2 )
+  auto createitem = []( Core::Pos4d p, u32 decay )
   {
-    INFO_PRINTLN( "Toplevelcount 1!={}", Core::gamestate.Realms[0]->toplevel_item_count() );
+    auto item = Items::Item::create( 0x0eed );
+    item->setposition( p );
+    Core::add_item_to_world( item );
+    item->set_decay_after( 1 );
+  };
+  auto* firstrealm = Core::gamestate.Realms[0];
+  auto* secondrealm = Core::gamestate.Realms[1];
+
+  // create 3 items, two should decay
+  createitem( { 0, 0, 0, firstrealm }, 1 );
+  createitem( { 0, 0, 0, firstrealm }, 60 );
+  createitem( { firstrealm->area.se() - Core::Vec2d( 1, 1 ), 0, firstrealm }, 1 );
+  if ( firstrealm->toplevel_item_count() != 3 )
+  {
+    INFO_PRINTLN( "first realm toplevelcount 3!={}", firstrealm->toplevel_item_count() );
     UnitTest::inc_failures();
     return;
   }
+  UnitTest::inc_successes();
+
+  // on the second realm one item should also decay
+  createitem( { 0, 0, 0, secondrealm }, 1 );
+  if ( secondrealm->toplevel_item_count() != 3 )
+  {
+    INFO_PRINTLN( "second realm toplevelcount 3!={}", secondrealm->toplevel_item_count() );
+    UnitTest::inc_failures();
+    return;
+  }
+  UnitTest::inc_successes();
+
+  // time machine
   Core::shift_clock_for_unittest( 2s );
+
   Core::Decay d;
   d.calculate_sleeptime();
-  INFO_PRINTLN( "Sleep time {}", d.sleeptime );
+
+  // first step should directly destroy on item
   d.step();
-  if ( Core::gamestate.Realms[0]->toplevel_item_count() != 1 )
+  if ( firstrealm->toplevel_item_count() != 2 )
   {
-    INFO_PRINTLN( "Toplevelcount 0!={}", Core::gamestate.Realms[0]->toplevel_item_count() );
-    INFO_PRINTLN( "active realm {}", d.realm_index );
-    INFO_PRINTLN( "Area {} Pos {}", d.area, *d.area_itr );
+    INFO_PRINTLN( "first decay step did not destroy item toplevelcount 2!={}",
+                  firstrealm->toplevel_item_count() );
     UnitTest::inc_failures();
     return;
   }
-  auto area = d.area;
-  for ( const auto& p : area )
+  UnitTest::inc_successes();
+  // since we did already one step, this loop will also switch realm
+  for ( const auto& p : d.area )
   {
     (void)p;
     d.step();
   }
-  INFO_PRINTLN( "active realm {}", d.realm_index );
-  INFO_PRINTLN( "Area {} Pos {}", d.area, *d.area_itr );
-  INFO_PRINTLN( "top {}", Core::gamestate.Realms[0]->toplevel_item_count() );
+  if ( firstrealm->toplevel_item_count() != 1 )
+  {
+    INFO_PRINTLN( "toplevelcount after complete loop 1!={}", firstrealm->toplevel_item_count() );
+    UnitTest::inc_failures();
+    return;
+  }
+  UnitTest::inc_successes();
+  if ( d.realm_index != 1 )
+  {
+    INFO_PRINTLN( "active realm didnt switch 1!={}", d.realm_index );
+    UnitTest::inc_failures();
+    return;
+  }
+  UnitTest::inc_successes();
+  if ( secondrealm->toplevel_item_count() != 0 )
+  {
+    INFO_PRINTLN( "second realm toplevelcount 0!={}", secondrealm->toplevel_item_count() );
+    UnitTest::inc_failures();
+    return;
+  }
+  UnitTest::inc_successes();
+  // loop until active realm should be again 0
+  for ( const auto& p : d.area )
+  {
+    (void)p;
+    d.step();
+  }
+  if ( d.realm_index != 0 )
+  {
+    INFO_PRINTLN( "active realm didnt roll over 0!={}", d.realm_index );
+    UnitTest::inc_failures();
+    return;
+  }
+  UnitTest::inc_successes();
 }
 }  // namespace Testing
 }  // namespace Pol
