@@ -15,6 +15,7 @@
 #include "../globals/uvars.h"
 #include "../item/item.h"
 #include "../network/packethelper.h"
+#include "../polclock.h"
 #include "../realms/realm.h"
 #include "../uworld.h"
 #include "testenv.h"
@@ -377,12 +378,13 @@ void test_curlfeatures()
 
 void decay_test()
 {
-  Item* item;
-  item = Item::create( 0x0eed );
+  Items::Item* item;
+  item = Items::Item::create( 0x0eed );
   item->setposition( { 0, 0, 0 Core::gamestate.main_realm } );
-  add_item_to_world( item );
+  Core::add_item_to_world( item );
   INFO_PRINTLN( "top {}", Core::gamestate.main_realm->toplevel_item_count() );
   item->set_decay_after( 0 );
+  Core::pol_sleep_ms( 1000 );
   Core::Decay d;
   d.calculate_sleeptime();
   d.step();
