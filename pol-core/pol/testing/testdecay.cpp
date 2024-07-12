@@ -18,9 +18,7 @@
 #include "../uworld.h"
 #include "testenv.h"
 
-namespace Pol
-{
-namespace Testing
+namespace Pol::Testing
 {
 void decay_test()
 {
@@ -169,5 +167,4 @@ void decay_test()
   }
   UnitTest::inc_successes();
 }
-}  // namespace Testing
-}  // namespace Pol
+}  // namespace Pol::Testing

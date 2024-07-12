@@ -183,8 +183,9 @@ void Decay::on_delete_realm( Realms::Realm* realm )
     POLLOG_INFOLN( "index bigger2 {} {}", realm_index, gamestate.Realms.size() );
     return;
   }
-  area = gamestate.Realms[realm_index + 1]->gridarea();
-  area_itr = area.begin();
+
+  area = gamestate.Realms[realm_index - 1]->gridarea();
+  area_itr = Range2dItr( area.se(), area.se() );
 }
 
 void Decay::calculate_sleeptime()
