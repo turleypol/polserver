@@ -380,9 +380,9 @@ void decay_test()
 {
   Items::Item* item;
   item = Items::Item::create( 0x0eed );
-  item->setposition( { 0, 0, 0, Core::gamestate.main_realm } );
+  item->setposition( { 0, 0, 0, Core::gamestate.Realms[0] } );
   Core::add_item_to_world( item );
-  INFO_PRINTLN( "top {}", Core::gamestate.main_realm->toplevel_item_count() );
+  INFO_PRINTLN( "top {}", Core::gamestate.Realms[0]->toplevel_item_count() );
   item->set_decay_after( 0 );
   Core::pol_sleep_ms( 2000 );
   Core::Decay d;
@@ -390,7 +390,7 @@ void decay_test()
   d.step();
   INFO_PRINTLN( "active realm {}", d.realm_index );
   INFO_PRINTLN( "Area {} Pos {}", d.area, *d.area_itr );
-  INFO_PRINTLN( "top {}", Core::gamestate.main_realm->toplevel_item_count() );
+  INFO_PRINTLN( "top {}", Core::gamestate.Realms[0]->toplevel_item_count() );
 }
 }  // namespace Testing
 }  // namespace Pol
