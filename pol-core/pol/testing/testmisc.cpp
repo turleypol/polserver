@@ -401,6 +401,7 @@ void decay_test()
   Core::shift_clock_for_unittest( 2s );
   Core::Decay d;
   d.calculate_sleeptime();
+  INFO_PRINTLN( "Sleep time {}", d.sleeptime );
   d.step();
   if ( Core::gamestate.Realms[0]->toplevel_item_count() != 1 )
   {
