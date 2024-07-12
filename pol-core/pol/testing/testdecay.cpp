@@ -159,6 +159,7 @@ void decay_test()
     UnitTest::inc_failures();
     return;
   }
+  INFO_PRINTLN( "A {} p {}", d.area, *d.area_itr );
   UnitTest::inc_successes();
   if ( secondshadow->toplevel_item_count() != 0 )
   {

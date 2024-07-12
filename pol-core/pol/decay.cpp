@@ -174,9 +174,15 @@ void Decay::on_delete_realm( Realms::Realm* realm )
     return;
   }
   if ( realm != gamestate.Realms[realm_index] )
+  {
+    POLLOG_INFOLN( "index != {} {}", realm_index, gamestate.Realms.size() );
     return;
+  }
   if ( realm_index + 1 >= gamestate.Realms.size() )  // already at the end
+  {
+    POLLOG_INFOLN( "index bigger2 {} {}", realm_index, gamestate.Realms.size() );
     return;
+  }
   area = gamestate.Realms[realm_index + 1]->gridarea();
   area_itr = area.begin();
 }
