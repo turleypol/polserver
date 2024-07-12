@@ -376,7 +376,10 @@ void test_curlfeatures()
 void decay_test()
 {
   Core::Decay d;
+  d.calculate_sleeptime();
   d.step();
+  INFO_PRINTLN( "active realm {}", d.realm_index );
+  INFO_PRINTLN( "Area {} Pos {}", d.area, *d.area_itr );
 }
 }  // namespace Testing
 }  // namespace Pol
