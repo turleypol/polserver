@@ -168,22 +168,14 @@ void Decay::step()
 
 void Decay::on_delete_realm( Realms::Realm* realm )
 {
-  if ( realm_index >= gamestate.Realms.size() )
-  {
-    POLLOG_INFOLN( "index bigger {} {}", realm_index, gamestate.Realms.size() );
+  if ( realm_index >= gamestate.Realms.size() )  // uninit state
     return;
-  }
   if ( realm != gamestate.Realms[realm_index] )
-  {
-    POLLOG_INFOLN( "index != {} {}", realm_index, gamestate.Realms.size() );
     return;
-  }
   if ( realm_index + 1 >= gamestate.Realms.size() )  // already at the end
-  {
-    POLLOG_INFOLN( "index bigger2 {} {}", realm_index, gamestate.Realms.size() );
     return;
-  }
-
+  // since the first realms are not deletable its save to subtract one and go to the end
+  // due to the ++itr in step the realm will be switched
   area = gamestate.Realms[realm_index - 1]->gridarea();
   area_itr = Range2dItr( area.se(), area.se() );
 }
