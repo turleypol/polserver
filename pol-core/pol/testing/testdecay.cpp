@@ -71,8 +71,8 @@ void decay_test()
 
   // decay thread doesnt run, recreate gamestate class
   // to be able to test realm add/delete the gamestate instance needs to be used
-  gamestate.decay = Core::Decay();
-  auto& d = gamestate.decay;
+  Core::gamestate.decay = Core::Decay();
+  auto& d = Core::gamestate.decay;
   d.calculate_sleeptime();
 
   // first step should directly destroy on item
