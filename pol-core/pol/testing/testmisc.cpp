@@ -413,9 +413,9 @@ void decay_test()
 
   // on the second realm one item should also decay
   createitem( { 0, 0, 0, secondrealm }, 1 );
-  if ( secondrealm->toplevel_item_count() != 3 )
+  if ( secondrealm->toplevel_item_count() != 1 )
   {
-    INFO_PRINTLN( "second realm toplevelcount 3!={}", secondrealm->toplevel_item_count() );
+    INFO_PRINTLN( "second realm toplevelcount 1!={}", secondrealm->toplevel_item_count() );
     UnitTest::inc_failures();
     return;
   }
