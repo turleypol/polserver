@@ -387,7 +387,7 @@ void decay_test()
     Core::add_item_to_world( item );
     item->set_decay_after( decay );
   };
-  auto decay_full_realm_loop = []( Decay& d )
+  auto decay_full_realm_loop = []( Core::Decay& d )
   {
     for ( const auto& p : d.area )
     {
