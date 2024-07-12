@@ -6,7 +6,10 @@
 #pragma once
 
 #include "base/range.h"
-
+namespace Pol::Testing
+{
+void decay_test();
+}
 namespace Pol::Realms
 {
 class Realm;
