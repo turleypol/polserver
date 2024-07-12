@@ -17,12 +17,13 @@ namespace Pol
 {
 namespace Core
 {
+using std::chrono7;
 static PolClock::time_point polclock_base = PolClock::time_point( PolClock::duration( 0 ) );
 static PolClock::time_point poltime_base = PolClock::time_point( PolClock::duration( 0 ) );
 static PolClock::time_point poltime_paused_at = PolClock::time_point( PolClock::duration( 0 ) );
 static PolClock::time_point polclock_paused_at = PolClock::time_point( PolClock::duration( 0 ) );
 static Clib::SpinLock polclock_lock;
-static std::chrono::milliseconds unittest_shift = 0;
+static std::chrono::milliseconds unittest_shift = 0ms;
 void pol_sleep_ms( unsigned int millis )
 {
   std::this_thread::sleep_for( std::chrono::milliseconds( millis ) );

@@ -379,16 +379,31 @@ void test_curlfeatures()
 void decay_test()
 {
   using std::chrono_literals;
-  Items::Item* item;
-  item = Items::Item::create( 0x0eed );
+  auto item = Items::Item::create( 0x0eed );
   item->setposition( { 0, 0, 0, Core::gamestate.Realms[0] } );
   Core::add_item_to_world( item );
-  INFO_PRINTLN( "top {}", Core::gamestate.Realms[0]->toplevel_item_count() );
+  if ( Core::gamestate.Realms[0]->toplevel_item_count != 1 )
+  {
+    INFO_PRINTLN( "Toplevelcount 1!={}", Core::gamestate.Realms[0]->toplevel_item_count() );
+    UnitTest::inc_failures();
+    return;
+  }
   item->set_decay_after( 1 );
   Core::shift_clock_for_unittest( 2s );
   Core::Decay d;
   d.calculate_sleeptime();
   d.step();
+  if ( Core::gamestate.Realms[0]->toplevel_item_count != 0 )
+  {
+    INFO_PRINTLN( "Toplevelcount 0!={}", Core::gamestate.Realms[0]->toplevel_item_count() );
+    INFO_PRINTLN( "active realm {}", d.realm_index );
+    INFO_PRINTLN( "Area {} Pos {}", d.area, *d.area_itr );
+    UnitTest::inc_failures();
+    return;
+  }
+  auto area = d.area;
+  for ( const auto& p : area )
+    d.step();
   INFO_PRINTLN( "active realm {}", d.realm_index );
   INFO_PRINTLN( "Area {} Pos {}", d.area, *d.area_itr );
   INFO_PRINTLN( "top {}", Core::gamestate.Realms[0]->toplevel_item_count() );
