@@ -378,7 +378,7 @@ void test_curlfeatures()
 
 void decay_test()
 {
-  using std::chrono_literals;
+  using namespace std::chrono_literals;
   auto item = Items::Item::create( 0x0eed );
   item->setposition( { 0, 0, 0, Core::gamestate.Realms[0] } );
   Core::add_item_to_world( item );
