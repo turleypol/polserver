@@ -15,7 +15,6 @@
 #include "../globals/uvars.h"
 #include "../network/packethelper.h"
 #include "../realms/realm.h"
-#include "../uworld.h"
 #include "testenv.h"
 
 #include <curl/curl.h>
