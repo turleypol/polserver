@@ -60,7 +60,6 @@ void Decay::decay_worldzone()
   for ( ZoneItems::size_type idx = 0; idx < zone.items.size(); ++idx )
   {
     Items::Item* item = zone.items[idx];
-    POLLOG_INFOLN( "check item" );
     if ( statistics )
     {
       if ( item->can_decay() )
@@ -86,7 +85,7 @@ void Decay::decay_worldzone()
             gamestate.system_hooks.can_decay->call_long( new Module::EItemRefObjImp( item ) );
         if ( !res )
           continue;
-        if ( res == 2 )  // TODO constant
+        if ( res == SKIP_FURTHER_CHECKS )
           skipchecks = true;
       }
 
@@ -129,9 +128,7 @@ bool Decay::should_switch_realm() const
 
 void Decay::switch_realm()
 {
-  POLLOG_INFOLN( "index {}", realm_index );
   ++realm_index;
-  POLLOG_INFOLN( "index {}", realm_index );
   if ( realm_index >= gamestate.Realms.size() )
   {
     realm_index = 0;
@@ -149,9 +146,7 @@ void Decay::switch_realm()
           stat.active_decay.max(), stat.active_decay.mean(), stat.active_decay.variance(),
           stat.active_decay.count() );
     }
-    POLLOG_INFOLN( "DECAY REALM ROLLOVER" );
   }
-  POLLOG_INFOLN( "DECAY REALM SWITXH" );
   area = gamestate.Realms[realm_index]->gridarea();
   area_itr = area.begin();
 }
@@ -178,6 +173,11 @@ void Decay::on_delete_realm( Realms::Realm* realm )
   --realm_index;
   area = gamestate.Realms[realm_index]->gridarea();
   area_itr = --area.end();
+}
+
+void Decay::after_realms_size_changed()
+{
+  calculate_sleeptime();
 }
 
 void Decay::calculate_sleeptime()

@@ -139,7 +139,7 @@ void decay_test()
     return;
   }
 
-  INFO_PRINTLN( "    remove shadow realms" );
+  INFO_PRINTLN( "    remove active realm" );
   Core::remove_realm( firstshadow->name() );
   d.step();
   if ( d.realm_index != 2 )
@@ -148,8 +148,6 @@ void decay_test()
     UnitTest::inc_failures();
     return;
   }
-  INFO_PRINTLN( "A {} p {}", d.area, *d.area_itr );
-
   if ( secondshadow->toplevel_item_count() != 0 )
   {
     INFO_PRINTLN( "second shadow toplevelcount 0!={}", secondshadow->toplevel_item_count() );
