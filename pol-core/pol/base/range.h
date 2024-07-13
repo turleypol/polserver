@@ -29,6 +29,7 @@ public:
   bool operator!=( const Range2dItr& other ) const;
   // does someone really need itr++?
   Range2dItr& operator++();
+  Range2dItr& operator--();
 };
 
 class Range2d

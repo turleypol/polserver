@@ -178,7 +178,7 @@ void Decay::on_delete_realm( Realms::Realm* realm )
   // due to the ++itr in step the realm will be switched
   --realm_index;
   area = gamestate.Realms[realm_index]->gridarea();
-  area_itr = Range2dItr( area.se(), area.se() );
+  area_itr = --area.end();
 }
 
 void Decay::calculate_sleeptime()
