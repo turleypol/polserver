@@ -32,7 +32,6 @@ private:
   void decay_worldzone();
 
   unsigned sleeptime = 0;
-  bool init = false;
   size_t realm_index = ~0lu;
   Range2d area;
   Range2dItr area_itr;

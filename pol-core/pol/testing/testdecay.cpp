@@ -52,7 +52,6 @@ void decay_test()
     UnitTest::inc_failures();
     return;
   }
-  UnitTest::inc_successes();
 
   // on the second realm one item should also decay
   createitem( { 0, 0, 0, secondrealm }, 1 );
@@ -62,7 +61,6 @@ void decay_test()
     UnitTest::inc_failures();
     return;
   }
-  UnitTest::inc_successes();
 
   // time machine
   Core::shift_clock_for_unittest( 2s );
@@ -83,7 +81,6 @@ void decay_test()
     UnitTest::inc_failures();
     return;
   }
-  UnitTest::inc_successes();
   // since we did already one step, this loop will also switch realm
   INFO_PRINTLN( "    full sweep" );
   decay_full_realm_loop( d );
@@ -93,21 +90,18 @@ void decay_test()
     UnitTest::inc_failures();
     return;
   }
-  UnitTest::inc_successes();
   if ( d.realm_index != 1 )
   {
     INFO_PRINTLN( "active realm didnt switch 1!={}", d.realm_index );
     UnitTest::inc_failures();
     return;
   }
-  UnitTest::inc_successes();
   if ( secondrealm->toplevel_item_count() != 0 )
   {
     INFO_PRINTLN( "second realm toplevelcount 0!={}", secondrealm->toplevel_item_count() );
     UnitTest::inc_failures();
     return;
   }
-  UnitTest::inc_successes();
   // loop until active realm should be again 0
   INFO_PRINTLN( "    rollover" );
   decay_full_realm_loop( d );
@@ -117,7 +111,6 @@ void decay_test()
     UnitTest::inc_failures();
     return;
   }
-  UnitTest::inc_successes();
 
   // test realm add/delete
   INFO_PRINTLN( "    prepare shadow realms" );
@@ -134,7 +127,6 @@ void decay_test()
     UnitTest::inc_failures();
     return;
   }
-  UnitTest::inc_successes();
   // time machine
   Core::shift_clock_for_unittest( 2s );
   // current index is 0 so loop 2 times to get to the first shadow realm
@@ -146,7 +138,6 @@ void decay_test()
     UnitTest::inc_failures();
     return;
   }
-  UnitTest::inc_successes();
 
   INFO_PRINTLN( "    remove shadow realms" );
   Core::remove_realm( firstshadow->name() );
@@ -158,7 +149,7 @@ void decay_test()
     return;
   }
   INFO_PRINTLN( "A {} p {}", d.area, *d.area_itr );
-  UnitTest::inc_successes();
+
   if ( secondshadow->toplevel_item_count() != 0 )
   {
     INFO_PRINTLN( "second shadow toplevelcount 0!={}", secondshadow->toplevel_item_count() );

@@ -135,7 +135,7 @@ void Decay::switch_realm()
   if ( realm_index >= gamestate.Realms.size() )
   {
     realm_index = 0;
-    if ( !init && Plib::systemstate.config.thread_decay_statistics )
+    if ( Plib::systemstate.config.thread_decay_statistics )
     {
       auto& stat = stateManager.decay_statistics;
       stat.decayed.update( stat.temp_count_decayed );
@@ -150,7 +150,6 @@ void Decay::switch_realm()
           stat.active_decay.count() );
     }
     POLLOG_INFOLN( "DECAY REALM ROLLOVER" );
-    init = false;
   }
   POLLOG_INFOLN( "DECAY REALM SWITXH" );
   area = gamestate.Realms[realm_index]->gridarea();
