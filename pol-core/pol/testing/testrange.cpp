@@ -118,7 +118,7 @@ void range2d_test()
       {
         Range2d a( p1, p2, r );
         std::vector<Pos2d> rangeres;
-        for ( auto itr = a.end(); itr > a.begin(); --itr )
+        for ( auto itr = a.end(); itr != a.begin(); --itr )
           rangeres.push_back( *itr );
         std::vector<Pos2d> res{ { { 3, 4 },
                                   { 2, 4 },
