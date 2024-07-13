@@ -196,7 +196,7 @@ void Decay::calculate_sleeptime()
   }
   // sweep every realm ~10minutes -> 36ms for 6 realms
   // limit to 30ms-500ms
-  sleeptime = std::clamp( ( 60 * 10L * 1000 ) / total_grid_count, 30u, 500u );
+  sleeptime = std::clamp( ( 60 * 10ul * 1000 ) / total_grid_count, 30u, 500u );
 }
 void Decay::decay_thread( void* /*arg*/ )
 {
