@@ -61,6 +61,11 @@ function(set_compile_flags target is_executable)
       -W
       -Wall
       -Wextra
+      -ffunction-sections
+      -fdata-sections
+      -Wl
+      --gc-sections
+      --print-gc-sections
     >
     
     $<$<AND:${FORCE_ARCH_BITS},${linux}>:
