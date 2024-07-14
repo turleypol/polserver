@@ -115,7 +115,6 @@ class Party;
 class RepSystem;
 class SaveContext;
 class Spellbook;
-class TargetCursor;
 class UOExecutor;
 class USpell;
 class Vital;
@@ -809,7 +808,6 @@ public:
   // SCRIPT
 public:
   DYN_PROPERTY( disable_skills_until, time_t, Core::PROP_DISABLE_SKILLS_UNTIL, 0 );
-  Core::TargetCursor* tcursor2;
   weak_ptr<Core::Menu> menu;  // TODO: Move this into the client's gamedata
   void ( *on_menu_selection )( Network::Client* client, Core::MenuItem* mi, Core::PKTIN_7D* msg );
   void ( *on_popup_menu_selection )( Network::Client* client, u32 serial, u16 id );

@@ -39,12 +39,12 @@ void handle_target_cursor( Network::Client* client, PKTBI_6C* msg )
 {
   Mobile::Character* targetter = client->chr;
 
-  if ( !targetter->tcursor2 )
+  if ( !client->gd->tcursor2 )
   {
     SuspiciousActs::OutOfSequenceCursor( client );
     return;
   }
-  targetter->tcursor2->handle_target_cursor( targetter, msg );
+  client->gd->tcursor2->handle_target_cursor( targetter, msg );
 }
 
 /*
@@ -118,7 +118,7 @@ bool TargetCursor::send_object_cursor( Network::Client* client, PKTBI_6C::CURSOR
     msg->Write<u8>( crstype );
     // rest 0
     msg.Send( client, sizeof msg->buffer );
-    client->chr->tcursor2 = this;
+    client->gd->tcursor2 = this;
     return true;
   }
   else
@@ -129,7 +129,8 @@ bool TargetCursor::send_object_cursor( Network::Client* client, PKTBI_6C::CURSOR
 
 void TargetCursor::cancel( Mobile::Character* chr )
 {
-  chr->tcursor2 = nullptr;
+  if ( chr->client )
+    chr->client->gd->tcursor2 = nullptr;
   if ( inform_on_cancel_ )
     on_target_cursor( chr, nullptr );
 }
@@ -197,7 +198,8 @@ void TargetCursor::handle_target_cursor( Mobile::Character* chr, PKTBI_6C* msg )
 
   if ( msg->x != 0xffff || msg->selected_serial != 0 )
   {
-    chr->tcursor2 = nullptr;
+    if ( chr->client )
+      chr->client->gd->tcursor2 = nullptr;
     on_target_cursor( chr, msg );
   }
   else
@@ -332,7 +334,7 @@ bool LosCheckedCoordCursor::send_coord_cursor( Network::Client* client )
     msg->Write<u8>( PKTBI_6C::CURSOR_TYPE_NEUTRAL );
     // rest 0
     msg.Send( client, sizeof msg->buffer );
-    client->chr->tcursor2 = this;
+    client->gd->tcursor2 = this;
     return true;
   }
   else
@@ -369,7 +371,7 @@ void MultiPlacementCursor::send_placemulti( Network::Client* client, unsigned in
   if ( client->ClientType & Network::CLIENTTYPE_7090 )
     msg->WriteFlipped<u32>( hue );
   msg.Send( client );
-  client->chr->tcursor2 = this;
+  client->gd->tcursor2 = this;
 }
 
 void MultiPlacementCursor::on_target_cursor( Mobile::Character* chr, PKTBI_6C* msg )

@@ -299,7 +299,6 @@ Character::Character( u32 objtype, Core::UOBJ_CLASS uobj_class )
       trading_cont(),
       trading_with( nullptr ),
       // SCRIPT
-      tcursor2( nullptr ),
       menu( nullptr ),
       on_menu_selection( nullptr ),
       on_popup_menu_selection( nullptr ),
@@ -417,8 +416,6 @@ void Character::disconnect_cleanup()
 {
   if ( is_trading() )
     Core::cancel_trade( this );
-
-  tcursor2 = nullptr;
 
   stop_skill_script();
   on_loggoff_party( this );
@@ -4164,14 +4161,10 @@ u16 Character::intelligence() const
 
 bool Character::target_cursor_busy() const
 {
-  if ( tcursor2 != nullptr )
-    return true;
-  if ( client && client->gd && client->gd->target_cursor_uoemod != nullptr )
+  if ( client && client->gd && client->tcursor2 && client->gd->target_cursor_uoemod != nullptr )
     return true;
   return false;
 }
-
-// get_legal_item removed, wasn't being used. - MuadDib
 
 void Character::cancel_menu()
 {
@@ -4345,7 +4338,6 @@ size_t Character::estimatedSize() const
                 + sizeof( Plib::URACE )                               /*race*/
                 + sizeof( short )                                     /*gradual_boost*/
                 + sizeof( u32 )                                       /*last_corpse*/
-                + sizeof( Core::TargetCursor* )                       /*tcursor2*/
                 + sizeof( weak_ptr<Core::Menu> )                      /*menu*/
                 + sizeof( u16 )                                       /*_last_textcolor*/
                 + sizeof( ref_ptr<Core::WornItemsContainer> )         /*wornitems_ref*/

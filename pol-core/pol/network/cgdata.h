@@ -27,6 +27,7 @@ class JusticeRegion;
 class MusicRegion;
 class UContainer;
 class WeatherRegion;
+class TargetCursor;
 }  // namespace Core
 namespace Network
 {
@@ -76,6 +77,7 @@ public:
   u32 custom_house_serial;
   u32 custom_house_chrserial;
   u8 update_range;
+  Core::TargetCursor* tcursor2;
 };
 }  // namespace Network
 }  // namespace Pol
