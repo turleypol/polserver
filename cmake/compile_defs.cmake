@@ -63,9 +63,6 @@ function(set_compile_flags target is_executable)
       -Wextra
       -ffunction-sections
       -fdata-sections
-      -Wl
-      --gc-sections
-      --print-gc-sections
     >
     
     $<$<AND:${FORCE_ARCH_BITS},${linux}>:
@@ -95,6 +92,11 @@ function(set_compile_flags target is_executable)
   )
 
   if(${gcc} OR ${clang})
+        target_link_libraries(${target} PRIVATE 
+        
+      -Wl
+      --gc-sections
+      --print-gc-sections)
     if(${GCOV})
         target_link_libraries(${target} PRIVATE -fprofile-arcs)
     endif()
