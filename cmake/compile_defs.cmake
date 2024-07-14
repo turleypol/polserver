@@ -95,8 +95,8 @@ function(set_compile_flags target is_executable)
         target_link_libraries(${target} PRIVATE 
         
       -Wl
-      --gc-sections
-      --print-gc-sections)
+      -gc-sections
+      -print-gc-sections)
     if(${GCOV})
         target_link_libraries(${target} PRIVATE -fprofile-arcs)
     endif()
