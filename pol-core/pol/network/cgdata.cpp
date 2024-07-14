@@ -11,12 +11,14 @@
 
 #include "../containr.h"
 #include "../fnsearch.h"
+#include "../menu.h"
 #include "../mobile/npc.h"
 #include "../module/unimod.h"
 #include "../module/uomod.h"
 #include "../multi/customhouses.h"
 #include "../multi/house.h"
 #include "../multi/multi.h"
+#include "../target.h"
 #include "../uoexec.h"
 
 namespace Pol
@@ -42,7 +44,8 @@ ClientGameData::ClientGameData()
       custom_house_serial( 0 ),
       custom_house_chrserial( 0 ),
       update_range( Plib::RANGE_VISUAL ),
-      tcursor2( nullptr )
+      tcursor2( nullptr ),
+      menu( nullptr )
 {
 }
 

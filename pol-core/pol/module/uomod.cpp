@@ -1640,7 +1640,7 @@ BObjectImp* UOExecutorModule::mf_SelectMenuItem2()
     return new Bscript::BError( "Script can't be blocked" );
   }
 
-  chr->menu = menu->getWeakPtr();
+  chr->client->gd->menu = menu->getWeakPtr();
   chr->on_menu_selection = menu_selection_made;
   chr->client->gd->menu_selection_uoemod = this;
   menu_selection_chr = chr;

@@ -28,6 +28,7 @@ class MusicRegion;
 class UContainer;
 class WeatherRegion;
 class TargetCursor;
+class Menu;
 }  // namespace Core
 namespace Network
 {
@@ -78,6 +79,7 @@ public:
   u32 custom_house_chrserial;
   u8 update_range;
   Core::TargetCursor* tcursor2;
+  weak_ptr<Core::Menu> menu;
 };
 }  // namespace Network
 }  // namespace Pol

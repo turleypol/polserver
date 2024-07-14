@@ -299,7 +299,6 @@ Character::Character( u32 objtype, Core::UOBJ_CLASS uobj_class )
       trading_cont(),
       trading_with( nullptr ),
       // SCRIPT
-      menu( nullptr ),
       on_menu_selection( nullptr ),
       on_popup_menu_selection( nullptr ),
       script_ex( nullptr ),
@@ -4168,7 +4167,8 @@ bool Character::target_cursor_busy() const
 
 void Character::cancel_menu()
 {
-  menu.clear();
+  if ( client )
+    client->gd->menu.clear();
   if ( on_menu_selection != nullptr )
     on_menu_selection( client, nullptr, nullptr );
   on_menu_selection = nullptr;
@@ -4338,7 +4338,6 @@ size_t Character::estimatedSize() const
                 + sizeof( Plib::URACE )                               /*race*/
                 + sizeof( short )                                     /*gradual_boost*/
                 + sizeof( u32 )                                       /*last_corpse*/
-                + sizeof( weak_ptr<Core::Menu> )                      /*menu*/
                 + sizeof( u16 )                                       /*_last_textcolor*/
                 + sizeof( ref_ptr<Core::WornItemsContainer> )         /*wornitems_ref*/
                 + sizeof( unsigned short )                            /*ar_*/

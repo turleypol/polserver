@@ -108,7 +108,6 @@ namespace Core
 {
 class ExportScript;
 class Guild;
-class Menu;
 class MenuItem;
 class OneShotTask;
 class Party;
@@ -808,7 +807,6 @@ public:
   // SCRIPT
 public:
   DYN_PROPERTY( disable_skills_until, time_t, Core::PROP_DISABLE_SKILLS_UNTIL, 0 );
-  weak_ptr<Core::Menu> menu;  // TODO: Move this into the client's gamedata
   void ( *on_menu_selection )( Network::Client* client, Core::MenuItem* mi, Core::PKTIN_7D* msg );
   void ( *on_popup_menu_selection )( Network::Client* client, u32 serial, u16 id );
 
