@@ -4160,7 +4160,7 @@ u16 Character::intelligence() const
 
 bool Character::target_cursor_busy() const
 {
-  if ( client && client->gd && client->tcursor2 && client->gd->target_cursor_uoemod != nullptr )
+  if ( client && client->gd && client->gd->tcursor2 && client->gd->target_cursor_uoemod != nullptr )
     return true;
   return false;
 }

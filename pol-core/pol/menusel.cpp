@@ -11,6 +11,7 @@
 #include "accounts/account.h"
 #include "menu.h"
 #include "mobile/charactr.h"
+#include "network/cgdata.h"
 #include "network/client.h"
 #include "network/pktin.h"
 #include "ufunc.h"
