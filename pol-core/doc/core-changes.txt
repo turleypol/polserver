@@ -1,4 +1,16 @@
 -- POL100.2.0 --
+07-14-2024 Turley:
+  Removed: pol.cfg SingleThreadDecay setting
+  Changed: syshook CanDecay: returning 2 skips further core checks.
+           Currently meaning that the item will decay even if inside of a multi and decayonmulti is false.
+           Returning true/false or 1/0 still have the same meaning.
+07-13-2024 Kevin:
+    Fixed: An attacking character will now attack immediately when their opponent unhides.
+07-11-2024 Kevin:
+    Fixed: A hidden, attacking character will now attack immediately when unhidden.
+07-10-2024 Turley:
+    Fixed: Boat movement to the edge of a realm no more crashes
+    Fixed: Moving a Boat via MoveObjectToLocation checks realms boundary and returns an error if it doesnt fit.
 06-14-2024 Kukkino:
     Fixed: Performance of containers held weight computations in deeply nested scenarios
 05-16-2024 Kevin:
