@@ -61,6 +61,7 @@ function(set_compile_flags target is_executable)
       -W
       -Wall
       -Wextra
+      -Wno-unused-function
     >
     
     $<$<AND:${FORCE_ARCH_BITS},${linux}>:
