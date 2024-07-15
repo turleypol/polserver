@@ -48,7 +48,7 @@ ClientGameData::ClientGameData()
       tcursor2( nullptr ),
       menu( nullptr ),
       on_menu_selection( nullptr ),
-      on_popup_menu_selection( nullptr ),
+      on_popup_menu_selection( nullptr )
 {
 }
 
