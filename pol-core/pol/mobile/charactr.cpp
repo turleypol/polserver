@@ -299,7 +299,6 @@ Character::Character( u32 objtype, Core::UOBJ_CLASS uobj_class )
       trading_cont(),
       trading_with( nullptr ),
       // SCRIPT
-      on_popup_menu_selection( nullptr ),
       script_ex( nullptr ),
       spell_task( nullptr ),
       // CLIENT

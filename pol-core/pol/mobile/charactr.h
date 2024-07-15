@@ -805,7 +805,6 @@ public:
   // SCRIPT
 public:
   DYN_PROPERTY( disable_skills_until, time_t, Core::PROP_DISABLE_SKILLS_UNTIL, 0 );
-  void ( *on_popup_menu_selection )( Network::Client* client, u32 serial, u16 id );
 
 protected:
   Core::UOExecutor* script_ex;

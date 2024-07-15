@@ -84,6 +84,7 @@ public:
   Core::TargetCursor* tcursor2;
   weak_ptr<Core::Menu> menu;
   void ( *on_menu_selection )( Network::Client* client, Core::MenuItem* mi, Core::PKTIN_7D* msg );
+  void ( *on_popup_menu_selection )( Network::Client* client, u32 serial, u16 id );
 };
 }  // namespace Network
 }  // namespace Pol

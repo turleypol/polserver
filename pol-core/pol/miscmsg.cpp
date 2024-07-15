@@ -396,7 +396,7 @@ void handle_msg_BF( Client* client, PKTBI_BF* msg )
   }
   case PKTBI_BF::TYPE_POPUP_ENTRY_SELECT:
   {
-    if ( client->chr->on_popup_menu_selection == nullptr )
+    if ( client->gd->on_popup_menu_selection == nullptr )
     {
       POLLOG_INFOLN( "{}/{} tried to use a popup menu, but none was active.", client->acct->name(),
                      client->chr->name() );
@@ -405,7 +405,7 @@ void handle_msg_BF( Client* client, PKTBI_BF* msg )
 
     u32 serial = cfBEu32( msg->popupselect.serial );
     u16 id = cfBEu16( msg->popupselect.entry_tag );
-    client->chr->on_popup_menu_selection( client, serial, id );
+    client->gd->on_popup_menu_selection( client, serial, id );
     break;
   }
   case PKTBI_BF::TYPE_BOAT_MOVE:
