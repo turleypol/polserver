@@ -299,7 +299,6 @@ Character::Character( u32 objtype, Core::UOBJ_CLASS uobj_class )
       trading_cont(),
       trading_with( nullptr ),
       // SCRIPT
-      on_menu_selection( nullptr ),
       on_popup_menu_selection( nullptr ),
       script_ex( nullptr ),
       spell_task( nullptr ),
@@ -4168,10 +4167,12 @@ bool Character::target_cursor_busy() const
 void Character::cancel_menu()
 {
   if ( client )
+  {
     client->gd->menu.clear();
-  if ( on_menu_selection != nullptr )
-    on_menu_selection( client, nullptr, nullptr );
-  on_menu_selection = nullptr;
+    if ( client->gd->on_menu_selection != nullptr )
+      client->gd->on_menu_selection( client, nullptr, nullptr );
+    client->gd->on_menu_selection = nullptr;
+  }
 }
 
 bool Character::is_trading() const

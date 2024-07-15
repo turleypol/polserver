@@ -84,8 +84,8 @@ void handle_menu_selection( Network::Client* client, PKTIN_7D* msg )
   }
   else
   {
-    passert( client->chr->on_menu_selection );
-    client->chr->on_menu_selection( client, mi, msg );
+    passert( client->gd->on_menu_selection );
+    client->gd->on_menu_selection( client, mi, msg );
   }
 }
 }  // namespace Core

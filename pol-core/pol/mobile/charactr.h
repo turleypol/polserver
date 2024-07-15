@@ -108,7 +108,6 @@ namespace Core
 {
 class ExportScript;
 class Guild;
-class MenuItem;
 class OneShotTask;
 class Party;
 class RepSystem;
@@ -118,7 +117,6 @@ class UOExecutor;
 class USpell;
 class Vital;
 struct PKTIN_00;
-struct PKTIN_7D;
 struct PKTIN_8D;
 struct PKTIN_F8;
 
@@ -807,7 +805,6 @@ public:
   // SCRIPT
 public:
   DYN_PROPERTY( disable_skills_until, time_t, Core::PROP_DISABLE_SKILLS_UNTIL, 0 );
-  void ( *on_menu_selection )( Network::Client* client, Core::MenuItem* mi, Core::PKTIN_7D* msg );
   void ( *on_popup_menu_selection )( Network::Client* client, u32 serial, u16 id );
 
 protected:

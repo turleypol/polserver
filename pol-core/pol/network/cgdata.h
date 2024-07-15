@@ -30,6 +30,8 @@ class UContainer;
 class WeatherRegion;
 class TargetCursor;
 class Menu;
+class MenuItem;
+struct PKTIN_7D;
 }  // namespace Core
 namespace Network
 {
@@ -81,6 +83,7 @@ public:
   u8 update_range;
   Core::TargetCursor* tcursor2;
   weak_ptr<Core::Menu> menu;
+  void ( *on_menu_selection )( Network::Client* client, Core::MenuItem* mi, Core::PKTIN_7D* msg );
 };
 }  // namespace Network
 }  // namespace Pol

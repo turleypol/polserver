@@ -1641,7 +1641,7 @@ BObjectImp* UOExecutorModule::mf_SelectMenuItem2()
   }
 
   chr->client->gd->menu = menu->getWeakPtr();
-  chr->on_menu_selection = menu_selection_made;
+  chr->client->gd->on_menu_selection = menu_selection_made;
   chr->client->gd->menu_selection_uoemod = this;
   menu_selection_chr = chr;
 
