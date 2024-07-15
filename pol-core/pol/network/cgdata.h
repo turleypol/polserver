@@ -12,6 +12,7 @@
 
 #include "../../clib/rawtypes.h"
 #include "../../clib/refptr.h"
+#include "../../clib/weakptr.h"
 #include "../reftypes.h"
 
 namespace Pol

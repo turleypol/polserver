@@ -20,6 +20,7 @@
 #include "item/itemdesc.h"
 #include "mobile/charactr.h"
 #include "multi/multi.h"
+#include "network/cgdata.h"
 #include "network/client.h"
 #include "network/packethelper.h"
 #include "network/packets.h"
