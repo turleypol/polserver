@@ -35,6 +35,8 @@ struct PKTIN_7D;
 }  // namespace Core
 namespace Network
 {
+class Client;
+
 class ClientGameData
 {
 public:
