@@ -50,6 +50,7 @@
 #include "module/uomod.h"
 #include "multi/customhouses.h"
 #include "multi/multi.h"
+#include "network/cgdata.h"
 #include "network/client.h"
 #include "network/clientio.h"
 #include "network/packethelper.h"
