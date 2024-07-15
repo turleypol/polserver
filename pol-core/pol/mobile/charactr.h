@@ -109,6 +109,7 @@ namespace Core
 class ExportScript;
 class Guild;
 class OneShotTask;
+class MenuItem;
 class Party;
 class RepSystem;
 class SaveContext;
@@ -117,6 +118,7 @@ class UOExecutor;
 class USpell;
 class Vital;
 struct PKTIN_00;
+struct PKTIN_7D;
 struct PKTIN_8D;
 struct PKTIN_F8;
 
