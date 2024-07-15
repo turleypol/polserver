@@ -141,10 +141,10 @@
 #include "uworld.h"
 
 
-#ifndef NDEBUG
+// #ifndef NDEBUG
 #include "containr.h"
 #include "mobile/npc.h"
-#endif
+// #endif
 
 #ifdef _WIN32
 #include <process.h>
