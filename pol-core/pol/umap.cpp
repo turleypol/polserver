@@ -19,6 +19,7 @@
 #include "../bscript/objmethods.h"
 #include "../clib/cfgelem.h"
 #include "../clib/clib_endian.h"
+#include "../clib/stlutil.h"
 #include "../clib/streamsaver.h"
 #include "../clib/strutil.h"
 #include "globals/uvars.h"
