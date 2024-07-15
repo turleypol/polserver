@@ -141,10 +141,10 @@
 #include "uworld.h"
 
 
-#ifndef NDEBUG
+// #ifndef NDEBUG
 #include "containr.h"
 #include "mobile/npc.h"
-#endif
+// #endif
 
 #ifdef _WIN32
 #include <process.h>
@@ -1017,7 +1017,7 @@ int xmain_inner( bool testing )
   if ( testing )
     POLLOG_INFOLN( "TESTING MODE" );
 
-#ifndef NDEBUG
+  // #ifndef NDEBUG
   POLLOG_INFOLN(
       "Sizes: \n"
       "   UObject:    {}\n"
@@ -1035,7 +1035,7 @@ int xmain_inner( bool testing )
 #endif
 #endif
   POLLOG_INFOLN( "" );
-#endif
+  // #endif
   POLLOG_INFOLN( "Using {} out of {} worldsave threads", Core::gamestate.task_thread_pool.size(),
                  std::thread::hardware_concurrency() );
 
