@@ -322,7 +322,7 @@ size_t Map::estimatedSize() const
          + sizeof( bool )                        /*plotting*/
          + 4 * sizeof( u16 )                     /*area*/
          + sizeof( u16 )                         /*facetid*/
-         + 3 * sizeof( Pos2d* ) + pin_points.capacity() * sizeof( Pos2d );
+         + Clib::memsize( pin_points );
 }
 
 bool Map::get_method_hook( const char* methodname, Bscript::Executor* ex, ExportScript** hook,

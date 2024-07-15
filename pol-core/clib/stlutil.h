@@ -12,7 +12,10 @@
 #define STLUTIL_H
 
 #include <cstring>
+#include <map>
+#include <set>
 #include <sstream>
+#include <vector>
 
 namespace Pol
 {
@@ -74,6 +77,23 @@ template <class T, size_t N>
 constexpr size_t arsize( T ( & )[N] )
 {
   return N;
+}
+
+// std::vector footprint is ~ 3 * sizeof(T*) + vector.capacity() * sizeof( T );
+template <typename T>
+size_t memsize( const std::vector<T>& container )
+{
+  return 3 * sizeof( T* ) + container.capacity() * sizeof( T );
+}
+template <typename T>
+size_t memsize( const std::set<T>& container )
+{
+  return 3 * sizeof( void* ) + container.size() * sizeof( T ) + 3 * sizeof( void* );
+}
+template <typename K, typename V>
+size_t memsize( const std::map<K, V>& container )
+{
+  return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
 }
 }  // namespace Clib
 }  // namespace Pol
