@@ -21,7 +21,7 @@ jobs:
             cxx-compiler: g++
             c-compiler: gcc
             compiler-version: 11
-            build-type: RelWithDebInfo
+            build-type: Debug
             nopch: 0
             name: Linux GCC
 
