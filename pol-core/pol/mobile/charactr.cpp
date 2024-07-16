@@ -328,7 +328,7 @@ Character::Character( u32 objtype, Core::UOBJ_CLASS uobj_class )
       // Note, Item uses the named constructor idiom, but here, it is not used.
       // this is probably okay, but something to keep in mind.
       gender( Plib::GENDER_MALE ),
-      race( Plib::RACE_HUMAN ),
+      race( Plib::RACE_HUMAN )
 {
   logged_in( true );  // so initialization scripts etc can see
 
