@@ -322,13 +322,13 @@ Character::Character( u32 objtype, Core::UOBJ_CLASS uobj_class )
       // MISC
       acct( nullptr ),
       registered_multi( 0 ),
-      truecolor( 0 ),
+      last_corpse( 0 ),
       trueobjtype( 0 ),
+      truecolor( 0 ),
       // Note, Item uses the named constructor idiom, but here, it is not used.
       // this is probably okay, but something to keep in mind.
       gender( Plib::GENDER_MALE ),
       race( Plib::RACE_HUMAN ),
-      last_corpse( 0 )
 {
   logged_in( true );  // so initialization scripts etc can see
 

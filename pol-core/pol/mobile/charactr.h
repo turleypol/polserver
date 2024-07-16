@@ -857,11 +857,11 @@ protected:
 public:
   Core::AccountRef acct;
   u32 registered_multi;
-  u16 truecolor;
+  u32 last_corpse;
   u32 trueobjtype;
+  u16 truecolor;
   Plib::UGENDER gender;
   Plib::URACE race;
-  u32 last_corpse;
 
   DYN_PROPERTY( dblclick_wait, u32, Core::PROP_DOUBLECLICK_WAIT, 0 );
 

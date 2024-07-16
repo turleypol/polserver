@@ -76,17 +76,17 @@ public:
 
   Core::JusticeRegion* justice_region;
 
-  int lightlevel;
   // LightRegion* light_region;
   Core::MusicRegion* music_region;
   Core::WeatherRegion* weather_region;
-  u32 custom_house_serial;
-  u32 custom_house_chrserial;
-  u8 update_range;
   Core::TargetCursor* tcursor2;
   weak_ptr<Core::Menu> menu;
   void ( *on_menu_selection )( Network::Client* client, Core::MenuItem* mi, Core::PKTIN_7D* msg );
   void ( *on_popup_menu_selection )( Network::Client* client, u32 serial, u16 id );
+  int lightlevel;
+  u32 custom_house_serial;
+  u32 custom_house_chrserial;
+  u8 update_range;
 };
 }  // namespace Network
 }  // namespace Pol

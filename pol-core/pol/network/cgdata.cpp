@@ -38,17 +38,17 @@ ClientGameData::ClientGameData()
       selcolor_uoemod( nullptr ),
       prompt_uniemod( nullptr ),
       justice_region( nullptr ),
-      lightlevel( 0 ),
       // light_region(nullptr),
       music_region( nullptr ),
       weather_region( nullptr ),
-      custom_house_serial( 0 ),
-      custom_house_chrserial( 0 ),
-      update_range( Plib::RANGE_VISUAL ),
       tcursor2( nullptr ),
       menu( nullptr ),
       on_menu_selection( nullptr ),
-      on_popup_menu_selection( nullptr )
+      on_popup_menu_selection( nullptr ),
+      lightlevel( 0 ),
+      custom_house_serial( 0 ),
+      custom_house_chrserial( 0 ),
+      update_range( Plib::RANGE_VISUAL )
 {
 }
 
