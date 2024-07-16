@@ -8,8 +8,7 @@
  */
 
 
-#ifndef STLUTIL_H
-#define STLUTIL_H
+#pragma once
 
 #include <cstring>
 #include <map>
@@ -17,9 +16,7 @@
 #include <sstream>
 #include <vector>
 
-namespace Pol
-{
-namespace Clib
+namespace Pol::Clib
 {
 template <class T>
 void delete_all( T& coll )
@@ -79,7 +76,7 @@ constexpr size_t arsize( T ( & )[N] )
   return N;
 }
 
-// std::vector footprint is ~ 3 * sizeof(T*) + vector.capacity() * sizeof( T );
+// Memory size estimation of std containers
 template <typename T>
 size_t memsize( const std::vector<T>& container )
 {
@@ -95,7 +92,6 @@ size_t memsize( const std::map<K, V>& container )
 {
   return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
 }
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib
 
 #endif
