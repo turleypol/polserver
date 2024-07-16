@@ -204,12 +204,12 @@ UOExecutorModule::UOExecutorModule( UOExecutor& exec )
       textentry_chr( nullptr ),
       resurrect_chr( nullptr ),
       selcolor_chr( nullptr ),
-      target_options( 0 ),
       attached_chr_( nullptr ),
       attached_npc_( nullptr ),
       attached_item_( nullptr ),
       controller_( nullptr ),
       reserved_items_(),
+      target_options( 0 ),
       registered_for_speech_events( false )
 {
 }
