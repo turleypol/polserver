@@ -87,8 +87,8 @@ size_t memsize( const std::set<T>& container )
 {
   return 3 * sizeof( void* ) + container.size() * sizeof( T ) + 3 * sizeof( void* );
 }
-template <typename K, typename V>
-size_t memsize( const std::map<K, V>& container )
+template <typename K, typename V, typename C>
+size_t memsize( const std::map<K, V, C>& container )
 {
   return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
 }
