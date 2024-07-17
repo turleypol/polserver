@@ -94,4 +94,3 @@ size_t memsize( const std::map<K, V>& container )
 }
 }  // namespace Pol::Clib
 
-#endif
