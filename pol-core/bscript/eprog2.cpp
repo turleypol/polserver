@@ -571,7 +571,7 @@ void EScriptProgram::addfunction( std::string funcname, unsigned firstPC, unsign
 
 size_t EScriptProgram::sizeEstimate() const
 {
-  using Clib;
+  using namespace Clib;
   size_t size = sizeof( EScriptProgram ) + program_decl.capacity();
   size += memsize( sourcelines );
   for ( const auto& l : sourcelines )
