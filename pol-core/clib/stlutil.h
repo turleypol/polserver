@@ -114,8 +114,8 @@ size_t memsize( const std::multimap<K, V, C>& container )
 template <typename T>
 size_t memsize( const std::deque<T>& container )
 {
-  // todo
-  return 3 * sizeof( void* ) + container.capacity() * sizeof( T );
+  // todo big lie, but would be even better to get rid of it
+  return 3 * sizeof( void* ) + container.size() * sizeof( T );
 }
 }  // namespace Pol::Clib
 

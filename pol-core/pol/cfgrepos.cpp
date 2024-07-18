@@ -30,6 +30,7 @@
 #include "../clib/cfgfile.h"
 #include "../clib/fileutil.h"
 #include "../clib/logfacility.h"
+#include "../clib/stlutil.h"
 #include "../clib/strutil.h"
 #include "../plib/pkg.h"
 #include "../plib/systemstate.h"
@@ -98,13 +99,11 @@ StoredConfigElem::equal_range( const std::string& propname ) const
 
 size_t StoredConfigElem::estimateSize() const
 {
-  size_t size = 0;
+  size_t size = Clib::memsize( propimps_ );
   for ( const auto& pair : propimps_ )
   {
-    size_t elemsize = sizeof( ref_ptr<Bscript::BObjectImp> );
     if ( pair.second.get() != nullptr )
-      elemsize += pair.second->sizeEstimate();
-    size += ( sizeof( pair.first ) + elemsize ) + ( sizeof( void* ) * 3 + 1 ) / 2;
+      size += pair.second->sizeEstimate();
   }
   return size;
 }
