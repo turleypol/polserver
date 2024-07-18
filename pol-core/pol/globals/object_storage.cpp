@@ -50,7 +50,8 @@ ObjectStorageManager::MemoryUsage ObjectStorageManager::estimateSize() const
   for ( ; hs_citr != hs_cend; ++hs_citr )
   {
     const UObjectRef& ref = ( *hs_citr ).second;
-    usage.objsize += ref->estimatedSize();
+    auto size = ref->estimatedSize();
+    usage.objsize += size;
     if ( ref->isa( UOBJ_CLASS::CLASS_ITEM ) )
     {
       usage.obj_item_size += size;

@@ -14,6 +14,7 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -97,6 +98,11 @@ template <typename T>
 size_t memsize( const std::unordered_set<T>& container )
 {
   return 3 * sizeof( void* ) + container.size() * sizeof( T ) + 3 * sizeof( void* );
+}
+template <typename K, typename V, typename C>
+size_t memsize( const std::unordered_map<K, V, C>& container )
+{
+  return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
 }
 }  // namespace Pol::Clib
 
