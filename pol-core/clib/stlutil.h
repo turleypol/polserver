@@ -15,6 +15,7 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -91,10 +92,22 @@ size_t memsize( const std::set<T>& container )
 {
   return 3 * sizeof( void* ) + container.size() * sizeof( T ) + 3 * sizeof( void* );
 }
+template <typename M, typename K, typename V, typename C>
+size_t _mapimp( const M<K, V, C>& container )
+{
+  if constexpr ( std::is_same_v<K, std::string> )
+  {
+    size_t size = ( sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
+    for ( const auto& p : container )
+      size += p.first.capacity();
+    return size;
+  }
+  return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
+}
 template <typename K, typename V, typename C>
 size_t memsize( const std::map<K, V, C>& container )
 {
-  return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
+  return _mapimp( container );
 }
 template <typename T>
 size_t memsize( const std::unordered_set<T>& container )
