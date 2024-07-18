@@ -92,6 +92,8 @@ size_t memsize( const std::set<T>& container )
 {
   return 3 * sizeof( void* ) + container.size() * sizeof( T ) + 3 * sizeof( void* );
 }
+namespace
+{
 template <typename M>
 size_t _mapimp( const M& container )
 {
@@ -100,7 +102,7 @@ size_t _mapimp( const M& container )
   {
     size_t size = ( ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
     for ( const auto& p : container )
-      size += p.first.capacity() i + p.second.capacity();
+      size += p.first.capacity() + +p.second.capacity();
     return size;
   }
   if constexpr ( std::is_same_v<typename M::key_type, std::string> )
@@ -113,6 +115,7 @@ size_t _mapimp( const M& container )
   return ( sizeof( M::key_type ) + sizeof( M::mapped_type ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) *
          container.size();
 }
+}  // namespace
 template <typename K, typename V, typename C>
 size_t memsize( const std::map<K, V, C>& container )
 {
