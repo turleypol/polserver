@@ -75,7 +75,7 @@ size_t UContainer::estimatedSize() const
   const size_t size = base::estimatedSize() + sizeof( u16 ) /*held_weight_*/
                       + sizeof( unsigned int )              /*held_item_count_*/
                       // no estimateSize here element is in objhash
-                      + Clib::memsize( contents );
+                      + Clib::memsize( contents_ );
   return size;
 }
 
