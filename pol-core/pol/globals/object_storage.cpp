@@ -47,7 +47,6 @@ ObjectStorageManager::MemoryUsage ObjectStorageManager::estimateSize() const
   memset( &usage, 0, sizeof( usage ) );
 
   usage.objcount = std::distance( hs_citr, hs_cend );
-  usage.objsize = Clib::memsize( objStorageManager.objecthash );
   for ( ; hs_citr != hs_cend; ++hs_citr )
   {
     const UObjectRef& ref = ( *hs_citr ).second;
@@ -89,7 +88,7 @@ ObjectStorageManager::MemoryUsage ObjectStorageManager::estimateSize() const
     }
   }
 
-  usage.misc = sizeof( ObjectStorageManager ) + Clib::memsize( modified_serials ) +
+  usage.misc = objecthash.estimateSize() + Clib::memsize( modified_serials ) +
                Clib::memsize( deleted_serials ) + Clib::memsize( incremental_serial_index ) +
                Clib::memsize( deferred_insertions );
 
