@@ -47,13 +47,11 @@ ObjectStorageManager::MemoryUsage ObjectStorageManager::estimateSize() const
   memset( &usage, 0, sizeof( usage ) );
 
   usage.objcount = std::distance( hs_citr, hs_cend );
-
+  usage.objsize = Clib::memsize( objStorageManager.objecthash );
   for ( ; hs_citr != hs_cend; ++hs_citr )
   {
-    size_t size = ( sizeof( void* ) * 3 + 1 ) / 2;
     const UObjectRef& ref = ( *hs_citr ).second;
-    size += ref->estimatedSize();
-    usage.objsize += size;
+    usage.objsize += ref->estimatedSize();
     if ( ref->isa( UOBJ_CLASS::CLASS_ITEM ) )
     {
       usage.obj_item_size += size;
@@ -91,16 +89,11 @@ ObjectStorageManager::MemoryUsage ObjectStorageManager::estimateSize() const
     }
   }
 
-  usage.misc = sizeof( ObjectStorageManager );
-  usage.misc += 3 * sizeof( u32* ) + modified_serials.capacity() * sizeof( u32 );
-  usage.misc += 3 * sizeof( u32* ) + deleted_serials.capacity() * sizeof( u32 );
-
-  usage.misc += ( sizeof( pol_serial_t ) + sizeof( unsigned ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) *
-                incremental_serial_index.size();
-  usage.misc += ( sizeof( pol_serial_t ) + sizeof( UObject* ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) *
-                deferred_insertions.size();
+  usage.misc = sizeof( ObjectStorageManager ) + Clib::memsize( modified_serials ) +
+               Clib::memsize( deleted_serials ) + Clib::memsize( incremental_serial_index ) +
+               Clib::memsize( deferred_insertions );
 
   return usage;
 }
-}
-}
+}  // namespace Core
+}  // namespace Pol
