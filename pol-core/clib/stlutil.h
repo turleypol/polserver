@@ -12,6 +12,7 @@
 
 #include <cstring>
 #include <map>
+#include <multimap>
 #include <set>
 #include <sstream>
 #include <unordered_map>
@@ -101,6 +102,11 @@ size_t memsize( const std::unordered_set<T>& container )
 }
 template <typename K, typename V, typename C>
 size_t memsize( const std::unordered_map<K, V, C>& container )
+{
+  return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
+}
+template <typename K, typename V, typename C>
+size_t memsize( const std::multimap<K, V, C>& container )
 {
   return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
 }
