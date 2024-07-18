@@ -79,10 +79,11 @@ constexpr size_t arsize( T ( & )[N] )
 }
 
 // Memory size estimation of std containers
+// highly implementation specific, so just a rough guess
 template <typename T>
 size_t memsize( const std::vector<T>& container )
 {
-  return 3 * sizeof( T* ) + container.capacity() * sizeof( T );
+  return 3 * sizeof( void* ) + container.capacity() * sizeof( T );
 }
 template <typename T>
 size_t memsize( const std::set<T>& container )

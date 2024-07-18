@@ -15,6 +15,7 @@
 #include "../../clib/cfgelem.h"
 #include "../../clib/clib_MD5.h"
 #include "../../clib/rawtypes.h"
+#include "../../clib/stlutil.h"
 #include "../../clib/streamsaver.h"
 #include "../../plib/systemstate.h"
 #include "../cmdlevel.h"
