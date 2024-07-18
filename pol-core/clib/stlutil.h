@@ -97,23 +97,23 @@ namespace
 template <typename M>
 size_t _mapimp( const M& container )
 {
-  if constexpr ( std::is_same_v<typename M::key_type, std::string> &&
-                 std::is_same_v<typename M::mapped_type, std::string> )
+  using K = typename M::key_type;
+  using V = typename M::mapped_type;
+  if constexpr ( std::is_same_v<K, std::string> && std::is_same_v<V, std::string> )
   {
     size_t size = ( ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
     for ( const auto& p : container )
       size += p.first.capacity() + +p.second.capacity();
     return size;
   }
-  if constexpr ( std::is_same_v<typename M::key_type, std::string> )
+  if constexpr ( std::is_same_v<K, std::string> )
   {
-    size_t size = ( sizeof( M::mapped_type ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
+    size_t size = ( sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
     for ( const auto& p : container )
       size += p.first.capacity();
     return size;
   }
-  return ( sizeof( M::key_type ) + sizeof( M::mapped_type ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) *
-         container.size();
+  return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
 }
 }  // namespace
 template <typename K, typename V, typename C>
