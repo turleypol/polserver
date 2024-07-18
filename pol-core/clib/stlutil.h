@@ -11,6 +11,7 @@
 #pragma once
 
 #include <cstring>
+#include <deque>
 #include <map>
 #include <set>
 #include <sstream>
@@ -109,6 +110,12 @@ template <typename K, typename V, typename C>
 size_t memsize( const std::multimap<K, V, C>& container )
 {
   return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
+}
+template <typename T>
+size_t memsize( const std::deque<T>& container )
+{
+  // todo
+  return 3 * sizeof( void* ) + container.capacity() * sizeof( T );
 }
 }  // namespace Pol::Clib
 
