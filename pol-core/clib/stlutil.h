@@ -95,7 +95,15 @@ size_t memsize( const std::set<T>& container )
 template <typename M>
 size_t _mapimp( const M& container )
 {
-  if constexpr ( std::is_same_v<M::key_type, std::string> )
+  if constexpr ( std::is_same_v<typename M::key_type, std::string> &&
+                 std::is_same_v<typename M::mapped_type, std::string> )
+  {
+    size_t size = ( ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
+    for ( const auto& p : container )
+      size += p.first.capacity() i + p.second.capacity();
+    return size;
+  }
+  if constexpr ( std::is_same_v<typename M::key_type, std::string> )
   {
     size_t size = ( sizeof( M::mapped_type ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
     for ( const auto& p : container )
