@@ -4360,26 +4360,11 @@ size_t Character::estimatedSize() const
                 + sizeof( Core::AttributeFlags<MOB_FLAGS> )  /*mob_flags_*/
       ;
 
-  size += 3 * sizeof( AttributeValue* ) + attributes.capacity() * sizeof( AttributeValue );
-  size += 3 * sizeof( VitalValue* ) + vitals.capacity() * sizeof( VitalValue );
-  size += 3 * sizeof( Items::UArmor** ) + armor_.capacity() * sizeof( Items::UArmor* );
-  size += 3 * sizeof( Core::ItemRef* ) + remote_containers_.capacity() * sizeof( Core::ItemRef );
-
-  size += 3 * sizeof( void* ) + opponent_of.size() * ( sizeof( Character* ) + 3 * sizeof( void* ) );
-
-  size += aggressor_to_.size() * ( sizeof( Core::CharacterRef ) + sizeof( Core::polclock_t ) +
-                                   ( sizeof( void* ) * 3 + 1 ) / 2 );
-  size += lawfully_damaged_.size() * ( sizeof( Core::CharacterRef ) + sizeof( Core::polclock_t ) +
-                                       ( sizeof( void* ) * 3 + 1 ) / 2 );
-
-  size +=
-      3 * sizeof( void* ) + to_be_reportable_.size() * ( sizeof( USERIAL ) + 3 * sizeof( void* ) );
-  size +=
-      3 * sizeof( void* ) + reportable_.size() * ( sizeof( reportable_t ) + 3 * sizeof( void* ) );
-
-  size +=
-      3 * sizeof( void* ) + buffs_.size() * ( sizeof( u16 ) + sizeof( Buff ) + sizeof( void* ) );
-
+  size += Clib::memsize( attributes ) + Clib::memsize( vitals ) + Clib::memsize( armor_ ) +
+          Clib::memsize( remote_containers_ ) + Clib::memsize( opponent_of ) +
+          Clib::memsize( aggressor_to_ ) + Clib::memsize( lawfully_damaged_ ) +
+          Clib::memsize( to_be_reportable_ ) + Clib::memsize( reportable_ ) +
+          Clib::memsize( buffs_ );
   return size;
 }
 
