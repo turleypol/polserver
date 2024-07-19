@@ -13,6 +13,7 @@
 #include <cstring>
 #include <deque>
 #include <map>
+#include <queue>
 #include <set>
 #include <sstream>
 #include <type_traits>
@@ -140,6 +141,11 @@ template <typename T>
 size_t memsize( const std::deque<T>& container )
 {
   // todo big lie, but would be even better to get rid of it
+  return 3 * sizeof( void* ) + container.size() * sizeof( T );
+}
+template <typename T>
+size_t memsize( const std::priority_queue<T>& container )
+{
   return 3 * sizeof( void* ) + container.size() * sizeof( T );
 }
 }  // namespace Pol::Clib
