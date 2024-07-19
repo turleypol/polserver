@@ -129,12 +129,12 @@ size_t memsize( const std::unordered_set<T>& container )
 template <typename K, typename V, typename C>
 size_t memsize( const std::unordered_map<K, V, C>& container )
 {
-  return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
+  return _mapimp( container );
 }
 template <typename K, typename V, typename C>
 size_t memsize( const std::multimap<K, V, C>& container )
 {
-  return ( sizeof( K ) + sizeof( V ) + ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
+  return _mapimp( container );
 }
 template <typename T>
 size_t memsize( const std::deque<T>& container )
