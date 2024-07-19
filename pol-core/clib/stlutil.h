@@ -143,8 +143,8 @@ size_t memsize( const std::deque<T>& container )
   // todo big lie, but would be even better to get rid of it
   return 3 * sizeof( void* ) + container.size() * sizeof( T );
 }
-template <typename T>
-size_t memsize( const std::priority_queue<T>& container )
+template <typename T, typename K, typename V>
+size_t memsize( const std::priority_queue<T, K, C>& container )
 {
   return 3 * sizeof( void* ) + container.size() * sizeof( T );
 }
