@@ -482,7 +482,7 @@ GameState::Memory GameState::estimateSize() const
     if ( party.get() != nullptr )
       usage.misc += party->estimateSize();
 
-  usage.misc += Clib::memsize( guild );
+  usage.misc += Clib::memsize( guilds );
   for ( const auto& guild : guilds )
     if ( guild.second.get() != nullptr )
       usage.misc += guild.second->estimateSize();
@@ -522,7 +522,7 @@ GameState::Memory GameState::estimateSize() const
 
   for ( const auto& zone : armorzones )
   {
-    usage.misc += zone.name.capacity() + sizeof( double ) + Clib::memsize( zone.layer );
+    usage.misc += zone.name.capacity() + sizeof( double ) + Clib::memsize( zone.layers );
   }
 
   usage.misc += Clib::memsize( vitals );
