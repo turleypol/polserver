@@ -32,6 +32,7 @@
 #include "../clib/logfacility.h"
 #include "../clib/passert.h"
 #include "../clib/random.h"
+#include "../clib/stlutil.h"
 #include "../clib/streamsaver.h"
 #include "../plib/uconst.h"
 #include "globals/state.h"
