@@ -9,6 +9,7 @@
 
 #include <cstddef>
 
+#include "../../clib/stlutil.h"
 #include "../containr.h"
 #include "../fnsearch.h"
 #include "../menu.h"
@@ -169,8 +170,7 @@ void ClientGameData::remove_gumpmods( Module::UOExecutorModule* uoemod )
 size_t ClientGameData::estimatedSize() const
 {
   size_t size = sizeof( ClientGameData );
-  size += 3 * sizeof( void* ) +
-          gumpmods.size() * ( sizeof( Module::UOExecutorModule* ) + 3 * sizeof( void* ) );
+  size += Clib::memsize( gumpmods );
   return size;
 }
 }  // namespace Network
