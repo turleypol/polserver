@@ -88,6 +88,7 @@
 #include "../../clib/logfacility.h"
 #include "../../clib/passert.h"
 #include "../../clib/refptr.h"
+#include "../../clib/stlutil.h"
 #include "../../plib/clidata.h"
 #include "../../plib/mapcell.h"
 #include "../../plib/mapshape.h"
