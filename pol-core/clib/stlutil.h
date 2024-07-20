@@ -148,5 +148,10 @@ size_t memsize( const std::priority_queue<T, K, C>& container )
 {
   return 3 * sizeof( void* ) + container.size() * sizeof( T );
 }
+template <typename T>
+size_t memsize( const std::list<T>& container )
+{
+  return 3 * sizeof( void* ) + container.size() * ( sizeof( T ) + 2 * sizeof( void* ) );
+}
 }  // namespace Pol::Clib
 
