@@ -180,8 +180,7 @@ size_t USpell::estimateSize() const
   size_t size = sizeof( Plib::Package* )                                         /*pkg_*/
                 + sizeof( unsigned short )                                       /*spellid_*/
                 + name_.capacity() + power_words_.capacity() + sizeof( UACTION ) /*action_*/
-                + 3 * sizeof( unsigned int* ) + reglist_.capacity() * sizeof( unsigned int ) +
-                sizeof( USpellParams ) /*params_*/
+                + Clib::memsize( reglist_ ) + sizeof( USpellParams )             /*params_*/
                 + scriptdef_.estimatedSize();
   return size;
 }
