@@ -27,6 +27,7 @@
 #include "../../clib/logfacility.h"
 #include "../../clib/passert.h"
 #include "../../clib/refptr.h"
+#include "../../clib/stlutil.h"
 #include "../../clib/streamsaver.h"
 #include "../../plib/mapcell.h"
 #include "../../plib/mapshape.h"
