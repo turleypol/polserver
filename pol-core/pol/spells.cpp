@@ -18,6 +18,7 @@
 #include "../clib/fileutil.h"
 #include "../clib/logfacility.h"
 #include "../clib/refptr.h"
+#include "../clib/stlutil.h"
 #include "../plib/pkg.h"
 #include "../plib/systemstate.h"
 #include "containr.h"
