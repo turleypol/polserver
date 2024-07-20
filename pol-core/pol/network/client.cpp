@@ -27,6 +27,7 @@
 #include "../../bscript/impstr.h"
 #include "../../clib/clib.h"
 #include "../../clib/logfacility.h"
+#include "../../clib/stlutil.h"
 #include "../../clib/strutil.h"  //CNXBUG
 #include "../../clib/wallclock.h"
 #include "../accounts/account.h"
