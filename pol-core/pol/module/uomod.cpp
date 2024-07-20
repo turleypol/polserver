@@ -5266,8 +5266,7 @@ BObjectImp* UOExecutorModule::mf_GetMidpointCircleCoords( /* xcenter, ycenter, r
 
 size_t UOExecutorModule::sizeEstimate() const
 {
-  size_t size = sizeof( *this );
-  size += 3 * sizeof( Core::ItemRef* ) + reserved_items_.capacity() * sizeof( Core::ItemRef );
+  size_t size = sizeof( *this ) + Clib::memsize( reserved_items_ );
   return size;
 }
 }  // namespace Module
