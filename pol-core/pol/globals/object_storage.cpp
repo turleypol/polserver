@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "../../clib/stlutil.h"
 #include "../objecthash.h"
 #include "../reftypes.h"
 #include "../uobject.h"
