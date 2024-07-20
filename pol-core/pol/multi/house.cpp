@@ -119,16 +119,15 @@ UHouse::UHouse( const Items::ItemDesc& itemdesc )
 size_t UHouse::estimatedSize() const
 {
   size_t size = base::estimatedSize() + CurrentDesign.estimatedSize() +
-                WorkingDesign.estimatedSize() + BackupDesign.estimatedSize() + 3 * sizeof( u8* ) +
-                CurrentCompressed.capacity() * sizeof( u8 ) + 3 * sizeof( u8* ) +
-                WorkingCompressed.capacity() * sizeof( u8 ) + sizeof( bool ) /*editing*/
-                + sizeof( bool )                                             /*waiting_for_accept*/
-                + sizeof( int )                                              /*editing_floor_num*/
-                + sizeof( u32 )                                              /*revision*/
-                + sizeof( bool )                                             /*custom*/
+                WorkingDesign.estimatedSize() + BackupDesign.estimatedSize() +
+                Clib::memsize( CurrentCompressed ) + Clib::memsize( WorkingCompressed ) +
+                sizeof( bool )   /*editing*/
+                + sizeof( bool ) /*waiting_for_accept*/
+                + sizeof( int )  /*editing_floor_num*/
+                + sizeof( u32 )  /*revision*/
+                + sizeof( bool ) /*custom*/
                 // no estimateSize here element is in objhash
-                + 3 * sizeof( Squatter* ) + squatters_.capacity() * sizeof( Squatter ) +
-                3 * sizeof( Component* ) + components_.capacity() * sizeof( Component );
+                + Clib::memsize( squatters_ ) + Clib::memsize( components_ );
   return size;
 }
 
