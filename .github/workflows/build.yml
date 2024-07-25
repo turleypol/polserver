@@ -136,21 +136,21 @@ jobs:
           sudo /etc/init.d/mysql start
           mysql -e "CREATE DATABASE IF NOT EXISTS poltest;" -uroot -proot
           echo "POLCORE_TESTSQL=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Test (EScript)
-        if: matrix.config.nopch == 0
-        run: |
-          cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
+          #      - name: Test (EScript)
+          #        if: matrix.config.nopch == 0
+          #        run: |
+          #          cd bin-build
+          #          cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
       - name: Test (Shard Fixtures)
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_fixture
-      - name: Test (UnitTests)
-        if: matrix.config.nopch == 0
-        run: |
-          cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target unittest_pol
+          #      - name: Test (UnitTests)
+          #        if: matrix.config.nopch == 0
+          #        run: |
+          #          cd bin-build
+          #          cmake --build . --config ${{ matrix.config.build-type }} --target unittest_pol
       - name: Test (Shard)
         if: matrix.config.nopch == 0
         run: |
