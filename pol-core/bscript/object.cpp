@@ -1038,17 +1038,35 @@ BObjectImp* ObjArray::copy( void ) const
 
 size_t ObjArray::sizeEstimate() const
 {
+  size_t sizeo = sizeof( ObjArray );
+  sizeo += 3 * sizeof( BObjectRef* ) + ref_arr.capacity() * sizeof( BObjectRef );
+  size_t elesizeo = 0;
+  for ( const auto& elem : ref_arr )
+  {
+    sizeo += elem.sizeEstimate();
+    elesizeo += elem.sizeEstimate();
+  }
+  sizeo += 3 * sizeof( std::string* ) + name_arr.capacity() * sizeof( std::string );
+  for ( const auto& elem : name_arr )
+  {
+    sizeo += elem.capacity();
+  }
+
   size_t size = sizeof( ObjArray );
   size += Clib::memsize( ref_arr );
+  size_t elesize = 0;
   for ( const auto& elem : ref_arr )
   {
     size += elem.sizeEstimate();
+    elesize += elem.sizeEstimate();
   }
   size += Clib::memsize( name_arr );
   for ( const auto& elem : name_arr )
   {
     size += elem.capacity();
   }
+  INFO_PRINTLN( "SIZE EST old {} new {}", sizeo, size );
+  INFO_PRINTLN( "SIZE EST ELEM old {} new {}", elesizeo, elesize );
   return size;
 }
 
