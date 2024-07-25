@@ -1065,8 +1065,8 @@ size_t ObjArray::sizeEstimate() const
   {
     size += elem.capacity();
   }
-  INFO_PRINTLN( "SIZE EST old {} new {}", sizeo, size );
-  INFO_PRINTLN( "SIZE EST ELEM old {} new {}", elesizeo, elesize );
+  // INFO_PRINTLN( "SIZE EST old {} new {}", sizeo, size );
+  //  INFO_PRINTLN( "SIZE EST ELEM old {} new {}", elesizeo, elesize );
   return size;
 }
 

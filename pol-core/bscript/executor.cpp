@@ -3545,6 +3545,55 @@ void Executor::dbg_clrallbp()
 
 size_t Executor::sizeEstimate() const
 {
+  size_t osize = sizeof( *this );
+  osize += 3 * sizeof( BObjectRefVec** ) + upperLocals2.size() * sizeof( BObjectRefVec* );
+  for ( const auto& bojectrefvec : upperLocals2 )
+  {
+    osize += 3 * sizeof( BObjectRef* ) + bojectrefvec->capacity() * sizeof( BObjectRef );
+    for ( const auto& bojectref : *bojectrefvec )
+    {
+      if ( bojectref != nullptr )
+        osize += bojectref->sizeEstimate();
+    }
+  }
+  osize += 3 * sizeof( ReturnContext* ) + ControlStack.size() * sizeof( ReturnContext );
+
+  osize += 3 * sizeof( BObjectRef* ) + Locals2->size() * sizeof( BObjectRef );
+  for ( const auto& bojectref : *Locals2 )
+  {
+    if ( bojectref != nullptr )
+      osize += bojectref->sizeEstimate();
+  }
+  osize += 3 * sizeof( BObjectRef* ) + Globals2.size() * sizeof( BObjectRef );
+  for ( const auto& bojectref : Globals2 )
+  {
+    if ( bojectref != nullptr )
+      osize += bojectref->sizeEstimate();
+  }
+  osize += 3 * sizeof( BObjectRef* ) + ValueStack.size() * sizeof( BObjectRef );
+  for ( const auto& bojectref : ValueStack )
+  {
+    if ( bojectref != nullptr )
+      osize += bojectref->sizeEstimate();
+  }
+  osize += 3 * sizeof( BObjectRef* ) + fparams.capacity() * sizeof( BObjectRef );
+  for ( const auto& bojectref : fparams )
+  {
+    if ( bojectref != nullptr )
+      osize += bojectref->sizeEstimate();
+  }
+  for ( const auto& module : availmodules )
+  {
+    if ( module != nullptr )
+      osize += module->sizeEstimate();
+  }
+  osize += 3 * sizeof( ExecutorModule** ) + execmodules.capacity() * sizeof( ExecutorModule* );
+  osize += 3 * sizeof( ExecutorModule** ) + availmodules.capacity() * sizeof( ExecutorModule* );
+  osize += 3 * sizeof( unsigned* ) + breakpoints_.size() * sizeof( unsigned );
+  osize += 3 * sizeof( unsigned* ) + tmpbreakpoints_.size() * sizeof( unsigned );
+  osize += func_result_ != nullptr ? func_result_->sizeEstimate() : 0;
+
+
   size_t size = sizeof( *this );
   size += Clib::memsize( upperLocals2 );
   for ( const auto& bojectrefvec : upperLocals2 )
@@ -3590,6 +3639,8 @@ size_t Executor::sizeEstimate() const
   size += Clib::memsize( execmodules ) + Clib::memsize( availmodules );
   size += dbg_env_ != nullptr ? dbg_env_->sizeEstimate() : 0;
   size += func_result_ != nullptr ? func_result_->sizeEstimate() : 0;
+
+  INFO_PRINTLN( "EXECUTOR old {} new {}", osize, size );
   return size;
 }
 
