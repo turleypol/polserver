@@ -3589,8 +3589,7 @@ size_t Executor::sizeEstimate() const
   }
   osize += 3 * sizeof( ExecutorModule** ) + execmodules.capacity() * sizeof( ExecutorModule* );
   osize += 3 * sizeof( ExecutorModule** ) + availmodules.capacity() * sizeof( ExecutorModule* );
-  osize += 3 * sizeof( unsigned* ) + breakpoints_.size() * sizeof( unsigned );
-  osize += 3 * sizeof( unsigned* ) + tmpbreakpoints_.size() * sizeof( unsigned );
+  osize += dbg_env_ != nullptr ? dbg_env_->sizeEstimate() : 0;
   osize += func_result_ != nullptr ? func_result_->sizeEstimate() : 0;
 
 
