@@ -194,7 +194,7 @@ size_t memsize_keyvalue( const std::map<K, V, C>& container, Func f )
 template <typename T>
 size_t memsize( const std::unordered_set<T>& container )
 {
-  return 3 * sizeof( void* ) + container.size() * sizeof( T ) + 3 * sizeof( void* );
+  return 3 * sizeof( void* ) + container.size() * ( sizeof( T ) + 3 * sizeof( void* ) );
 }
 
 template <typename K, typename V, typename C>
