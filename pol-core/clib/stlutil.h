@@ -119,7 +119,14 @@ size_t memsize( const std::vector<T>& container )
 template <typename T>
 size_t memsize( const std::set<T>& container )
 {
-  return 3 * sizeof( void* ) + container.size() * sizeof( T ) + 3 * sizeof( void* );
+  if constexpr ( std::is_same_v<T, std::string> )
+  {
+    size_t size = 3 * sizeof( void* );
+    for ( const auto& t : container )
+      size += t.capacity() + 3 * sizeof( void* );
+    return size;
+  }
+  return 3 * sizeof( void* ) + container.size() * ( sizeof( T ) + 3 * sizeof( void* ) );
 }
 
 template <typename K, typename V, typename C>
