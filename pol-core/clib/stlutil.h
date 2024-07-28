@@ -167,6 +167,11 @@ size_t memsize( const std::map<K, V, C>& container )
 {
   return _mapimp( container );
 }
+template <typename K, typename V, typename C>
+size_t memsize( const std::map<const K, V, C>& container )
+{
+  return _mapimp( container );
+}
 template <typename K, typename V, typename C, class Func>
 size_t memsize( const std::map<K, V, C>& container, Func f )
 {
