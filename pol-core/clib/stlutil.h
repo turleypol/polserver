@@ -173,6 +173,11 @@ size_t memsize( const std::map<K, V, C>& container, Func f )
   return _mapimp( container, f );
 }
 template <typename K, typename V, typename C, class Func>
+size_t memsize( const std::map<const K, V, C>& container, Func f )
+{
+  return _mapimp( container, f );
+}
+template <typename K, typename V, typename C, class Func>
 size_t memsize_keyvalue( const std::map<K, V, C>& container, Func f )
 {
   size_t size = ( ( sizeof( void* ) * 3 + 1 ) / 2 ) * container.size();
