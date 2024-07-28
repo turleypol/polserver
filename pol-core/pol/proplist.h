@@ -103,9 +103,9 @@ private:
     /// 0=read, 1=write, 2=erase
     std::array<u64, 3> hits;
   };
-  typedef std::map<PropertyList*, const Type> PropLists;
-  typedef std::map<std::string, HitsCounter> HitsEntries;
-  typedef std::map<Type, HitsEntries> Hits;
+  typedef std::map<const PropertyList*, const Type> PropLists;
+  typedef std::map<const std::string, HitsCounter> HitsEntries;
+  typedef std::map<const Type, HitsEntries> Hits;
 
   CPropProfiler();
 
