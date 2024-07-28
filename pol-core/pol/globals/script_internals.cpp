@@ -422,8 +422,6 @@ bool ScriptScheduler::logScriptVariables( const std::string& name ) const
         size_t varidx = left - 1 - progblock.parentvariables;
         left--;
         Bscript::BObjectImp* ptr = ( *locals )[varidx]->impptr();
-        INFO_PRINTLN( "{} ({}) {}", progblock.localvarnames[varidx], ptr->typeOf(),
-                      ptr->sizeEstimate() );
         fmt::format_to( std::back_inserter( log ), "  {} ({}) {}\n",
                         progblock.localvarnames[varidx], ptr->typeOf(), ptr->sizeEstimate() );
       }
