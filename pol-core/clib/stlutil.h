@@ -118,6 +118,7 @@ size_t memsize( const std::vector<T>& container )
     size_t size = 3 * sizeof( void* );
     for ( const auto& t : container )
       size += t.capacity();
+    size += ( container.capacity() - container.size() ) * sizeof( T );
     return size;
   }
   return 3 * sizeof( void* ) + container.capacity() * sizeof( T );
@@ -128,6 +129,7 @@ size_t memsize( const std::vector<T>& container, Func f )
   size_t size = 3 * sizeof( void* );
   for ( const auto& t : container )
     size += f( t );
+  size += ( container.capacity() - container.size() ) * sizeof( T );
   return size;
 }
 

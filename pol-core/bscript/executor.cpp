@@ -3557,10 +3557,10 @@ size_t Executor::sizeEstimate() const
 {
   size_t size = sizeof( *this );
   size += Clib::memsize( upperLocals2 );
-  for ( const auto& bojectrefvec : upperLocals2 )
+  for ( const auto& bobjectrefvec : upperLocals2 )
   {
     size += Clib::memsize( bobjectrefvec );
-    for ( const auto& bojectref : *bojectrefvec )
+    for ( const auto& bojectref : *bobjectrefvec )
     {
       if ( bojectref != nullptr )
         size += bojectref->sizeEstimate();
