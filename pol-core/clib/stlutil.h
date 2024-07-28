@@ -113,7 +113,22 @@ size_t _mapimp( const M& container )
 template <typename T>
 size_t memsize( const std::vector<T>& container )
 {
+  if constexpr ( std::is_same_v<T, std::string> )
+  {
+    size_t size = 3 * sizeof( void* );
+    for ( const auto& t : container )
+      size += t.capacity();
+    return size;
+  }
   return 3 * sizeof( void* ) + container.capacity() * sizeof( T );
+}
+template <typename T, class Func>
+size_t memsize( const std::vector<T>& container, Func f )
+{
+  size_t size = 3 * sizeof( void* );
+  for ( const auto& t : container )
+    size += f( t );
+  return size;
 }
 
 template <typename T>
