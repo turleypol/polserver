@@ -427,7 +427,7 @@ antlrcpp::Any PrettifyFileProcessor::visitExpressionList(
   {
     visitExpression( args[i] );
     if ( i < args.size() - 1 )
-      addToken( ",", ctx->COMMA( i ), linebuilder.delimiterStyle() );
+      addToken( ",", ctx->COMMA( i ), linebuilder.delimiterStyle() | FmtToken::PREFERRED_BREAK );
   }
   return {};
 }
@@ -457,7 +457,7 @@ antlrcpp::Any PrettifyFileProcessor::visitExpression( EscriptParser::ExpressionC
     case EscriptLexer::OR_B:
     case EscriptLexer::AND_A:
     case EscriptLexer::AND_B:
-      style = FmtToken::SPACE | FmtToken::BREAKPOINT;
+      style = FmtToken::SPACE | FmtToken::BREAKPOINT | FmtToken::PREFERRED_BREAK_LOGICAL;
       break;
     case EscriptLexer::ADDMEMBER:
     case EscriptLexer::DELMEMBER:
@@ -556,6 +556,15 @@ antlrcpp::Any PrettifyFileProcessor::expression_suffix(
     if ( auto expr = method->expressionList() )
       visitExpressionList( expr );
     addToken( ")", method->RPAREN(), linebuilder.closingParenthesisStyle( curcount ) );
+  }
+  else if ( auto function_call = expr_suffix_ctx->functionCallSuffix() )
+  {
+    visitExpression( expr_ctx );
+    addToken( "(", function_call->LPAREN(), linebuilder.openingParenthesisStyle() );
+    size_t curcount = linebuilder.currentTokens().size();
+    if ( auto expr = function_call->expressionList() )
+      visitExpressionList( expr );
+    addToken( ")", function_call->RPAREN(), linebuilder.closingParenthesisStyle( curcount ) );
   }
   return {};
 }
@@ -684,7 +693,7 @@ antlrcpp::Any PrettifyFileProcessor::visitFunctionParameterList(
   {
     visitFunctionParameter( params[i] );
     if ( i < params.size() - 1 )
-      addToken( ",", ctx->COMMA( i ), linebuilder.delimiterStyle() );
+      addToken( ",", ctx->COMMA( i ), linebuilder.delimiterStyle() | FmtToken::PREFERRED_BREAK );
   }
   return {};
 }
@@ -856,6 +865,26 @@ antlrcpp::Any PrettifyFileProcessor::visitFunctionReference(
   return {};
 }
 
+antlrcpp::Any PrettifyFileProcessor::visitFunctionExpression(
+    EscriptGrammar::EscriptParser::FunctionExpressionContext* ctx )
+{
+  addToken( "@", ctx->AT(), FmtToken::SPACE );
+
+  if ( auto params = ctx->functionParameters() )
+    visitFunctionParameters( params );
+
+  addToken( "{", ctx->LBRACE(), linebuilder.openingBracketStyle() );
+
+  ++_currentgroup;
+  size_t curcount = linebuilder.currentTokens().size();
+  visitBlock( ctx->block() );
+  --_currentgroup;
+
+  addToken( "}", ctx->RBRACE(), linebuilder.closingBracketStyle( curcount ) );
+
+  return {};
+}
+
 antlrcpp::Any PrettifyFileProcessor::visitGotoStatement( EscriptParser::GotoStatementContext* ctx )
 {
   addToken( "goto", ctx->GOTO(), FmtToken::SPACE );
@@ -1018,7 +1047,7 @@ antlrcpp::Any PrettifyFileProcessor::visitModuleFunctionParameterList(
   {
     visitModuleFunctionParameter( params[i] );
     if ( i < params.size() - 1 )
-      addToken( ",", ctx->COMMA( i ), linebuilder.delimiterStyle() );
+      addToken( ",", ctx->COMMA( i ), linebuilder.delimiterStyle() | FmtToken::PREFERRED_BREAK );
   }
   return {};
 }
@@ -1050,6 +1079,8 @@ antlrcpp::Any PrettifyFileProcessor::visitPrimary( EscriptParser::PrimaryContext
     return make_identifier( identifier );
   else if ( auto functionReference = ctx->functionReference() )
     return visitFunctionReference( functionReference );
+  else if ( auto functionExpression = ctx->functionExpression() )
+    return visitFunctionExpression( functionExpression );
   else if ( auto explicitArrayInitializer = ctx->explicitArrayInitializer() )
     return visitExplicitArrayInitializer( explicitArrayInitializer );
   else if ( auto explicitStructInitializer = ctx->explicitStructInitializer() )
@@ -1087,7 +1118,7 @@ antlrcpp::Any PrettifyFileProcessor::visitProgramParameterList(
     visitProgramParameter( params[i] );
     // comma is optional here
     if ( i < params.size() - 1 && ctx->COMMA( i ) )
-      addToken( ",", ctx->COMMA( i ), linebuilder.delimiterStyle() );
+      addToken( ",", ctx->COMMA( i ), linebuilder.delimiterStyle() | FmtToken::PREFERRED_BREAK );
   }
   return {};
 }

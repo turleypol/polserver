@@ -180,6 +180,9 @@ public:
   virtual void enterPrimary(EscriptParser::PrimaryContext *ctx) = 0;
   virtual void exitPrimary(EscriptParser::PrimaryContext *ctx) = 0;
 
+  virtual void enterFunctionExpression(EscriptParser::FunctionExpressionContext *ctx) = 0;
+  virtual void exitFunctionExpression(EscriptParser::FunctionExpressionContext *ctx) = 0;
+
   virtual void enterExplicitArrayInitializer(EscriptParser::ExplicitArrayInitializerContext *ctx) = 0;
   virtual void exitExplicitArrayInitializer(EscriptParser::ExplicitArrayInitializerContext *ctx) = 0;
 
@@ -212,6 +215,9 @@ public:
 
   virtual void enterMethodCallSuffix(EscriptParser::MethodCallSuffixContext *ctx) = 0;
   virtual void exitMethodCallSuffix(EscriptParser::MethodCallSuffixContext *ctx) = 0;
+
+  virtual void enterFunctionCallSuffix(EscriptParser::FunctionCallSuffixContext *ctx) = 0;
+  virtual void exitFunctionCallSuffix(EscriptParser::FunctionCallSuffixContext *ctx) = 0;
 
   virtual void enterFunctionCall(EscriptParser::FunctionCallContext *ctx) = 0;
   virtual void exitFunctionCall(EscriptParser::FunctionCallContext *ctx) = 0;

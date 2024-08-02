@@ -248,7 +248,9 @@ functionParameter
     ;
 
 // EXPRESSIONS
-
+//
+// Currently no module functions return a function reference, so no need to
+// support eg. `uo::Foo( bar )( baz )`.
 scopedFunctionCall
     : IDENTIFIER '::' functionCall
     ;
@@ -286,12 +288,17 @@ primary
     | scopedFunctionCall
     | IDENTIFIER
     | functionReference
+    | functionExpression
     | explicitArrayInitializer
     | explicitStructInitializer
     | explicitDictInitializer
     | explicitErrorInitializer
     | bareArrayInitializer
     | interpolatedString
+    ;
+
+functionExpression
+    : AT functionParameters? LBRACE block RBRACE
     ;
 
 explicitArrayInitializer
@@ -327,6 +334,7 @@ expressionSuffix
     : indexingSuffix
     | methodCallSuffix
     | navigationSuffix
+    | functionCallSuffix
     ;
 
 indexingSuffix
@@ -339,6 +347,10 @@ navigationSuffix
 
 methodCallSuffix
     : '.' IDENTIFIER LPAREN expressionList? RPAREN
+    ;
+
+functionCallSuffix
+    : '(' expressionList? ')'
     ;
 
 functionCall

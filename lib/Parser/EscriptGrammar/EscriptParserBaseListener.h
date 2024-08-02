@@ -182,6 +182,9 @@ public:
   virtual void enterPrimary(EscriptParser::PrimaryContext * /*ctx*/) override { }
   virtual void exitPrimary(EscriptParser::PrimaryContext * /*ctx*/) override { }
 
+  virtual void enterFunctionExpression(EscriptParser::FunctionExpressionContext * /*ctx*/) override { }
+  virtual void exitFunctionExpression(EscriptParser::FunctionExpressionContext * /*ctx*/) override { }
+
   virtual void enterExplicitArrayInitializer(EscriptParser::ExplicitArrayInitializerContext * /*ctx*/) override { }
   virtual void exitExplicitArrayInitializer(EscriptParser::ExplicitArrayInitializerContext * /*ctx*/) override { }
 
@@ -214,6 +217,9 @@ public:
 
   virtual void enterMethodCallSuffix(EscriptParser::MethodCallSuffixContext * /*ctx*/) override { }
   virtual void exitMethodCallSuffix(EscriptParser::MethodCallSuffixContext * /*ctx*/) override { }
+
+  virtual void enterFunctionCallSuffix(EscriptParser::FunctionCallSuffixContext * /*ctx*/) override { }
+  virtual void exitFunctionCallSuffix(EscriptParser::FunctionCallSuffixContext * /*ctx*/) override { }
 
   virtual void enterFunctionCall(EscriptParser::FunctionCallContext * /*ctx*/) override { }
   virtual void exitFunctionCall(EscriptParser::FunctionCallContext * /*ctx*/) override { }

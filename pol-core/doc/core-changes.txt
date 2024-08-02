@@ -1,4 +1,30 @@
 -- POL100.2.0 --
+08-02-2024 Kevin:
+    Added: Array script method `find(FunctionObject testFn)`.
+    Added: Array script method `findIndex(FunctionObject testFn)`.
+    Added: Array script method `map(FunctionObject mapFn)`.
+    Added: Array script method `reduce(FunctionObject testFn, [initialValue])`.
+08-01-2024 Kevin:
+    Fixed: Resolved an issue where function expression assignments to locals and captures was mis-targetted.
+    Fixed: Resolved an issue where function expression captures were not being captured by reference.
+07-31-2024 Turley:
+ Improved: EScript ECompile Formatter: formatting of if statements and function parameters
+07-29-2024 Kevin:
+    Added: Compiler support for function expressions via syntax `@(param1, param2, ..., paramN) { ... }`.
+           For example, to get all hidden online players:
+
+            var all_hidden := EnumerateOnlinePlayers()
+              .filter( @( player ) {
+                return player.hidden;
+              });
+
+           See the Racalac Escript Guide for additional details.
+07-28-2024 Kevin:
+    Added: Array script method `filter(FunctionObject testFn)`.
+    Added: The compiler now supports any expression as the callee for a function call,
+           eg: `var func := @FunctionObject; func( 1, 2, 3 )` or `func( 1 )( 2 )( 3 )`.
+           For now, only function references (ie. a variable that holds or a function
+           that returns a `@FunctionObject`) can be called in this manner.
 07-21-2024 Kukkino:
     Fixed: Changing realm will now send full status to player to prevent showing scaled hp/maxhp.
 07-16-2024 Kevin:

@@ -57,6 +57,8 @@ class Double;
 class String;
 class ObjArray;
 
+typedef std::vector<BObjectRef> ValueStackCont;
+
 class BObjectImp : public ref_counted
 {
 public:
@@ -116,6 +118,10 @@ public:
     OTFuncRef = 39,
     OTExportScript = 40,
     OTStorageArea = 41,
+
+    // Used internally only during executor runtime. Can be modified without
+    // breaking compatibility.
+    OTContinuation = 100,
   };
 
 #if INLINE_BOBJECTIMP_CTOR
@@ -817,7 +823,8 @@ class BFunctionRef final : public BObjectImp
   typedef BObjectImp base;
 
 public:
-  BFunctionRef( int progcounter, int param_count, const std::string& scriptname );
+  BFunctionRef( int progcounter, int param_count, const std::string& scriptname,
+                ValueStackCont&& captures );
   BFunctionRef( const BFunctionRef& B );
 
 private:
@@ -827,6 +834,7 @@ public:
   virtual size_t sizeEstimate() const override;
   bool validCall( const int id, Executor& ex, Instruction* inst ) const;
   bool validCall( const char* methodname, Executor& ex, Instruction* inst ) const;
+  size_t numParams() const;
 
 public:  // Class Machinery
   virtual BObjectImp* copy() const override;
@@ -843,6 +851,9 @@ private:
   unsigned int pc_;
   int num_params_;
   std::string script_name_;
+
+public:
+  ValueStackCont captures;
 };
 class BApplicObjType
 {
