@@ -213,13 +213,13 @@ UOExecutorModule::UOExecutorModule( UOExecutor& exec )
       target_options( 0 ),
       registered_for_speech_events( false )
 {
-  INFO_PRINTLN( "{:X}", (void*)this );
+  INFO_PRINTLN( "{}", (void*)this );
   Clib::force_backtrace();
 }
 
 UOExecutorModule::~UOExecutorModule()
 {
-  INFO_PRINTLN( "{:X}", (void*)this );
+  INFO_PRINTLN( "{}", (void*)this );
   auto& uoex = uoexec();
   while ( !reserved_items_.empty() )
   {
