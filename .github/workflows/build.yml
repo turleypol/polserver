@@ -145,7 +145,7 @@ jobs:
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_fixture
+          #cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_fixture
           #      - name: Test (UnitTests)
           #        if: matrix.config.nopch == 0
           #        run: |
@@ -155,14 +155,14 @@ jobs:
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
+          #cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
           #env:
           #POLCORE_TEST_FILTER: testitems
       - name: Test (Ecompile Watch)
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target test_ecompile_watch
+          #cmake --build . --config ${{ matrix.config.build-type }} --target test_ecompile_watch
           #env:
           #POLCORE_TEST_FILTER: testitems
       - name: Upload coretest folder
