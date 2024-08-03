@@ -75,6 +75,7 @@ UOExecutor::~UOExecutor()
 
   pParent = nullptr;
   pChild = nullptr;
+  cleanup();
 }
 
 bool UOExecutor::suspend()
