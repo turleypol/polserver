@@ -39,11 +39,28 @@ PolModule::PolModule( const char* moduleName, Bscript::Executor& iExec )
     : Bscript::ExecutorModule( moduleName, iExec )
 {
   passert_always( exec.type() == Bscript::ExecutorType::POL );
+  try
+  {
+    dynamic_cast<UOExecutor&>( exec );
+  }
+  catch ( ... )
+  {
+    INFO_PRINTLN( "BAD CAST Cobstructor" );
+  }
 }
 
 UOExecutor& PolModule::uoexec()
 {
-  return dynamic_cast<UOExecutor&>( exec );
+  try
+  {
+    return dynamic_cast<UOExecutor&>( exec );
+  }
+  catch ( ... )
+  {
+    INFO_PRINTLN( "BAD CAST" );
+    Clib::force_backtrace();
+  }
+  return static_cast<UOExecutor&>( exec );
 }
 
 bool PolModule::getCharacterOrClientParam( unsigned param, Mobile::Character*& chrptr,
