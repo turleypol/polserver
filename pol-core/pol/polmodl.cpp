@@ -39,7 +39,6 @@ PolModule::PolModule( const char* moduleName, Bscript::Executor& iExec )
     : Bscript::ExecutorModule( moduleName, iExec )
 {
   passert_always( exec.type() == Bscript::ExecutorType::POL );
-  Clib::force_backtrace();
 }
 
 UOExecutor& PolModule::uoexec()
