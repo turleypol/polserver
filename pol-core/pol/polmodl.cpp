@@ -38,7 +38,8 @@ using namespace Module;
 PolModule::PolModule( const char* moduleName, Bscript::Executor& iExec )
     : Bscript::ExecutorModule( moduleName, iExec )
 {
-  passert( exec.type() == Bscript::ExecutorType::POL );
+  passert_always( exec.type() == Bscript::ExecutorType::POL );
+  Clib::force_backtrace();
 }
 
 UOExecutor& PolModule::uoexec()
