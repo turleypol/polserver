@@ -379,7 +379,7 @@ inline BObjectImp::BObjectType BObjectImp::type() const
 }
 
 template <typename T>
-T* impptr_if( BObjectImp* objimp )
+T* impptrIf( BObjectImp* objimp )
 {
   if ( !objimp )
     return nullptr;
@@ -491,7 +491,7 @@ inline const T* BObject::impptr() const
 template <typename T>
 T* BObject::impptr_if()
 {
-  return impptr_if<T>( objimp.get() );
+  return impptrIf<T>( objimp.get() );
 }
 
 template <typename T>
