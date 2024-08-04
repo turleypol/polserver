@@ -2916,7 +2916,7 @@ void Executor::ins_return( const Instruction& /*ins*/ )
     auto* imp = continuation->impptr<BContinuation>()->continueWith( *this, result );
 
     // If the the continuation callback returned a continuation, handle the jump.
-    if ( auto* cont = impptr_if<BContinuation>( imp ) )
+    if ( auto* cont = impptrIf<BContinuation>( imp ) )
     {
       // Do not delete imp, as the ReturnContext created in `ins_jsr_userfunc`
       // takes ownership.
