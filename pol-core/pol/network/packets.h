@@ -262,9 +262,11 @@ public:
   void Write( const std::vector<u16>& x, bool nullterm = true )
   {
     passert_always_r( offset + x.size() * 2 <= SIZE, "pkt " + Clib::hexint( ID ) );
-    passert_always_r( x.size() > 0, "pkt size 0 " + Clib::hexint( ID ) );
-    std::memcpy( &buffer[offset], x.data(), 2 * x.size() );
-    offset += static_cast<u16>( x.size() * 2 );
+    if ( !x.empty() )
+    {
+      std::memcpy( &buffer[offset], x.data(), 2 * x.size() );
+      offset += static_cast<u16>( x.size() * 2 );
+    }
     if ( nullterm )
     {
       passert_always_r( offset + 2 <= SIZE, "pkt " + Clib::hexint( ID ) );
