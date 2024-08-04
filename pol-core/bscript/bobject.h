@@ -378,10 +378,13 @@ inline BObjectImp::BObjectType BObjectImp::type() const
   return type_;
 }
 
-template <typename T>
-struct dependent_false : std::false_type
+namespace
+{
+template <typename T>  // static_assert(false) is not valid, need a typedependent false
+struct always_false : std::false_type
 {
 };
+}  // namespace
 template <typename T>
 T* impptrIf( BObjectImp* objimp )
 {
@@ -406,7 +409,7 @@ T* impptrIf( BObjectImp* objimp )
   impif_e( BObjectImp::OTBoolean, BBoolean );
   impif_e( BObjectImp::OTFuncRef, BFunctionRef );
   impif_e( BObjectImp::OTContinuation, BContinuation );
-  else static_assert( dependent_false<T>::value, "unsupported type" );
+  else static_assert( always_false<T>::value, "unsupported type" );
   return nullptr;
 #undef impif_
 #undef impif_e
