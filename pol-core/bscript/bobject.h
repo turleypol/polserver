@@ -379,6 +379,10 @@ inline BObjectImp::BObjectType BObjectImp::type() const
 }
 
 template <typename T>
+struct dependent_false : std::false_type
+{
+};
+template <typename T>
 T* impptrIf( BObjectImp* objimp )
 {
   if ( !objimp )
@@ -402,9 +406,10 @@ T* impptrIf( BObjectImp* objimp )
   impif_e( BObjectImp::OTBoolean, BBoolean );
   impif_e( BObjectImp::OTFuncRef, BFunctionRef );
   impif_e( BObjectImp::OTContinuation, BContinuation );
-  else static_assert( false, "unsupported type" );
+  else static_assert( dependent_false<T>::value, "unsupported type" );
   return nullptr;
 #undef impif_
+#undef impif_e
 }
 
 class BObject final : public ref_counted
