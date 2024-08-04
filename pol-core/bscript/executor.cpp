@@ -361,11 +361,11 @@ double Executor::paramAsDouble( unsigned param )
 int Executor::paramAsLong( unsigned param )
 {
   BObjectImp* objimp = getParam( param )->impptr();
-  if ( auto* v = impptr_if<BLong>( objimp ) )
+  if ( auto* v = impptrIf<BLong>( objimp ) )
   {
     return v->value();
   }
-  else if ( auto* v = impptr_if<Double>( objimp ) )
+  else if ( auto* v = impptrIf<Double>( objimp ) )
   {
     return static_cast<int>( v->value() );
   }
@@ -584,12 +584,12 @@ bool Executor::getParam( unsigned param, int& value, int minval, int maxval )
 bool Executor::getRealParam( unsigned param, double& value )
 {
   BObjectImp* imp = getParamImp( param );
-  if ( auto* v = impptr_if<Double>( imp ) )
+  if ( auto* v = impptrIf<Double>( imp ) )
   {
     value = v->value();
     return true;
   }
-  else if ( auto* v = impptr_if<BLong>( imp ) )
+  else if ( auto* v = impptrIf<BLong>( imp ) )
   {
     value = v->value();
     return true;
@@ -882,12 +882,12 @@ bool Executor::getParam( unsigned param, signed char& value )
 bool Executor::getParam( unsigned param, bool& value )
 {
   BObjectImp* imp = getParamImp( param );
-  if ( auto* v = impptr_if<BBoolean>( imp ) )
+  if ( auto* v = impptrIf<BBoolean>( imp ) )
   {
     value = v->value();
     return true;
   }
-  else if ( auto* v = impptr_if<BLong>( imp ) )
+  else if ( auto* v = impptrIf<BLong>( imp ) )
   {
     value = v->isTrue();
     return true;
@@ -1285,11 +1285,11 @@ void Executor::ins_nextfor( const Instruction& ins )
   BObjectImp* itr = ( *Locals2 )[locsize - 2]->impptr();
   BObjectImp* end = ( *Locals2 )[locsize - 1]->impptr();
 
-  if ( auto* v = impptr_if<BLong>( itr ) )
+  if ( auto* v = impptrIf<BLong>( itr ) )
   {
     v->increment();
   }
-  else if ( auto* v = impptr_if<Double>( itr ) )
+  else if ( auto* v = impptrIf<Double>( itr ) )
   {
     v->increment();
   }
@@ -2653,7 +2653,7 @@ void Executor::ins_call_method_id( const Instruction& ins )
 #endif
     BObjectImp* imp = ValueStack.back()->impptr()->call_method_id( ins.token.lval, *this );
 
-    if ( ( continuation = impptr_if<BContinuation>( imp ) ) )
+    if ( ( continuation = impptrIf<BContinuation>( imp ) ) )
     {
       cleanParams();
       nparams = static_cast<unsigned int>( continuation->numParams() );
@@ -2705,7 +2705,7 @@ void Executor::ins_call_method( const Instruction& ins )
   unsigned nparams = ins.token.lval;
   getParams( nparams );
 
-  if ( auto* funcr = ValueStack.back()->impptr_if<BFunctionRef>() )
+  if ( auto* funcr = ValueStack.back()->impptr_if<const BFunctionRef>() )
   {
     Instruction jmp;
     if ( funcr->validCall( ins.token.tokval(), *this, &jmp ) )

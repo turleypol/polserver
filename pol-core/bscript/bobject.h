@@ -383,12 +383,12 @@ T* impptrIf( BObjectImp* objimp )
 {
   if ( !objimp )
     return nullptr;
-#define impif_( ot, type )                 \
-  if constexpr ( std::is_same_v<T, type> ) \
+#define impif_( ot, type )                                      \
+  if constexpr ( std::is_same_v<std::remove_const_t<T>, type> ) \
   return objimp->isa( ot ) ? static_cast<T*>( objimp ) : nullptr
-#define impif_e( ot, type )                                              \
-  else if constexpr ( std::is_same_v<T, type> ) return objimp->isa( ot ) \
-      ? static_cast<T*>( objimp )                                        \
+#define impif_e( ot, type )                                                                   \
+  else if constexpr ( std::is_same_v<std::remove_const_t<T>, type> ) return objimp->isa( ot ) \
+      ? static_cast<T*>( objimp )                                                             \
       : nullptr
 
   impif_( BObjectImp::OTUninit, UninitObject );
@@ -402,7 +402,7 @@ T* impptrIf( BObjectImp* objimp )
   impif_e( BObjectImp::OTBoolean, BBoolean );
   impif_e( BObjectImp::OTFuncRef, BFunctionRef );
   impif_e( BObjectImp::OTContinuation, BContinuation );
-  else static_assert( false, typeid( T ).name() );
+  else static_assert( false, "unsupported type" );
   return nullptr;
 #undef impif_
 }
