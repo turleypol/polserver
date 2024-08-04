@@ -615,8 +615,9 @@ void handle_se_object_list( Client* client, PKTBI_D6_IN* msgin )
   }
 }
 
-void handle_ef_seed( Client* client, PKTIN_EF* msg )
+void handle_ef_seed( Client* client, void* /*PKTIN_EF**/ vmsg )
 {
+  auto* msg = reinterpret_cast<PKTIN_EF*>( vmsg );
   VersionDetailStruct detail;
   detail.major = cfBEu32( msg->ver_Major );
   detail.minor = cfBEu32( msg->ver_Minor );

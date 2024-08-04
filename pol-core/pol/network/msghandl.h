@@ -140,7 +140,7 @@ void handle_msg_BB( Network::Client* client, PKTBI_BB* msg );
 void handle_unknown_C4( Network::Client* client, PKTOUT_C4* msg );
 void handle_update_range_change( Network::Client* client, PKTBI_C8* msg );
 void handle_allnames( Network::Client* client, PKTBI_98_IN* msg );
-void handle_ef_seed( Network::Client* client, PKTIN_EF* msg );
+void handle_ef_seed( Network::Client* client, void* /*PKTIN_EF**/ msg );
 void handle_e1_clienttype( Network::Client* client, PKTIN_E1* msg );
 void handle_walk( Network::Client* client, PKTIN_02* msg02 );
 void char_select( Network::Client* client, PKTIN_5D* msg );

@@ -753,10 +753,7 @@ void Client::handle_msg( unsigned char* pktbuffer, int pktlen )
   {
     INFO_PRINTLN_TRACE( 10 )( "Client#{}: message {:#x}", instance_, msgtype );
 
-    // TODO: use PacketRegistry::handle_msg(...) ?
-    MSG_HANDLER packetHandler = Network::PacketRegistry::find_handler( msgtype, this );
-    passert( packetHandler.msglen != 0 );
-    packetHandler.func( this, pktbuffer );
+    Network::PacketRegistry::handle_msg( msgtype, this, pktbuffer );
     Core::restart_all_clients();
   }
   catch ( std::exception& ex )
