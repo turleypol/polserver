@@ -402,7 +402,7 @@ T* impptrIf( BObjectImp* objimp )
   impif_e( BObjectImp::OTBoolean, BBoolean );
   impif_e( BObjectImp::OTFuncRef, BFunctionRef );
   impif_e( BObjectImp::OTContinuation, BContinuation );
-  else static_assert( false, "unhandled type" );
+  else static_assert( false, typeid( T ).name() );
   return nullptr;
 #undef impif_
 }
