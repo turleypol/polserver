@@ -23,7 +23,6 @@
 
 #include <fmt/ostream.h>
 
-
 #include "../clib/fixalloc.h"
 #include "../clib/passert.h"
 #include "../clib/rawtypes.h"
@@ -36,6 +35,7 @@
 
 #include <iosfwd>
 #include <stack>
+#include <type_traits>
 #include <vector>
 
 namespace Pol
@@ -56,6 +56,13 @@ class BLong;
 class Double;
 class String;
 class ObjArray;
+class UninitObject;
+class BError;
+class BStruct;
+class BDictionary;
+class BBoolean;
+class BFunctionRef;
+class BContinuation;
 
 typedef std::vector<BObjectRef> ValueStackCont;
 
@@ -371,6 +378,35 @@ inline BObjectImp::BObjectType BObjectImp::type() const
   return type_;
 }
 
+template <typename T>
+T* impptr_if( BObjectImp* objimp )
+{
+  if ( !objimp )
+    return nullptr;
+#define impif_( ot, type )                 \
+  if constexpr ( std::is_same_v<T, type> ) \
+  return objimp->isa( ot ) ? static_cast<T*>( objimp ) : nullptr
+#define impif_e( ot, type )                                              \
+  else if constexpr ( std::is_same_v<T, type> ) return objimp->isa( ot ) \
+      ? static_cast<T*>( objimp )                                        \
+      : nullptr
+
+  impif_( BObjectImp::OTUninit, UninitObject );
+  impif_e( BObjectImp::OTString, String );
+  impif_e( BObjectImp::OTLong, BLong );
+  impif_e( BObjectImp::OTDouble, Double );
+  impif_e( BObjectImp::OTArray, ObjArray );
+  impif_e( BObjectImp::OTError, BError );
+  impif_e( BObjectImp::OTDictionary, BDictionary );
+  impif_e( BObjectImp::OTStruct, BStruct );
+  impif_e( BObjectImp::OTBoolean, BBoolean );
+  impif_e( BObjectImp::OTFuncRef, BFunctionRef );
+  impif_e( BObjectImp::OTContinuation, BContinuation );
+  else static_assert( false, "unhandled type" );
+  return nullptr;
+#undef impif_
+}
+
 class BObject final : public ref_counted
 {
 public:
@@ -398,7 +434,6 @@ public:
 
   bool isa( BObjectImp::BObjectType type ) const;
 
-  //   friend StreamWriter& operator << (StreamWriter&, const BObject& );
   friend std::ostream& operator<<( std::ostream&, const BObject& );
   void printOn( std::ostream& ) const;
 
@@ -406,8 +441,13 @@ public:
   T* impptr();
   template <typename T = BObjectImp>
   const T* impptr() const;
-  BObjectImp& impref();
-  const BObjectImp& impref() const;
+  template <typename T>
+  T* impptr_if();  // also als freestanding function available
+
+  template <typename T = BObjectImp>
+  T& impref();
+  template <typename T = BObjectImp>
+  const T& impref() const;
 
   void setimp( BObjectImp* imp );
 
@@ -448,13 +488,21 @@ inline const T* BObject::impptr() const
   return static_cast<T*>( objimp.get() );
 }
 
-inline BObjectImp& BObject::impref()
+template <typename T>
+T* BObject::impptr_if()
 {
-  return *objimp;
+  return impptr_if<T>( objimp.get() );
 }
-inline const BObjectImp& BObject::impref() const
+
+template <typename T>
+inline T& BObject::impref()
 {
-  return *objimp;
+  return static_cast<T&>( *objimp );
+}
+template <typename T>
+inline const T& BObject::impref() const
+{
+  return static_cast<T&>( *objimp );
 }
 inline void BObject::setimp( BObjectImp* imp )
 {

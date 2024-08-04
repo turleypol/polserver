@@ -361,13 +361,13 @@ double Executor::paramAsDouble( unsigned param )
 int Executor::paramAsLong( unsigned param )
 {
   BObjectImp* objimp = getParam( param )->impptr();
-  if ( objimp->isa( BObjectImp::OTLong ) )
+  if ( auto* v = impptr_if<BLong>( objimp ) )
   {
-    return ( (BLong*)objimp )->value();
+    return v->value();
   }
-  else if ( objimp->isa( BObjectImp::OTDouble ) )
+  else if ( auto* v = impptr_if<Double>( objimp ) )
   {
-    return static_cast<int>( ( (Double*)objimp )->value() );
+    return static_cast<int>( v->value() );
   }
   else
   {
@@ -584,14 +584,14 @@ bool Executor::getParam( unsigned param, int& value, int minval, int maxval )
 bool Executor::getRealParam( unsigned param, double& value )
 {
   BObjectImp* imp = getParamImp( param );
-  if ( imp->isa( BObjectImp::OTDouble ) )
+  if ( auto* v = impptr_if<Double>( imp ) )
   {
-    value = static_cast<Double*>( imp )->value();
+    value = v->value();
     return true;
   }
-  else if ( imp->isa( BObjectImp::OTLong ) )
+  else if ( auto* v = impptr_if<BLong>( imp ) )
   {
-    value = static_cast<BLong*>( imp )->value();
+    value = v->value();
     return true;
   }
   else
@@ -882,14 +882,14 @@ bool Executor::getParam( unsigned param, signed char& value )
 bool Executor::getParam( unsigned param, bool& value )
 {
   BObjectImp* imp = getParamImp( param );
-  if ( imp->isa( BObjectImp::OTBoolean ) )
+  if ( auto* v = impptr_if<BBoolean>( imp ) )
   {
-    value = static_cast<BBoolean*>( imp )->value();
+    value = v->value();
     return true;
   }
-  else if ( imp->isa( BObjectImp::OTLong ) )
+  else if ( auto* v = impptr_if<BLong>( imp ) )
   {
-    value = static_cast<BLong*>( imp )->isTrue();
+    value = v->isTrue();
     return true;
   }
   else
@@ -1285,15 +1285,13 @@ void Executor::ins_nextfor( const Instruction& ins )
   BObjectImp* itr = ( *Locals2 )[locsize - 2]->impptr();
   BObjectImp* end = ( *Locals2 )[locsize - 1]->impptr();
 
-  if ( itr->isa( BObjectImp::OTLong ) )
+  if ( auto* v = impptr_if<BLong>( itr ) )
   {
-    BLong* blong = static_cast<BLong*>( itr );
-    blong->increment();
+    v->increment();
   }
-  else if ( itr->isa( BObjectImp::OTDouble ) )
+  else if ( auto* v = impptr_if<Double>( itr ) )
   {
-    Double* dbl = static_cast<Double*>( itr );
-    dbl->increment();
+    v->increment();
   }
 
   if ( *end >= *itr )
@@ -2655,10 +2653,8 @@ void Executor::ins_call_method_id( const Instruction& ins )
 #endif
     BObjectImp* imp = ValueStack.back()->impptr()->call_method_id( ins.token.lval, *this );
 
-    if ( imp && imp->isa( BObjectImp::OTContinuation ) )
+    if ( ( continuation = impptr_if<BContinuation>( imp ) ) )
     {
-      continuation = static_cast<BContinuation*>( imp );
-
       cleanParams();
       nparams = static_cast<unsigned int>( continuation->numParams() );
 
@@ -2709,10 +2705,8 @@ void Executor::ins_call_method( const Instruction& ins )
   unsigned nparams = ins.token.lval;
   getParams( nparams );
 
-  if ( ValueStack.back()->isa( BObjectImp::OTFuncRef ) )
+  if ( auto* funcr = ValueStack.back()->impptr_if<BFunctionRef>() )
   {
-    BObjectRef objref = ValueStack.back();
-    auto funcr = objref->impptr<BFunctionRef>();
     Instruction jmp;
     if ( funcr->validCall( ins.token.tokval(), *this, &jmp ) )
     {
@@ -2922,11 +2916,10 @@ void Executor::ins_return( const Instruction& /*ins*/ )
     auto* imp = continuation->impptr<BContinuation>()->continueWith( *this, result );
 
     // If the the continuation callback returned a continuation, handle the jump.
-    if ( imp && imp->isa( BObjectImp::OTContinuation ) )
+    if ( auto* cont = impptr_if<BContinuation>( imp ) )
     {
       // Do not delete imp, as the ReturnContext created in `ins_jsr_userfunc`
       // takes ownership.
-      auto cont = static_cast<BContinuation*>( imp );
 
       BObjectRef objref = ValueStack.back();
       auto funcr = objref->impptr<BFunctionRef>();
