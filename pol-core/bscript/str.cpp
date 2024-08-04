@@ -825,7 +825,7 @@ bool try_to_format( std::stringstream& to_stream, BObjectImp* what, std::string&
 
   if ( frmt.find( 'b' ) != std::string::npos )
   {
-    if ( auto* plong = impptr_if<BLong>( what ) )
+    if ( auto* plong = impptrIf<BLong>( what ) )
     {
       int n = plong->value();
       if ( frmt.find( '#' ) != std::string::npos )
@@ -840,7 +840,7 @@ bool try_to_format( std::stringstream& to_stream, BObjectImp* what, std::string&
   }
   else if ( frmt.find( 'x' ) != std::string::npos )
   {
-    if ( auto* plong = impptr_if<BLong>( what ) )
+    if ( auto* plong = impptrIf<BLong>( what ) )
     {
       int n = plong->value();
       if ( frmt.find( '#' ) != std::string::npos )
@@ -855,7 +855,7 @@ bool try_to_format( std::stringstream& to_stream, BObjectImp* what, std::string&
   }
   else if ( frmt.find( 'o' ) != std::string::npos )
   {
-    if ( auto* plong = impptr_if<BLong>( what ) )
+    if ( auto* plong = impptrIf<BLong>( what ) )
     {
       int n = plong->value();
       if ( frmt.find( '#' ) != std::string::npos )
@@ -871,9 +871,9 @@ bool try_to_format( std::stringstream& to_stream, BObjectImp* what, std::string&
   else if ( frmt.find( 'd' ) != std::string::npos )
   {
     int n;
-    if ( auto* plong = impptr_if<BLong>( what ) )
+    if ( auto* plong = impptrIf<BLong>( what ) )
       n = plong->value();
-    else if ( auto* pdbl = impptr_if<Double>( what ) )
+    else if ( auto* pdbl = impptrIf<Double>( what ) )
       n = (int)pdbl->value();
     else
     {
