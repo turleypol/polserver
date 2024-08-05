@@ -878,12 +878,12 @@ bool Executor::getParam( unsigned param, signed char& value )
 bool Executor::getParam( unsigned param, bool& value )
 {
   BObjectImp* imp = getParamImp( param );
-  if ( auto* v = impptrIf<BBoolean>() )
+  if ( auto* v = impptrIf<BBoolean>( imp ) )
   {
     value = v->value();
     return true;
   }
-  else if ( auto* v = impptrIf<BLong>() )
+  else if ( auto* v = impptrIf<BLong>( imp ) )
   {
     value = v->isTrue();
     return true;
@@ -1279,9 +1279,9 @@ void Executor::ins_nextfor( const Instruction& ins )
   BObjectImp* itr = ( *Locals2 )[locsize - 2]->impptr();
   BObjectImp* end = ( *Locals2 )[locsize - 1]->impptr();
 
-  if ( auto* v = impptrIf<BLong>() )
+  if ( auto* v = impptrIf<BLong>( itr ) )
     v->increment();
-  else if ( auto* v = impptrIf<Double>() )
+  else if ( auto* v = impptrIf<Double>( itr ) )
     v->increment();
 
   if ( *end >= *itr )
@@ -1479,13 +1479,13 @@ void Executor::ins_casejmp( const Instruction& ins )
 {
   BObjectRef& objref = ValueStack.back();
   BObjectImp* objimp = objref->impptr();
-  if ( auto* v = impptrIf<BLong>() )
+  if ( auto* v = impptrIf<BLong>( objimp ) )
     PC = ins_casejmp_findlong( ins.token, v );
-  else if ( auto* v = impptrIf<String>() )
+  else if ( auto* v = impptrIf<String>( objimp ) )
     PC = ins_casejmp_findstring( ins.token, v );
-  else if ( auto* v = impptrIf<BBoolean>() )
+  else if ( auto* v = impptrIf<BBoolean>( objimp ) )
     PC = ins_casejmp_findbool( ins.token, v );
-  else if ( impptrIf<UninitObject>() )
+  else if ( impptrIf<UninitObject>( objimp ) )
     PC = ins_casejmp_finduninit( ins.token );
   else
     PC = ins_casejmp_finddefault( ins.token );
