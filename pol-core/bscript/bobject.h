@@ -390,15 +390,14 @@ T* impptrIf( BObjectImp* objimp )
 {
   if ( !objimp )
     return nullptr;
-#define impif_( ot, type )                                      \
-  if constexpr ( std::is_same_v<std::remove_const_t<T>, type> ) \
-  return objimp->isa( ot ) ? static_cast<T*>( objimp ) : nullptr
-#define impif_e( ot, type )                                                                   \
-  else if constexpr ( std::is_same_v<std::remove_const_t<T>, type> ) return objimp->isa( ot ) \
-      ? static_cast<T*>( objimp )                                                             \
-      : nullptr
+#define impif_test( type ) std::is_same_v<std::remove_const_t<T>, type>
+#define impif_return ( ot, type ) return objimp->isa( ot ) ? static_cast<T*>( objimp ) : nullptr
+#define impif_i( ot, type )           \
+  if constexpr ( impif_test( type ) ) \
+  impif_return( ot, type )
+#define impif_e( ot, type ) else if constexpr ( impif_test( type ) ) impif_return( ot, type )
 
-  impif_( BObjectImp::OTUninit, UninitObject );
+  impif_i( BObjectImp::OTUninit, UninitObject );
   impif_e( BObjectImp::OTString, String );
   impif_e( BObjectImp::OTLong, BLong );
   impif_e( BObjectImp::OTDouble, Double );
@@ -411,8 +410,10 @@ T* impptrIf( BObjectImp* objimp )
   impif_e( BObjectImp::OTContinuation, BContinuation );
   else static_assert( always_false<T>::value, "unsupported type" );
   return nullptr;
-#undef impif_
+#undef impif_i
 #undef impif_e
+#undef impif_return
+#undef impif_test
 }
 
 class BObject final : public ref_counted
