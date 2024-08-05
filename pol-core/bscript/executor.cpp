@@ -343,7 +343,7 @@ int Executor::makeDouble( unsigned param )
     return -1;
   if ( obj->isa( BObjectImp::OTDouble ) )
     return 0;
-
+  // TODO WTF? we cast to double when its not double?
   fparams[param].set( new BObject( new Double( static_cast<Double&>( obj->impref() ) ) ) );
 
   return 0;
@@ -878,14 +878,14 @@ bool Executor::getParam( unsigned param, signed char& value )
 bool Executor::getParam( unsigned param, bool& value )
 {
   BObjectImp* imp = getParamImp( param );
-  if ( imp->isa( BObjectImp::OTBoolean ) )
+  if ( auto* v = impptrIf<BBoolean>() )
   {
-    value = static_cast<BBoolean*>( imp )->value();
+    value = v->value();
     return true;
   }
-  else if ( imp->isa( BObjectImp::OTLong ) )
+  else if ( auto* v = impptrIf<BLong>() )
   {
-    value = static_cast<BLong*>( imp )->isTrue();
+    value = v->isTrue();
     return true;
   }
   else
@@ -1111,7 +1111,7 @@ BObjectRef Executor::addmember( BObject& left, const BObject& right )
     return BObjectRef( left.clone() );
   }
 
-  const String& varname = static_cast<const String&>( right.impref() );
+  const String& varname = right.impref<const String>();
 
   return left.impref().operDotPlus( varname.data() );
 }
@@ -1123,7 +1123,7 @@ BObjectRef Executor::removemember( BObject& left, const BObject& right )
     return BObjectRef( left.clone() );
   }
 
-  const String& varname = static_cast<const String&>( right.impref() );
+  const String& varname = right.impref<const String>();
 
   return left.impref().operDotMinus( varname.data() );
 }
@@ -1135,7 +1135,7 @@ BObjectRef Executor::checkmember( BObject& left, const BObject& right )
     return BObjectRef( left.clone() );
   }
 
-  const String& varname = static_cast<const String&>( right.impref() );
+  const String& varname = right.impref<const String>();
 
   return left.impref().operDotQMark( varname.data() );
 }
@@ -1276,21 +1276,13 @@ void Executor::ins_initfor( const Instruction& ins )
 void Executor::ins_nextfor( const Instruction& ins )
 {
   size_t locsize = Locals2->size();
-
-
   BObjectImp* itr = ( *Locals2 )[locsize - 2]->impptr();
   BObjectImp* end = ( *Locals2 )[locsize - 1]->impptr();
 
-  if ( itr->isa( BObjectImp::OTLong ) )
-  {
-    BLong* blong = static_cast<BLong*>( itr );
-    blong->increment();
-  }
-  else if ( itr->isa( BObjectImp::OTDouble ) )
-  {
-    Double* dbl = static_cast<Double*>( itr );
-    dbl->increment();
-  }
+  if ( auto* v = impptrIf<BLong>() )
+    v->increment();
+  else if ( auto* v = impptrIf<Double>() )
+    v->increment();
 
   if ( *end >= *itr )
   {
@@ -1487,26 +1479,16 @@ void Executor::ins_casejmp( const Instruction& ins )
 {
   BObjectRef& objref = ValueStack.back();
   BObjectImp* objimp = objref->impptr();
-  if ( objimp->isa( BObjectImp::OTLong ) )
-  {
-    PC = ins_casejmp_findlong( ins.token, static_cast<BLong*>( objimp ) );
-  }
-  else if ( objimp->isa( BObjectImp::OTString ) )
-  {
-    PC = ins_casejmp_findstring( ins.token, static_cast<String*>( objimp ) );
-  }
-  else if ( objimp->isa( BObjectImp::OTBoolean ) )
-  {
-    PC = ins_casejmp_findbool( ins.token, static_cast<BBoolean*>( objimp ) );
-  }
-  else if ( objimp->isa( BObjectImp::OTUninit ) )
-  {
+  if ( auto* v = impptrIf<BLong>() )
+    PC = ins_casejmp_findlong( ins.token, v );
+  else if ( auto* v = impptrIf<String>() )
+    PC = ins_casejmp_findstring( ins.token, v );
+  else if ( auto* v = impptrIf<BBoolean>() )
+    PC = ins_casejmp_findbool( ins.token, v );
+  else if ( impptrIf<UninitObject>() )
     PC = ins_casejmp_finduninit( ins.token );
-  }
   else
-  {
     PC = ins_casejmp_finddefault( ins.token );
-  }
   ValueStack.pop_back();
 }
 
@@ -2638,10 +2620,8 @@ void Executor::ins_call_method_id( const Instruction& ins )
 #endif
     BObjectImp* imp = ValueStack.back()->impptr()->call_method_id( ins.token.lval, *this );
 
-    if ( imp && imp->isa( BObjectImp::OTContinuation ) )
+    if ( ( continuation = impptrIf<BContinuation>( imp ) ) )
     {
-      continuation = static_cast<BContinuation*>( imp );
-
       // Set nparams, so the next loop iteration's `getParams` will know how many arguments to
       // move.
       nparams = static_cast<unsigned int>( continuation->args.size() );
@@ -2913,11 +2893,10 @@ void Executor::ins_return( const Instruction& /*ins*/ )
     auto* imp = continuation->impptr<BContinuation>()->continueWith( *this, result );
 
     // If the the continuation callback returned a continuation, handle the jump.
-    if ( imp && imp->isa( BObjectImp::OTContinuation ) )
+    if ( auto* cont = impptrIf<BContinuation>( imp ) )
     {
       // Do not delete imp, as the ReturnContext created in `ins_jsr_userfunc`
       // takes ownership.
-      auto cont = static_cast<BContinuation*>( imp );
 
       // Add function reference to stack
       ValueStack.push_back( BObjectRef( new BObject( cont->func() ) ) );
