@@ -361,13 +361,13 @@ double Executor::paramAsDouble( unsigned param )
 int Executor::paramAsLong( unsigned param )
 {
   BObjectImp* objimp = getParam( param )->impptr();
-  if ( auto* v = impptrIf<BLong>( objimp ) )
+  if ( objimp->isa( BObjectImp::OTLong ) )
   {
-    return v->value();
+    return ( (BLong*)objimp )->value();
   }
-  else if ( auto* v = impptrIf<Double>( objimp ) )
+  else if ( objimp->isa( BObjectImp::OTDouble ) )
   {
-    return static_cast<int>( v->value() );
+    return static_cast<int>( ( (Double*)objimp )->value() );
   }
   else
   {
@@ -584,14 +584,14 @@ bool Executor::getParam( unsigned param, int& value, int minval, int maxval )
 bool Executor::getRealParam( unsigned param, double& value )
 {
   BObjectImp* imp = getParamImp( param );
-  if ( auto* v = impptrIf<Double>( imp ) )
+  if ( imp->isa( BObjectImp::OTDouble ) )
   {
-    value = v->value();
+    value = static_cast<Double*>( imp )->value();
     return true;
   }
-  else if ( auto* v = impptrIf<BLong>( imp ) )
+  else if ( imp->isa( BObjectImp::OTLong ) )
   {
-    value = v->value();
+    value = static_cast<BLong*>( imp )->value();
     return true;
   }
   else
@@ -882,14 +882,14 @@ bool Executor::getParam( unsigned param, signed char& value )
 bool Executor::getParam( unsigned param, bool& value )
 {
   BObjectImp* imp = getParamImp( param );
-  if ( auto* v = impptrIf<BBoolean>( imp ) )
+  if ( imp->isa( BObjectImp::OTBoolean ) )
   {
-    value = v->value();
+    value = static_cast<BBoolean*>( imp )->value();
     return true;
   }
-  else if ( auto* v = impptrIf<BLong>( imp ) )
+  else if ( imp->isa( BObjectImp::OTLong ) )
   {
-    value = v->isTrue();
+    value = static_cast<BLong*>( imp )->isTrue();
     return true;
   }
   else
@@ -1285,13 +1285,15 @@ void Executor::ins_nextfor( const Instruction& ins )
   BObjectImp* itr = ( *Locals2 )[locsize - 2]->impptr();
   BObjectImp* end = ( *Locals2 )[locsize - 1]->impptr();
 
-  if ( auto* v = impptrIf<BLong>( itr ) )
+  if ( itr->isa( BObjectImp::OTLong ) )
   {
-    v->increment();
+    BLong* blong = static_cast<BLong*>( itr );
+    blong->increment();
   }
-  else if ( auto* v = impptrIf<Double>( itr ) )
+  else if ( itr->isa( BObjectImp::OTDouble ) )
   {
-    v->increment();
+    Double* dbl = static_cast<Double*>( itr );
+    dbl->increment();
   }
 
   if ( *end >= *itr )
@@ -2620,20 +2622,7 @@ void Executor::ins_call_method_id( const Instruction& ins )
       Instruction jmp;
       if ( funcr->validCall( continuation ? MTH_CALL : ins.token.lval, *this, &jmp ) )
       {
-        // params need to be on the stack, without current objectref
-        ValueStack.pop_back();
-
-        // Push captured parameters onto the stack prior to function parameters.
-        for ( auto& p : funcr->captures )
-          ValueStack.push_back( p );
-
-        for ( auto& p : fparams )
-          ValueStack.push_back( p );
-        // jump to function
-        ins_jsr_userfunc( jmp, continuation );
-        fparams.clear();
-        // switch to new block
-        ins_makelocal( jmp );
+        call_function_reference( funcr, continuation, jmp );
         return;
       }
     }
@@ -2653,12 +2642,30 @@ void Executor::ins_call_method_id( const Instruction& ins )
 #endif
     BObjectImp* imp = ValueStack.back()->impptr()->call_method_id( ins.token.lval, *this );
 
-    if ( ( continuation = impptrIf<BContinuation>( imp ) ) )
+    if ( imp && imp->isa( BObjectImp::OTContinuation ) )
     {
-      cleanParams();
-      nparams = static_cast<unsigned int>( continuation->numParams() );
+      continuation = static_cast<BContinuation*>( imp );
 
-      printStack( "Prior to funcref.call()" );
+      // Set nparams, so the next loop iteration's `getParams` will know how many arguments to
+      // move.
+      nparams = static_cast<unsigned int>( continuation->args.size() );
+
+      // Add function reference to stack
+      ValueStack.push_back( BObjectRef( continuation->func() ) );
+
+      // Move all arguments to the value stack
+      ValueStack.insert( ValueStack.end(), std::make_move_iterator( continuation->args.begin() ),
+                         std::make_move_iterator( continuation->args.end() ) );
+
+      continuation->args.clear();
+
+      cleanParams();
+
+      printStack( fmt::format(
+          "call_method_id continuation arguments added to ValueStack, prior to getParams({}) and "
+          "funcref.call()",
+          nparams ) );
+
       // Next on the stack is a `FuncRef` that we need to call. We will continue the loop and handle
       // it.
 
@@ -2705,20 +2712,14 @@ void Executor::ins_call_method( const Instruction& ins )
   unsigned nparams = ins.token.lval;
   getParams( nparams );
 
-  if ( auto* funcr = ValueStack.back()->impptr_if<const BFunctionRef>() )
+  if ( ValueStack.back()->isa( BObjectImp::OTFuncRef ) )
   {
+    BObjectRef objref = ValueStack.back();
+    auto funcr = objref->impptr<BFunctionRef>();
     Instruction jmp;
     if ( funcr->validCall( ins.token.tokval(), *this, &jmp ) )
     {
-      // params need to be on the stack, without current objectref
-      ValueStack.pop_back();
-      for ( auto& p : fparams )
-        ValueStack.push_back( p );
-      // jump to function
-      ins_jsr_userfunc( jmp );
-      fparams.clear();
-      // switch to new block
-      ins_makelocal( jmp );
+      call_function_reference( funcr, nullptr, jmp );
       return;
     }
   }
@@ -2916,25 +2917,30 @@ void Executor::ins_return( const Instruction& /*ins*/ )
     auto* imp = continuation->impptr<BContinuation>()->continueWith( *this, result );
 
     // If the the continuation callback returned a continuation, handle the jump.
-    if ( auto* cont = impptrIf<BContinuation>( imp ) )
+    if ( imp && imp->isa( BObjectImp::OTContinuation ) )
     {
       // Do not delete imp, as the ReturnContext created in `ins_jsr_userfunc`
       // takes ownership.
+      auto cont = static_cast<BContinuation*>( imp );
+
+      // Add function reference to stack
+      ValueStack.push_back( BObjectRef( new BObject( cont->func() ) ) );
+
+      // Move all arguments to the fparams stack
+      fparams.insert( fparams.end(), std::make_move_iterator( cont->args.begin() ),
+                      std::make_move_iterator( cont->args.end() ) );
+
+      cont->args.clear();
+
+      printStack(
+          "continuation callback returned a continuation; continuation args added to fparams" );
 
       BObjectRef objref = ValueStack.back();
       auto funcr = objref->impptr<BFunctionRef>();
       Instruction jmp;
       if ( funcr->validCall( MTH_CALL, *this, &jmp ) )
       {
-        // params need to be on the stack, without current objectref
-        ValueStack.pop_back();
-        for ( auto& p : fparams )
-          ValueStack.push_back( p );
-        // jump to function
-        ins_jsr_userfunc( jmp, cont );
-        fparams.clear();
-        // switch to new block
-        ins_makelocal( jmp );
+        call_function_reference( funcr, cont, jmp );
       }
       else
       {
@@ -3113,12 +3119,18 @@ void Executor::ins_bitwise_not( const Instruction& /*ins*/ )
 // case TOK_FUNCREF:
 void Executor::ins_funcref( const Instruction& ins )
 {
-  ValueStack.push_back( BObjectRef(
-      new BObject( new BFunctionRef( ins.token.lval, ins.token.type, scriptname(), {} ) ) ) );
+  int param_count = ins.token.type & ~0x80;
+  bool variadic = ins.token.type >> 7;
+  ValueStack.push_back( BObjectRef( new BObject(
+      new BFunctionRef( ins.token.lval, param_count, scriptname(), variadic, {} ) ) ) );
 }
 
 void Executor::ins_functor( const Instruction& ins )
 {
+  passert_always( ValueStack.back()->isa( BObjectImp::OTBoolean ) );
+  bool variadic = static_cast<BBoolean*>( ValueStack.back()->impptr() )->value();
+  ValueStack.pop_back();
+
   passert_always( ValueStack.back()->isa( BObjectImp::OTLong ) );
   int parameter_count = ValueStack.back()->impptr<BLong>()->value();
   ValueStack.pop_back();
@@ -3135,7 +3147,8 @@ void Executor::ins_functor( const Instruction& ins )
     capture_count--;
   }
 
-  auto func = new BFunctionRef( PC, parameter_count, scriptname(), std::move( captures ) );
+  auto func =
+      new BFunctionRef( PC, parameter_count, scriptname(), variadic, std::move( captures ) );
 
   ValueStack.push_back( BObjectRef( func ) );
 
@@ -3497,6 +3510,51 @@ void Executor::show_context( std::string& os, unsigned atPC )
   }
 }
 
+void Executor::call_function_reference( BFunctionRef* funcr, BContinuation* continuation,
+                                        const Instruction& jmp )
+{
+  // params need to be on the stack, without current objectref
+  ValueStack.pop_back();
+
+  // Push captured parameters onto the stack prior to function parameters.
+  for ( auto& p : funcr->captures )
+    ValueStack.push_back( p );
+
+  if ( funcr->variadic() )
+  {
+    passert_always( funcr->numParams() > 0 );
+    auto num_nonrest_args = static_cast<unsigned>( funcr->numParams() - 1 );
+
+    auto rest_arg = std::make_unique<ObjArray>();
+
+    for ( size_t i = 0; i < fparams.size(); ++i )
+    {
+      auto& p = fparams[i];
+
+      if ( i < num_nonrest_args )
+      {
+        ValueStack.push_back( p );
+      }
+      else
+      {
+        rest_arg->ref_arr.push_back( p );
+      }
+    }
+    ValueStack.push_back( BObjectRef( rest_arg.release() ) );
+  }
+  else
+  {
+    for ( auto& p : fparams )
+      ValueStack.push_back( p );
+  }
+
+  // jump to function
+  ins_jsr_userfunc( jmp, continuation );
+  fparams.clear();
+  // switch to new block
+  ins_makelocal( jmp );
+}
+
 bool Executor::exec()
 {
   passert( prog_ok_ );
@@ -3852,9 +3910,6 @@ BContinuation* Executor::withContinuation( BContinuation* continuation, BObjectR
 {
   auto* func = continuation->func();
 
-  // Add function reference to stack
-  ValueStack.push_back( BObjectRef( new BObject( func ) ) );
-
   // Add function arguments to value stack. Add arguments if there are not enough.  Remove if
   // there are too many
   while ( func->numParams() > args.size() )
@@ -3862,14 +3917,11 @@ BContinuation* Executor::withContinuation( BContinuation* continuation, BObjectR
     args.push_back( BObjectRef( new BObject( UninitObject::create() ) ) );
   }
 
-  // Resize and erase the state in `args` since it was moved above.
-  args.resize( func->numParams() );
+  // Resize args only for non-varadic functions
+  if ( !func->variadic() )
+    args.resize( func->numParams() );
 
-  // Move all arguments to the fparams stack
-  fparams.insert( fparams.end(), std::make_move_iterator( args.begin() ),
-                  std::make_move_iterator( args.end() ) );
-
-  printStack( "End of withContinuation" );
+  continuation->args = std::move( args );
 
   return continuation;
 }

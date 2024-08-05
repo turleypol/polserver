@@ -409,6 +409,7 @@ T* impptrIf( BObjectImp* objimp )
   impif_e( BObjectImp::OTFuncRef, BFunctionRef );
   impif_e( BObjectImp::OTContinuation, BContinuation );
   else static_assert( always_false<T>::value, "unsupported type" );
+  return nullptr;
 #undef impif_i
 #undef impif_e
 #undef impif_return
@@ -883,7 +884,7 @@ class BFunctionRef final : public BObjectImp
   typedef BObjectImp base;
 
 public:
-  BFunctionRef( int progcounter, int param_count, const std::string& scriptname,
+  BFunctionRef( int progcounter, int param_count, const std::string& scriptname, bool variadic,
                 ValueStackCont&& captures );
   BFunctionRef( const BFunctionRef& B );
 
@@ -895,6 +896,7 @@ public:
   bool validCall( const int id, Executor& ex, Instruction* inst ) const;
   bool validCall( const char* methodname, Executor& ex, Instruction* inst ) const;
   size_t numParams() const;
+  bool variadic() const;
 
 public:  // Class Machinery
   virtual BObjectImp* copy() const override;
@@ -911,6 +913,7 @@ private:
   unsigned int pc_;
   int num_params_;
   std::string script_name_;
+  bool variadic_;
 
 public:
   ValueStackCont captures;
