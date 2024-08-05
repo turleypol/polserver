@@ -354,25 +354,21 @@ double Executor::paramAsDouble( unsigned param )
   makeDouble( param );
   BObjectImp* objimp = getParam( param )->impptr();
 
-  Double* dbl = (Double*)objimp;
-  return dbl ? dbl->value() : 0.0;
+  if ( auto* v = impptrIf<Double>( objimp ) )
+    return v->value();
+  else if ( auto* v = impptrIf<BLong>( objimp ) )
+    return v->value();
+  return 0.0;
 }
 
 int Executor::paramAsLong( unsigned param )
 {
   BObjectImp* objimp = getParam( param )->impptr();
-  if ( objimp->isa( BObjectImp::OTLong ) )
-  {
-    return ( (BLong*)objimp )->value();
-  }
-  else if ( objimp->isa( BObjectImp::OTDouble ) )
-  {
-    return static_cast<int>( ( (Double*)objimp )->value() );
-  }
-  else
-  {
-    return 0;
-  }
+  if ( auto* v = impptrIf<BLong>( objimp ) )
+    return v->value();
+  else if ( auto* v = impptrIf<Double>( objimp ) )
+    return static_cast<int>( v->value() );
+  return 0;
 }
 BObject* Executor::getParam( unsigned param )
 {
@@ -584,14 +580,14 @@ bool Executor::getParam( unsigned param, int& value, int minval, int maxval )
 bool Executor::getRealParam( unsigned param, double& value )
 {
   BObjectImp* imp = getParamImp( param );
-  if ( imp->isa( BObjectImp::OTDouble ) )
+  if ( auto* v = impptrIf<Double>( imp ) )
   {
-    value = static_cast<Double*>( imp )->value();
+    value = v->value();
     return true;
   }
-  else if ( imp->isa( BObjectImp::OTLong ) )
+  else if ( auto* v = impptrIf<BLong>( imp ) )
   {
-    value = static_cast<BLong*>( imp )->value();
+    value = v->value();
     return true;
   }
   else
