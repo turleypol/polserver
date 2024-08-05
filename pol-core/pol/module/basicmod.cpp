@@ -520,25 +520,25 @@ Bscript::BObjectImp* BasicExecutorModule::mf_TypeOfInt()
   return new BLong( imp->typeOfInt() );
 }
 
-picojson::value recurseE2J( BObjectImp* v )
+picojson::value recurseE2J( BObjectImp* value )
 {
-  if ( auto* v = impptrIf<String>( imp ) )
+  if ( auto* v = impptrIf<String>( value ) )
   {
     return picojson::value( v->getStringRep() );
   }
-  else if ( auto* v = impptrIf<BLong>( imp ) )
+  else if ( auto* v = impptrIf<BLong>( value ) )
   {
     return picojson::value( static_cast<double>( v->value() ) );
   }
-  else if ( auto* v = impptrIf<Double>( imp ) )
+  else if ( auto* v = impptrIf<Double>( value ) )
   {
     return picojson::value( v->value() );
   }
-  else if ( auto* v = impptrIf<BBoolean>( imp ) )
+  else if ( auto* v = impptrIf<BBoolean>( value ) )
   {
     return picojson::value( v->value() );
   }
-  else if ( auto* v = impptrIf<ObjArray>( imp ) )
+  else if ( auto* v = impptrIf<ObjArray>( value ) )
   {
     picojson::array jsonArr;
 
@@ -552,7 +552,7 @@ picojson::value recurseE2J( BObjectImp* v )
     }
     return picojson::value( jsonArr );
   }
-  else if ( auto* v = impptrIf<BStruct>( imp ) )
+  else if ( auto* v = impptrIf<BStruct>( value ) )
   {
     picojson::object jsonObj;
     for ( const auto& content : v->contents() )
@@ -562,7 +562,7 @@ picojson::value recurseE2J( BObjectImp* v )
     }
     return picojson::value( jsonObj );
   }
-  else if ( auto* v = impptrIf<BDictionary>( imp ) )
+  else if ( auto* v = impptrIf<BDictionary>( value ) )
   {
     picojson::object jsonObj;
     for ( const auto& content : v->contents() )
