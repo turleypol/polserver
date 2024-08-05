@@ -390,8 +390,8 @@ T* impptrIf( BObjectImp* objimp )
 {
   if ( !objimp )
     return nullptr;
-#define impif_test( type ) std::is_same_v<std::remove_const_t<T>, type>
-#define impif_return ( ot, type ) return objimp->isa( ot ) ? static_cast<T*>( objimp ) : nullptr
+#define impif_test( type_ ) std::is_same_v<std::remove_const_t<T>, type_>
+#define impif_return ( ot_, type ) return objimp->isa( ot_ ) ? static_cast<T*>( objimp ) : nullptr
 #define impif_i( ot, type )           \
   if constexpr ( impif_test( type ) ) \
   impif_return( ot, type )
