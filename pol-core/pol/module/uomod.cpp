@@ -1252,9 +1252,8 @@ void replace_properties( Clib::ConfigElem& elem, BStruct* custom )
 
     if ( name == "CProps" )
     {
-      if ( ref->isa( BObjectImp::OTDictionary ) )
+      if ( auto* cpropdict = impptrIf<BDictionary>( ref ) )
       {
-        BDictionary* cpropdict = static_cast<BDictionary*>( ref );
         const BDictionary::Contents& cprop_cont = cpropdict->contents();
         BDictionary::Contents::const_iterator itr;
         for ( itr = cprop_cont.begin(); itr != cprop_cont.end(); ++itr )
@@ -4219,9 +4218,8 @@ BObjectImp* UOExecutorModule::mf_SetScriptController()
   BObjectImp* param0 = getParamImp( 0 );
   bool handled = false;
 
-  if ( param0->isa( BObjectImp::OTLong ) )
+  if ( auto* lng = impptrIf<BLong>( param0 ) )
   {
-    BLong* lng = static_cast<BLong*>( param0 );
     if ( lng->value() == 0 )
     {
       controller_.clear();
