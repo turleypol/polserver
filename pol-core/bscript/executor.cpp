@@ -343,8 +343,10 @@ int Executor::makeDouble( unsigned param )
     return -1;
   if ( obj->isa( BObjectImp::OTDouble ) )
     return 0;
-  // TODO WTF? we cast to double when its not double?
-  fparams[param].set( new BObject( new Double( static_cast<Double&>( obj->impref() ) ) ) );
+  if ( auto* v = obj->impptr_if<BLong>() )
+    fparams[param].set( new BObject( new Double( v->value() ) ) );
+  else
+    fparams[param].set( new BObject( new Double( 0.0 ) ) );
 
   return 0;
 }
@@ -355,8 +357,6 @@ double Executor::paramAsDouble( unsigned param )
   BObjectImp* objimp = getParam( param )->impptr();
 
   if ( auto* v = impptrIf<Double>( objimp ) )
-    return v->value();
-  else if ( auto* v = impptrIf<BLong>( objimp ) )
     return v->value();
   return 0.0;
 }
