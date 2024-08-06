@@ -354,9 +354,7 @@ int Executor::makeDouble( unsigned param )
 double Executor::paramAsDouble( unsigned param )
 {
   makeDouble( param );
-  BObjectImp* objimp = getParam( param )->impptr();
-
-  if ( auto* v = impptrIf<Double>( objimp ) )
+  if ( auto* v = getParam( param )->impptr_if<Double>() )
     return v->value();
   return 0.0;
 }
