@@ -2642,8 +2642,10 @@ void Executor::ins_call_method_id( const Instruction& ins )
   do
   {
     getParams( nparams );
-    if ( auto* funcr = ValueStack.back()->impptr_if<BFunctionRef>() )
+    if ( ValueStack.back()->isa( BObjectImp::OTFuncRef ) )
     {
+      BObjectRef objref = ValueStack.back();
+      auto funcr = objref->impptr<BFunctionRef>();
       Instruction jmp;
       if ( funcr->validCall( continuation ? MTH_CALL : ins.token.lval, *this, &jmp ) )
       {
