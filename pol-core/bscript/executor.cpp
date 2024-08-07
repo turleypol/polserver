@@ -937,14 +937,14 @@ bool Executor::getUnicodeStringParam( unsigned param, const String*& pstr )
   BObject* obj = getParam( param );
   if ( !obj )
     return false;
-  if ( obj->isa( BObjectImp::OTString ) )
+  if ( auto* s = obj->impptr_if<String>() )
   {
-    pstr = obj->impptr<String>();
+    pstr = s;
     return true;
   }
-  else if ( obj->isa( BObjectImp::OTArray ) )
+  else if ( auto* a = obj->impptr_if<ObjArray>() )
   {
-    String* str = String::fromUCArray( obj->impptr<ObjArray>() );
+    String* str = String::fromUCArray( a );
     fparams[param].set( new BObject( str ) );  // store raw pointer
     pstr = str;
     return true;
