@@ -2512,8 +2512,9 @@ void Executor::ins_insert_into( const Instruction& /*ins*/ )
   BObject& right = *rightref;
   BObject& left = *leftref;
 
-  if ( auto* spread = right.impptr_if<BSpread>() )
+  if ( right->isa( BObjectImp::OTSpread ) )
   {
+    BSpread* spread = right.impptr<BSpread>();
     BObjectRef refIter( new BObject( UninitObject::create() ) );
 
     auto pIter =
