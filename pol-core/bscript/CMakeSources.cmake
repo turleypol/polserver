@@ -142,6 +142,8 @@ set (bscript_sources    # sorted !
   compiler/ast/RepeatUntilLoop.h
   compiler/ast/ReturnStatement.cpp
   compiler/ast/ReturnStatement.h
+  compiler/ast/SpreadElement.cpp
+  compiler/ast/SpreadElement.h
   compiler/ast/Statement.cpp
   compiler/ast/Statement.h
   compiler/ast/StringValue.cpp
@@ -211,6 +213,8 @@ set (bscript_sources    # sorted !
   compiler/codegen/DataEmitter.h
   compiler/codegen/DebugBlockGuard.cpp
   compiler/codegen/DebugBlockGuard.h
+  compiler/codegen/FunctionReferenceRegistrar.cpp
+  compiler/codegen/FunctionReferenceRegistrar.h
   compiler/codegen/InstructionEmitter.cpp
   compiler/codegen/InstructionEmitter.h
   compiler/codegen/InstructionGenerator.cpp
@@ -284,6 +288,8 @@ set (bscript_sources    # sorted !
   compiler/representation/DebugStore.h
   compiler/representation/ExportedFunction.cpp
   compiler/representation/ExportedFunction.h
+  compiler/representation/FunctionReferenceDescriptor.cpp
+  compiler/representation/FunctionReferenceDescriptor.h
   compiler/representation/ModuleDescriptor.cpp
   compiler/representation/ModuleDescriptor.h
   compiler/representation/ModuleFunctionDescriptor.cpp

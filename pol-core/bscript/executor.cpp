@@ -306,7 +306,39 @@ int Executor::getParams( unsigned howMany )
       ValueStack.pop_back();
     }
   }
+  expandParams();
   return 0;
+}
+
+void Executor::expandParams()
+{
+  for ( auto i = static_cast<int>( fparams.size() ) - 1; i >= 0; --i )
+  {
+    if ( auto* spread = impptrIf<BSpread>( fparams[i] ) )
+    {
+      // defer destruction
+      BObjectRef obj( spread );
+
+      // Remove the spread
+      fparams.erase( fparams.begin() + i );
+
+      BObjectRef refIter( new BObject( UninitObject::create() ) );
+
+      auto pIter = std::unique_ptr<ContIterator>(
+          spread->object->impptr()->createIterator( refIter.get() ) );
+
+      BObject* next = pIter->step();
+
+      int added = 0;
+      while ( next != nullptr )
+      {
+        fparams.insert( fparams.begin() + i + added, BObjectRef( next ) );
+        next = pIter->step();
+        added++;
+      }
+      i += added;
+    }
+  }
 }
 
 void Executor::cleanParams()
@@ -362,10 +394,10 @@ double Executor::paramAsDouble( unsigned param )
 int Executor::paramAsLong( unsigned param )
 {
   BObjectImp* objimp = getParam( param )->impptr();
-  if ( auto* v = impptrIf<BLong>( objimp ) )
-    return v->value();
-  else if ( auto* v = impptrIf<Double>( objimp ) )
-    return static_cast<int>( v->value() );
+  if ( auto* l = impptrIf<BLong>( objimp ) )
+    return l->value();
+  else if ( auto* d = impptrIf<Double>( objimp ) )
+    return static_cast<int>( d->value() );
   return 0;
 }
 BObject* Executor::getParam( unsigned param )
@@ -578,14 +610,14 @@ bool Executor::getParam( unsigned param, int& value, int minval, int maxval )
 bool Executor::getRealParam( unsigned param, double& value )
 {
   BObjectImp* imp = getParamImp( param );
-  if ( auto* v = impptrIf<Double>( imp ) )
+  if ( auto* d = impptrIf<Double>( imp ) )
   {
-    value = v->value();
+    value = d->value();
     return true;
   }
-  else if ( auto* v = impptrIf<BLong>( imp ) )
+  else if ( auto* l = impptrIf<BLong>( imp ) )
   {
-    value = v->value();
+    value = l->value();
     return true;
   }
   else
@@ -876,14 +908,14 @@ bool Executor::getParam( unsigned param, signed char& value )
 bool Executor::getParam( unsigned param, bool& value )
 {
   BObjectImp* imp = getParamImp( param );
-  if ( auto* v = impptrIf<BBoolean>( imp ) )
+  if ( auto* b = impptrIf<BBoolean>( imp ) )
   {
-    value = v->value();
+    value = b->value();
     return true;
   }
-  else if ( auto* v = impptrIf<BLong>( imp ) )
+  else if ( auto* l = impptrIf<BLong>( imp ) )
   {
-    value = v->isTrue();
+    value = l->isTrue();
     return true;
   }
   else
@@ -904,14 +936,14 @@ bool Executor::getUnicodeStringParam( unsigned param, const String*& pstr )
   BObject* obj = getParam( param );
   if ( !obj )
     return false;
-  if ( obj->isa( BObjectImp::OTString ) )
+  if ( auto* s = obj->impptr_if<String>() )
   {
-    pstr = obj->impptr<String>();
+    pstr = s;
     return true;
   }
-  else if ( obj->isa( BObjectImp::OTArray ) )
+  else if ( auto* a = obj->impptr_if<ObjArray>() )
   {
-    String* str = String::fromUCArray( obj->impptr<ObjArray>() );
+    String* str = String::fromUCArray( a );
     fparams[param].set( new BObject( str ) );  // store raw pointer
     pstr = str;
     return true;
@@ -1277,10 +1309,10 @@ void Executor::ins_nextfor( const Instruction& ins )
   BObjectImp* itr = ( *Locals2 )[locsize - 2]->impptr();
   BObjectImp* end = ( *Locals2 )[locsize - 1]->impptr();
 
-  if ( auto* v = impptrIf<BLong>( itr ) )
-    v->increment();
-  else if ( auto* v = impptrIf<Double>( itr ) )
-    v->increment();
+  if ( auto* l = impptrIf<BLong>( itr ) )
+    l->increment();
+  else if ( auto* d = impptrIf<Double>( itr ) )
+    d->increment();
 
   if ( *end >= *itr )
   {
@@ -1477,12 +1509,12 @@ void Executor::ins_casejmp( const Instruction& ins )
 {
   BObjectRef& objref = ValueStack.back();
   BObjectImp* objimp = objref->impptr();
-  if ( auto* v = impptrIf<BLong>( objimp ) )
-    PC = ins_casejmp_findlong( ins.token, v );
-  else if ( auto* v = impptrIf<String>( objimp ) )
-    PC = ins_casejmp_findstring( ins.token, v );
-  else if ( auto* v = impptrIf<BBoolean>( objimp ) )
-    PC = ins_casejmp_findbool( ins.token, v );
+  if ( auto* l = impptrIf<BLong>( objimp ) )
+    PC = ins_casejmp_findlong( ins.token, l );
+  else if ( auto* s = impptrIf<String>( objimp ) )
+    PC = ins_casejmp_findstring( ins.token, s );
+  else if ( auto* b = impptrIf<BBoolean>( objimp ) )
+    PC = ins_casejmp_findbool( ins.token, b );
   else if ( impptrIf<UninitObject>( objimp ) )
     PC = ins_casejmp_finduninit( ins.token );
   else
@@ -2479,7 +2511,24 @@ void Executor::ins_insert_into( const Instruction& /*ins*/ )
   BObject& right = *rightref;
   BObject& left = *leftref;
 
-  left.impref().operInsertInto( left, right.impref() );
+  if ( auto* spread = right->impptr_if<BSpread>() )
+  {
+    BObjectRef refIter( new BObject( UninitObject::create() ) );
+
+    auto pIter =
+        std::unique_ptr<ContIterator>( spread->object->impptr()->createIterator( refIter.get() ) );
+
+    BObject* next = pIter->step();
+    while ( next != nullptr )
+    {
+      left.impref().operInsertInto( left, next->impref() );
+      next = pIter->step();
+    }
+  }
+  else
+  {
+    left.impref().operInsertInto( left, right.impref() );
+  }
 }
 
 void Executor::ins_plusequal( const Instruction& /*ins*/ )
@@ -2591,10 +2640,8 @@ void Executor::ins_call_method_id( const Instruction& ins )
   do
   {
     getParams( nparams );
-    if ( ValueStack.back()->isa( BObjectImp::OTFuncRef ) )
+    if ( auto* funcr = ValueStack.back()->impptr_if<BFunctionRef>() )
     {
-      BObjectRef objref = ValueStack.back();
-      auto funcr = objref->impptr<BFunctionRef>();
       Instruction jmp;
       if ( funcr->validCall( continuation ? MTH_CALL : ins.token.lval, *this, &jmp ) )
       {
@@ -2618,8 +2665,9 @@ void Executor::ins_call_method_id( const Instruction& ins )
 #endif
     BObjectImp* imp = ValueStack.back()->impptr()->call_method_id( ins.token.lval, *this );
 
-    if ( ( continuation = impptrIf<BContinuation>( imp ) ) )
+    if ( auto* cont = impptrIf<BContinuation>( imp ) )
     {
+      continuation = cont;
       // Set nparams, so the next loop iteration's `getParams` will know how many arguments to
       // move.
       nparams = static_cast<unsigned int>( continuation->args.size() );
@@ -2686,10 +2734,8 @@ void Executor::ins_call_method( const Instruction& ins )
   unsigned nparams = ins.token.lval;
   getParams( nparams );
 
-  if ( ValueStack.back()->isa( BObjectImp::OTFuncRef ) )
+  if ( auto* funcr = ValueStack.back()->impptr_if<BFunctionRef>() )
   {
-    BObjectRef objref = ValueStack.back();
-    auto funcr = objref->impptr<BFunctionRef>();
     Instruction jmp;
     if ( funcr->validCall( ins.token.tokval(), *this, &jmp ) )
     {
@@ -2956,6 +3002,12 @@ void Executor::ins_struct( const Instruction& /*ins*/ )
 {
   ValueStack.push_back( BObjectRef( new BObject( new BStruct ) ) );
 }
+void Executor::ins_spread( const Instruction& /*ins*/ )
+{
+  auto spread = new BSpread( ValueStack.back() );
+  ValueStack.pop_back();
+  ValueStack.push_back( BObjectRef( new BObject( spread ) ) );
+}
 void Executor::ins_array( const Instruction& /*ins*/ )
 {
   ValueStack.push_back( BObjectRef( new BObject( new ObjArray ) ) );
@@ -3092,25 +3144,22 @@ void Executor::ins_bitwise_not( const Instruction& /*ins*/ )
 // case TOK_FUNCREF:
 void Executor::ins_funcref( const Instruction& ins )
 {
-  int param_count = ins.token.type & ~0x80;
-  bool variadic = ins.token.type >> 7;
-  ValueStack.push_back( BObjectRef( new BObject(
-      new BFunctionRef( ins.token.lval, param_count, scriptname(), variadic, {} ) ) ) );
+  auto funcref_index = static_cast<int>( ins.token.type );
+
+  const auto& ep_funcref = prog_->function_references[funcref_index];
+
+  ValueStack.push_back( BObjectRef(
+      new BObject( new BFunctionRef( ins.token.lval, ep_funcref.parameter_count, scriptname(),
+                                     ep_funcref.is_variadic, {} /* captures */ ) ) ) );
 }
 
 void Executor::ins_functor( const Instruction& ins )
 {
-  passert_always( ValueStack.back()->isa( BObjectImp::OTBoolean ) );
-  bool variadic = static_cast<BBoolean*>( ValueStack.back()->impptr() )->value();
-  ValueStack.pop_back();
+  auto funcref_index = static_cast<int>( ins.token.type );
 
-  passert_always( ValueStack.back()->isa( BObjectImp::OTLong ) );
-  int parameter_count = ValueStack.back()->impptr<BLong>()->value();
-  ValueStack.pop_back();
+  const auto& ep_funcref = prog_->function_references[funcref_index];
 
-  passert_always( ValueStack.back()->isa( BObjectImp::OTLong ) );
-  int capture_count = ValueStack.back()->impptr<BLong>()->value();
-  ValueStack.pop_back();
+  int capture_count = ep_funcref.capture_count;
 
   auto captures = ValueStackCont();
   while ( capture_count > 0 )
@@ -3120,8 +3169,8 @@ void Executor::ins_functor( const Instruction& ins )
     capture_count--;
   }
 
-  auto func =
-      new BFunctionRef( PC, parameter_count, scriptname(), variadic, std::move( captures ) );
+  auto func = new BFunctionRef( PC, ep_funcref.parameter_count, scriptname(),
+                                ep_funcref.is_variadic, std::move( captures ) );
 
   ValueStack.push_back( BObjectRef( func ) );
 
@@ -3165,6 +3214,8 @@ ExecInstrFunc Executor::GetInstrFunc( const Token& token )
     return &Executor::ins_error;
   case TOK_STRUCT:
     return &Executor::ins_struct;
+  case TOK_SPREAD:
+    return &Executor::ins_spread;
   case TOK_ARRAY:
     return &Executor::ins_array;
   case TOK_DICTIONARY:

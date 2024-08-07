@@ -48,6 +48,7 @@
 #include "bscript/compiler/ast/ProgramParameterDeclaration.h"
 #include "bscript/compiler/ast/RepeatUntilLoop.h"
 #include "bscript/compiler/ast/ReturnStatement.h"
+#include "bscript/compiler/ast/SpreadElement.h"
 #include "bscript/compiler/ast/StringValue.h"
 #include "bscript/compiler/ast/StructInitializer.h"
 #include "bscript/compiler/ast/StructMemberInitializer.h"
@@ -409,6 +410,15 @@ void InstructionGenerator::visit_function_call( FunctionCall& call )
         // All children for a non-expression-as-callee FunctionCalls are arguments.
         for ( unsigned i = 0; i < call.children.size(); ++i )
         {
+          bool is_spread = dynamic_cast<SpreadElement*>( call.children[i].get() );
+
+          if ( is_spread && i < num_nonrest_args )
+          {
+            // Should be caught by semantic analyzer
+            call.internal_error( "spread operator used in location before rest arguments" );
+            return;
+          }
+
           // Create the array once we've reached the rest argument.
           if ( i == num_nonrest_args )
           {
@@ -417,9 +427,9 @@ void InstructionGenerator::visit_function_call( FunctionCall& call )
 
           call.children[i]->accept( *this );
 
-          // Add to the array if we're past the non-rest arguments.
           if ( i >= num_nonrest_args )
           {
+            // `ins_insert_into` for arrays will spread BSpread's at runtime.
             emit.array_append();
           }
         }
@@ -432,6 +442,7 @@ void InstructionGenerator::visit_function_call( FunctionCall& call )
       }
       else
       {
+        // Cannot use spread operator in non-variadic function calls.
         visit_children( call );
       }
 
@@ -497,12 +508,7 @@ void InstructionGenerator::visit_function_expression( FunctionExpression& node )
       emit_access_variable( *variable->capturing );
     }
 
-    auto capture_count_index = emit.value<int>();
-
-    emit.value( static_cast<int>( user_function->parameter_count() ) );
-    emit.value( user_function->is_variadic() );
-
-    emit.functor_create();
+    emit.functor_create( *user_function );
     auto index = emitter.next_instruction_address() - 1;
 
     user_function->accept( *this );
@@ -517,7 +523,6 @@ void InstructionGenerator::visit_function_expression( FunctionExpression& node )
     }
 
     emit.patch_offset( index, instrs_count );
-    emit.patch_value( capture_count_index, static_cast<int>( user_function->capture_count() ) );
   }
   else
   {
@@ -531,13 +536,7 @@ void InstructionGenerator::visit_function_reference( FunctionReference& function
   {
     update_debug_location( function_reference );
     FlowControlLabel& label = user_function_labels[uf->name];
-
-    // Since we encode the 'is variadic' as the top bit, 0x7f parameters allowed.
-    if ( uf->parameter_count() >= 0x80 )
-    {
-      function_reference.internal_error( "too many parameters" );
-    }
-    emit.function_reference( uf->parameter_count(), uf->is_variadic(), label );
+    emit.function_reference( *uf, label );
   }
   else
   {
@@ -708,6 +707,13 @@ void InstructionGenerator::visit_return_statement( ReturnStatement& ret )
   {
     emit.progend();
   }
+}
+
+void InstructionGenerator::visit_spread_element( SpreadElement& node )
+{
+  visit_children( node );
+  update_debug_location( node );
+  emit.spread();
 }
 
 void InstructionGenerator::visit_string_value( StringValue& lit )

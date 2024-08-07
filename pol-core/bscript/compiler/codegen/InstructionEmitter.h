@@ -33,6 +33,8 @@ class FlowControlLabel;
 class LocalVariableScopeInfo;
 class ModuleDeclarationRegistrar;
 class ModuleFunctionDeclaration;
+class FunctionReferenceRegistrar;
+class UserFunction;
 class Node;
 class Variable;
 class SourceLocation;
@@ -41,7 +43,8 @@ class InstructionEmitter
 {
 public:
   InstructionEmitter( CodeSection& code, DataSection& data, DebugStore& debug,
-                      ExportedFunctions& exported_functions, ModuleDeclarationRegistrar& );
+                      ExportedFunctions& exported_functions, ModuleDeclarationRegistrar&,
+                      FunctionReferenceRegistrar& );
 
   void initialize_data();
 
@@ -81,8 +84,8 @@ public:
   void exit();
   void foreach_init( FlowControlLabel& );
   void foreach_step( FlowControlLabel& );
-  void function_reference( unsigned parameter_count, bool is_variadic, FlowControlLabel& );
-  void functor_create();
+  void function_reference( const UserFunction&, FlowControlLabel& );
+  void functor_create( const UserFunction& uf );
   void get_arg( const std::string& name );
   void get_member( const std::string& name );
   void get_member_id( MemberID );
@@ -102,6 +105,7 @@ public:
   void set_member_id_consume( MemberID member_id );
   void set_member_consume( const std::string& name );
   void set_member_by_operator( BTokenId, MemberID );
+  void spread();
   void struct_create();
   void struct_add_uninit_member( const std::string& name );
   void struct_add_member( const std::string& name );
@@ -113,9 +117,6 @@ public:
   void value( int );
   void value( bool );
   void value( const std::string& );
-  // Create an empty value. Use patch_value to set the value later.
-  template <typename T>
-  unsigned int value();
   void interpolate_string( unsigned count );
   void format_expression();
 
@@ -126,8 +127,6 @@ public:
                             unsigned last_address );
 
   void patch_offset( unsigned index, unsigned offset );
-  template <typename T>
-  void patch_value( unsigned index, T value );
 
 private:
   unsigned emit_data( const std::string& );
@@ -140,25 +139,10 @@ private:
   DebugStore& debug;
   ExportedFunctions& exported_functions;
   ModuleDeclarationRegistrar& module_declaration_registrar;
+  FunctionReferenceRegistrar& function_reference_registrar;
 
   DebugStore::InstructionInfo debug_instruction_info{};
 };
-
-template <>
-inline unsigned int InstructionEmitter::value<int>()
-{
-  auto offset = next_instruction_address();
-  emit_token( TOK_LONG, TYP_OPERAND, 0 );
-  return offset;
-}
-
-template <>
-inline void InstructionEmitter::patch_value( unsigned index, int v )
-{
-  unsigned offset = data_emitter.append( v );
-  patch_offset( index, offset );
-}
-
 }  // namespace Pol::Bscript::Compiler
 
 #endif  // POLSERVER_INSTRUCTIONEMITTER_H
