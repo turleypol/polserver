@@ -314,7 +314,7 @@ void Executor::expandParams()
 {
   for ( auto i = static_cast<int>( fparams.size() ) - 1; i >= 0; --i )
   {
-    if ( auto* spread = impptrIf<BSpread>( fparams[i] ) )
+    if ( auto* spread = fparams[i]->impptr_if<BSpread>() )
     {
       // defer destruction
       BObjectRef obj( spread );
@@ -2511,7 +2511,7 @@ void Executor::ins_insert_into( const Instruction& /*ins*/ )
   BObject& right = *rightref;
   BObject& left = *leftref;
 
-  if ( auto* spread = right->impptr_if<BSpread>() )
+  if ( auto* spread = right.impptr_if<BSpread>() )
   {
     BObjectRef refIter( new BObject( UninitObject::create() ) );
 
