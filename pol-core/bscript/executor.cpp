@@ -314,10 +314,11 @@ void Executor::expandParams()
 {
   for ( auto i = static_cast<int>( fparams.size() ) - 1; i >= 0; --i )
   {
-    if ( auto* spread = fparams[i]->impptr_if<BSpread>() )
+    if ( fparams[i]->isa( BObjectImp::OTSpread ) )
     {
       // defer destruction
-      BObjectRef obj( spread );
+      BObjectRef obj( fparams[i] );
+      BSpread* spread = obj->impptr<BSpread>();
 
       // Remove the spread
       fparams.erase( fparams.begin() + i );
