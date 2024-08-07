@@ -2738,9 +2738,11 @@ void Executor::ins_call_method( const Instruction& ins )
   unsigned nparams = ins.token.lval;
   getParams( nparams );
 
-  if ( auto* funcr = ValueStack.back()->impptr_if<BFunctionRef>() )
+  if ( ValueStack.back()->isa( BObjectImp::OTFuncRef ) )
   {
-    Instruction jmp;
+    BObjectRef objref = ValueStack.back();
+    auto funcr = objref->impptr<BFunctionRef>();
+    i Instruction jmp;
     if ( funcr->validCall( ins.token.tokval(), *this, &jmp ) )
     {
       call_function_reference( funcr, nullptr, jmp );
