@@ -937,14 +937,14 @@ bool Executor::getUnicodeStringParam( unsigned param, const String*& pstr )
   BObject* obj = getParam( param );
   if ( !obj )
     return false;
-  if ( auto* s = obj->impptr_if<String>() )
+  if ( obj->isa( BObjectImp::OTString ) )
   {
-    pstr = s;
+    pstr = obj->impptr<String>();
     return true;
   }
-  else if ( auto* a = obj->impptr_if<ObjArray>() )
+  else if ( obj->isa( BObjectImp::OTArray ) )
   {
-    String* str = String::fromUCArray( a );
+    String* str = String::fromUCArray( obj->impptr<ObjArray>() );
     fparams[param].set( new BObject( str ) );  // store raw pointer
     pstr = str;
     return true;
@@ -2742,7 +2742,7 @@ void Executor::ins_call_method( const Instruction& ins )
   {
     BObjectRef objref = ValueStack.back();
     auto funcr = objref->impptr<BFunctionRef>();
-    i Instruction jmp;
+    Instruction jmp;
     if ( funcr->validCall( ins.token.tokval(), *this, &jmp ) )
     {
       call_function_reference( funcr, nullptr, jmp );
