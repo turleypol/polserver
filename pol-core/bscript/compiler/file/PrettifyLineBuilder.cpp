@@ -130,6 +130,16 @@ std::vector<PrettifyLineBuilder::LineSplit> PrettifyLineBuilder::buildLineSplits
   std::vector<LineSplit> lines;
   std::string line;
   size_t firstgroup = 0;
+  bool has_varcomma = false;  // only if a "var," exists split based on these, otherwise var
+                              // statement would be splitted
+  for ( size_t i = 0; i < _line_parts.size(); ++i )
+  {
+    if ( _line_parts[i].context == FmtContext::VAR_COMMA )
+    {
+      has_varcomma = true;
+      break;
+    }
+  }
   for ( size_t i = 0; i < _line_parts.size(); ++i )
   {
     if ( line.empty() )
@@ -147,8 +157,8 @@ std::vector<PrettifyLineBuilder::LineSplit> PrettifyLineBuilder::buildLineSplits
         line += ' ';
     }
     if ( _line_parts[i].style & FmtToken::FORCED_BREAK ||
-         _line_parts[i].context == FmtContext::VAR_STATEMENT ||
-         _line_parts[i].context == FmtContext::VAR_COMMA )
+         ( has_varcomma && ( _line_parts[i].context == FmtContext::VAR_STATEMENT ||
+                             _line_parts[i].context == FmtContext::VAR_COMMA ) ) )
     {
       if ( _line_parts[i].context == FmtContext::VAR_STATEMENT ||
            _line_parts[i].context == FmtContext::VAR_COMMA )
@@ -316,6 +326,35 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
   return finallines;
 }
 
+// helper to find the alignment of the last open parenthesis and use this as alignment for the next
+// line
+void PrettifyLineBuilder::parenthesisAlign( const std::vector<std::string>& finallines,
+                                            size_t alignmentspace, std::string& line ) const
+{
+  std::vector<size_t> parenthesisalign;
+  for ( const auto& finalline : finallines )
+  {
+    size_t i = 0;
+    for ( auto c : finalline )
+    {
+      if ( c == '(' )
+        parenthesisalign.push_back( i );
+      else if ( c == ')' && !parenthesisalign.empty() )
+        parenthesisalign.pop_back();
+      ++i;
+    }
+  }
+  if ( !parenthesisalign.empty() )
+  {
+    // if its at the end of last line start at the beginning
+    if ( parenthesisalign.back() >= ( finallines.back().size() - 1 ) )
+      return;
+    line = alignmentSpacing( parenthesisalign.back() - alignmentspace +
+                             ( compilercfg.FormatterBracketSpacing ? 2 : 1 ) ) +
+           line;
+  }
+}
+
 std::vector<std::string> PrettifyLineBuilder::createBasedOnPreferredBreaks(
     const std::vector<LineSplit>& lines, bool logical ) const
 {
@@ -352,29 +391,6 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnPreferredBreaks(
     parts.push_back( { tmp, FmtToken::NONE } );
   // now build the actual line(s)
   bool alignpart = false;
-  // helper to find the alignment of the last open parenthesis
-  auto parenthesis_align = [&]()
-  {
-    std::vector<size_t> parenthesisalign;
-    for ( const auto& finalline : finallines )
-    {
-      size_t i = 0;
-      for ( auto c : finalline )
-      {
-        if ( c == '(' )
-          parenthesisalign.push_back( i );
-        else if ( c == ')' && !parenthesisalign.empty() )
-          parenthesisalign.pop_back();
-        ++i;
-      }
-    }
-    if ( !parenthesisalign.empty() )
-    {
-      line = alignmentSpacing( parenthesisalign.back() - alignmentspace +
-                               ( compilercfg.FormatterBracketSpacing ? 2 : 1 ) ) +
-             line;
-    }
-  };
   for ( auto& [l, style] : parts )
   {
 #ifdef DEBUG_FORMAT_BREAK
@@ -386,8 +402,10 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnPreferredBreaks(
     // with a margin of 50% start a new line before
     if ( ( line.size() + ( l.size() / 2 ) ) > compilercfg.FormatterLineWidth )
     {
+      // TODO if next is linecomment dont split now, but split comment
       stripline( line );
-      parenthesis_align();
+      if ( !logical )  // TODO does not work
+        parenthesisAlign( finallines, alignmentspace, line );
       finallines.emplace_back( std::move( line ) );
       line = alignmentSpacing( alignmentspace );
     }
@@ -396,8 +414,10 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnPreferredBreaks(
     if ( line.size() > compilercfg.FormatterLineWidth || style & FmtToken::FORCED_BREAK ||
          style & FmtToken::PREFERRED_BREAK_VAR )
     {
+      // TODO if next is linecomment dont split now, but split comment
       stripline( line );
-      parenthesis_align();
+      if ( !logical )
+        parenthesisAlign( finallines, alignmentspace, line );
       finallines.emplace_back( std::move( line ) );
       line.clear();
     }
@@ -405,6 +425,8 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnPreferredBreaks(
   if ( !line.empty() )
   {
     stripline( line );
+    if ( !logical )
+      parenthesisAlign( finallines, alignmentspace, line );
     finallines.emplace_back( std::move( line ) );
   }
   return finallines;
@@ -416,6 +438,7 @@ std::vector<std::string> PrettifyLineBuilder::createSimple(
   std::vector<std::string> finallines;
   std::string line;
   size_t alignmentspace = 0;
+  size_t i = 0;
   for ( auto& [l, group, firstgroup, style] : lines )
   {
     // following lines need to be aligned
@@ -429,17 +452,38 @@ std::vector<std::string> PrettifyLineBuilder::createSimple(
       line += ident;
     }
     line += l;
-    // linewidth reached add current line, start a new one
-    if ( line.size() > compilercfg.FormatterLineWidth || style & FmtToken::FORCED_BREAK )
+    bool forcebreakVarToLong{ false };
+    // if its a var definition, check if the next var would fit in the line,
+    // otherwise start directly a new line
+    if ( style & FmtToken::PREFERRED_BREAK_VAR && i > 0 )
     {
+      std::string next_var;
+      for ( size_t j = i + 1; j < lines.size(); ++j )
+      {
+        next_var += std::get<0>( lines[j] );
+        if ( std::get<3>( lines[j] ) & FmtToken::PREFERRED_BREAK_VAR )
+          break;
+      }
+      if ( ( line.size() + next_var.size() + alignmentSpacing( alignmentspace ).size() ) >
+           compilercfg.FormatterLineWidth )
+        forcebreakVarToLong = true;
+    }
+    // linewidth reached add current line, start a new one
+    if ( line.size() > compilercfg.FormatterLineWidth || style & FmtToken::FORCED_BREAK ||
+         forcebreakVarToLong )
+    {
+      // TODO if next is linecomment dont split now, but split comment
       stripline( line );
+      parenthesisAlign( finallines, alignmentspace, line );
       finallines.emplace_back( std::move( line ) );
       line.clear();
     }
+    ++i;
   }
   if ( !line.empty() )
   {
     stripline( line );
+    parenthesisAlign( finallines, alignmentspace, line );
     finallines.emplace_back( std::move( line ) );
   }
   return finallines;

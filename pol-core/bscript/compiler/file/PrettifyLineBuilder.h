@@ -134,6 +134,8 @@ private:
   std::vector<std::string> createBasedOnPreferredBreaks( const std::vector<LineSplit>& lines,
                                                          bool logical ) const;
   std::vector<std::string> createSimple( const std::vector<LineSplit>& lines ) const;
+  void parenthesisAlign( const std::vector<std::string>& finallines, size_t alignmentspace,
+                         std::string& line ) const;
 };
 }  // namespace Pol::Bscript::Compiler
 
