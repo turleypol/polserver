@@ -123,9 +123,11 @@ std::string PrettifyFileProcessor::prettify() const
 
 antlrcpp::Any PrettifyFileProcessor::visitVarStatement( EscriptParser::VarStatementContext* ctx )
 {
+  _currentscope |= FmtToken::Scope::VAR;
   addToken( "var", ctx->VAR(), FmtToken::SPACE, FmtContext::VAR_STATEMENT );
   visitVariableDeclarationList( ctx->variableDeclarationList() );
   addToken( ";", ctx->SEMI(), linebuilder.terminatorStyle() );
+  _currentscope &= ~FmtToken::Scope::VAR;
   linebuilder.buildLine( _currident );
   return {};
 }
@@ -179,6 +181,8 @@ antlrcpp::Any PrettifyFileProcessor::visitVariableDeclaration(
 
   if ( auto variable_declaration_initializer = ctx->variableDeclarationInitializer() )
   {
+    _currentscope |= FmtToken::Scope::VAR;
+
     if ( auto assign = variable_declaration_initializer->ASSIGN() )
       addToken( ":=", assign, linebuilder.assignmentStyle() );
 
@@ -186,6 +190,7 @@ antlrcpp::Any PrettifyFileProcessor::visitVariableDeclaration(
       visitExpression( expression );
     else if ( auto arr = variable_declaration_initializer->ARRAY() )
       addToken( "array", arr, FmtToken::SPACE );
+    _currentscope &= ~FmtToken::Scope::VAR;
   }
   return {};
 }
@@ -314,9 +319,11 @@ antlrcpp::Any PrettifyFileProcessor::visitExplicitArrayInitializer(
     EscriptParser::ExplicitArrayInitializerContext* ctx )
 {
   ++_currentgroup;
+  _currentscope |= FmtToken::Scope::ARRAY;
   addToken( "array", ctx->ARRAY(), FmtToken::SPACE );
   if ( auto init = ctx->arrayInitializer() )
     visitArrayInitializer( init );
+  _currentscope &= ~FmtToken::Scope::ARRAY;
   --_currentgroup;
   return {};
 }
@@ -352,9 +359,11 @@ antlrcpp::Any PrettifyFileProcessor::visitExplicitDictInitializer(
     EscriptParser::ExplicitDictInitializerContext* ctx )
 {
   ++_currentgroup;
+  _currentscope |= FmtToken::Scope::DICT;
   addToken( "dictionary", ctx->DICTIONARY(), FmtToken::SPACE );
   if ( auto init = ctx->dictInitializer() )
     visitDictInitializer( init );
+  _currentscope &= ~FmtToken::Scope::DICT;
   --_currentgroup;
   return {};
 }
@@ -398,6 +407,7 @@ antlrcpp::Any PrettifyFileProcessor::visitExplicitErrorInitializer(
 antlrcpp::Any PrettifyFileProcessor::visitBareArrayInitializer(
     EscriptParser::BareArrayInitializerContext* ctx )
 {
+  _currentscope |= FmtToken::Scope::ARRAY;
   addToken( "{", ctx->LBRACE(), linebuilder.openingBracketStyle() & ~FmtToken::ATTACHED );
   ++_currentgroup;
   size_t curcount = linebuilder.currentTokens().size();
@@ -405,6 +415,7 @@ antlrcpp::Any PrettifyFileProcessor::visitBareArrayInitializer(
     visitExpressionList( expr );
   --_currentgroup;
   addToken( "}", ctx->RBRACE(), linebuilder.closingBracketStyle( curcount ) );
+  _currentscope &= ~FmtToken::Scope::ARRAY;
   return {};
 }
 
@@ -412,9 +423,11 @@ antlrcpp::Any PrettifyFileProcessor::visitExplicitStructInitializer(
     EscriptParser::ExplicitStructInitializerContext* ctx )
 {
   ++_currentgroup;
+  _currentscope |= FmtToken::Scope::STRUCT;
   addToken( "struct", ctx->STRUCT(), FmtToken::SPACE );
   if ( auto init = ctx->structInitializer() )
     visitStructInitializer( init );
+  _currentscope &= ~FmtToken::Scope::STRUCT;
   --_currentgroup;
   return {};
 }
@@ -486,6 +499,7 @@ antlrcpp::Any PrettifyFileProcessor::visitExpression( EscriptParser::ExpressionC
     case EscriptLexer::MUL_ASSIGN:
     case EscriptLexer::DIV_ASSIGN:
     case EscriptLexer::MOD_ASSIGN:
+      _currentscope |= FmtToken::Scope::VAR;  // matches with visitStatement
       style = linebuilder.assignmentStyle();
       break;
     case EscriptLexer::TOK_IN:
@@ -661,6 +675,7 @@ antlrcpp::Any PrettifyFileProcessor::visitForStatement( EscriptParser::ForStatem
 antlrcpp::Any PrettifyFileProcessor::visitFunctionCall( EscriptParser::FunctionCallContext* ctx )
 {
   make_identifier( ctx->IDENTIFIER() );
+  _currentscope |= FmtToken::Scope::FUNCTION;
 
   addToken( "(", ctx->LPAREN(), linebuilder.openingParenthesisStyle() );
 
@@ -669,6 +684,7 @@ antlrcpp::Any PrettifyFileProcessor::visitFunctionCall( EscriptParser::FunctionC
     visitExpressionList( args );
 
   addToken( ")", ctx->RPAREN(), linebuilder.closingParenthesisStyle( curcount ) );
+  _currentscope &= ~FmtToken::Scope::FUNCTION;
   return {};
 }
 antlrcpp::Any PrettifyFileProcessor::visitFunctionDeclaration(
@@ -1207,6 +1223,7 @@ antlrcpp::Any PrettifyFileProcessor::visitStatement( EscriptParser::StatementCon
     visitExpression( expression );
 
     addToken( ";", ctx->SEMI(), linebuilder.terminatorStyle() );
+    _currentscope &= ~FmtToken::Scope::VAR;  // matches with assignment inside of visitExpression
     linebuilder.buildLine( _currident );
     return {};
   }
@@ -1295,8 +1312,8 @@ antlrcpp::Any PrettifyFileProcessor::make_bool_literal( antlr4::tree::TerminalNo
 void PrettifyFileProcessor::addToken( std::string&& text, const Position& pos, int style,
                                       size_t token_type, FmtContext context )
 {
-  linebuilder.addPart(
-      { std::forward<std::string>( text ), pos, style, _currentgroup, token_type, context } );
+  linebuilder.addPart( { std::forward<std::string>( text ), pos, style, _currentgroup, token_type,
+                         context, _currentscope } );
 }
 void PrettifyFileProcessor::addToken( std::string&& text, antlr4::tree::TerminalNode* terminal,
                                       int style, FmtContext context )

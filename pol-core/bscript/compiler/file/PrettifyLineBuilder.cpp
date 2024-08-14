@@ -9,7 +9,7 @@
 #include <iostream>
 #include <utility>
 
-// #define DEBUG_FORMAT_BREAK
+#define DEBUG_FORMAT_BREAK
 
 namespace Pol::Bscript::Compiler
 {
@@ -106,7 +106,8 @@ void PrettifyLineBuilder::mergeComments()
     if ( _line_parts[i].pos.token_index > _comments.front().pos.token_index )
     {
       auto info = _comments.front();
-      info.group = _currentgroup;
+      //      info.group = _currentgroup;
+      info.group = i ? _line_parts[i - 1].group : _currentgroup;
       _line_parts.insert( _line_parts.begin() + i, std::move( info ) );
       _comments.erase( _comments.begin() );
     }
@@ -125,11 +126,9 @@ void PrettifyLineBuilder::mergeComments()
   }
 }
 
-std::vector<PrettifyLineBuilder::LineSplit> PrettifyLineBuilder::buildLineSplits()
+std::vector<FmtToken> PrettifyLineBuilder::buildLineSplits()
 {
-  std::vector<LineSplit> lines;
-  std::string line;
-  size_t firstgroup = 0;
+  std::vector<FmtToken> lines;
   bool has_varcomma = false;  // only if a "var," exists split based on these, otherwise var
                               // statement would be splitted
   for ( size_t i = 0; i < _line_parts.size(); ++i )
@@ -140,32 +139,44 @@ std::vector<PrettifyLineBuilder::LineSplit> PrettifyLineBuilder::buildLineSplits
       break;
     }
   }
+  FmtToken part;
   for ( size_t i = 0; i < _line_parts.size(); ++i )
   {
-    if ( line.empty() )
-      firstgroup = _line_parts[i].group;
-    line += _line_parts[i].text;
+#ifdef DEBUG_FORMAT_BREAK
+    INFO_PRINTLN( "\"{}\" {}", _line_parts[i].text, _line_parts[i].group );
+#endif
+    if ( part.text.empty() )
+    {
+      part.firstgroup = _line_parts[i].group;
+      part.pos = _line_parts[i].pos;
+      part.scope = _line_parts[i].scope;
+      part.context = _line_parts[i].context;
+    }
+    part.text += _line_parts[i].text;
     // add space if set, but not if the following part is attached
     if ( _line_parts[i].style & FmtToken::SPACE )
     {
       if ( i + 1 < _line_parts.size() )
       {
         if ( !( _line_parts[i + 1].style & FmtToken::ATTACHED ) )
-          line += ' ';
+          part.text += ' ';
       }
       else
-        line += ' ';
+        part.text += ' ';
     }
     if ( _line_parts[i].style & FmtToken::FORCED_BREAK ||
          ( has_varcomma && ( _line_parts[i].context == FmtContext::VAR_STATEMENT ||
                              _line_parts[i].context == FmtContext::VAR_COMMA ) ) )
     {
+      // need to break directly after "var" to align multiple variables
       if ( _line_parts[i].context == FmtContext::VAR_STATEMENT ||
            _line_parts[i].context == FmtContext::VAR_COMMA )
         _line_parts[i].style |= FmtToken::PREFERRED_BREAK_VAR;
-      lines.emplace_back( std::make_tuple( std::move( line ), _line_parts[i].group, firstgroup,
-                                           _line_parts[i].style ) );
-      line.clear();
+      part.style = _line_parts[i].style;
+      part.group = _line_parts[i].group;
+      part.pos_end = _line_parts[i].pos_end;
+      lines.emplace_back( std::move( part ) );
+      part = FmtToken{};
     }
     // start a new line if breakpoint
     else if ( _line_parts[i].style & FmtToken::BREAKPOINT )
@@ -195,24 +206,28 @@ std::vector<PrettifyLineBuilder::LineSplit> PrettifyLineBuilder::buildLineSplits
       }
       if ( skip )
         continue;
-      lines.emplace_back( std::make_tuple( std::move( line ), _line_parts[i].group, firstgroup,
-                                           _line_parts[i].style ) );
-      line.clear();
+      part.style = _line_parts[i].style;
+      part.group = _line_parts[i].group;
+      part.pos_end = _line_parts[i].pos_end;
+      lines.emplace_back( std::move( part ) );
+      part = FmtToken{};
     }
   }
   // add remainings
-  if ( !line.empty() )
+  if ( !part.text.empty() )
   {
-    lines.emplace_back( std::make_tuple( std::move( line ), _line_parts.back().group,
-                                         _line_parts.back().group, _line_parts.back().style ) );
-    line.clear();
+    part.style = _line_parts.back().style;
+    part.group = _line_parts.back().group;
+    part.pos_end = _line_parts.back().pos_end;
+    part.firstgroup = part.group;  // todo
+    lines.emplace_back( std::move( part ) );
   }
 
   return lines;
 }
 
 std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
-    const std::vector<LineSplit>& lines ) const
+    const std::vector<FmtToken>& lines ) const
 {
   std::vector<std::string> finallines;
   std::string line;
@@ -223,34 +238,259 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
   auto ident = identSpacing();
   line = ident;
   bool groupdiffered = false;
-  for ( auto& [l, group, firstgroup, style] : lines )
+  size_t i = 0, skipuntil = 0, trieduntil = 0;
+  for ( const auto& part : lines )
   {
-    if ( style & FmtToken::FORCED_BREAK )
+    if ( skipuntil > i )  // already handled during binpack
     {
-      line += l;
+      ++i;
+      continue;
+    }
+    if ( line.empty() && !alignmentspace.empty() )
+    {
+      line = alignmentSpacing( alignmentspace[part.firstgroup] );
+      line += ident;
+    }
+    if ( part.style & FmtToken::FORCED_BREAK )
+    {
+      line += part.text;
       stripline( line );
       finallines.emplace_back( std::move( line ) );
       line = ident;
+      ++i;
       continue;
     }
     if ( lastgroup == 0xffffFFFF )
     {
-      line += l;  // first part
-      alignmentspace[firstgroup] = line.size() - ident.size();
-      alignmentspace[group] = line.size() - ident.size();
+      line += part.text;  // first part
+      alignmentspace[part.firstgroup] = line.size() - ident.size();
+      alignmentspace[part.group] = line.size() - ident.size();
       newline = true;
 #ifdef DEBUG_FORMAT_BREAK
       INFO_PRINTLN( "first {}", line );
 #endif
+      ++i;
+      lastgroup = part.firstgroup;
+      continue;
     }
-    else if ( lastgroup < firstgroup )  // new group
+
+    // TODO arrays for uo to 3 lines, dict/structs one line or maybe 2 half lines?
+    bool allowed = true;
+    if ( ( part.scope & FmtToken::Scope::VAR ) == FmtToken::Scope::VAR )
+      allowed = false;
+    if ( ( part.scope & FmtToken::Scope::ARRAY ) == FmtToken::Scope::ARRAY )
+      allowed = true;
+    if ( _line_parts[0].context != FmtContext::VAR_STATEMENT && trieduntil < i && allowed )
+    {  // call it binpacking and make it optional, in vars default no, otherwise true
+      size_t j = i + 1;
+      bool allsame{ true };
+      // check for nested groups, binpack is not done for these eg array of struct
+      for ( ; j < lines.size(); ++j )
+      {
+        if ( lines[j].group > part.group )
+        {
+          allsame = false;
+          break;
+        }
+      }
+      if ( false && !allsame )  // TODO really needed?
+      {
+        std::string currline = line + part.text;
+        //        INFO_PRINTLN( "ORIG {} NEW {}", line, currline );
+        j = i + 1;
+        for ( ; j < lines.size(); ++j )
+        {
+          if ( lines[j].group == part.group )  // next group begins
+          {
+            // but only if afterwards the groups increase
+            // at the end this is not the case, (bug or feature?)
+            if ( j + 1 <= lines.size() )
+              if ( lines[j + 1].group > part.group )
+                break;
+          }
+          if ( lines[j].style & FmtToken::FORCED_BREAK )
+            break;
+          currline += lines[j].text;
+          if ( lines[j].group == part.group )  // see above
+          {
+            ++j;
+            break;
+          }
+        }
+        if ( currline.size() < compilercfg.FormatterLineWidth )
+        {
+          if ( !alignmentspace.count( part.group ) )
+            alignmentspace[part.group] = line.size() - ident.size();
+          line = currline;
+          INFO_PRINTLN( "!ALLSAME UNTIL {} {}", j, line );
+          stripline( line );
+          finallines.emplace_back( std::move( line ) );
+          ++i;
+          skipuntil = j;
+          continue;
+        }
+      }
+      else if ( allsame )
+      {
+        std::vector<std::pair<std::string, size_t>> lengths;
+        std::string currline, currline2, currline3;
+        std::vector<std::string> lineparts2, lineparts3;
+        size_t room = compilercfg.FormatterLineWidth - line.size();
+        size_t end_group = 0;
+        //        INFO_PRINTLN( "ALLSAME SEARCHING FOR {}", l );
+        //        where does the group end?
+        for ( j = i + 1; j < lines.size(); ++j )
+        {
+          if ( lines[j].group == part.group || lines[j].firstgroup == part.group )
+          {
+            //          INFO_PRINTLN( "matching {}", std::get<0>( lines[j] ) );
+            continue;
+          }
+          end_group = j;
+          break;
+        }
+        if ( end_group == 0 )
+          end_group = lines.size();
+        //    INFO_PRINTLN( "ENDGROUP {} {}", end_group, lines.size() );
+        std::string total;
+        bool total_valid{ true };
+        for ( j = i; j < end_group; ++j )
+        {
+          total += lines[j].text;
+          if ( lines[j].style & FmtToken::FORCED_BREAK )
+            total_valid = false;
+        }
+        // it fits directly into the line
+        if ( total_valid && total.size() + line.size() < compilercfg.FormatterLineWidth )
+        {
+          if ( !alignmentspace.count( part.group ) )
+            alignmentspace[part.group] = line.size() - ident.size();
+          line += total;
+          stripline( line );
+          finallines.emplace_back( std::move( line ) );
+          line.clear();
+          ++i;
+          skipuntil = j;
+          continue;
+        }
+        size_t lenOption2 = std::min( room, total.size() / 2 );
+        if ( ( part.scope & FmtToken::Scope::STRUCT ) == FmtToken::Scope::STRUCT )
+        {
+          INFO_PRINTLN( "IS STRUCT {}", part.text );
+          lenOption2 = room / 2;
+        }
+        size_t lenOption3 = std::min( room, total.size() / 3 );
+        INFO_PRINTLN( "ROOM {} TOTAL {}/{}/{}", room, total.size(), lenOption2, lenOption3 );
+        // build the options equally in 2 or 3 lines
+        for ( j = i; j < end_group; ++j )
+        {
+          const auto& lpart = lines[j].text;
+          if ( lines[j].style & FmtToken::FORCED_BREAK )
+          {
+            currline2 += lpart;
+            lineparts2.push_back( std::move( currline2 ) );
+            currline2.clear();
+            currline3 += lpart;
+            lineparts3.push_back( std::move( currline3 ) );
+            currline3.clear();
+            continue;
+          }
+
+          if ( currline2.size() + lpart.size() <= lenOption2 )  // war ohne min
+            currline2 += lpart;
+          else
+          {
+            if ( currline2.size() >= lenOption2 )
+            {
+              lineparts2.push_back( std::move( currline2 ) );
+              currline2 = lpart;
+            }
+            else
+            {
+              currline2 += lpart;
+              lineparts2.push_back( std::move( currline2 ) );
+              currline2.clear();
+            }
+          }
+          if ( currline3.size() + lpart.size() <= lenOption3 )
+            currline3 += lpart;
+          else
+          {
+            if ( currline3.size() >= lenOption3 )
+            {
+              lineparts3.push_back( std::move( currline3 ) );
+              currline3 = lpart;
+            }
+            else
+            {
+              currline3 += lpart;
+              lineparts3.push_back( std::move( currline3 ) );
+              currline3.clear();
+            }
+          }
+        }
+        if ( !currline2.empty() )
+          lineparts2.push_back( currline2 );
+        if ( !currline3.empty() )
+          lineparts3.push_back( currline3 );
+
+        bool pack_succeeded{ false };
+        if ( lineparts2.size() == 2 )
+        {
+          //          INFO_PRINTLN( "PACKED2 {}\n{}", lineparts2.size(), lineparts2 );
+          if ( !alignmentspace.count( part.group ) )
+            alignmentspace[part.group] = line.size() - ident.size();
+          line += lineparts2[0];
+          stripline( line );
+          finallines.emplace_back( std::move( line ) );
+          line = alignmentSpacing( alignmentspace[part.firstgroup] );
+          line += ident + lineparts2[1];
+          stripline( line );
+          finallines.emplace_back( std::move( line ) );
+          pack_succeeded = true;
+        }
+        else if ( lineparts3.size() == 3 &&
+                  ( part.scope & FmtToken::Scope::STRUCT ) == FmtToken::Scope::NONE )
+        {
+          //          INFO_PRINTLN( "PACKED3 {}\n{}", lineparts3.size(), lineparts3 );
+          if ( !alignmentspace.count( part.group ) )
+            alignmentspace[part.group] = line.size() - ident.size();
+          line += lineparts3[0];
+          stripline( line );
+          finallines.emplace_back( std::move( line ) );
+          line = alignmentSpacing( alignmentspace[part.firstgroup] );
+          line += ident + lineparts3[1];
+          stripline( line );
+          finallines.emplace_back( std::move( line ) );
+          line = alignmentSpacing( alignmentspace[part.firstgroup] );
+          line += ident + lineparts3[2];
+          stripline( line );
+          finallines.emplace_back( std::move( line ) );
+          pack_succeeded = true;
+        }
+        if ( pack_succeeded )
+        {
+          line.clear();
+          ++i;
+          skipuntil = j;
+          continue;
+        }
+        else
+        {
+          //      INFO_PRINTLN( "failedPACKED2 {}\n{}", lineparts2.size(), lineparts2 );
+          //    INFO_PRINTLN( "failedPACKED3 {}\n{}", lineparts3.size(), lineparts3 );
+          trieduntil = j;
+        }
+      }
+    }
+    if ( lastgroup < part.firstgroup )  // new group
     {
       groupdiffered = true;
       bool newgroup = false;
-      if ( !alignmentspace.count( firstgroup ) )
+      if ( !alignmentspace.count( part.firstgroup ) )
       {
         newgroup = true;
-        alignmentspace[firstgroup] = line.size() - ident.size();
+        alignmentspace[part.firstgroup] = line.size() - ident.size();
       }
       // if its not a new group and not a fresh line start a new one
       // nested structs eg should start at the same line
@@ -259,9 +499,9 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
         stripline( line );
         if ( !line.empty() )
           finallines.emplace_back( std::move( line ) );
-        line = alignmentSpacing( alignmentspace[firstgroup] );
+        line = alignmentSpacing( alignmentspace[part.firstgroup] );
         line += ident;
-        line += l;
+        line += part.text;
         newline = true;
 #ifdef DEBUG_FORMAT_BREAK
         INFO_PRINTLN( "!new {} - {}", line, alignmentspace );
@@ -269,23 +509,23 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
       }
       else
       {
-        line += l;
+        line += part.text;
 #ifdef DEBUG_FORMAT_BREAK
         INFO_PRINTLN( "new {} - {}", line, alignmentspace );
 #endif
       }
-      if ( !alignmentspace.count( group ) )
-        alignmentspace[group] = line.size() - ident.size();
+      if ( !alignmentspace.count( part.group ) )
+        alignmentspace[part.group] = line.size() - ident.size();
     }
-    else if ( lastgroup > firstgroup )  // descending
+    else if ( lastgroup > part.firstgroup )  // descending
     {
       newline = true;
       stripline( line );
       if ( !line.empty() )
         finallines.emplace_back( std::move( line ) );
-      line = alignmentSpacing( alignmentspace[firstgroup] );
+      line = alignmentSpacing( alignmentspace[part.firstgroup] );
       line += ident;
-      line += l;
+      line += part.text;
 #ifdef DEBUG_FORMAT_BREAK
       INFO_PRINTLN( "desc {} - {}", line, alignmentspace );
 #endif
@@ -299,10 +539,10 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
         stripline( line );
         if ( !line.empty() )
           finallines.emplace_back( std::move( line ) );
-        line = alignmentSpacing( alignmentspace[firstgroup] );
+        line = alignmentSpacing( alignmentspace[part.firstgroup] );
         line += ident;
       }
-      line += l;
+      line += part.text;
 #ifdef DEBUG_FORMAT_BREAK
       INFO_PRINTLN( "same {} - {}", line, alignmentspace );
 #endif
@@ -311,12 +551,13 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
         stripline( line );
         if ( !line.empty() )
           finallines.emplace_back( std::move( line ) );
-        line = alignmentSpacing( alignmentspace[firstgroup] );
+        line = alignmentSpacing( alignmentspace[part.firstgroup] );
         line += ident;
       }
     }
 
-    lastgroup = firstgroup;
+    lastgroup = part.firstgroup;
+    ++i;
   }
   if ( !line.empty() )
   {
@@ -356,7 +597,7 @@ void PrettifyLineBuilder::parenthesisAlign( const std::vector<std::string>& fina
 }
 
 std::vector<std::string> PrettifyLineBuilder::createBasedOnPreferredBreaks(
-    const std::vector<LineSplit>& lines, bool logical ) const
+    const std::vector<FmtToken>& lines, bool logical ) const
 {
   std::vector<std::string> finallines;
   std::string line;
@@ -368,22 +609,22 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnPreferredBreaks(
   // in a long if-statement we want to break line on the logical points and not mixed with
   // commas from functions
   int breakflag = logical ? FmtToken::PREFERRED_BREAK_LOGICAL : FmtToken::PREFERRED_BREAK;
-  for ( auto& [l, group, firstgroup, style] : lines )
+  for ( const auto& part : lines )
   {
     if ( !alignmentspace )
     {
       auto ident = identSpacing();
-      alignmentspace = l.size() + ident.size();
+      alignmentspace = part.text.size() + ident.size();
       line += ident;
-      parts.push_back( { l, FmtToken::NONE } );
+      parts.push_back( { part.text, FmtToken::NONE } );
       continue;
     }
-    tmp += l;
+    tmp += part.text;
 
-    if ( ( style & FmtToken::FORCED_BREAK ) || ( style & FmtToken::PREFERRED_BREAK_VAR ) ||
-         ( style & breakflag ) )
+    if ( ( part.style & FmtToken::FORCED_BREAK ) ||
+         ( part.style & FmtToken::PREFERRED_BREAK_VAR ) || ( part.style & breakflag ) )
     {
-      parts.push_back( { std::move( tmp ), style } );
+      parts.push_back( { std::move( tmp ), part.style } );
       tmp.clear();
     }
   }
@@ -433,13 +674,13 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnPreferredBreaks(
 }
 
 std::vector<std::string> PrettifyLineBuilder::createSimple(
-    const std::vector<LineSplit>& lines ) const
+    const std::vector<FmtToken>& lines ) const
 {
   std::vector<std::string> finallines;
   std::string line;
   size_t alignmentspace = 0;
   size_t i = 0;
-  for ( auto& [l, group, firstgroup, style] : lines )
+  for ( const auto& part : lines )
   {
     // following lines need to be aligned
     if ( line.empty() && alignmentspace )
@@ -448,20 +689,20 @@ std::vector<std::string> PrettifyLineBuilder::createSimple(
     if ( !alignmentspace )
     {
       auto ident = identSpacing();
-      alignmentspace = l.size() + ident.size();
+      alignmentspace = part.text.size() + ident.size();
       line += ident;
     }
-    line += l;
+    line += part.text;
     bool forcebreakVarToLong{ false };
     // if its a var definition, check if the next var would fit in the line,
     // otherwise start directly a new line
-    if ( style & FmtToken::PREFERRED_BREAK_VAR && i > 0 )
+    if ( part.style & FmtToken::PREFERRED_BREAK_VAR && i > 0 )
     {
       std::string next_var;
       for ( size_t j = i + 1; j < lines.size(); ++j )
       {
-        next_var += std::get<0>( lines[j] );
-        if ( std::get<3>( lines[j] ) & FmtToken::PREFERRED_BREAK_VAR )
+        next_var += lines[j].text;
+        if ( lines[j].style & FmtToken::PREFERRED_BREAK_VAR )
           break;
       }
       if ( ( line.size() + next_var.size() + alignmentSpacing( alignmentspace ).size() ) >
@@ -469,7 +710,7 @@ std::vector<std::string> PrettifyLineBuilder::createSimple(
         forcebreakVarToLong = true;
     }
     // linewidth reached add current line, start a new one
-    if ( line.size() > compilercfg.FormatterLineWidth || style & FmtToken::FORCED_BREAK ||
+    if ( line.size() > compilercfg.FormatterLineWidth || part.style & FmtToken::FORCED_BREAK ||
          forcebreakVarToLong )
     {
       // TODO if next is linecomment dont split now, but split comment
@@ -505,12 +746,12 @@ void PrettifyLineBuilder::buildLine( size_t current_ident )
   mergeComments();
 
   // fill lines with final strings splitted at breakpoints
-  // <splitted string, groupid, firstgroup, style>
   auto lines = buildLineSplits();
 #ifdef DEBUG_FORMAT_BREAK
   INFO_PRINTLN( "BREAK " );
-  for ( auto& [l, group, firstgroup, style] : lines )
-    INFO_PRINTLN( "\"{}\" {}-{} ->{}", l, group, firstgroup, style );
+  for ( const auto& part : lines )
+    INFO_PRINTLN( "\"{}\" {}-{} ->{} :{}", part.text, part.group, part.firstgroup, part.style,
+                  (int)part.scope );
 #endif
   // add newline from original sourcecode
   addEmptyLines( _line_parts.front().pos.line_number );
@@ -520,15 +761,15 @@ void PrettifyLineBuilder::buildLine( size_t current_ident )
   bool has_preferred = false;
   bool has_preferred_logical = false;
   size_t linelength = 0;
-  for ( auto& [l, group, firstgroup, style] : lines )
+  for ( const auto& part : lines )
   {
-    if ( group != 0 )
+    if ( part.group != 0 )
       groups = true;
-    if ( style & FmtToken::PREFERRED_BREAK )
+    if ( part.style & FmtToken::PREFERRED_BREAK )
       has_preferred = true;
-    if ( style & FmtToken::PREFERRED_BREAK_LOGICAL )
+    if ( part.style & FmtToken::PREFERRED_BREAK_LOGICAL )
       has_preferred_logical = true;
-    linelength += l.size();
+    linelength += part.text.size();
   }
 
   // split based on groups
