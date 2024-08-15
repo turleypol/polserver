@@ -148,6 +148,11 @@ private:
   std::vector<std::string> createSimple( const std::vector<FmtToken>& lines ) const;
   void parenthesisAlign( const std::vector<std::string>& finallines, size_t alignmentspace,
                          std::string& line ) const;
+  bool binPack( const FmtToken& part, std::string line, size_t index,
+                const std::vector<FmtToken>& lines, bool only_single_line,
+                std::vector<std::string>* finallines, std::map<size_t, size_t>* alignmentspace,
+                size_t* skipindex ) const;
+  void alignComments( std::vector<std::string>& finallines );
 };
 
 // operator for enum bitflag handling

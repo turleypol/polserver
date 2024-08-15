@@ -1430,14 +1430,15 @@ std::vector<FmtToken> PrettifyFileProcessor::collectComments( SourceFile& sf )
       {
         info.context = FmtContext::LINE_COMMENT;
         info.style |= FmtToken::FORCED_BREAK;
+
         info.text.erase( 0, 2 );  // remove //
         auto firstchar = info.text.find_first_not_of( " \t" );
-        if ( info.text.empty() || firstchar == std::string::npos )
+        if ( info.text.empty() )
         {
           // empty or only whitespace
           info.text = "//";
         }
-        else if ( info.text.front() == '/' )
+        else if ( firstchar == std::string::npos || info.text.front() == '/' )
         {
           // assuming its ////// -> keep it
           info.text = std::string( "//" ) + info.text;

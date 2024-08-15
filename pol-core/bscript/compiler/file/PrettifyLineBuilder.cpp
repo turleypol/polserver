@@ -9,7 +9,7 @@
 #include <iostream>
 #include <utility>
 
-#define DEBUG_FORMAT_BREAK
+// #define DEBUG_FORMAT_BREAK
 
 namespace Pol::Bscript::Compiler
 {
@@ -106,6 +106,7 @@ void PrettifyLineBuilder::mergeComments()
     if ( _line_parts[i].pos.token_index > _comments.front().pos.token_index )
     {
       auto info = _comments.front();
+      INFO_PRINTLN( "{}", info.text );
       //      info.group = _currentgroup;
       info.group = i ? _line_parts[i - 1].group : _currentgroup;
       _line_parts.insert( _line_parts.begin() + i, std::move( info ) );
@@ -219,11 +220,144 @@ std::vector<FmtToken> PrettifyLineBuilder::buildLineSplits()
     part.style = _line_parts.back().style;
     part.group = _line_parts.back().group;
     part.pos_end = _line_parts.back().pos_end;
-    part.firstgroup = part.group;  // todo
+    //  INFO_PRINTLN( "LAST {}", part );
+    //    part.firstgroup = part.group;  // todo
     lines.emplace_back( std::move( part ) );
   }
 
   return lines;
+}
+
+bool PrettifyLineBuilder::binPack( const FmtToken& part, std::string line, size_t index,
+                                   const std::vector<FmtToken>& lines, bool only_single_line,
+                                   std::vector<std::string>* finallines,
+                                   std::map<size_t, size_t>* alignmentspace,
+                                   size_t* skipindex ) const
+{
+  auto packTaktic =
+      []( size_t index, size_t end_group, size_t max_len, const std::vector<FmtToken>& lines )
+  {
+    // fill up lines with given max_len
+    std::string currline;
+    std::vector<std::string> lineparts;
+    for ( size_t j = index; j < end_group; ++j )
+    {
+      const auto& lpart = lines[j].text;
+      if ( lines[j].style & FmtToken::FORCED_BREAK )
+      {
+        currline += lpart;
+        lineparts.push_back( std::move( currline ) );
+        currline.clear();
+        continue;
+      }
+      // new part still fits, add to line
+      if ( currline.size() + lpart.size() <= max_len )
+      {
+        currline += lpart;
+        continue;
+      }
+      // we are already at end, start a new line
+      if ( currline.size() >= max_len )
+      {
+        lineparts.push_back( std::move( currline ) );
+        currline = lpart;
+        continue;
+      }
+      // we where smaller, add it anyway and start a new line
+      // the line will be bigger then the available room
+      // but I think looks better
+      currline += lpart;
+      lineparts.push_back( std::move( currline ) );
+      currline.clear();
+    }
+    if ( !currline.empty() )
+      lineparts.push_back( currline );
+    return lineparts;
+  };
+  auto ident = identSpacing();
+  size_t room = compilercfg.FormatterLineWidth - line.size();
+  size_t end_group = 0;
+  // where does the group end?
+  for ( size_t j = index + 1; j < lines.size(); ++j )
+  {
+    if ( lines[j].group == part.group || lines[j].firstgroup == part.group )
+    {
+      continue;
+    }
+    end_group = j;
+    break;
+  }
+  if ( end_group == 0 )
+    end_group = lines.size();
+  *skipindex = end_group;  // independent of the result we will skip till end of group
+  std::string total;
+  bool total_valid{ true };
+  for ( size_t j = index; j < end_group; ++j )
+  {
+    total += lines[j].text;
+    if ( lines[j].style & FmtToken::FORCED_BREAK )
+    {
+      total_valid = false;
+      break;
+    }
+  }
+  // it fits directly into the line
+  if ( total_valid && total.size() + line.size() < compilercfg.FormatterLineWidth )
+  {
+    if ( !alignmentspace->count( part.group ) )
+      ( *alignmentspace )[part.group] = line.size() - ident.size();
+    line += total;
+    stripline( line );
+    finallines->emplace_back( std::move( line ) );
+    line.clear();
+    return true;
+  }
+  // if its part of an active groupformatting only allow a single line
+  if ( only_single_line )
+    return false;
+  // TODO: if only a few chars room are left start a newline before
+  //  option 1: try to equally split the line into two, for structs and dicts half the available
+  //  room
+  size_t lenOption2 = std::min( room, total.size() / 2 );
+  if ( ( part.scope & FmtToken::Scope::STRUCT ) == FmtToken::Scope::STRUCT ||
+       ( part.scope & FmtToken::Scope::DICT ) == FmtToken::Scope::DICT )
+  {
+    lenOption2 = room / 2;
+  }
+
+  auto lineparts = packTaktic( index, end_group, lenOption2, lines );
+
+  // option1 failed, for arrays its allowed to use 3 lines
+  if ( lineparts.size() != 2 )
+  {
+    if ( ( part.scope & FmtToken::Scope::STRUCT ) == FmtToken::Scope::STRUCT ||
+         ( part.scope & FmtToken::Scope::DICT ) == FmtToken::Scope::DICT )
+    {
+      return false;
+    }
+    size_t lenOption3 = std::min( room, total.size() / 3 );
+    lineparts = packTaktic( index, end_group, lenOption3, lines );
+    if ( lineparts.size() != 3 )
+    {
+      return false;
+    }
+  }
+  // we found a solution
+  if ( !alignmentspace->count( part.group ) )
+    ( *alignmentspace )[part.group] = line.size() - ident.size();
+  for ( const auto& lpart : lineparts )
+  {
+    if ( line.empty() )
+    {
+      line = alignmentSpacing( ( *alignmentspace )[part.firstgroup] );
+      line += ident;
+    }
+    line += lpart;
+    stripline( line );
+    finallines->emplace_back( std::move( line ) );
+    line.clear();
+  }
+  return true;
 }
 
 std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
@@ -246,6 +380,28 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
       ++i;
       continue;
     }
+    // it was a binpack before
+    if ( line.empty() && !finallines.empty() )
+    {
+      // add a following comment to the line if it fits
+      if ( part.context == FmtContext::LINE_COMMENT || part.context == FmtContext::COMMENT )
+      {
+        if ( part.text.size() + finallines.back().size() < compilercfg.FormatterLineWidth )
+        {
+          if ( !( lines[i - 1].style & FmtToken::FORCED_BREAK ) )
+          {
+            if ( lines[i - 1].style & FmtToken::SPACE )
+              finallines.back() += ' ';  // needed since already stripped
+            INFO_PRINTLN( "ADD C {}", part.text );
+            finallines.back() += part.text;
+            stripline( finallines.back() );
+            line = ident;
+            ++i;
+            continue;
+          }
+        }
+      }
+    }
     if ( line.empty() && !alignmentspace.empty() )
     {
       line = alignmentSpacing( alignmentspace[part.firstgroup] );
@@ -254,6 +410,10 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
     if ( part.style & FmtToken::FORCED_BREAK )
     {
       line += part.text;
+      // do not ident comments if they start at the beginning
+      if ( part.context == FmtContext::LINE_COMMENT || part.context == FmtContext::COMMENT )
+        if ( part.pos.character_column < 4 )
+          line = part.text;
       stripline( line );
       finallines.emplace_back( std::move( line ) );
       line = ident;
@@ -267,25 +427,24 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
       alignmentspace[part.group] = line.size() - ident.size();
       newline = true;
 #ifdef DEBUG_FORMAT_BREAK
-      INFO_PRINTLN( "first {}", line );
+      INFO_PRINTLN( "first {} {}", line, part.firstgroup );
 #endif
       ++i;
       lastgroup = part.firstgroup;
       continue;
     }
 
-    // TODO arrays for uo to 3 lines, dict/structs one line or maybe 2 half lines?
+    // in assignements array only 2 lines?
     bool allowed = true;
-    if ( ( part.scope & FmtToken::Scope::VAR ) == FmtToken::Scope::VAR )
-      allowed = false;
-    if ( ( part.scope & FmtToken::Scope::ARRAY ) == FmtToken::Scope::ARRAY )
-      allowed = true;
-    if ( _line_parts[0].context != FmtContext::VAR_STATEMENT && trieduntil < i && allowed )
+    /*    if ( ( part.scope & FmtToken::Scope::VAR ) == FmtToken::Scope::VAR )
+          allowed = false;
+        if ( ( part.scope & FmtToken::Scope::ARRAY ) == FmtToken::Scope::ARRAY )
+          allowed = true;*/
+    if ( /*_line_parts[0].context != FmtContext::VAR_STATEMENT &&*/ trieduntil < i && allowed )
     {  // call it binpacking and make it optional, in vars default no, otherwise true
-      size_t j = i + 1;
       bool allsame{ true };
-      // check for nested groups, binpack is not done for these eg array of struct
-      for ( ; j < lines.size(); ++j )
+      // check for nested groups, binpack is not allowed for these eg array of struct
+      for ( size_t j = i + 1; j < lines.size(); ++j )
       {
         if ( lines[j].group > part.group )
         {
@@ -293,194 +452,17 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
           break;
         }
       }
-      if ( false && !allsame )  // TODO really needed?
+      if ( allsame )
       {
-        std::string currline = line + part.text;
-        //        INFO_PRINTLN( "ORIG {} NEW {}", line, currline );
-        j = i + 1;
-        for ( ; j < lines.size(); ++j )
+        size_t skip;
+        if ( binPack( part, line, i, lines, trieduntil > 0, &finallines, &alignmentspace, &skip ) )
         {
-          if ( lines[j].group == part.group )  // next group begins
-          {
-            // but only if afterwards the groups increase
-            // at the end this is not the case, (bug or feature?)
-            if ( j + 1 <= lines.size() )
-              if ( lines[j + 1].group > part.group )
-                break;
-          }
-          if ( lines[j].style & FmtToken::FORCED_BREAK )
-            break;
-          currline += lines[j].text;
-          if ( lines[j].group == part.group )  // see above
-          {
-            ++j;
-            break;
-          }
-        }
-        if ( currline.size() < compilercfg.FormatterLineWidth )
-        {
-          if ( !alignmentspace.count( part.group ) )
-            alignmentspace[part.group] = line.size() - ident.size();
-          line = currline;
-          INFO_PRINTLN( "!ALLSAME UNTIL {} {}", j, line );
-          stripline( line );
-          finallines.emplace_back( std::move( line ) );
-          ++i;
-          skipuntil = j;
-          continue;
-        }
-      }
-      else if ( allsame )
-      {
-        std::vector<std::pair<std::string, size_t>> lengths;
-        std::string currline, currline2, currline3;
-        std::vector<std::string> lineparts2, lineparts3;
-        size_t room = compilercfg.FormatterLineWidth - line.size();
-        size_t end_group = 0;
-        //        INFO_PRINTLN( "ALLSAME SEARCHING FOR {}", l );
-        //        where does the group end?
-        for ( j = i + 1; j < lines.size(); ++j )
-        {
-          if ( lines[j].group == part.group || lines[j].firstgroup == part.group )
-          {
-            //          INFO_PRINTLN( "matching {}", std::get<0>( lines[j] ) );
-            continue;
-          }
-          end_group = j;
-          break;
-        }
-        if ( end_group == 0 )
-          end_group = lines.size();
-        //    INFO_PRINTLN( "ENDGROUP {} {}", end_group, lines.size() );
-        std::string total;
-        bool total_valid{ true };
-        for ( j = i; j < end_group; ++j )
-        {
-          total += lines[j].text;
-          if ( lines[j].style & FmtToken::FORCED_BREAK )
-            total_valid = false;
-        }
-        // it fits directly into the line
-        if ( total_valid && total.size() + line.size() < compilercfg.FormatterLineWidth )
-        {
-          if ( !alignmentspace.count( part.group ) )
-            alignmentspace[part.group] = line.size() - ident.size();
-          line += total;
-          stripline( line );
-          finallines.emplace_back( std::move( line ) );
+          skipuntil = skip;
           line.clear();
           ++i;
-          skipuntil = j;
           continue;
         }
-        size_t lenOption2 = std::min( room, total.size() / 2 );
-        if ( ( part.scope & FmtToken::Scope::STRUCT ) == FmtToken::Scope::STRUCT )
-        {
-          INFO_PRINTLN( "IS STRUCT {}", part.text );
-          lenOption2 = room / 2;
-        }
-        size_t lenOption3 = std::min( room, total.size() / 3 );
-        INFO_PRINTLN( "ROOM {} TOTAL {}/{}/{}", room, total.size(), lenOption2, lenOption3 );
-        // build the options equally in 2 or 3 lines
-        for ( j = i; j < end_group; ++j )
-        {
-          const auto& lpart = lines[j].text;
-          if ( lines[j].style & FmtToken::FORCED_BREAK )
-          {
-            currline2 += lpart;
-            lineparts2.push_back( std::move( currline2 ) );
-            currline2.clear();
-            currline3 += lpart;
-            lineparts3.push_back( std::move( currline3 ) );
-            currline3.clear();
-            continue;
-          }
-
-          if ( currline2.size() + lpart.size() <= lenOption2 )  // war ohne min
-            currline2 += lpart;
-          else
-          {
-            if ( currline2.size() >= lenOption2 )
-            {
-              lineparts2.push_back( std::move( currline2 ) );
-              currline2 = lpart;
-            }
-            else
-            {
-              currline2 += lpart;
-              lineparts2.push_back( std::move( currline2 ) );
-              currline2.clear();
-            }
-          }
-          if ( currline3.size() + lpart.size() <= lenOption3 )
-            currline3 += lpart;
-          else
-          {
-            if ( currline3.size() >= lenOption3 )
-            {
-              lineparts3.push_back( std::move( currline3 ) );
-              currline3 = lpart;
-            }
-            else
-            {
-              currline3 += lpart;
-              lineparts3.push_back( std::move( currline3 ) );
-              currline3.clear();
-            }
-          }
-        }
-        if ( !currline2.empty() )
-          lineparts2.push_back( currline2 );
-        if ( !currline3.empty() )
-          lineparts3.push_back( currline3 );
-
-        bool pack_succeeded{ false };
-        if ( lineparts2.size() == 2 )
-        {
-          //          INFO_PRINTLN( "PACKED2 {}\n{}", lineparts2.size(), lineparts2 );
-          if ( !alignmentspace.count( part.group ) )
-            alignmentspace[part.group] = line.size() - ident.size();
-          line += lineparts2[0];
-          stripline( line );
-          finallines.emplace_back( std::move( line ) );
-          line = alignmentSpacing( alignmentspace[part.firstgroup] );
-          line += ident + lineparts2[1];
-          stripline( line );
-          finallines.emplace_back( std::move( line ) );
-          pack_succeeded = true;
-        }
-        else if ( lineparts3.size() == 3 &&
-                  ( part.scope & FmtToken::Scope::STRUCT ) == FmtToken::Scope::NONE )
-        {
-          //          INFO_PRINTLN( "PACKED3 {}\n{}", lineparts3.size(), lineparts3 );
-          if ( !alignmentspace.count( part.group ) )
-            alignmentspace[part.group] = line.size() - ident.size();
-          line += lineparts3[0];
-          stripline( line );
-          finallines.emplace_back( std::move( line ) );
-          line = alignmentSpacing( alignmentspace[part.firstgroup] );
-          line += ident + lineparts3[1];
-          stripline( line );
-          finallines.emplace_back( std::move( line ) );
-          line = alignmentSpacing( alignmentspace[part.firstgroup] );
-          line += ident + lineparts3[2];
-          stripline( line );
-          finallines.emplace_back( std::move( line ) );
-          pack_succeeded = true;
-        }
-        if ( pack_succeeded )
-        {
-          line.clear();
-          ++i;
-          skipuntil = j;
-          continue;
-        }
-        else
-        {
-          //      INFO_PRINTLN( "failedPACKED2 {}\n{}", lineparts2.size(), lineparts2 );
-          //    INFO_PRINTLN( "failedPACKED3 {}\n{}", lineparts3.size(), lineparts3 );
-          trieduntil = j;
-        }
+        trieduntil = skip;
       }
     }
     if ( lastgroup < part.firstgroup )  // new group
@@ -772,15 +754,14 @@ void PrettifyLineBuilder::buildLine( size_t current_ident )
     linelength += part.text.size();
   }
 
+  std::vector<std::string> finallines;
   // split based on groups
   if ( groups && linelength > compilercfg.FormatterLineWidth )
   {
 #ifdef DEBUG_FORMAT_BREAK
     INFO_PRINTLN( "split groupbased" );
 #endif
-    auto finallines = createBasedOnGroups( lines );
-    _lines.insert( _lines.end(), std::make_move_iterator( finallines.begin() ),
-                   std::make_move_iterator( finallines.end() ) );
+    finallines = createBasedOnGroups( lines );
   }
   else  // split based on parts
   {
@@ -790,24 +771,55 @@ void PrettifyLineBuilder::buildLine( size_t current_ident )
 #ifdef DEBUG_FORMAT_BREAK
       INFO_PRINTLN( "split preferred" );
 #endif
-      auto finallines = createBasedOnPreferredBreaks( lines, has_preferred_logical );
-      _lines.insert( _lines.end(), std::make_move_iterator( finallines.begin() ),
-                     std::make_move_iterator( finallines.end() ) );
+      finallines = createBasedOnPreferredBreaks( lines, has_preferred_logical );
     }
     else  // simple splitting
     {
 #ifdef DEBUG_FORMAT_BREAK
       INFO_PRINTLN( "split simple" );
 #endif
-      auto finallines = createSimple( lines );
-      _lines.insert( _lines.end(), std::make_move_iterator( finallines.begin() ),
-                     std::make_move_iterator( finallines.end() ) );
+      finallines = createSimple( lines );
     }
   }
+  alignComments( finallines );
+  _lines.insert( _lines.end(), std::make_move_iterator( finallines.begin() ),
+                 std::make_move_iterator( finallines.end() ) );
   _last_line = _line_parts.back().pos.line_number;
   _line_parts.clear();
 }
 
+void PrettifyLineBuilder::alignComments( std::vector<std::string>& finallines )
+{
+  std::vector<size_t> commentstart;
+  for ( size_t i = 0; i < finallines.size(); ++i )
+  {
+    auto linecomment = finallines[i].find( "//" );
+    if ( linecomment == std::string::npos )
+      commentstart.push_back( 0 );
+    else
+    {
+      // if the line only contains a comment dont align it
+      auto other = finallines[i].find_first_not_of( " \t" );
+      if ( other == linecomment )
+        commentstart.push_back( 0 );
+      else
+        commentstart.push_back( linecomment );
+    }
+  }
+  if ( commentstart.empty() )
+    return;
+
+  auto max = *std::max_element( commentstart.begin(), commentstart.end() );
+  if ( max == 0 )
+    return;
+
+  for ( size_t i = 0; i < finallines.size(); ++i )
+  {
+    if ( !commentstart[i] || max == commentstart[i] )
+      continue;
+    finallines[i].insert( commentstart[i], max - commentstart[i], ' ' );
+  }
+}
 
 void PrettifyLineBuilder::addEmptyLines( size_t line_number )
 {
