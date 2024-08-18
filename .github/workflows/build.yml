@@ -162,6 +162,7 @@ jobs:
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
+          ../bin/ecompile -F coretest/scripts/tests.src
           #cmake --build . --config ${{ matrix.config.build-type }} --target test_ecompile_watch
           #env:
           #POLCORE_TEST_FILTER: testitems

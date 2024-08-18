@@ -712,8 +712,12 @@ antlrcpp::Any PrettifyFileProcessor::visitFunctionParameters(
   if ( auto args = ctx->functionParameterList() )
     visitFunctionParameterList( args );
 
-  addToken( ")", ctx->RPAREN(), linebuilder.closingParenthesisStyle( curcount ) );
-  linebuilder.buildLine( _currident );
+  auto closingstyle = linebuilder.closingParenthesisStyle( curcount );
+  if ( _suppressnewline )  // add space if newline is suppressed
+    closingstyle |= FmtToken::SPACE;
+  addToken( ")", ctx->RPAREN(), closingstyle );
+  if ( !_suppressnewline )
+    linebuilder.buildLine( _currident );
   return {};
 }
 
@@ -905,10 +909,14 @@ antlrcpp::Any PrettifyFileProcessor::visitFunctionExpression(
 {
   addToken( "@", ctx->AT(), FmtToken::SPACE );
 
+  _suppressnewline = true;  // functionparams force newline
   if ( auto params = ctx->functionParameters() )
     visitFunctionParameters( params );
+  _suppressnewline = false;
 
-  addToken( "{", ctx->LBRACE(), linebuilder.openingBracketStyle() );
+  // we want the starting { at the same line and not attached
+  addToken( "{", ctx->LBRACE(), linebuilder.openingBracketStyle() & ~FmtToken::ATTACHED );
+  linebuilder.buildLine( _currident );  // now start a newline
 
   ++_currentgroup;
   size_t curcount = linebuilder.currentTokens().size();
@@ -1426,45 +1434,46 @@ std::vector<FmtToken> PrettifyFileProcessor::collectComments( SourceFile& sf )
       info.text = comment->getText();
       info.token_type = comment->getType();
       info.style = FmtToken::SPACE;
+      // replace tabs with spaces if not active
+      if ( compilercfg.FormatterFormatInsideComments && !compilercfg.FormatterUseTabs )
+      {
+        auto it = info.text.find( '\t' );
+        while ( it != std::string::npos )
+        {
+          // replacing tabs inbetween is a bit more complicated...
+          // the size is based on the next tabstop which is eg 4
+          // if its multiline we need to calc it based on the last newline
+          auto lastnewline = info.text.find_last_of( '\n', it );
+          if ( lastnewline == std::string::npos )
+            lastnewline = 0;
+          auto delta = ( it - lastnewline ) % compilercfg.FormatterTabWidth;
+          info.text.replace( it, 1, std::string( compilercfg.FormatterTabWidth - delta, ' ' ) );
+          it = info.text.find( '\t' );
+        }
+      }
       if ( info.token_type == EscriptLexer::LINE_COMMENT )
       {
         info.context = FmtContext::LINE_COMMENT;
         info.style |= FmtToken::FORCED_BREAK;
-
         info.text.erase( 0, 2 );  // remove //
         auto firstchar = info.text.find_first_not_of( " \t" );
-        if ( info.text.empty() )
+        if ( info.text.empty() || firstchar == std::string::npos )
         {
           // empty or only whitespace
           info.text = "//";
         }
-        else if ( firstchar == std::string::npos || info.text.front() == '/' )
+        else if ( info.text.front() == '/' )
         {
           // assuming its ////// -> keep it
           info.text = std::string( "//" ) + info.text;
         }
         else
         {
-          if ( info.text[firstchar] == '/' || info.text.back() == '/' )
-          {
-            // assuming its //    // -> keep it
-            info.text = std::string( "//" ) + info.text;
-          }
+          // add space if non is there
+          if ( info.text.front() != ' ' )
+            info.text = std::string( "// " ) + info.text;
           else
-          {
-            // if its at the line start and line before was also a comment dont trim whitespaces
-            // (could be a header comment)
-            if ( startpos.start.character_column == 1 && !comments.empty() &&
-                 comments.back().pos.line_number == startpos.start.line_number - 1 )
-            {
-              info.text = std::string( "//" ) + info.text;
-            }
-            else
-            {
-              info.text.erase( 0, firstchar );  // remove remaining whitespace
-              info.text = std::string( "// " ) + info.text;
-            }
-          }
+            info.text = std::string( "//" ) + info.text;
         }
         auto lastchar = info.text.find_last_not_of( ' ' );
         info.text.erase( info.text.begin() + lastchar + 1, info.text.end() );
@@ -1472,14 +1481,18 @@ std::vector<FmtToken> PrettifyFileProcessor::collectComments( SourceFile& sf )
       else
       {
         info.context = FmtContext::COMMENT;
-        info.text.erase( 0, 2 );  // remove /*
-        auto firstchar = info.text.find_first_not_of( " \t" );
-        info.text.erase( 0, firstchar );                          // remove remaining whitespace
+        info.text.erase( 0, 2 );                                  // remove /*
         info.text.erase( info.text.end() - 2, info.text.end() );  // remove */
-        auto lastchar = info.text.find_last_not_of( " \t" );
-        info.text.erase( info.text.begin() + lastchar + 1, info.text.end() );
+        if ( compilercfg.FormatterFormatInsideComments )
+        {
+          auto firstchar = info.text.find_first_not_of( " \t" );
+          info.text.erase( 0, firstchar );  // remove remaining whitespace
+          auto lastchar = info.text.find_last_not_of( " \t" );
+          info.text.erase( info.text.begin() + lastchar + 1, info.text.end() );
+        }
         // if its in the style of /*** blubb **/ dont add whitespace
-        if ( info.text.empty() || ( info.text.front() == '*' && info.text.back() == '*' ) )
+        if ( !compilercfg.FormatterFormatInsideComments || info.text.empty() ||
+             ( info.text.front() == '*' && info.text.back() == '*' ) )
           info.text = std::string( "/*" ) + info.text + "*/";
         else
         {
@@ -1500,10 +1513,16 @@ std::vector<FmtToken> PrettifyFileProcessor::collectComments( SourceFile& sf )
           if ( rawtext[ri] == '\r' && ri + 1 < rawtext.size() && rawtext[ri + 1] == '\n' )
           {
             ++ri;
+            auto lastchar = info.text.find_last_not_of( ' ' );
+            info.text.erase( info.text.begin() + lastchar + 1, info.text.end() );
             info.text += compilercfg.FormatterWindowsLineEndings ? "\r\n" : "\n";
           }
           else if ( rawtext[ri] == '\r' || rawtext[ri] == '\n' )
+          {
+            auto lastchar = info.text.find_last_not_of( ' ' );
+            info.text.erase( info.text.begin() + lastchar + 1, info.text.end() );
             info.text += compilercfg.FormatterWindowsLineEndings ? "\r\n" : "\n";
+          }
           else
             info.text += rawtext[ri];
         }

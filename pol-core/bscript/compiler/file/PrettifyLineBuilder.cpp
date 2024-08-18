@@ -106,8 +106,6 @@ void PrettifyLineBuilder::mergeComments()
     if ( _line_parts[i].pos.token_index > _comments.front().pos.token_index )
     {
       auto info = _comments.front();
-      INFO_PRINTLN( "{}", info.text );
-      //      info.group = _currentgroup;
       info.group = i ? _line_parts[i - 1].group : _currentgroup;
       _line_parts.insert( _line_parts.begin() + i, std::move( info ) );
       _comments.erase( _comments.begin() );
@@ -164,6 +162,23 @@ std::vector<FmtToken> PrettifyLineBuilder::buildLineSplits()
       }
       else
         part.text += ' ';
+      // if something is left and not attached
+      if ( i + 1 < _line_parts.size() )
+      {
+        if ( !( _line_parts[i + 1].style & FmtToken::ATTACHED ) )
+        {
+          // if its already quite long split it
+          if ( part.text.size() > compilercfg.FormatterLineWidth * 0.5 )
+          {
+            part.style = _line_parts[i].style;
+            part.group = _line_parts[i].group;
+            part.pos_end = _line_parts[i].pos_end;
+            lines.emplace_back( std::move( part ) );
+            part = FmtToken{};
+            continue;
+          }
+        }
+      }
     }
     if ( _line_parts[i].style & FmtToken::FORCED_BREAK ||
          ( has_varcomma && ( _line_parts[i].context == FmtContext::VAR_STATEMENT ||
@@ -220,8 +235,6 @@ std::vector<FmtToken> PrettifyLineBuilder::buildLineSplits()
     part.style = _line_parts.back().style;
     part.group = _line_parts.back().group;
     part.pos_end = _line_parts.back().pos_end;
-    //  INFO_PRINTLN( "LAST {}", part );
-    //    part.firstgroup = part.group;  // todo
     lines.emplace_back( std::move( part ) );
   }
 
@@ -263,7 +276,7 @@ bool PrettifyLineBuilder::binPack( const FmtToken& part, std::string line, size_
         currline = lpart;
         continue;
       }
-      // we where smaller, add it anyway and start a new line
+      // we were smaller, add it anyway and start a new line
       // the line will be bigger then the available room
       // but I think looks better
       currline += lpart;
@@ -372,7 +385,7 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
   auto ident = identSpacing();
   line = ident;
   bool groupdiffered = false;
-  size_t i = 0, skipuntil = 0, trieduntil = 0;
+  size_t i = 0, skipuntil = 0, tried_binpack_until = 0;
   for ( const auto& part : lines )
   {
     if ( skipuntil > i )  // already handled during binpack
@@ -388,11 +401,11 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
       {
         if ( part.text.size() + finallines.back().size() < compilercfg.FormatterLineWidth )
         {
+          // if the last one was forced (comment) let the default behaviour later do it
           if ( !( lines[i - 1].style & FmtToken::FORCED_BREAK ) )
           {
             if ( lines[i - 1].style & FmtToken::SPACE )
               finallines.back() += ' ';  // needed since already stripped
-            INFO_PRINTLN( "ADD C {}", part.text );
             finallines.back() += part.text;
             stripline( finallines.back() );
             line = ident;
@@ -404,19 +417,25 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
     }
     if ( line.empty() && !alignmentspace.empty() )
     {
+      if ( alignmentspace.find( part.firstgroup ) == alignmentspace.end() )
+        alignmentspace[part.firstgroup] = alignmentspace[part.firstgroup - 1];
       line = alignmentSpacing( alignmentspace[part.firstgroup] );
       line += ident;
     }
     if ( part.style & FmtToken::FORCED_BREAK )
     {
+      auto nonspace = line.find_first_not_of( " \t" );
       line += part.text;
       // do not ident comments if they start at the beginning
       if ( part.context == FmtContext::LINE_COMMENT || part.context == FmtContext::COMMENT )
-        if ( part.pos.character_column < 4 )
+        if ( part.pos.character_column < 4 &&
+             nonspace == std::string::npos )  // TODO startpos does not include original space ident
           line = part.text;
       stripline( line );
       finallines.emplace_back( std::move( line ) );
-      line = ident;
+      line.clear();
+      line = alignmentSpacing( alignmentspace[part.firstgroup] );
+      line += ident;
       ++i;
       continue;
     }
@@ -427,21 +446,15 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
       alignmentspace[part.group] = line.size() - ident.size();
       newline = true;
 #ifdef DEBUG_FORMAT_BREAK
-      INFO_PRINTLN( "first {} {}", line, part.firstgroup );
+      INFO_PRINTLN( "first {} {} a{}", line, part.firstgroup, alignmentspace );
 #endif
       ++i;
       lastgroup = part.firstgroup;
       continue;
     }
 
-    // in assignements array only 2 lines?
-    bool allowed = true;
-    /*    if ( ( part.scope & FmtToken::Scope::VAR ) == FmtToken::Scope::VAR )
-          allowed = false;
-        if ( ( part.scope & FmtToken::Scope::ARRAY ) == FmtToken::Scope::ARRAY )
-          allowed = true;*/
-    if ( /*_line_parts[0].context != FmtContext::VAR_STATEMENT &&*/ trieduntil < i && allowed )
-    {  // call it binpacking and make it optional, in vars default no, otherwise true
+    if ( tried_binpack_until < i )
+    {
       bool allsame{ true };
       // check for nested groups, binpack is not allowed for these eg array of struct
       for ( size_t j = i + 1; j < lines.size(); ++j )
@@ -455,14 +468,15 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnGroups(
       if ( allsame )
       {
         size_t skip;
-        if ( binPack( part, line, i, lines, trieduntil > 0, &finallines, &alignmentspace, &skip ) )
+        if ( binPack( part, line, i, lines, tried_binpack_until > 0, &finallines, &alignmentspace,
+                      &skip ) )
         {
           skipuntil = skip;
           line.clear();
           ++i;
           continue;
         }
-        trieduntil = skip;
+        tried_binpack_until = skip;
       }
     }
     if ( lastgroup < part.firstgroup )  // new group
@@ -575,6 +589,14 @@ void PrettifyLineBuilder::parenthesisAlign( const std::vector<std::string>& fina
     line = alignmentSpacing( parenthesisalign.back() - alignmentspace +
                              ( compilercfg.FormatterBracketSpacing ? 2 : 1 ) ) +
            line;
+    // if its a operator eg +/- align the actual "data" so subtract 2
+    auto space = line.find_first_not_of( " \t" );
+    if ( space != std::string::npos && space + 1 < line.size() && line[space + 1] == ' ' )
+    {
+      // TODO tabs...
+      if ( !compilercfg.FormatterUseTabs )
+        line.erase( 0, 2 );
+    }
   }
 }
 
@@ -601,6 +623,12 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnPreferredBreaks(
       parts.push_back( { part.text, FmtToken::NONE } );
       continue;
     }
+    // if it gets to long we still have to split the line
+    if ( tmp.size() + part.text.size() > compilercfg.FormatterLineWidth )
+    {
+      parts.push_back( { std::move( tmp ), part.style } );
+      tmp.clear();
+    }
     tmp += part.text;
 
     if ( ( part.style & FmtToken::FORCED_BREAK ) ||
@@ -621,16 +649,20 @@ std::vector<std::string> PrettifyLineBuilder::createBasedOnPreferredBreaks(
 #endif
     if ( line.empty() && alignmentspace && alignpart )
       line = alignmentSpacing( alignmentspace );
+
     alignpart = true;  // otherwise first part would get spacing
-    // with a margin of 50% start a new line before
-    if ( ( line.size() + ( l.size() / 2 ) ) > compilercfg.FormatterLineWidth )
+    // with a margin of 75% start a new line before
+    if ( ( line.size() + ( l.size() * 0.75 ) ) > compilercfg.FormatterLineWidth )
     {
       // TODO if next is linecomment dont split now, but split comment
       stripline( line );
-      if ( !logical )  // TODO does not work
-        parenthesisAlign( finallines, alignmentspace, line );
-      finallines.emplace_back( std::move( line ) );
-      line = alignmentSpacing( alignmentspace );
+      if ( !line.empty() )  // line contained only alignment
+      {
+        if ( !logical )
+          parenthesisAlign( finallines, alignmentspace, line );
+        finallines.emplace_back( std::move( line ) );
+        line = alignmentSpacing( alignmentspace );
+      }
     }
     line += l;
     // linewidth reached add current line, start a new one
@@ -696,6 +728,15 @@ std::vector<std::string> PrettifyLineBuilder::createSimple(
          forcebreakVarToLong )
     {
       // TODO if next is linecomment dont split now, but split comment
+      // be extra generous if we only have a few chars left
+      if ( ( part.style & FmtToken::FORCED_BREAK ) == 0 )
+      {
+        if ( i + 1 == lines.size() - 1 && lines[i + 1].text.size() < 4 )
+        {
+          ++i;
+          continue;
+        }
+      }
       stripline( line );
       parenthesisAlign( finallines, alignmentspace, line );
       finallines.emplace_back( std::move( line ) );
@@ -730,7 +771,7 @@ void PrettifyLineBuilder::buildLine( size_t current_ident )
   // fill lines with final strings splitted at breakpoints
   auto lines = buildLineSplits();
 #ifdef DEBUG_FORMAT_BREAK
-  INFO_PRINTLN( "BREAK " );
+  INFO_PRINTLN( "BREAK {}", current_ident );
   for ( const auto& part : lines )
     INFO_PRINTLN( "\"{}\" {}-{} ->{} :{}", part.text, part.group, part.firstgroup, part.style,
                   (int)part.scope );
@@ -791,6 +832,7 @@ void PrettifyLineBuilder::buildLine( size_t current_ident )
 void PrettifyLineBuilder::alignComments( std::vector<std::string>& finallines )
 {
   std::vector<size_t> commentstart;
+  // collect comment columns
   for ( size_t i = 0; i < finallines.size(); ++i )
   {
     auto linecomment = finallines[i].find( "//" );
@@ -809,10 +851,10 @@ void PrettifyLineBuilder::alignComments( std::vector<std::string>& finallines )
   if ( commentstart.empty() )
     return;
 
+  // add spaces at comment start foreach comment other then max
   auto max = *std::max_element( commentstart.begin(), commentstart.end() );
   if ( max == 0 )
     return;
-
   for ( size_t i = 0; i < finallines.size(); ++i )
   {
     if ( !commentstart[i] || max == commentstart[i] )
