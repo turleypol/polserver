@@ -112,6 +112,7 @@ antlrcpp::Any PrettifyFileProcessor::visitModuleUnit( EscriptParser::ModuleUnitC
 
 std::string PrettifyFileProcessor::prettify() const
 {
+  INFO_PRINTLN( "{}", linebuilder.formattedLines() );
   auto result =
       fmt::format( "{}", fmt::join( linebuilder.formattedLines(),
                                     compilercfg.FormatterWindowsLineEndings ? "\r\n" : "\n" ) );
