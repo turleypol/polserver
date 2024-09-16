@@ -1,4 +1,54 @@
 -- POL100.2.0 --
+09-12-2024 Turley:
+    Fixed: multiple problems with the EScript formatter
+    Added: more ecompile.cfg options for the formatter, see ecompile.cfg.example for details
+           FormatterBracketAttachToType, FormatterFormatInsideComments, FormatterAlignTrailingComments,
+           FormatterAllowShortCaseLabelsOnASingleLine, FormatterAllowShortFuncRefsOnASingleLine, FormatterAlignConsecutiveShortCaseStatements
+     Note: should be now "production" ready, default settings are just our personal preferences
+08-30-2024 Kevin:
+    Added: Performance improvements to the compiler
+08-27-2024 Reloecc:
+  Changed: ssopt.MobilesBlockNpcMovement now accepts values 0/1/2. Earlier 0 = false, 1 = true.
+           2 = new behavior, where npcs of the same master are allowed to walk on top of each other. Backward compatible.
+08-24-2024 Kevin:
+    Fixed: Resolved an issue where the Z coordinate of objects on a boat was incorrectly
+           calculated during turns (introduced in the 07-08-2024 nightly build).
+08-11-2024 Turley:
+  Changed: EScript Formatter
+           variable declaration list if it doesnt fit to the line, split on the commas.
+           if a newline happens while a parenthesis is open align the following line with this parenthesis.
+08-08-2024 Kevin:
+    Added: Function Objects can now be called across different scripts.
+
+           For example, an item use script can pass to pass an "initializer"
+           function to another script that provides a new color for the item as
+           a parameter:
+
+             program item_usescript( who, item )
+               // Find the color changer process.
+               var color_changer := GetProcess( ... );
+
+               // Send it an event, containing the item and the initializer function.
+               color_changer.SendEvent( struct{
+                 type := "new",
+                 item := item,
+                 initializer := @SetupItem
+               } );
+
+               // Wait for the script to send us a result.
+               do
+                 if ( Wait_For_Event( 1 ) )
+                   break;
+                 endif
+               while ( true );
+
+               SendSysMessage( who, $"Item color changed: {item.color}" );
+             endprogram
+
+             function SetupItem( item, color )
+               Print( $"Changing color: {item.color} -> {color}" );
+               item.color := color;
+             endfunction
 08-06-2024 Kevin:
   Changed: Performance improvements handling function references in the executor during runtime.
            These changes increases the Escript version, therefore a recompilation of all scripts is required.

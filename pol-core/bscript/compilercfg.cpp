@@ -12,6 +12,7 @@
 #include "../clib/cfgelem.h"
 #include "../clib/cfgfile.h"
 #include "../clib/fileutil.h"
+#include "../clib/logfacility.h"
 
 namespace Pol
 {
@@ -69,9 +70,9 @@ void CompilerConfig::Read( const std::string& path )
   IncParseTreeCacheSize = elem.remove_int( "IncParseTreeCacheSize", 50 );
 
 
-  FormatterLineWidth = elem.remove_unsigned( "FormatterLineWidth", 80 );
+  FormatterLineWidth = elem.remove_unsigned( "FormatterLineWidth", 100 );
   FormatterKeepKeywords = elem.remove_bool( "FormatterKeepKeywords", false );
-  FormatterIdentLevel = elem.remove_ushort( "FormatterIdentLevel", 2 );
+  FormatterIndentLevel = elem.remove_ushort( "FormatterIndentLevel", 2 );
   FormatterMergeEmptyLines = elem.remove_bool( "FormatterMergeEmptyLines", true );
   FormatterEmptyParenthesisSpacing = elem.remove_bool( "FormatterEmptyParenthesisSpacing", false );
   FormatterEmptyBracketSpacing = elem.remove_bool( "FormatterEmptyBracketSpacing", false );
@@ -86,11 +87,21 @@ void CompilerConfig::Read( const std::string& path )
   FormatterWindowsLineEndings = elem.remove_bool( "FormatterWindowsLineEndings", win_platform );
   FormatterUseTabs = elem.remove_bool( "FormatterUseTabs", false );
   FormatterTabWidth = elem.remove_ushort( "FormatterTabWidth", 4 );
-  FormatterInsertNewlineAtEOF = elem.remove_bool( "FormatterInsertNewlineAtEOF", false );
+  FormatterInsertNewlineAtEOF = elem.remove_bool( "FormatterInsertNewlineAtEOF", true );
+  INFO_PRINTLN( "{}", FormatterInsertNewlineAtEOF );
   FormatterFormatInsideComments = elem.remove_bool( "FormatterFormatInsideComments", true );
+  FormatterBracketAttachToType = elem.remove_bool( "FormatterBracketAttachToType", true );
+  FormatterAlignTrailingComments = elem.remove_bool( "FormatterAlignTrailingComments", true );
+  FormatterAlignConsecutiveShortCaseStatements =
+      elem.remove_bool( "FormatterAlignConsecutiveShortCaseStatements", true );
+  FormatterAllowShortCaseLabelsOnASingleLine =
+      elem.remove_bool( "FormatterAllowShortCaseLabelsOnASingleLine", true );
+  FormatterAllowShortFuncRefsOnASingleLine =
+      elem.remove_bool( "FormatterAllowShortFuncRefsOnASingleLine", true );
 
-// This is where we TRY to validate full paths from what was provided in the
-// ecompile.cfg. Maybe Turley or Shini can find the best way to do this in *nix.
+
+  // This is where we TRY to validate full paths from what was provided in the
+  // ecompile.cfg. Maybe Turley or Shini can find the best way to do this in *nix.
 #ifdef WIN32
   std::string MyPath = path.c_str();
   // If it's just "ecompile.cfg", let's change it to the exe's path which it SHOULD be
