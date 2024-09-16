@@ -134,8 +134,8 @@ jobs:
         run: |
           cd bin-build
           cd coretest
-          ecompile -Fi -T8 -r .
-          ecompile -Fi -T8 -ri .
+          ../../bin/ecompile -Fi -T8 -r .
+          ../../bin/ecompile -Fi -T8 -ri .
           #cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
           #env:
           #POLCORE_TEST_FILTER: testitems
