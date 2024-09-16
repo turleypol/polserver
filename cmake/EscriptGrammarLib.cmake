@@ -18,6 +18,8 @@ add_library(${lib_name} STATIC
   ${${lib_name}_sources}
 )
 set_compile_flags(${lib_name} 0)
+  target_compile_definitions(${lib_name} PRIVATE
+    ANTLR4_USE_THREAD_LOCAL_CACHE)
 
 target_include_directories(${lib_name} PRIVATE
   "${grammardir}/EscriptGrammar"
