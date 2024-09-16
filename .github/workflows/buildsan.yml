@@ -136,6 +136,8 @@ jobs:
           cd coretest
           ../../bin/ecompile -Fi -T8 -r .
           ../../bin/ecompile -Fi -T8 -ri .
+          ../../bin/ecompile -Fi -T8 -r -b ../../testsuite/escript
+          ../../bin/ecompile -Fi -T8 -ri -b ../../testsuite/escript
           #cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
           #env:
           #POLCORE_TEST_FILTER: testitems

@@ -136,12 +136,7 @@ std::string PrettifyFileProcessor::prettify() const
     return {};
   }
   if ( compilercfg.FormatterInsertNewlineAtEOF && !result.empty() && result.back() != '\n' )
-  {
-    INFO_PRINTLN( "ADD" );
     result += compilercfg.FormatterWindowsLineEndings ? "\r\n" : "\n";
-  }
-
-  INFO_PRINTLN( "end \"{}\" {}", result.back(), compilercfg.FormatterInsertNewlineAtEOF );
   return result;
 }
 
