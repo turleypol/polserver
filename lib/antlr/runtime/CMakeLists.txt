@@ -138,9 +138,9 @@ if (TARGET antlr4_shared)
                                    OUTPUT_NAME antlr4-runtime
                                    COMPILE_FLAGS "${disabled_compile_warnings} ${extra_share_compile_flags}")
 
-  target_compile_options(antlr4_shared PRIVATE -fsanitize=thread)
-  target_link_libraries(antlr4_shared PRIVATE  -fsanitize=thread)
-  target_compile_options(antlr4_shared PRIVATE
+  target_compile_options(antlr4_shared  -fsanitize=thread)
+  target_link_libraries(antlr4_shared   -fsanitize=thread)
+  target_compile_options(antlr4_shared 
         -g
         -fno-omit-frame-pointer
       )
@@ -153,9 +153,9 @@ if (TARGET antlr4_static)
                                    OUTPUT_NAME "antlr4-runtime${static_lib_suffix}"
                                    COMPILE_PDB_NAME "antlr4-runtime${static_lib_suffix}"
                                    COMPILE_FLAGS "${disabled_compile_warnings} ${extra_static_compile_flags}")
-  target_compile_options(antlr4_static PRIVATE -fsanitize=thread)
-  target_link_libraries(antlr4_static PRIVATE  -fsanitize=thread)
-  target_compile_options(antlr4_static PRIVATE
+  target_compile_options(antlr4_static  -fsanitize=thread)
+  target_link_libraries(antlr4_static  -fsanitize=thread)
+  target_compile_options(antlr4_static 
         -g
         -fno-omit-frame-pointer
       )
