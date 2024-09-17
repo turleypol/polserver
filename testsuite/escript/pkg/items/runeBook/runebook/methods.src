@@ -1,0 +1,8 @@
+use uo;
+
+exported function IsRunebook( runebook )
+
+  runebook := runebook;
+  return 1;
+
+endfunction

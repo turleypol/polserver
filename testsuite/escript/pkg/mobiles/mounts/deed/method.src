@@ -1,0 +1,7 @@
+
+use uo;
+
+program Install()
+
+  return 1;
+endprogram
