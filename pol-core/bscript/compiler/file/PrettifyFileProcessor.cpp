@@ -132,7 +132,8 @@ std::string PrettifyFileProcessor::prettify() const
                                     compilercfg.FormatterWindowsLineEndings ? "\r\n" : "\n" ) );
   if ( result.empty() )
   {
-    report.error( source_file_identifier, "format result empty" );
+    report.error( source_file_identifier,
+                  "###################format result empty #######€€#########" );
     return {};
   }
   if ( compilercfg.FormatterInsertNewlineAtEOF && !result.empty() && result.back() != '\n' )
