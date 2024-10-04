@@ -1,0 +1,65 @@
+EScript Compiler v1.17
+Copyright (C) 1993-2024 Eric N. Swanson
+
+Formatting: test/t.src
+/////////////
+//  test   //
+//
+/***********/
+
+//format-off
+var t := struct{ a, 
+  iknowitbetter:= "blubb", 
+           g := "blubb", 
+                              g := "blubb", 
+                              g := "blubb", 
+                 c := "abc" };
+//format-on
+var t := struct{ a, 
+                 idontknowitbetter := "blubb", 
+                 g := "blubb", 
+                 g := "blubb", 
+                 g := "blubb", 
+                 c := "abc" };
+
+// test
+case ( t )
+  1:
+  2:
+    "hello";
+  4:
+    "huhu formatter";
+    "dumdidumdida";
+endcase
+CAsc( struct{ f := 6 + 7, g := "blubb", h := "xyz" } );
+
+var a := { "hello world", "hello world", "hello world", "hello world" };
+var a := array{ "hello world", "hello world", "hello world", "hello world" };
+
+var d := dictionary{ "hello"-> "world", 
+                     "hello"-> "world", 
+                     "hello"-> "world", 
+                     "hello"-> "world" };
+
+if ( 1 == 2 && 1 == 2 && // i need a break
+     1 == 2 && ( 1 == 2 && 1 == 2 ) && 1 == 2 && 1 == 2 && 1 == 2 )
+  print( d );
+endif
+
+function helloworldhowareyou( byref loooong, byref unused loooonger, evenlooooonger )
+  return;
+endfunction
+
+var loooong, loooonger, evenlooooonger;
+helloworldhowareyou( loooong, loooonger /* important param */, evenlooooonger );
+
+a := array{};
+const b := array{ 1 };
+a := {};
+{ 1, 2 };
+print( 1 );
+print();
+
+for ( a := 0; a <= 1; a )
+  ++a;
+endfor

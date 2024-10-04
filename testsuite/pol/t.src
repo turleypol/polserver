@@ -1,0 +1,10 @@
+if ( ( GetObjProperty( sign, "ownerserial" ) == who.serial ) ||
+     ( GetObjProperty( sign, "owneraccount" ) == who.acctname ) )
+  return 1;
+endif
+
+var exceptional_type := GetObjProperty( targ, "ExceptionalType" ),
+    exceptional := GetObjProperty( targ, "Exceptional" ),
+    iname := GetObjProperty( targ, "IName" ),
+    ided := GetObjProperty( targ, "IDed" ),
+    color := targ.color;

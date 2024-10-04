@@ -1,0 +1,30 @@
+  var objtype := array{
+    struct{ graphic := 2691, x := 0, y := 0 },
+    struct{ graphic := 2690, x := -1, y := 0 },
+    struct{ graphic := 2687, x := 0, y := -1 },
+    struct{ graphic := 2686, x := -1, y := -1 }
+  };
+
+var cprops := { { "DeathList",
+                  death_list }, //tedt
+                { "MerchantInfo",
+                  merchant_info },
+                { "Range",
+                  range },
+                { "RespawnTime",
+                  60.0 },
+                { "RestockTime",
+                  60.0 }
+                };
+merchant_info.Insert(
+                          npc_info[i], struct{ "Anchor" := struct{ "X" := anchor[1],
+                                                                   "Y" := anchor[2],
+                                                                   "Z" := anchor[3],
+                                                                   "Realm" := realm },                                                                                                                 "Enabled" := 1, "Info" := struct{ "Gender" := -1,
+                                                                                 "Name" := "<Random>",
+                                                                                 "RandomizeSkinHue" := 1,                                                                                                                                "RandomizeSpeechHue" := 1 },
+                                                               "Template" := template_name }                                                                                                           );
+// format-on
+  1;
+// format- off
+  1;

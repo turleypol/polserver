@@ -12,7 +12,6 @@
 #include "../clib/cfgelem.h"
 #include "../clib/cfgfile.h"
 #include "../clib/fileutil.h"
-#include "../clib/logfacility.h"
 
 namespace Pol
 {
@@ -88,7 +87,6 @@ void CompilerConfig::Read( const std::string& path )
   FormatterUseTabs = elem.remove_bool( "FormatterUseTabs", false );
   FormatterTabWidth = elem.remove_ushort( "FormatterTabWidth", 4 );
   FormatterInsertNewlineAtEOF = elem.remove_bool( "FormatterInsertNewlineAtEOF", true );
-  INFO_PRINTLN( "{}", FormatterInsertNewlineAtEOF );
   FormatterFormatInsideComments = elem.remove_bool( "FormatterFormatInsideComments", true );
   FormatterBracketAttachToType = elem.remove_bool( "FormatterBracketAttachToType", true );
   FormatterAlignTrailingComments = elem.remove_bool( "FormatterAlignTrailingComments", true );

@@ -1,0 +1,20 @@
+var a:=struct{ "b" := B(hhhhhhh,hhhhhhhh,gggggggggggg,ttttttt,
+        1 ),
+        "c some very long token so that the struct cannot be all one one line yes please",
+        "c some very long token so that the struct cannot be all one one line yes please" };
+
+        var signs := { CInt( 0x20BD1 ), CInt( 0x20BD2 ), CInt( 0x20BCF ),                                                                                CInt( 0x20BD0 ), CInt( 0x260FA ) };
+  var coords := struct{ "x1" := CInt( x1 ),
+                        "y1" := CInt(
+                        y1 ),
+                        "x2" := CInt(
+                        x2 ),
+                        "y2" := CInt(
+                        y2 ) };
+
+
+print( array{ "a", "b", "c", "D", "e" }.findIndex( @Always ) );
+print( array{ "a", "b", "c", "D", "e" }.findIndex( @{ return 0; } ));
+{ array{ "a", "e" }.findIndex( @( element ) {
+  return element == "D";
+} )};

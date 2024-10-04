@@ -1,0 +1,189 @@
+EScript Compiler v1.17
+Copyright (C) 1993-2024 Eric N. Swanson
+
+Formatting: test/t.src
+BREAK 
+"var t:=struct{" 1
+"a," 2
+"idontknowitbetter:="blubb"," 2
+"g:="blubb"," 2
+"g:="blubb"," 2
+"g:="blubb"," 2
+"c:="abc"}; " 0
+BREAK 
+"case " 0
+"(" 0
+"t) " 0
+BREAK 
+"1: " 0
+BREAK 
+"2: " 0
+BREAK 
+""hello"; " 0
+BREAK 
+"4: " 0
+BREAK 
+""huhu formatter"; " 0
+BREAK 
+""dumdidumdida"; " 0
+BREAK 
+"endcase " 0
+BREAK 
+"CAsc(" 0
+"struct{" 1
+"f:=6+7," 2
+"g:="blubb"," 2
+"h:="xyz"}); " 0
+BREAK 
+"var a:={" 0
+""hello world"," 1
+""hello world"," 1
+""hello world"," 1
+""hello world"}; " 0
+BREAK 
+"var a:=array{" 1
+""hello world"," 2
+""hello world"," 2
+""hello world"," 2
+""hello world"}; " 0
+BREAK 
+"var d:=dictionary{" 1
+""hello"->"world"," 2
+""hello"->"world"," 2
+""hello"->"world"," 2
+""hello"->"world"}; " 0
+BREAK 
+"if (" 0
+"1==2 && " 0
+"1==2 && " 0
+"// i need a break " 0
+"1==2 && " 0
+"(" 0
+"1==2 && " 0
+"1==2) " 0
+"&& " 0
+"1==2 && " 0
+"1==2 && " 0
+"1==2) " 0
+BREAK 
+"print(" 0
+"d); " 0
+BREAK 
+"endif " 0
+BREAK 
+"function helloworldhowareyou(" 0
+"byref loooong," 0
+"byref unused loooonger," 0
+"evenlooooonger) " 0
+BREAK 
+"return; " 0
+BREAK 
+"endfunction " 0
+BREAK 
+"var loooong," 0
+"loooonger," 0
+"evenlooooonger; " 0
+BREAK 
+"helloworldhowareyou(" 0
+"loooong," 0
+"loooonger /* important param */," 0
+"evenlooooonger); " 0
+BREAK 
+"a:=array{}; " 0
+BREAK 
+"const b:=array{" 1
+"1}; " 0
+BREAK 
+"a:={}; " 0
+BREAK 
+"{" 0
+"1," 1
+"2}; " 0
+BREAK 
+"print(" 0
+"1); " 0
+BREAK 
+"print(); " 0
+BREAK 
+"for (" 0
+"a:=0;" 0
+"a<=1;" 0
+"a) " 0
+BREAK 
+"++a; " 0
+BREAK 
+"endfor " 0
+
+FORMATTED:
+/////////////
+//  test   //
+//
+/***********/
+
+//format-off
+var t := struct{ a, 
+  iknowitbetter:= "blubb", 
+           g := "blubb", 
+                              g := "blubb", 
+                              g := "blubb", 
+                 c := "abc" };
+//format-on
+var t:=struct{a,
+			  idontknowitbetter:="blubb",
+			  g:="blubb",
+			  g:="blubb",
+			  g:="blubb",
+			  c:="abc"};
+
+// test
+case (t)
+  1:
+  2:
+	"hello";
+  4:
+	"huhu formatter";
+	"dumdidumdida";
+endcase
+CAsc(struct{f:=6+7,
+			g:="blubb",
+			h:="xyz"});
+
+var a:={"hello world",
+		"hello world",
+		"hello world",
+		"hello world"};
+var a:=array{"hello world",
+			 "hello world",
+			 "hello world",
+			 "hello world"};
+
+var d:=dictionary{"hello"->"world",
+				  "hello"->"world",
+				  "hello"->"world",
+				  "hello"->"world"};
+
+if (1==2 && 1==2 && // i need a break
+	1==2 && (1==2 && 1==2) && 1==2 && 1==2 &&
+	1==2)
+  print(d);
+endif
+
+function helloworldhowareyou(byref loooong,
+							 byref unused loooonger,evenlooooonger)
+  return;
+endfunction
+
+var loooong,loooonger,evenlooooonger;
+helloworldhowareyou(loooong,loooonger /* important param */,
+					evenlooooonger);
+
+a:=array{};
+const b:=array{1};
+a:={};
+{1,2};
+print(1);
+print();
+
+for (a:=0;a<=1;a)
+  ++a;
+endfor

@@ -1,0 +1,74 @@
+EScript Compiler v1.17
+Copyright (C) 1993-2024 Eric N. Swanson
+
+Formatting: test/t.src
+COMMENT /////////////
+COMMENT //  test   //
+COMMENT //
+COMMENT /***********/
+VAR `vari;`
+BREAK 
+"var i; " 0
+VAR `vart:=struct{a,iknowitbetter:="blubb",g:="blubb",g:="blubb",g:="blubb",c:="abc"};`
+ADD//no-format-begin
+ADDvar t := struct{ a, 
+ADD  iknowitbetter:= "blubb", 
+ADD           g := "blubb", 
+ADD                              g := "blubb", 
+ADD                              g := "blubb", 
+ADD                 c := "abc" };
+ADD//no-format-end
+BREAK 
+"case " 0
+"( " 0
+"t ) " 0
+BREAK 
+"1: " 0
+BREAK 
+"2: " 0
+BREAK 
+""a"; " 0
+BREAK 
+"4: " 0
+BREAK 
+""c"; " 0
+BREAK 
+""d"; " 0
+BREAK 
+"endcase " 0
+BREAK 
+"CAsc( " 0
+"struct{ " 0
+"f := 6 + 7, " 1
+"g := "blubb", " 1
+"h := "xyz" } " 0
+"); " 0
+
+FORMATTED:
+/////////////
+//  test   //
+//
+/***********/
+var i;
+//no-format-begin
+var t := struct{ a, 
+  iknowitbetter:= "blubb", 
+           g := "blubb", 
+                              g := "blubb", 
+                              g := "blubb", 
+                 c := "abc" };
+//no-format-end
+
+case ( t )
+  1:
+  2:
+    "a";
+  4:
+    "c";
+    "d";
+endcase
+CAsc( 
+      struct{ f := 6 + 7, 
+              g := "blubb", 
+              h := "xyz" } 
+      );

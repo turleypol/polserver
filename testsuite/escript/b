@@ -1,0 +1,310 @@
+EScript Compiler v1.17
+Copyright (C) 1993-2024 Eric N. Swanson
+
+Formatting: test/t.src
+BREAK 
+"var t := struct{ " 1-0 ->7
+"a, " 2-2 ->7
+"idontknowitbetter := "blubb", " 2-2 ->7
+"g := "blubb", " 2-2 ->7
+"g := "blubb", " 2-2 ->7
+"g := "blubb", " 2-2 ->7
+"c := "abc" }; " 0-2 ->7
+first var t := struct{ 
+new var t := struct{ a,  - {0: 17, 1: 17, 2: 17}
+same                  idontknowitbetter := "blubb",  - {0: 17, 1: 17, 2: 17}
+same                  g := "blubb",  - {0: 17, 1: 17, 2: 17}
+same                  g := "blubb",  - {0: 17, 1: 17, 2: 17}
+same                  g := "blubb",  - {0: 17, 1: 17, 2: 17}
+same                  c := "abc" };  - {0: 17, 1: 17, 2: 17}
+BREAK 
+"case " 0-0 ->6
+"( " 0-0 ->6
+"t ) " 0-0 ->6
+BREAK 
+"1: " 0-0 ->7
+BREAK 
+"2: " 0-0 ->7
+BREAK 
+""hello"; " 0-0 ->7
+"// t " 0-0 ->10
+BREAK 
+"4: " 0-0 ->7
+BREAK 
+""huhu formatter"; " 0-0 ->7
+BREAK 
+""dumdidumdida"; " 0-0 ->7
+BREAK 
+"endcase " 0-0 ->6
+BREAK 
+"CAsc( " 0-0 ->7
+"struct{ " 1-1 ->7
+"f := 6 + 7, " 2-2 ->7
+"g := "blubb", " 2-2 ->7
+"h := "xyz", " 2-2 ->7
+"aaaaaab := "aaaaaaa" } " 1-2 ->6
+"); " 0-0 ->7
+BREAK 
+"var a := { " 0-0 ->6
+""hello world", " 1-1 ->7
+""hello world", " 1-1 ->7
+""hello world", " 1-1 ->7
+""hello world" }; " 0-1 ->7
+BREAK 
+"var a := array{ " 1-0 ->7
+""hello world", " 2-2 ->7
+""hello world", " 2-2 ->7
+""hello world", " 2-2 ->7
+""hello world", " 2-2 ->7
+""heeee3333333333e33eeee" }; " 0-2 ->7
+first var a := array{ 
+new var a := array{ "hello world",  - {0: 16, 1: 16, 2: 16}
+same                 "hello world",  - {0: 16, 1: 16, 2: 16}
+same                 "hello world",  - {0: 16, 1: 16, 2: 16}
+same                 "hello world",  - {0: 16, 1: 16, 2: 16}
+same                 "heeee3333333333e33eeee" };  - {0: 16, 1: 16, 2: 16}
+BREAK 
+"var d := dictionary{ " 1-0 ->7
+""hello" -> "world", " 2-2 ->7
+""hello" -> "world", " 2-2 ->7
+""hello" -> "world", " 2-2 ->7
+""hello" -> "world" }; " 0-2 ->7
+first var d := dictionary{ 
+new var d := dictionary{ "hello" -> "world",  - {0: 21, 1: 21, 2: 21}
+same                      "hello" -> "world",  - {0: 21, 1: 21, 2: 21}
+same                      "hello" -> "world",  - {0: 21, 1: 21, 2: 21}
+same                      "hello" -> "world" };  - {0: 21, 1: 21, 2: 21}
+BREAK 
+"if ( " 0-0 ->6
+"1 == 2 && " 0-0 ->22
+"1 == 2 && " 0-0 ->22
+"// i need a break " 0-0 ->10
+"1 == 2 && " 0-0 ->22
+"( " 0-0 ->6
+"1 == 2 && " 0-0 ->22
+"1 == 2 ) " 0-0 ->6
+"&& " 0-0 ->22
+"1 == 2 && " 0-0 ->22
+"1 == 2 && " 0-0 ->22
+"1 == 2 ) " 0-0 ->6
+'if ( ' -0 FILTERED
+'1 == 2 && ' -16 FILTERED
+'1 == 2 && ' -16 FILTERED
+'// i need a break ' -8 FILTERED
+'1 == 2 && ' -16 FILTERED
+'( 1 == 2 && ' -16 FILTERED
+'1 == 2 ) && ' -16 FILTERED
+'1 == 2 && ' -16 FILTERED
+'1 == 2 && ' -16 FILTERED
+'1 == 2 ) ' -0 FILTERED
+BREAK 
+"print( " 0-0 ->7
+"d ); " 0-0 ->7
+BREAK 
+"endif " 0-0 ->2
+BREAK 
+"function helloworldhowareyou( " 0-0 ->7
+"byref loooong, " 0-0 ->7
+"byref unused loooonger, " 0-0 ->7
+"evenlooooonger ) " 0-0 ->6
+BREAK 
+"return; " 0-0 ->7
+BREAK 
+"endfunction " 0-0 ->2
+BREAK 
+"var loooong, " 0-0 ->7
+"loooonger, " 0-0 ->7
+"evenlooooonger; " 0-0 ->7
+BREAK 
+"helloworldhowareyou( " 0-0 ->7
+"loooong, " 0-0 ->7
+"loooonger /* important param */, " 0-0 ->7
+"evenlooooonger ); " 0-0 ->7
+BREAK 
+"a := array{}; " 0-0 ->7
+BREAK 
+"const b := array{ " 1-0 ->7
+"1 }; " 0-2 ->7
+BREAK 
+"a := {}; " 0-0 ->7
+BREAK 
+"{ " 0-0 ->6
+"1, " 1-1 ->7
+"2 }; " 0-1 ->7
+BREAK 
+"print( " 0-0 ->7
+"1 ); " 0-0 ->7
+BREAK 
+"print(); " 0-0 ->7
+BREAK 
+"for ( " 0-0 ->6
+"a := 0; " 0-0 ->7
+"a <= 1; " 0-0 ->7
+"a ) " 0-0 ->6
+BREAK 
+"++a; " 0-0 ->7
+BREAK 
+"endfor " 0-0 ->2
+BREAK 
+"var who, " 0-0 ->7
+"range; " 0-0 ->7
+"// ,z; " 0-0 ->10
+BREAK 
+"if ( " 0-0 ->6
+"( " 0-0 ->6
+"who.x >= CInt( " 0-0 ->7
+"range[1] ) " 0-0 ->6
+") " 0-0 ->6
+"&& " 0-0 ->22
+"( " 0-0 ->6
+"who.x <= CInt( " 0-0 ->7
+"range[3] ) " 0-0 ->6
+") " 0-0 ->6
+"&& " 0-0 ->22
+"( " 0-0 ->6
+"who.y >= CInt( " 0-0 ->7
+"range[2] ) " 0-0 ->6
+") " 0-0 ->6
+"&& " 0-0 ->22
+"( " 0-0 ->6
+"who.y <= CInt( " 0-0 ->7
+"range[4] ) " 0-0 ->6
+") " 0-0 ->6
+") " 0-0 ->6
+'if ( ' -0 FILTERED
+'( who.x >= CInt( range[1] ) ) && ' -16 FILTERED
+'( who.x <= CInt( range[3] ) ) && ' -16 FILTERED
+'( who.y >= CInt( range[2] ) ) && ' -16 FILTERED
+'( who.y <= CInt( range[4] ) ) ) ' -0 FILTERED
+BREAK 
+"exit; " 0-0 ->7
+BREAK 
+"endif " 0-0 ->2
+BREAK 
+"var objtype := array{ " 1-0 ->7
+"struct{ " 3-3 ->7
+"graphic := 2691, " 4-4 ->7
+"x := 0, " 4-4 ->7
+"y := 0 }, " 2-4 ->7
+"struct{ " 3-3 ->7
+"graphic := 2690, " 4-4 ->7
+"x := -1, " 4-4 ->7
+"y := 0 }, " 2-4 ->7
+"struct{ " 3-3 ->7
+"graphic := 2687, " 4-4 ->7
+"x := 0, " 4-4 ->7
+"y := -1 }, " 2-4 ->7
+"struct{ " 3-3 ->7
+"graphic := 2686, " 4-4 ->7
+"x := -1, " 4-4 ->7
+"y := -1 } " 3-4 ->6
+"}; " 0-1 ->7
+first var objtype := array{ 
+new var objtype := array{ struct{  - {0: 22, 1: 22, 3: 22}
+new var objtype := array{ struct{ graphic := 2691,  - {0: 22, 1: 22, 3: 22, 4: 30}
+same                               x := 0,  - {0: 22, 1: 22, 3: 22, 4: 30}
+same                               y := 0 },  - {0: 22, 1: 22, 3: 22, 4: 30}
+desc                       struct{  - {0: 22, 1: 22, 3: 22, 4: 30}
+new                       struct{ graphic := 2690,  - {0: 22, 1: 22, 3: 22, 4: 30}
+same                               x := -1,  - {0: 22, 1: 22, 3: 22, 4: 30}
+same                               y := 0 },  - {0: 22, 1: 22, 3: 22, 4: 30}
+desc                       struct{  - {0: 22, 1: 22, 3: 22, 4: 30}
+new                       struct{ graphic := 2687,  - {0: 22, 1: 22, 3: 22, 4: 30}
+same                               x := 0,  - {0: 22, 1: 22, 3: 22, 4: 30}
+same                               y := -1 },  - {0: 22, 1: 22, 3: 22, 4: 30}
+desc                       struct{  - {0: 22, 1: 22, 3: 22, 4: 30}
+new                       struct{ graphic := 2686,  - {0: 22, 1: 22, 3: 22, 4: 30}
+same                               x := -1,  - {0: 22, 1: 22, 3: 22, 4: 30}
+same                               y := -1 }  - {0: 22, 1: 22, 3: 22, 4: 30}
+desc                       };  - {0: 22, 1: 22, 3: 22, 4: 30}
+/////////////
+//  test   //
+//    hallo
+//  check
+/***********/
+/*
+
+   hello
+
+*/
+//format-off
+var t := struct{ a, 
+  iknowitbetter:= "blubb", 
+           g := "blubb", 
+                              g := "blubb", 
+                              g := "blubb", 
+                 c := "abc" };
+//format-on
+var t := struct{ a,
+                 idontknowitbetter := "blubb",
+                 g := "blubb",
+                 g := "blubb",
+                 g := "blubb",
+                 c := "abc" };
+
+// test
+case ( t )
+  1:
+  2:
+    "hello"; // t
+  4:
+    "huhu formatter";
+    "dumdidumdida";
+endcase
+CAsc( struct{ f := 6 + 7, g := "blubb", h := "xyz", aaaaaab := "aaaaaaa" } );
+
+var a := { "hello world", "hello world", "hello world", "hello world" };
+var a := array{ "hello world",
+                "hello world",
+                "hello world",
+                "hello world",
+                "heeee3333333333e33eeee" };
+
+var d := dictionary{ "hello" -> "world",
+                     "hello" -> "world",
+                     "hello" -> "world",
+                     "hello" -> "world" };
+
+if ( 1 == 2 && 1 == 2 && // i need a break
+     1 == 2 && ( 1 == 2 && 1 == 2 ) && 1 == 2 && 1 == 2 && 1 == 2 )
+  print( d );
+endif
+
+function helloworldhowareyou( byref loooong, byref unused loooonger, evenlooooonger )
+  return;
+endfunction
+
+var loooong, loooonger, evenlooooonger;
+helloworldhowareyou( loooong, loooonger /* important param */, evenlooooonger );
+
+a := array{};
+const b := array{ 1 };
+a := {};
+{ 1, 2 };
+print( 1 );
+print();
+
+for ( a := 0; a <= 1; a )
+  ++a;
+endfor
+
+var who, range; // ,z;
+
+if ( ( who.x >= CInt( range[1] ) ) && ( who.x <= CInt( range[3] ) ) && ( who.y >= CInt( range[2] ) ) &&
+     ( who.y <= CInt( range[4] ) ) )
+  exit;
+endif
+
+var objtype := array{ struct{ graphic := 2691,
+                              x := 0,
+                              y := 0 },
+                      struct{ graphic := 2690,
+                              x := -1,
+                              y := 0 },
+                      struct{ graphic := 2687,
+                              x := 0,
+                              y := -1 },
+                      struct{ graphic := 2686,
+                              x := -1,
+                              y := -1 }
+                      };

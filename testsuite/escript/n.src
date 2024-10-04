@@ -1,0 +1,27 @@
+var exceptional_type := GetObjProperty( targ, "ExceptionalType", "hshshhshsshshshshshshsh",
+    "hsahshshshehheeheheheheheheheh" ), exceptional := GetObjProperty( targ, "Exceptional" ),
+    iname := GetObjProperty( targ, "IName" ), ided := GetObjProperty( targ, "IDed" ),
+    color := targ.color,
+    length := { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 21 };
+
+print( what := 1 );
+if ( !( scopes := request_succeeded( err, "scopes", struct{ frameId := stackTrace.stackFrames[1].id }
+     ) ) )
+  return err;
+endif
+optests := array{ "1234",
+                  "hello",
+                  "b",
+                  "ab",
+                  "a",
+                  "caterpillar",
+                  1234,
+                  0,
+                  -6,
+                  12.11,
+                  0.0,
+                  -8.8, array{ "a", "b", "c", 19 },
+                        dictionary{ "1234" -> "456", "eeee" -> 0 },
+                        struct{ a := t, b := 21, c := "0" },
+                  struct{ errortext := "ERROR" }, uninit,
+                  error{ errortext := "ERROR" }, uninit };

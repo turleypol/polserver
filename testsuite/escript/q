@@ -1,0 +1,117 @@
+EScript Compiler v1.17
+Copyright (C) 1993-2024 Eric N. Swanson
+
+Formatting: test/t.src
+1
+/////////////////////////////////////////////////////////////
+full
+2
+// setmurder.src                                           //
+between
+3
+//                                                         //
+between
+4
+// Author: olor                                            //
+between
+5
+// Date: 22.04.2001                                        //
+between
+6
+//														   //
+between
+7
+// Updated: Yukiko										   //
+between
+8
+// Date: 10-Jan-2016									   //
+between
+9
+//														   //
+between
+10
+// Description: Either sets or clears the murder flag.     //
+between
+11
+//														   //
+between
+12
+// Usage: .setmurder <0 or 1>							   //
+between
+13
+// 0 = clears murder flag and sets the alignment as good   //
+between
+14
+// 1 = sets the murder flag and sets the alignment to evil //
+between
+15
+/////////////////////////////////////////////////////////////
+full
+30
+BREAK 
+"var t := struct{ " 0
+"a, " 1
+"g := "blubb", " 1
+"g := "blubb", " 1
+"g := "blubb", " 1
+"g := "blubb", " 1
+"c := "abc" }; " 0
+BREAK 
+"case " 0
+"( " 0
+"t ) " 0
+BREAK 
+"1: " 0
+BREAK 
+"2: " 0
+BREAK 
+""a"; " 0
+BREAK 
+"3: " 0
+BREAK 
+""b"; " 0
+BREAK 
+"4: " 0
+BREAK 
+""c"; " 0
+BREAK 
+""d"; " 0
+BREAK 
+"endcase " 0
+
+FORMATTED:
+/////////////////////////////////////////////////////////////
+// setmurder.src                                           //
+//                                                         //
+// Author: olor                                            //
+// Date: 22.04.2001                                        //
+//														   //
+// Updated: Yukiko										   //
+// Date: 10-Jan-2016									   //
+//														   //
+// Description: Either sets or clears the murder flag.     //
+//														   //
+// Usage: .setmurder <0 or 1>							   //
+// 0 = clears murder flag and sets the alignment as good   //
+// 1 = sets the murder flag and sets the alignment to evil //
+/////////////////////////////////////////////////////////////
+var t := struct{ a, 
+                 g := "blubb", 
+                 g := "blubb", 
+                 g := "blubb", 
+                 g := "blubb", 
+                 c := "abc" };
+
+case ( t )
+  1:
+  2:
+    "a";
+  3:
+    "b";
+  4:
+    "c";
+    "d";
+endcase
+/* b := struct{ f := 6 + 7,
+                              g := "blubb", 
+                              h := "xyz" }, */

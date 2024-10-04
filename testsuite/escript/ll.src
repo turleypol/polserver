@@ -1,0 +1,36 @@
+/*
+if ( 1 )
+  if ( 1 )
+    if ( 1 )
+      LogToFile( "::log/createstack_" + month + ".log",
+                 "On " + dmy + " at " + hms + " " + who.name
+               + " on account " + who.acctname + " created  "
+               + created.amount + " of " + GetObjTypeDesc( created.objtype, 1 ) );
+    endif
+  endif
+endif
+
+var storage_areas := StorageAreas(),
+    names := array,
+    gump := GFCreateGump( 50, 50 ),
+    result := 0;
+
+var things := ListEquippedItems( mobile )
+                                 + EnumerateItemsInContainer( mobile.backpack, ENUMERATE_ROOT_ONLY );
+
+if (0)
+if (0)
+                                 GFResizePic( gump, 280, 300, GFGetCfgConst( "BackGrounds", "GOLDTRIM" ), 230,                                                                   100 ); // Cell 1
+                                 endif
+                                 npctest := CreateNpcFromTemplate( "banker", 5445, 1153, 0, 0,    "britannia" ); // newmap problem
+                                 endif*/
+  var piece_list := array{ 0x1DAD, // Torso
+                           0x1DB2, // Left Leg
+                           0x1DB1, // Right Leg
+                           0x1DB0, // Left Arm
+                           0x1DAF, // Right Arm
+                           0x1CEE, // Liver
+                           0x1CED, // Heart
+0x1CF0                             // Brain
+                           };
+

@@ -1,0 +1,37 @@
+if ( ( who.x >= CInt( range[1] ) ) && ( who.x <= CInt( range[3] ) ) &&
+     ( who.y >= CInt( range[2] ) ) && ( who.y <= CInt( range[4] ) ) )
+  exit;
+elseif ( ( GetObjProperty( thing, "lockeddown" ) == 1 ) &&
+         ( thing.movable == 0 ) ) // item is locked down in the house
+
+endif
+targets := ListObjectsInBox( Caster.x - 4, Caster.y - 9, Caster.z, Caster.x + 4,
+                             Caster.y - 10, Caster.z + 20, Caster.realm )
+          + ListObjectsInBox( Caster.x - 3, Caster.y - 7, Caster.z, Caster.x + 3,
+                              Caster.y - 8, Caster.z + 20, Caster.realm )
+          + ListObjectsInBox( Caster.x - 2, Caster.y - 5, Caster.z, Caster.x + 2,
+                              Caster.y - 6, Caster.z + 20, Caster.realm )
+          + ListObjectsInBox( Caster.x - 1, Caster.y - 3, Caster.z, Caster.x + 1,
+                              Caster.y - 4, Caster.z + 20, Caster.realm )
+          + ListObjectsInBox( Caster.x, Caster.y, Caster.z, Caster.x,
+                              Caster.y - 2, Caster.z + 20, Caster.realm );
+
+if ( 1 )
+  if ( 1 )
+    SendSysMessage( who, "<season>: spring | desolation | fall | winder | summer" );
+  endif
+endif
+
+amount := CInt( RequestInput( mobile, mobile.backpack,
+                              "How many of this object do you want to create?" ) );
+
+if ( 1 )
+  if ( 1 )
+    if ( 1 )
+      LogToFile( "::log/createstack_" + month + ".log",
+                 "On " + dmy + " at " + hms + " " + who.name
+               + " on account " + who.acctname + " created  "
+         + created.amount + " of " + GetObjTypeDesc( created.objtype, 1 ) );
+    endif
+  endif
+endif

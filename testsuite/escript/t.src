@@ -1,0 +1,134 @@
+
+if ( ( who.x >= CInt( range[1] ) ) && ( who.x <= CInt( range[3] ) ) &&
+     ( who.y >= CInt( range[2] ) ) && ( who.y <= CInt( range[4] ) ) )
+  exit;
+endif
+var exceptional_type := GetObjProperty( targ, "ExceptionalType", "hshshhshsshshshshshshsh",
+    "hsahshshshehheeheheheheheheheh" ), exceptional := GetObjProperty( targ, "Exceptional" ),
+    iname := GetObjProperty( targ, "IName" ), ided := GetObjProperty( targ, "IDed" ),
+    color := targ.color, length := { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                     12, 13, 14, 15, 16, 18, 21 };
+
+var i, j;
+
+var zauaususususususududududududueu, susususjshshebebebebbeebebebebebbehe,
+    wjj, whshshshsheh, sjsjsj, jsjssjsj, jssjsjsj, sjsjsj;
+
+var stuff := ListObjectsInBox( whereleft.x, whereleft.y, lowerz, whereright.x,
+                               whereright.y, upperz, who.realm );
+var bulletin_board := SystemFindObjectBySerial( packet.GetInt32( 4 ) ),
+    message := SystemFindObjectBySerial( packet.GetInt32( 8 ) );
+
+exported function handleRemoveSpeakingPrivs( character, byref packet )
+  Start_Script( "handleSpeakingPrivs", array{ character, packet, 2 } );
+  // 2 = remove speaking privs
+
+  return 1;
+endfunction
+
+length.+width := { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                   12, 13, 14, 15, 16, 18, 21 };
+length.+width1234568 := { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                          17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+                          30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42 };
+
+Start_Script( "handleSpeakingPrivs", array{ character, packet, test2,
+                                            test3, test4, test5, 2 },
+              afterparm2, afterparam3, afterparm4 );
+Start_Script( "handleSpeakingPriv2", array{ character, packet, test2,
+                                            test3, test4, test5, 2 },
+              afterparm2, // t
+              afterparam3,
+              afterparm4,
+              afterparm5,
+              afterparam6,
+              afterparam7 );
+if ( !( text[i] in { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "." }
+     ) )
+  exit;
+endif
+
+caster_info := struct{ "x" := caster.x,
+                       "y" := caster.y,
+                       "z" := caster.z,
+                       "realm" := caster.realm,
+                       "facing" := caster.facing,
+                       "duplicate" := duplicate.serial };
+caster_info := struct{ "x" := caster.x, "y" := caster.y,
+                       "z" := caster.z, "realm" := caster.realm };
+caster_info := struct{ "x" := caster.x, "y" := caster.y };
+
+var objtype := array{ struct{ graphic := 2691,
+                              x := 0,
+                              x := 0,
+                              x := 0,
+                              x := 0,
+                              x := 0,
+                              x := 0,
+                              y := 0 },
+                      struct{ graphic := 2690, x := -1, y := 0 },
+                      struct{ graphic := 2687, x := 0, y := -1 },
+                      struct{ graphic := 2686, x := -1, y := -1 }
+                      };
+
+var moongates := { { 4467, 1283, 5, "britannia" }, // Moonglow
+                   { 1336, 1997, 5, "britannia" }, // Britain
+                   { 1499, 3771, 5, "britannia" }, // Jhelom
+//////////////////////////////////////////////////////////////
+//                                                          //
+//      Start of Trammel (britannia_alt realm) teleporters. //
+//      I believe these are for the Mondain's Legacy        //
+//      map.    Yukiko                                      //
+//                                                          //
+//////////////////////////////////////////////////////////////
+                   { 771, 753, 5, "britannia" },   // Yew
+                   { 2701, 693, 5, "britannia" },  // Minoc
+                   // { 1828, 2948, -20, "britannia" }, // Trinsic
+                   { 643, 2067, 5, "britannia" },  // Skara Brae
+                   { 3564, 2140, 34, "britannia" } // Magincia
+                   };
+var piece_list := array{ 0x1DAD, // Torso
+                         0x1DB2, // Left Leg
+                         0x1DB1, // Right Leg
+// test
+//    test2
+//   test3
+0x1DB0, // Left Arm
+                         0x1DAF, // Right Arm
+                         0x1CEE, // Liver
+                         0x1CED, // Heart
+                         0x1CF0  // Brain
+                         };
+
+if ( add_page > 2 )
+  tzuithis_layout.append( "text " + ( width - 105 ) + " 291 0 " + len( this_data ) );
+endif
+
+syslog( $"\n{CONSOLE_COLOR_CYAN}###########################\n"
+      + $"{CONSOLE_COLOR_CYAN}# finished tests: {result} {CONSOLE_COLOR_CYAN}#\n"
+      + $"{CONSOLE_COLOR_CYAN}###########################\n", 0,
+        CONSOLE_COLOR_CYAN );
+
+/*
+	Packet: 0x3C
+	Sent By: Server
+	Size: Variable
+
+	Packet Build
+	BYTE[1] cmd
+	BYTE[2] packet length
+	BYTE[2] number of Items to add
+	loop items:
+
+		BYTE[4] item serial
+		BYTE[2] item ID (objtype)
+		BYTE[1] unknown (0x00)
+		BYTE[2] item amount (stack)
+		BYTE[2] xLoc
+		BYTE[2] yLoc
+		BYTE[1] Backpack grid index (see notes)
+		BYTE[4] Container serial
+		BYTE[2] item color
+
+	endloop
+*/

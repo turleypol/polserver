@@ -1,0 +1,75 @@
+/////////////
+//  test   //
+//    hallo
+//  check
+/***********/
+/*
+
+
+*/
+//format-off
+var t := struct{ a, 
+  iknowitbetter:= "blubb", 
+           g := "blubb", 
+                              g := "blubb", 
+                              g := "blubb", 
+                 c := "abc" };
+//format-on
+var t := struct{ a,
+                 idontknowitbetter := "blubb",
+                 g := "blubb",
+                 g := "blubb",
+                 g := "blubb",
+                 c := "abc" };
+
+// test
+case ( t )
+  1:
+  2:
+    "hello"; // t
+  4: "huhu formatter"; "dumdidumdida";
+endcase
+CAsc( struct{ f := 6 + 7, g := "blubb", h := "xyz", aaaaaab := "aaaaaaa" } );
+
+var a := { "hello world", "hello world", "hello world", "hello world" };
+var a := array{ "hello world", "hello world", "hello world",
+                "hello world", "heeee3333333333e33eeee" };
+
+var d := dictionary{ "hello" -> "world", "hello" -> "world",
+                     "hello" -> "world", "hello" -> "world" };
+
+if ( 1 == 2 && 1 == 2 && // i need a break
+     1 == 2 && ( 1 == 2 && 1 == 2 ) && 1 == 2 && 1 == 2 && 1 == 2 )
+  print( d );
+endif
+
+function helloworldhowareyou( byref loooong, byref unused loooonger,
+                              evenlooooonger )
+  return;
+endfunction
+
+var loooong, loooonger, evenlooooonger;
+helloworldhowareyou( loooong, loooonger /* important param */, evenlooooonger );
+
+a := array{};
+const b := array{ 1 };
+a := {};
+{ 1, 2 };
+print( 1 );
+print();
+
+for ( a := 0; a <= 1; a )
+  ++a;
+endfor
+
+var who, range; // ,z;
+
+if ( ( who.x >= CInt( range[1] ) ) && ( who.x <= CInt( range[3] ) ) &&
+     ( who.y >= CInt( range[2] ) ) && ( who.y <= CInt( range[4] ) ) )
+  exit;
+endif
+
+var objtype := array{ struct{ graphic := 2691, x := 0, y := 0 },
+                      struct{ graphic := 2690, x := -1, y := 0 },
+                      struct{ graphic := 2687, x := 0, y := -1 },
+                      struct{ graphic := 2686, x := -1, y := -1 } };

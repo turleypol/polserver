@@ -1,0 +1,1 @@
+:6:30: error: In call to 'bar': Spread operator can only be used for arguments on or after the formal rest parameter.

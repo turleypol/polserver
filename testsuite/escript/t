@@ -1,0 +1,19 @@
+EScript Compiler v1.17
+Copyright (C) 1993-2024 Eric N. Swanson
+
+Formatting: test/t.src
+BREAK 
+"var t := struct{ " 0
+"a, " 1
+"b := struct{ " 1
+"f := 6 + 7, " 2
+"g := "blubb", " 2
+"h := "xyz" }, " 1
+"c := "abc" }; " 0
+
+FORMATTED:
+var t := struct{ a, 
+                 b := struct{ f := 6 + 7, 
+                              g := "blubb", 
+                              h := "xyz" }, 
+                 c := "abc" };

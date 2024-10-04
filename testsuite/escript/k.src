@@ -1,0 +1,14 @@
+  SendSysMessage(
+    mobile,
+    targ.name + "'s hunger is now " + AdjustHunger( targ, targ, targ, targ, targ, targ, CInt( amount ) ),
+    0x3,
+    0x42
+  );
+  if(0)
+  if(0)
+  SendSysMessage( who, "Serial " +
+                    Hex( what.serial ) + ", ObjType " + Hex( what
+.objtype ) );                                                        endif
+endif
+
+SendSysMessage( towhom, "Could not find the player's profile info: -> "                    + df_elem.errortext, 0x3, 0x22 );
