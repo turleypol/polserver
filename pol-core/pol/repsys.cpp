@@ -772,7 +772,7 @@ void Character::restart_criminal_timer( Core::polclock_t until )
   {
     if ( criminal_until_ < Core::polclock() )
     {
-      Core::WorldIterator<Core::NPCFilter>::InRange( this, gamestate.max_areaevent_range,
+      Core::WorldIterator<Core::NPCFilter>::InRange( this, Core::gamestate.max_areaevent_range,
                                                      [&]( Character* chr )
                                                      { NpcPropagateCriminal( chr, this ); } );
     }
