@@ -21,7 +21,7 @@ jobs:
             cxx-compiler: g++
             c-compiler: gcc
             compiler-version: 11
-            build-type: Debug
+            build-type: RelWithDebInfo
             nopch: 0
             name: Linux GCC
 
@@ -44,28 +44,28 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - uses: seanmiddleditch/gha-setup-vsdevenv@v4
+      - uses: compnerd/gha-setup-vsdevenv@v6
       - name: Cache curl
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: lib/curl-8.2.1
           key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-curl-8.2.1-2
       - name: Cache antlr
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: lib/antlr
           key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-antlr-4.13.1
       - name: Cache boost
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: lib/boost_1_83_0
           key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-boost-1.83.0-2
       - name: Cache cppdap
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: lib/cppdap-2a4c7cf
           key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-cppdap-2a4c7cf
@@ -140,41 +140,34 @@ jobs:
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          #cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
+          cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
       - name: Test (Shard Fixtures)
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_fixture
-          #      - name: Test (UnitTests)
-          #        if: matrix.config.nopch == 0
-          #        run: |
-          #          cd bin-build
-          #          cmake --build . --config ${{ matrix.config.build-type }} --target unittest_pol
+      - name: Test (UnitTests)
+        if: matrix.config.nopch == 0
+        run: |
+          cd bin-build
+          cmake --build . --config ${{ matrix.config.build-type }} --target unittest_pol
       - name: Test (Shard)
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          cd coretest
-          ../../bin/ecompile -Fi -T8 -r .
-          ../../bin/ecompile -Fi -T8 -ri .
-          ../../bin/ecompile -Fi -T8 -b -r ../../testsuite/escript
-          ../../bin/ecompile -Fi -T8 -b -ri ../../testsuite/escript
-          #cd bin-build
-          #cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
+          cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
           #env:
           #POLCORE_TEST_FILTER: testitems
       - name: Test (Ecompile Watch)
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          ../bin/ecompile -F coretest/scripts/tests.src
-          #cmake --build . --config ${{ matrix.config.build-type }} --target test_ecompile_watch
+          cmake --build . --config ${{ matrix.config.build-type }} --target test_ecompile_watch
           #env:
           #POLCORE_TEST_FILTER: testitems
       - name: Upload coretest folder
         if: matrix.config.nopch == 0 && always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Testdir-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin-build/coretest/
@@ -197,7 +190,7 @@ jobs:
 
       - name: Upload Artefact
         if: matrix.config.nopch == 0
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Nightly-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin/release
@@ -208,17 +201,17 @@ jobs:
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Download artefacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Nightly-Linux-g++
           path: Nightly-Linux-g++
       - name: Download artefacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Nightly-Linux-clang++
           path: Nightly-Linux-clang++
       - name: Download artefacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Nightly-Windows-cl
           path: Nightly-Windows-cl

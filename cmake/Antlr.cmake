@@ -30,8 +30,8 @@ if (NOT EXISTS ${ANTLR_LIB})
       -DCMAKE_OSX_ARCHITECTURES=${PIPED_OSX_ARCHITECTURES}
       -DCMAKE_POSITION_INDEPENDENT_CODE=ON
     BINARY_DIR ${ANTLR_SOURCE_DIR}/build
-    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Debug
-    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Debug --target install
+    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
+    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
 
     BUILD_BYPRODUCTS ${ANTLR_LIB}
     LOG_DOWNLOAD 1
