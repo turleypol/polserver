@@ -137,24 +137,24 @@ void Realm::notify_moved( Mobile::Character& whomoved )
 {
   // When the movement is larger than maxeventrange tiles, notify mobiles and items in the old
   // location
-  if ( whomoved.distance_to( whomoved.lastpos ) > gamestate.max_areaevent_range )
+  if ( whomoved.distance_to( whomoved.lastpos ) > Core::gamestate.max_areaevent_range )
   {
     Core::WorldIterator<Core::MobileFilter>::InRange(
-        whomoved.lastpos, gamestate.max_areaevent_range,
+        whomoved.lastpos, Core::gamestate.max_areaevent_range,
         [&]( Mobile::Character* chr ) { Mobile::NpcPropagateMove( chr, &whomoved ); } );
 
-    Core::WorldIterator<Core::ItemFilter>::InRange( whomoved.lastpos, gamestate.max_areaevent_range,
-                                                    [&]( Items::Item* item )
-                                                    { item->inform_moved( &whomoved ); } );
+    Core::WorldIterator<Core::ItemFilter>::InRange(
+        whomoved.lastpos, Core::gamestate.max_areaevent_range,
+        [&]( Items::Item* item ) { item->inform_moved( &whomoved ); } );
   }
 
   // Inform nearby mobiles that a movement has been made.
   Core::WorldIterator<Core::MobileFilter>::InRange(
-      &whomoved, gamestate.max_areaevent_range,
+      &whomoved, Core::gamestate.max_areaevent_range,
       [&]( Mobile::Character* chr ) { Mobile::NpcPropagateMove( chr, &whomoved ); } );
 
   // the same for top-level items
-  Core::WorldIterator<Core::ItemFilter>::InRange( &whomoved, gamestate.max_areaevent_range,
+  Core::WorldIterator<Core::ItemFilter>::InRange( &whomoved, Core::gamestate.max_areaevent_range,
                                                   [&]( Items::Item* item )
                                                   { item->inform_moved( &whomoved ); } );
 }
@@ -164,10 +164,10 @@ void Realm::notify_moved( Mobile::Character& whomoved )
 void Realm::notify_unhid( Mobile::Character& whounhid )
 {
   Core::WorldIterator<Core::NPCFilter>::InRange(
-      &whounhid, gamestate.max_areaevent_range,
+      &whounhid, Core::gamestate.max_areaevent_range,
       [&]( Mobile::Character* chr ) { Mobile::NpcPropagateEnteredArea( chr, &whounhid ); } );
 
-  Core::WorldIterator<Core::ItemFilter>::InRange( &whounhid, gamestate.max_areaevent_range,
+  Core::WorldIterator<Core::ItemFilter>::InRange( &whounhid, Core::gamestate.max_areaevent_range,
                                                   [&]( Items::Item* item )
                                                   { item->inform_enteredarea( &whounhid ); } );
 }
@@ -181,7 +181,7 @@ void Realm::notify_resurrected( Mobile::Character& whoressed )
 void Realm::notify_entered( Mobile::Character& whoentered )
 {
   Core::WorldIterator<Core::MobileFilter>::InRange(
-      &whoentered, gamestate.max_areaevent_range,
+      &whoentered, Core::gamestate.max_areaevent_range,
       [&]( Mobile::Character* chr )
       {
         Mobile::NpcPropagateEnteredArea( chr, &whoentered );
@@ -191,7 +191,7 @@ void Realm::notify_entered( Mobile::Character& whoentered )
       } );
 
   // and notify the top-level items too
-  Core::WorldIterator<Core::ItemFilter>::InRange( &whoentered, gamestate.max_areaevent_range,
+  Core::WorldIterator<Core::ItemFilter>::InRange( &whoentered, Core::gamestate.max_areaevent_range,
                                                   [&]( Items::Item* item )
                                                   { item->inform_enteredarea( &whoentered ); } );
 }
@@ -200,10 +200,10 @@ void Realm::notify_entered( Mobile::Character& whoentered )
 void Realm::notify_left( Mobile::Character& wholeft )
 {
   Core::WorldIterator<Core::MobileFilter>::InRange(
-      &wholeft, gamestate.max_areaevent_range,
+      &wholeft, Core::gamestate.max_areaevent_range,
       [&]( Mobile::Character* chr ) { Mobile::NpcPropagateLeftArea( chr, &wholeft ); } );
 
-  Core::WorldIterator<Core::ItemFilter>::InRange( &wholeft, gamestate.max_areaevent_range,
+  Core::WorldIterator<Core::ItemFilter>::InRange( &wholeft, Core::gamestate.max_areaevent_range,
                                                   [&]( Items::Item* item )
                                                   { item->inform_leftarea( &wholeft ); } );
 }
