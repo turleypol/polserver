@@ -16,6 +16,7 @@
 #include "plib/realmdescriptor.h"
 #include "plib/staticserver.h"
 
+#include "globals/uvars.h"
 #include "mobile/charactr.h"
 #include "realms/WorldChangeReasons.h"
 #include "ufunc.h"
@@ -134,27 +135,28 @@ const std::string Realm::name() const
 
 void Realm::notify_moved( Mobile::Character& whomoved )
 {
-  // When the movement is larger than 32 tiles, notify mobiles and items in the old location
-  // TODO Pos magic 32 everywhere?
-  // TODO its for npcs, with ex->area_size, NPC::update_range equal the area_size?
-  if ( whomoved.distance_to( whomoved.lastpos ) > 32 )
+  // When the movement is larger than maxeventrange tiles, notify mobiles and items in the old
+  // location
+  if ( whomoved.distance_to( whomoved.lastpos ) > gamestate.max_areaevent_range )
   {
     Core::WorldIterator<Core::MobileFilter>::InRange(
-        whomoved.lastpos, 32,
+        whomoved.lastpos, gamestate.max_areaevent_range,
         [&]( Mobile::Character* chr ) { Mobile::NpcPropagateMove( chr, &whomoved ); } );
 
-    Core::WorldIterator<Core::ItemFilter>::InRange(
-        whomoved.lastpos, 32, [&]( Items::Item* item ) { item->inform_moved( &whomoved ); } );
+    Core::WorldIterator<Core::ItemFilter>::InRange( whomoved.lastpos, gamestate.max_areaevent_range,
+                                                    [&]( Items::Item* item )
+                                                    { item->inform_moved( &whomoved ); } );
   }
 
   // Inform nearby mobiles that a movement has been made.
   Core::WorldIterator<Core::MobileFilter>::InRange(
-      &whomoved, 33,
+      &whomoved, gamestate.max_areaevent_range,
       [&]( Mobile::Character* chr ) { Mobile::NpcPropagateMove( chr, &whomoved ); } );
 
   // the same for top-level items
-  Core::WorldIterator<Core::ItemFilter>::InRange(
-      &whomoved, 33, [&]( Items::Item* item ) { item->inform_moved( &whomoved ); } );
+  Core::WorldIterator<Core::ItemFilter>::InRange( &whomoved, gamestate.max_areaevent_range,
+                                                  [&]( Items::Item* item )
+                                                  { item->inform_moved( &whomoved ); } );
 }
 
 // The unhid character was already in the area and must have seen the other mobiles. So only notify
@@ -162,11 +164,12 @@ void Realm::notify_moved( Mobile::Character& whomoved )
 void Realm::notify_unhid( Mobile::Character& whounhid )
 {
   Core::WorldIterator<Core::NPCFilter>::InRange(
-      &whounhid, 32,
+      &whounhid, gamestate.max_areaevent_range,
       [&]( Mobile::Character* chr ) { Mobile::NpcPropagateEnteredArea( chr, &whounhid ); } );
 
-  Core::WorldIterator<Core::ItemFilter>::InRange(
-      &whounhid, 32, [&]( Items::Item* item ) { item->inform_enteredarea( &whounhid ); } );
+  Core::WorldIterator<Core::ItemFilter>::InRange( &whounhid, gamestate.max_areaevent_range,
+                                                  [&]( Items::Item* item )
+                                                  { item->inform_enteredarea( &whounhid ); } );
 }
 
 // Resurrecting is just like unhiding
@@ -178,7 +181,7 @@ void Realm::notify_resurrected( Mobile::Character& whoressed )
 void Realm::notify_entered( Mobile::Character& whoentered )
 {
   Core::WorldIterator<Core::MobileFilter>::InRange(
-      &whoentered, 32,
+      &whoentered, gamestate.max_areaevent_range,
       [&]( Mobile::Character* chr )
       {
         Mobile::NpcPropagateEnteredArea( chr, &whoentered );
@@ -188,19 +191,21 @@ void Realm::notify_entered( Mobile::Character& whoentered )
       } );
 
   // and notify the top-level items too
-  Core::WorldIterator<Core::ItemFilter>::InRange(
-      &whoentered, 32, [&]( Items::Item* item ) { item->inform_enteredarea( &whoentered ); } );
+  Core::WorldIterator<Core::ItemFilter>::InRange( &whoentered, gamestate.max_areaevent_range,
+                                                  [&]( Items::Item* item )
+                                                  { item->inform_enteredarea( &whoentered ); } );
 }
 
 // Must be used right before a mobile leaves (before updating x and y)
 void Realm::notify_left( Mobile::Character& wholeft )
 {
   Core::WorldIterator<Core::MobileFilter>::InRange(
-      &wholeft, 32,
+      &wholeft, gamestate.max_areaevent_range,
       [&]( Mobile::Character* chr ) { Mobile::NpcPropagateLeftArea( chr, &wholeft ); } );
 
-  Core::WorldIterator<Core::ItemFilter>::InRange(
-      &wholeft, 32, [&]( Items::Item* item ) { item->inform_leftarea( &wholeft ); } );
+  Core::WorldIterator<Core::ItemFilter>::InRange( &wholeft, gamestate.max_areaevent_range,
+                                                  [&]( Items::Item* item )
+                                                  { item->inform_leftarea( &wholeft ); } );
 }
 
 // This function will be called whenever:

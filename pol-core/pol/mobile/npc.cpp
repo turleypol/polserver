@@ -776,7 +776,7 @@ void NPC::inform_criminal( Character* thecriminal )
   if ( ex != nullptr )
   {
     if ( ( ex->eventmask & ( Core::EVID_GONE_CRIMINAL ) ) &&
-         in_range( thecriminal, ex->area_size ) )
+         in_range( thecriminal, ex->get_areaevent_range() ) )
     {
       if ( ( !Core::settingsManager.ssopt.event_visibility_core_checks ) ||
            is_visible_to_me( thecriminal, /*check_range*/ false ) )
@@ -791,7 +791,7 @@ void NPC::inform_leftarea( Character* wholeft )
   {
     if ( ( ex->eventmask & ( Core::EVID_LEFTAREA ) ) && can_accept_area_event_by( wholeft ) )
     {
-      if ( in_range( wholeft, ex->area_size ) )
+      if ( in_range( wholeft, ex->get_areaevent_range() ) )
       {
         if ( ( !Core::settingsManager.ssopt.event_visibility_core_checks ) ||
              is_visible_to_me( wholeft, /*check_range*/ false ) )
@@ -807,7 +807,7 @@ void NPC::inform_enteredarea( Character* whoentered )
   {
     if ( ( ex->eventmask & ( Core::EVID_ENTEREDAREA ) ) && can_accept_area_event_by( whoentered ) )
     {
-      if ( in_range( whoentered, ex->area_size ) )
+      if ( in_range( whoentered, ex->get_areaevent_range() ) )
       {
         if ( ( !Core::settingsManager.ssopt.event_visibility_core_checks ) ||
              is_visible_to_me( whoentered, /*check_range*/ false ) )
@@ -825,8 +825,8 @@ void NPC::inform_moved( Character* moved )
   if ( ( ex->eventmask & ( Core::EVID_ENTEREDAREA | Core::EVID_LEFTAREA ) ) &&
        can_accept_area_event_by( moved ) )
   {
-    bool are_inrange = in_range( moved, ex->area_size );
-    bool were_inrange = in_range( moved->lastpos, ex->area_size );
+    bool are_inrange = in_range( moved, ex->get_areaevent_range() );
+    bool were_inrange = in_range( moved->lastpos, ex->get_areaevent_range() );
 
     if ( ( !Core::settingsManager.ssopt.event_visibility_core_checks ) ||
          is_visible_to_me( moved ) )
@@ -865,8 +865,8 @@ void NPC::inform_imoved( Character* chr )
   if ( ex->eventmask & ( Core::EVID_ENTEREDAREA | Core::EVID_LEFTAREA ) &&
        can_accept_area_event_by( chr ) )
   {
-    bool are_inrange = in_range( chr, ex->area_size );
-    bool were_inrange = lastpos.in_range( chr->pos(), ex->area_size );
+    bool are_inrange = in_range( chr, ex->get_areaevent_range() );
+    bool were_inrange = lastpos.in_range( chr->pos(), ex->get_areaevent_range() );
 
     if ( ( !Core::settingsManager.ssopt.event_visibility_core_checks ) || is_visible_to_me( chr ) )
     {

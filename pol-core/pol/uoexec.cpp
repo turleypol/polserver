@@ -48,13 +48,13 @@ UOExecutor::UOExecutor()
       runaway_cycles( 0 ),
       eventmask( 0 ),
       area_mask( 0 ),
-      area_size( 0 ),
       speech_size( 1 ),
       can_access_offline_mobiles_( false ),
       auxsvc_assume_string( false ),
       survive_attached_disconnect( false ),
       pParent( nullptr ),
-      pChild( nullptr )
+      pChild( nullptr ),
+      area_size( 0 )
 {
   weakptr.set( this );
   os_module = new Module::OSExecutorModule( *this );
@@ -974,6 +974,12 @@ bool UOExecutor::getPos4dParam( unsigned xparam, unsigned yparam, unsigned zpara
     return true;
   }
   return false;
+}
+void UOExecutor::set_areaevent_range( u16 range )
+{
+  if ( gamestate.max_areaevent_range < range )
+    gamestate.max_areaevent_range = range;
+  area_size = range;
 }
 }  // namespace Core
 }  // namespace Pol

@@ -172,6 +172,7 @@ GameState::GameState()
       task_thread_pool(),
       decay(),
       max_update_range( Plib::RANGE_VISUAL ),
+      max_areaevent_range( 0 ),
       max_update_range_client( Plib::RANGE_VISUAL ),
       max_update_range_multi( 0 )
 
