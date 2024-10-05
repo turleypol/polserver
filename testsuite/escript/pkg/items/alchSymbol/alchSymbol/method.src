@@ -1,7 +1,0 @@
-program Install()
-  return 1;
-endprogram
-
-exported function IsAlchemySymbol( unused item )
-  return 1;
-endfunction

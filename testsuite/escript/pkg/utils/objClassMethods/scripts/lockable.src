@@ -1,4 +1,0 @@
-program Install()
-  Print( "Custom Lockable Class Methods Installed." );
-  return 1;
-endprogram

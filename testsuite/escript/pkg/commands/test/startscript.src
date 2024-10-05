@@ -1,5 +1,0 @@
-use os;
-
-program textcmd_start( unused who, scriptname )
-  start_script( scriptname );
-endprogram
