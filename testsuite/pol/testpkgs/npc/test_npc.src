@@ -123,6 +123,7 @@ print($"create {npc.serial}");
       if ( !idx )
         return ret_error( "Unexpected NPC was seen entering: {}".format( serial ) );
       endif
+      print($"{serial} {_serial_iter} {idx}");
       if ( _serial_iter != idx )
         return ret_error( "NPC seen entering out of order: {} / {}".format( idx, _serial_iter ) );
       endif
