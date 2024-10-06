@@ -65,7 +65,7 @@ function npc_test_areaevents( template, expected_to_see )
   if ( ready.errortext )
     return ready;
   endif
-
+print($"create {npc.serial}");
   // test if it can see npcs created at the four borders of the event range
   var probe_npc1 := CreateNPCFromTemplate( ":testnpc:probe_npc", x + range, y + range, 0 );
   var probe_npc2 := CreateNPCFromTemplate( ":testnpc:probe_npc", x - range, y - range, 0 );
