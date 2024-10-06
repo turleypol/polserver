@@ -91,6 +91,7 @@ function npc_test_areaevents( template, expected_to_see )
   var in_range_npcs := { probe_npc1.serial, probe_npc2.serial, probe_npc3.serial,
                          probe_npc4.serial, probe_npc_outside_then_in.serial };
   var nExpected := in_range_npcs.size();
+  print($"in range def: {in_range_npcs}");
 
   if ( !expected_to_see )
     var who_entered := wait_for_prop( npc, "who_entered", max_try := 3 );
@@ -116,6 +117,7 @@ function npc_test_areaevents( template, expected_to_see )
                                                                                      nExpected ) );
     endif
 
+  print($"who entered: {who_entered}");
     foreach serial in who_entered
       var idx := serial in in_range_npcs;
       if ( !idx )
