@@ -148,6 +148,8 @@ void Realm::notify_moved( Mobile::Character& whomoved )
         [&]( Items::Item* item ) { item->inform_moved( &whomoved ); } );
   }
 
+  INFO_PRINTLN( "range {} dist {}", Core::gamestate.max_areaevent_range,
+                whomoved.distance_to( whomoved.lastpos.xy() ) );
   // Inform nearby mobiles that a movement has been made.
   Core::WorldIterator<Core::MobileFilter>::InRange(
       &whomoved,
