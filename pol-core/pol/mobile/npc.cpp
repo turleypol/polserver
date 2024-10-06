@@ -839,6 +839,7 @@ void NPC::inform_moved( Character* moved )
       }
       else if ( !are_inrange && were_inrange && ( ex->eventmask & ( Core::EVID_LEFTAREA ) ) )
       {
+        INFO_PRINTLN( "{} OUTRANGE {}", serial, moved.serial );
         ex->signal_event( new Module::SourcedEvent( Core::EVID_LEFTAREA, moved ) );
         return;
       }

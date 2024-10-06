@@ -123,7 +123,6 @@ print($"create {npc.serial}");
       if ( !idx )
         return ret_error( "Unexpected NPC was seen entering: {}".format( serial ) );
       endif
-      print($"{serial} {_serial_iter} {idx}");
       if ( _serial_iter != idx )
         return ret_error( "NPC seen entering out of order: {} / {}".format( idx, _serial_iter ) );
       endif
@@ -168,6 +167,7 @@ print($"create {npc.serial}");
                                                                                   nExpected ) );
     endif
 
+  print($"who left: {who_left}");
     foreach serial in who_left
       var idx := serial in in_range_npcs;
       if ( !idx )
