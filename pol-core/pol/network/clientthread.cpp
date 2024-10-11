@@ -71,6 +71,7 @@ void set_polling_timeouts( Clib::SinglePoller& poller, bool single_threaded_logi
 bool threadedclient_io_step( Network::ThreadedClient* session, Clib::SinglePoller& clientpoller,
                              int& nidle )
 {
+  INFO_PRINTLN( "STEP" );
   SESSION_CHECKPOINT( 1 );
   if ( !clientpoller.prepare( session->have_queued_data() ) )
   {
@@ -140,6 +141,7 @@ bool threadedclient_io_step( Network::ThreadedClient* session, Clib::SinglePolle
     {
       SESSION_CHECKPOINT( 17 );
       PolLock lck;
+      INFO_PRINTLN( "LOCK PROCSUCC" );
 
       // reset packet timer
       session->last_packet_at = polclock();
@@ -389,6 +391,7 @@ bool process_data( Network::ThreadedClient* session )
                       session->message_length );
 
       PolLock lck;  // multithread
+      INFO_PRINTLN( "LOCK PROC2" );
       // it can happen that a client gets disconnected while waiting for the lock.
       if ( session->isConnected() )
       {
