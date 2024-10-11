@@ -201,13 +201,13 @@ class PolServer:
     sock.send(seed)
     sock.send(bts)
 
-    while sock:
-      try:
+    try:
+      while sock:
         rcv = sock.recv(1024)
         if (not rcv):
           break
-      except:
-        pass
+    except:
+      pass
 
     self.log.error('--------------End')
   def startclient(self,user,psw,charname,charidx,id):
