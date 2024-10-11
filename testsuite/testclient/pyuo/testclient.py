@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+usr/bin/env python3
 
 import configparser
 import logging
@@ -195,7 +195,7 @@ class PolServer:
 
   def t(self):
     sock = socket.create_connection((self.lconf.get('ip'), self.lconf.getint('port')))
-    sock.settimeout(2);
+    sock.settimeout(20);
 
     seed = bytes([0x01, 0x02, 0x03, 0x04]*1000)
     bts = bytes([0xF1, 0x00, 0x04, 0xFF])
@@ -204,9 +204,12 @@ class PolServer:
     sock.send(bts)
 
     while sock:
-      rcv = sock.recv(1024)
-      if (not rcv):
-        break
+      try:
+        rcv = sock.recv(1024)
+        if (not rcv):
+          break
+      except:
+        pass
 
     self.log.error('--------------End')
   def startclient(self,user,psw,charname,charidx,id):
