@@ -15,6 +15,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #endif
+#include "clib/logfacility.h"
 #include <atomic>
 
 namespace Pol
@@ -40,12 +41,18 @@ extern pthread_mutex_t polsem;
 void polsem_lock();
 void polsem_unlock();
 
-class PolLock
+class PolLockD
 {
 public:
-  PolLock() { polsem_lock(); }
-  ~PolLock() { polsem_unlock(); }
+  PolLockD( const std::string& file, size_t line ) { INFO_PRINTLN( "lock {} {}", file, line ); }
+  polsem_lock();
+} ~PolLockD()
+{
+  polsem_unlock();
+}
 };
+
+#define PolLock PolLockD( __FILE__, __LINE__ )
 
 class PolLock2
 {
