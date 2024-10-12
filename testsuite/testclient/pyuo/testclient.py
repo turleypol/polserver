@@ -195,7 +195,7 @@ class PolServer:
     sock = socket.create_connection((self.lconf.get('ip'), self.lconf.getint('port')))
     sock.settimeout(20);
 
-    seed = bytes([0x01, 0x02, 0x03, 0x04]*1000)
+    seed = bytes([0x01, 0x02, 0x03, 0x04]*100000)
     bts = bytes([0xF1, 0x00, 0x04, 0xFF])
     self.log.error("SEND------");
     sock.send(seed)
