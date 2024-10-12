@@ -49,10 +49,7 @@ public:
     INFO_PRINTLN( "lock {} {}", file, line );
     polsem_lock();
   }
-} ~PolLockD()
-{
-  polsem_unlock();
-}
+  ~PolLockD() { polsem_unlock(); }
 };
 
 #define PolLock PolLockD( __FILE__, __LINE__ )
@@ -82,6 +79,6 @@ public:
 private:
   bool locked_;
 };
-}
-}
+}  // namespace Core
+}  // namespace Pol
 #endif  // POLSEM_H
