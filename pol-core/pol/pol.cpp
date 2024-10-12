@@ -584,7 +584,7 @@ void scripts_thread( void )
   {
     THREAD_CHECKPOINT( scripts, 0 );
     {
-      PolLock lck;
+      PolLockD lck;
       polclock_checkin();
       TRACEBUF_ADDELEM( "scripts thread now", static_cast<u32>( polclock() ) );
       ++stateManager.profilevars.script_passes;
