@@ -52,7 +52,7 @@ public:
   ~PolLockD() { polsem_unlock(); }
 };
 
-#define PolLock PolLockD( __FILE__, __LINE__ )
+#define PolLock PolLockD __lock( __FILE__, __LINE__ );  //
 
 class PolLock2
 {
