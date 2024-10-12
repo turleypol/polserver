@@ -44,15 +44,13 @@ void polsem_unlock();
 class PolLockD
 {
 public:
-  PolLockD( const std::string& file, int line )
-  {
-    INFO_PRINTLN( "lock {} {}", file, line );
-    polsem_lock();
-  }
+  PolLockD() { polsem_lock(); }
   ~PolLockD() { polsem_unlock(); }
 };
 
-#define PolLock PolLockD __lock( __FILE__, __LINE__ );  //
+#define PolLock                                     \
+  INFO_PRINTLN( "lock {} {}", __FILE__, __LINE__ ); \
+  PolLockD
 
 class PolLock2
 {
