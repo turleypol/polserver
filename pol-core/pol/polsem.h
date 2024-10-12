@@ -48,7 +48,7 @@ public:
   PolLockD() { polsem_lock(); }
   ~PolLockD() { polsem_unlock(); }
 };
-void noop(){};
+inline void noop(){};
 #define PolLock                                     \
   noop();                                           \
   INFO_PRINTLN( "lock {} {}", __FILE__, __LINE__ ); \
