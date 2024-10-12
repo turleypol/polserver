@@ -41,16 +41,18 @@ extern pthread_mutex_t polsem;
 void polsem_lock();
 void polsem_unlock();
 
+
 class PolLockD
 {
 public:
   PolLockD() { polsem_lock(); }
   ~PolLockD() { polsem_unlock(); }
 };
-
+void noop(){};
 #define PolLock                                     \
+  noop();                                           \
   INFO_PRINTLN( "lock {} {}", __FILE__, __LINE__ ); \
-  PolLockD
+  Core::PolLockD
 
 class PolLock2
 {
