@@ -231,6 +231,8 @@ void AuxClientThread::run()
         _uoexec->signal_event( new Bscript::BError( "connection closed" ) );
         break;
       }
+      else
+        INFO_PRINTLN( "{}", timeout_exit );
     }
     else
     {  // the controlling script dropped its last reference to the connection,
