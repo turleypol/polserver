@@ -226,6 +226,11 @@ void AuxClientThread::run()
         event->addMember( "value", value.release() );
         _uoexec->signal_event( event.release() );
       }
+      else if ( !reader->connected() )
+      {
+        _uoexec->signal_event( new Bscript::BError( "connection closed" ) );
+        break;
+      }
     }
     else
     {  // the controlling script dropped its last reference to the connection,
