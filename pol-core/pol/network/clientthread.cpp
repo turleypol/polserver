@@ -322,7 +322,20 @@ bool process_data( Network::ThreadedClient* session )
     if ( !Network::PacketRegistry::is_defined( msgtype ) )
     {
       handle_undefined_packet( session );
+      if ( !session->myClient.chr && Plib::systemstate.config.loginserver_disconnect_unknown_pkts )
+        session->forceDisconnect();
       return false;  // remain in RECV_STATE_MSGTYPE_WAIT
+    }
+    if ( !session->myClient.chr && !session->msgtype_filter->msgtype_allowed[msgtype] &&
+         Plib::systemstate.config.loginserver_disconnect_unknown_pkts )
+    {
+      session->forceDisconnect();
+
+      POLLOG_ERRORLN( "Client#{} ({}, Acct {}) sent non-allowed message type {:#x}.",
+                      session->myClient.instance_, session->ipaddrAsString(),
+                      ( session->myClient.acct ? session->myClient.acct->name() : "unknown" ),
+                      (int)msgtype );
+      return false;
     }
 
     Network::MSG_HANDLER packetHandler =
