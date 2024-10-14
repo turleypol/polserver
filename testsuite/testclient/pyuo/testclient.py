@@ -211,7 +211,7 @@ class PolServer:
 
     self.log.error('--------------End')
   def startclient(self,user,psw,charname,charidx,id):
-    self.t()
+    #self.t()
     with self.clientLock:
       c = client.Client(id)
       self.clients.append(c)
