@@ -266,7 +266,7 @@ bool Socket::listen( unsigned short port )
 
 bool Socket::has_incoming_data( unsigned int waitms, int* result )
 {
-  if ( !_sck.connected() )
+  if ( !connected() )
   {
     if ( result )
       *result = -1;
@@ -751,8 +751,8 @@ bool SocketByteReader::try_read( std::string& out, bool* timed_out )
       *timed_out = true;
     else if ( res == -1 )
     {
-      HandleError();
-      close();
+      INFO_PRINTLN( "ERROR Incomming" );
+      _socket.close();
       return false;
     }
 
