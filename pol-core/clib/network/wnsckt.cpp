@@ -749,7 +749,7 @@ bool SocketByteReader::try_read( std::string& out, bool* timed_out )
   {
     if ( timed_out )
       *timed_out = true;
-    else if ( res == -1 )
+    if ( res == -1 )
     {
       INFO_PRINTLN( "ERROR Incomming" );
       _socket.close();
