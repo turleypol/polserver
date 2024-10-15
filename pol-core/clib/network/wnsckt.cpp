@@ -266,6 +266,12 @@ bool Socket::listen( unsigned short port )
 
 bool Socket::has_incoming_data( unsigned int waitms, int* result )
 {
+  if ( !_sck.connected() )
+  {
+    if ( result )
+      *result = -1;
+    return false;
+  }
   SinglePoller poller( _sck );
   poller.set_timeout( 0, waitms * 1000 );
 
@@ -743,6 +749,13 @@ bool SocketByteReader::try_read( std::string& out, bool* timed_out )
   {
     if ( timed_out )
       *timed_out = true;
+    else if ( res == -1 )
+    {
+      HandleError();
+      close();
+      return false;
+    }
+
     INFO_PRINTLN( "NO INCOMING {}", _waitms );
     return false;
   }
