@@ -743,6 +743,7 @@ bool SocketByteReader::try_read( std::string& out, bool* timed_out )
   {
     if ( timed_out )
       *timed_out = true;
+    INFO_PRINTLN( "NO INCOMING {}", _waitms );
     return false;
   }
   int bytes_read = -1;
