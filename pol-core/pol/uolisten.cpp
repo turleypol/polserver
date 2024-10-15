@@ -114,15 +114,11 @@ void UoClientListener::run()
       port, Clib::Socket::option( Clib::Socket::nonblocking | Clib::Socket::reuseaddr ) );
   while ( !Clib::exit_signalled )
   {
-    unsigned int timeout = 2;
-    unsigned int mstimeout = 0;
+    unsigned int mstimeout = 2000;
     if ( !login_clients.empty() )
-    {
-      timeout = 0;
       mstimeout = 200;
-    }
     Clib::Socket newsck;
-    if ( SL.GetConnection( &newsck, timeout, mstimeout ) && newsck.connected() )
+    if ( SL.GetConnection( &newsck, mstimeout ) && newsck.connected() )
     {
       INFO_PRINTLN( "CONNECT" );
       // create an appropriate Client object

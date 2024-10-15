@@ -326,15 +326,16 @@ bool process_data( Network::ThreadedClient* session )
         session->forceDisconnect();
       return false;  // remain in RECV_STATE_MSGTYPE_WAIT
     }
-    if ( !session->myClient.chr && !session->msgtype_filter->msgtype_allowed[msgtype] &&
-         Plib::systemstate.config.loginserver_disconnect_unknown_pkts )
+    // during login if it should disconnect no need to receive the data before killing the
+    // connection
+    if ( !session->myClient.chr && Plib::systemstate.config.loginserver_disconnect_unknown_pkts &&
+         !session->msgtype_filter->msgtype_allowed[msgtype] )
     {
-      session->forceDisconnect();
-
       POLLOG_ERRORLN( "Client#{} ({}, Acct {}) sent non-allowed message type {:#x}.",
                       session->myClient.instance_, session->ipaddrAsString(),
                       ( session->myClient.acct ? session->myClient.acct->name() : "unknown" ),
                       (int)msgtype );
+      session->forceDisconnect();
       return false;
     }
 

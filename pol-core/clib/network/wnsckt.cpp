@@ -273,7 +273,7 @@ bool Socket::has_incoming_data( unsigned int waitms, int* result )
     return false;
   }
   SinglePoller poller( _sck );
-  poller.set_timeout( 0, waitms * 1000 );
+  poller.set_timeout( waitms );
 
   if ( !poller.prepare( false ) )
   {
@@ -755,14 +755,6 @@ bool SocketByteReader::try_read( std::string& out, bool* timed_out )
   {
     if ( timed_out )
       *timed_out = true;
-    if ( res == -1 )
-    {
-      INFO_PRINTLN( "ERROR Incomming" );
-      _socket.close();
-      return false;
-    }
-
-    INFO_PRINTLN( "NO INCOMING {}", _waitms );
     return false;
   }
   int bytes_read = -1;
