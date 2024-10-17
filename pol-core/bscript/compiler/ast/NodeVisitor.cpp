@@ -12,6 +12,11 @@
 #include "bscript/compiler/ast/CaseDispatchGroups.h"
 #include "bscript/compiler/ast/CaseDispatchSelectors.h"
 #include "bscript/compiler/ast/CaseStatement.h"
+#include "bscript/compiler/ast/ClassBody.h"
+#include "bscript/compiler/ast/ClassDeclaration.h"
+#include "bscript/compiler/ast/ClassInstance.h"
+#include "bscript/compiler/ast/ClassParameterDeclaration.h"
+#include "bscript/compiler/ast/ClassParameterList.h"
 #include "bscript/compiler/ast/ConditionalOperator.h"
 #include "bscript/compiler/ast/ConstDeclaration.h"
 #include "bscript/compiler/ast/CstyleForLoop.h"
@@ -35,6 +40,7 @@
 #include "bscript/compiler/ast/FunctionExpression.h"
 #include "bscript/compiler/ast/FunctionParameterDeclaration.h"
 #include "bscript/compiler/ast/FunctionParameterList.h"
+#include "bscript/compiler/ast/GeneratedFunction.h"
 #include "bscript/compiler/ast/IfThenElseStatement.h"
 #include "bscript/compiler/ast/InterpolateString.h"
 #include "bscript/compiler/ast/JumpStatement.h"
@@ -130,6 +136,30 @@ void NodeVisitor::visit_const_declaration( ConstDeclaration& node )
 }
 
 void NodeVisitor::visit_cstyle_for_loop( CstyleForLoop& node )
+{
+  visit_children( node );
+}
+
+void NodeVisitor::visit_class_body( ClassBody& node )
+{
+  visit_children( node );
+}
+void NodeVisitor::visit_class_declaration( ClassDeclaration& node )
+{
+  visit_children( node );
+}
+
+void NodeVisitor::visit_class_instance( ClassInstance& node )
+{
+  visit_children( node );
+}
+
+void NodeVisitor::visit_class_parameter_declaration( ClassParameterDeclaration& node )
+{
+  visit_children( node );
+}
+
+void NodeVisitor::visit_class_parameter_list( ClassParameterList& node )
 {
   visit_children( node );
 }
@@ -317,6 +347,11 @@ void NodeVisitor::visit_struct_initializer( StructInitializer& node )
 }
 
 void NodeVisitor::visit_struct_member_initializer( StructMemberInitializer& node )
+{
+  visit_children( node );
+}
+
+void NodeVisitor::visit_generated_function( GeneratedFunction& node )
 {
   visit_children( node );
 }

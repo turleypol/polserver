@@ -91,6 +91,10 @@ void StoredTokenDecoder::decode_to( const StoredToken& tkn, std::string& w )
     w += ">=";
     break;
 
+  case TOK_IS:
+    w += "is";
+    break;
+
   case TOK_AND:
     w += "&& (logical and)";
     break;
@@ -151,6 +155,9 @@ void StoredTokenDecoder::decode_to( const StoredToken& tkn, std::string& w )
     break;
   case CTRL_MAKELOCAL:
     w += "makelocal";
+    break;
+  case INS_CHECK_MRO:
+    fmt::format_to( std::back_inserter( w ), "check mro (this @ offset {})", tkn.offset );
     break;
   case CTRL_JSR_USERFUNC:
     fmt::format_to( std::back_inserter( w ), "jsr userfunc @{}", tkn.offset );
@@ -281,6 +288,9 @@ void StoredTokenDecoder::decode_to( const StoredToken& tkn, std::string& w )
   case TOK_STRUCT:
     w += "create empty struct";
     break;
+  case TOK_CLASSINST:
+    fmt::format_to( std::back_inserter( w ), "create class instance (index={})", tkn.offset );
+    break;
   case INS_SUBSCRIPT_ASSIGN:
     w += "subscript assign";
     break;
@@ -329,15 +339,15 @@ void StoredTokenDecoder::decode_to( const StoredToken& tkn, std::string& w )
 
   case INS_GET_MEMBER_ID:
     fmt::format_to( std::back_inserter( w ), "get-member-id '{}' ({})",
-                    getObjMember( tkn.type )->code, tkn.type );
+                    getObjMember( tkn.offset )->code, tkn.offset );
     break;
   case INS_SET_MEMBER_ID:
     fmt::format_to( std::back_inserter( w ), "set-member-id '{}' ({})",
-                    getObjMember( tkn.type )->code, tkn.type );
+                    getObjMember( tkn.offset )->code, tkn.offset );
     break;
   case INS_SET_MEMBER_ID_CONSUME:
     fmt::format_to( std::back_inserter( w ), "set-member-id-consume '{}' ({})",
-                    getObjMember( tkn.type )->code, tkn.type );
+                    getObjMember( tkn.offset )->code, tkn.offset );
     break;
   case INS_CALL_METHOD_ID:
     fmt::format_to( std::back_inserter( w ), "call-method-id '{}' (#{}, {} arguments)",
@@ -382,9 +392,7 @@ void StoredTokenDecoder::decode_to( const StoredToken& tkn, std::string& w )
 
   case TOK_FUNCREF:
   {
-    fmt::format_to( std::back_inserter( w ),
-                    "create-funcref index={} pc={} (TOK_FUNCREF)",
-                    static_cast<int>( tkn.type ), tkn.offset );
+    fmt::format_to( std::back_inserter( w ), "create-funcref index={} (TOK_FUNCREF)", tkn.offset );
     break;
   }
 

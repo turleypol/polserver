@@ -2,12 +2,14 @@
 
 #include "bscript/compiler/Profile.h"
 #include "bscript/compiler/Report.h"
+#include "bscript/compiler/ast/ClassBody.h"
 #include "bscript/compiler/ast/ConstDeclaration.h"
 #include "bscript/compiler/ast/Program.h"
 #include "bscript/compiler/ast/Statement.h"
 #include "bscript/compiler/ast/TopLevelStatements.h"
-#include "bscript/compiler/astbuilder/AvailableUserFunction.h"
+#include "bscript/compiler/astbuilder/AvailableParseTree.h"
 #include "bscript/compiler/astbuilder/BuilderWorkspace.h"
+#include "bscript/compiler/astbuilder/FunctionResolver.h"
 #include "bscript/compiler/astbuilder/ModuleProcessor.h"
 #include "bscript/compiler/file/SourceFile.h"
 #include "bscript/compiler/file/SourceFileCache.h"
@@ -280,15 +282,56 @@ void SourceFileProcessor::handle_use_declaration( EscriptParser::UseDeclarationC
   use_module( modulename, source_location, micros_used );
 }
 
+// Visits global user functions. Class functions are visited in UserFunctionVisitor.
 antlrcpp::Any SourceFileProcessor::visitFunctionDeclaration(
     EscriptParser::FunctionDeclarationContext* ctx )
 {
   auto loc = location_for( *ctx );
-  workspace.function_resolver.register_available_user_function( loc, ctx );
+  bool force_reference = user_function_inclusion == UserFunctionInclusion::All;
+  workspace.function_resolver.register_available_user_function( loc, ctx, force_reference );
   const std::string& function_name = tree_builder.text( ctx->IDENTIFIER() );
   workspace.compiler_workspace.all_function_locations.emplace( function_name, loc );
+  return antlrcpp::Any();
+}
+
+antlrcpp::Any SourceFileProcessor::visitClassDeclaration(
+    EscriptGrammar::EscriptParser::ClassDeclarationContext* ctx )
+{
+  auto loc = location_for( *ctx );
+  auto class_name = tree_builder.text( ctx->IDENTIFIER() );
+
+  // Add var statements to top-level, as their declaration + semantic analysis
+  // needs to happen in-line with other statements:
+  //
+  //   Foo::staticVar;  // compilation error
+  //   class Foo var staticVar := 2; endclass
+  //   print(Foo::staticVar == 2);  // true
+  //
+  // We add this `ClassBody` to the top level statements now. When the
+  // UserFunctionVisitor visits the class declaration, it will add its variable
+  // statements to this node.
+  auto var_statement_holder = std::make_unique<ClassBody>( loc );
+
+  workspace.function_resolver.register_available_class_declaration( loc, class_name, ctx,
+                                                                    var_statement_holder.get() );
+
+  workspace.compiler_workspace.all_class_locations.emplace( class_name, loc );
+
+  workspace.compiler_workspace.top_level_statements->children.push_back(
+      std::move( var_statement_holder ) );
+
   if ( user_function_inclusion == UserFunctionInclusion::All )
-    workspace.function_resolver.force_reference( function_name, loc );
+  {
+    for ( auto classStatement : ctx->classBody()->classStatement() )
+    {
+      if ( auto func_decl = classStatement->functionDeclaration() )
+      {
+        auto function_name = tree_builder.text( func_decl->IDENTIFIER() );
+        workspace.function_resolver.force_reference( ScopableName( class_name, function_name ),
+                                                     loc );
+      }
+    }
+  }
   return antlrcpp::Any();
 }
 

@@ -25,6 +25,7 @@ struct CompilerConfig
   bool GenerateDebugTextInfo;
   int VerbosityLevel;
   bool DisplayWarnings;
+  bool DisplayDebugs;
   bool GenerateDependencyInfo;
   bool CompileAspPages;
   bool AutoCompileByDefault;
@@ -43,7 +44,7 @@ struct CompilerConfig
   int IncParseTreeCacheSize;
 
   // Formatter
-  size_t FormatterLineWidth = 80;
+  size_t FormatterLineWidth = 100;
   bool FormatterKeepKeywords = false;
   unsigned short FormatterIndentLevel = 2;
   bool FormatterMergeEmptyLines = true;
@@ -59,7 +60,7 @@ struct CompilerConfig
   bool FormatterWindowsLineEndings = false;
   bool FormatterUseTabs = false;
   unsigned short FormatterTabWidth = 4;
-  bool FormatterInsertNewlineAtEOF = false;
+  bool FormatterInsertNewlineAtEOF = true;
   bool FormatterFormatInsideComments = true;
   bool FormatterBracketAttachToType = true;
   bool FormatterAlignTrailingComments = true;

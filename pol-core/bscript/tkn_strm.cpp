@@ -369,6 +369,9 @@ void Token::printOn( std::ostream& os ) const
   case TOK_STRUCT:
     os << "struct";
     break;
+  case TOK_CLASSINST:
+    os << "class instance #" << lval;
+    break;
   case INS_UNINIT:
     os << "uninit";
     break;
@@ -401,6 +404,9 @@ void Token::printOn( std::ostream& os ) const
     break;
   case CTRL_JSR_USERFUNC:
     os << "jmp userfunc @" << lval;
+    break;
+  case INS_CHECK_MRO:
+    os << "check mro (this at offset " << lval << ")";
     break;
   case INS_POP_PARAM_BYREF:
     os << "pop param byref '" << token << "'";

@@ -189,8 +189,10 @@ enum MethodID
   MTH_FILTER,
   MTH_REDUCE,
   MTH_MAP,
-  MTH_FINDINDEX, // 160
+  MTH_FINDINDEX,  // 160
   MTH_SET_MULTIID,
+  MTH_NEW,
+  MTH_CALL_METHOD,
 };
 
 inline auto format_as( MethodID id )

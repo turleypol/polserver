@@ -1,6 +1,7 @@
 #include "InstructionGenerator.h"
 
 #include <boost/range/adaptor/reversed.hpp>
+#include <boost/range/adaptor/sliced.hpp>
 
 #include "bscript/compiler/ast/ArrayInitializer.h"
 #include "bscript/compiler/ast/BasicForLoop.h"
@@ -12,6 +13,8 @@
 #include "bscript/compiler/ast/CaseDispatchGroups.h"
 #include "bscript/compiler/ast/CaseDispatchSelectors.h"
 #include "bscript/compiler/ast/CaseStatement.h"
+#include "bscript/compiler/ast/ClassDeclaration.h"
+#include "bscript/compiler/ast/ClassInstance.h"
 #include "bscript/compiler/ast/ConditionalOperator.h"
 #include "bscript/compiler/ast/ConstDeclaration.h"
 #include "bscript/compiler/ast/CstyleForLoop.h"
@@ -34,6 +37,7 @@
 #include "bscript/compiler/ast/FunctionParameterDeclaration.h"
 #include "bscript/compiler/ast/FunctionParameterList.h"
 #include "bscript/compiler/ast/FunctionReference.h"
+#include "bscript/compiler/ast/GeneratedFunction.h"
 #include "bscript/compiler/ast/Identifier.h"
 #include "bscript/compiler/ast/IfThenElseStatement.h"
 #include "bscript/compiler/ast/IntegerValue.h"
@@ -72,10 +76,12 @@
 namespace Pol::Bscript::Compiler
 {
 InstructionGenerator::InstructionGenerator(
-    InstructionEmitter& emitter, std::map<std::string, FlowControlLabel>& user_function_labels )
+    InstructionEmitter& emitter, std::map<std::string, FlowControlLabel>& user_function_labels,
+    const std::map<std::string, size_t>& class_declaration_indexes )
     : emitter( emitter ),
       emit( emitter ),
       user_function_labels( user_function_labels ),
+      class_declaration_indexes( class_declaration_indexes ),
       user_functions()
 {
 }
@@ -85,6 +91,63 @@ void InstructionGenerator::generate( Node& node )
   // alternative: two identical methods 'evaluate' and 'execute', for readability
   update_debug_location( node );
   node.accept( *this );
+}
+
+void InstructionGenerator::generate_default_parameters( const UserFunction& user_function )
+{
+  // Emit instructions for default parameters only for method functions or those that have a
+  // function reference.
+  if ( user_function.type == UserFunctionType::Method ||
+       emitter.has_function_reference( user_function ) )
+  {
+    FlowControlLabel& label = user_function_labels[user_function.scoped_name()];
+
+    if ( !label.has_address() )
+    {
+      user_function.internal_error( "function reference label not set" );
+    }
+
+    std::vector<std::reference_wrapper<FunctionParameterDeclaration>> params;
+    user_function.child<FunctionParameterList>( 0 ).get_children( params );
+
+    // Track if the function has any default parameters.
+    bool any_default_params = false;
+
+    // Emit the default arguments for parameters in declaration order.
+    for ( auto& param_ref : params )
+    {
+      auto& param = param_ref.get();
+      auto default_value = param.default_value();
+
+      if ( default_value || param.rest )
+      {
+        auto label_name =
+            FlowControlLabel::label_for_user_function_default_argument( user_function, param );
+
+        unsigned param_address = emitter.next_instruction_address();
+
+        user_function_labels[label_name].assign_address( param_address );
+
+        if ( default_value )
+        {
+          default_value->accept( *this );
+        }
+        else  // a rest param
+        {
+          emit.array_create();
+        }
+
+        any_default_params = true;
+      }
+    }
+
+    // Jump to the actual user function if there are default parameters. Once
+    // hitting the jump, the user function's pop params will be called.
+    if ( any_default_params )
+    {
+      emit.jmp_always( label );
+    }
+  }
 }
 
 void InstructionGenerator::update_debug_location( const Node& node )
@@ -241,6 +304,16 @@ void InstructionGenerator::visit_branch_selector( BranchSelector& node )
   case BranchSelector::Never:
     break;
   }
+}
+
+void InstructionGenerator::visit_class_instance( ClassInstance& node )
+{
+  update_debug_location( node );
+
+  auto index =
+      static_cast<unsigned>( class_declaration_indexes.at( node.class_declaration->name ) );
+
+  emit.classinst_create( index );
 }
 
 void InstructionGenerator::visit_debug_statement_marker( DebugStatementMarker& marker )
@@ -459,7 +532,23 @@ void InstructionGenerator::visit_function_call( FunctionCall& call )
     else if ( auto uf = call.function_link->user_function() )
     {
       emit_args( *uf );
-      FlowControlLabel& label = user_function_labels[uf->name];
+      FlowControlLabel& label = user_function_labels[uf->scoped_name()];
+      // Emit the `check_mro` instruction if the current function is a generated
+      // function (super or generated constructor).
+      if ( !user_functions.empty() &&
+           dynamic_cast<GeneratedFunction*>( user_functions.top() ) != nullptr )
+      {
+        if ( call.children.empty() )
+        {
+          call.internal_error( "super/ctor call missing 'this'" );
+        }
+
+        // Arg to cast can never be negative, since size is >= 1.
+        auto classinst_offset = static_cast<unsigned>( call.children.size() - 1 );
+
+        emit.check_mro( classinst_offset );
+      }
+
       emit.makelocal();
       emit.call_userfunc( label );
     }
@@ -483,9 +572,9 @@ void InstructionGenerator::visit_function_parameter_declaration(
 {
   update_debug_location( node );
   if ( node.byref )
-    emit.pop_param_byref( node.name );
+    emit.pop_param_byref( node.name.string() );
   else
-    emit.pop_param( node.name );
+    emit.pop_param( node.name.string() );
 }
 
 // The function expression generation emits the following instructions:
@@ -508,7 +597,11 @@ void InstructionGenerator::visit_function_expression( FunctionExpression& node )
       emit_access_variable( *variable->capturing );
     }
 
-    emit.functor_create( *user_function );
+    // Create a new FlowControlLabel via operator[] on user_function_labels. Its
+    // address will be assigned when visiting the user function (below).
+    auto& label = user_function_labels[user_function->scoped_name()];
+
+    emit.functor_create( *user_function, label );
     auto index = emitter.next_instruction_address() - 1;
 
     user_function->accept( *this );
@@ -535,7 +628,7 @@ void InstructionGenerator::visit_function_reference( FunctionReference& function
   if ( auto uf = function_reference.function_link->user_function() )
   {
     update_debug_location( function_reference );
-    FlowControlLabel& label = user_function_labels[uf->name];
+    FlowControlLabel& label = user_function_labels[uf->scoped_name()];
     emit.function_reference( *uf, label );
   }
   else
@@ -694,18 +787,35 @@ void InstructionGenerator::visit_repeat_until_loop( RepeatUntilLoop& loop )
 
 void InstructionGenerator::visit_return_statement( ReturnStatement& ret )
 {
-  emit.debug_statementbegin();
+  auto user_function = user_functions.empty() ? nullptr : user_functions.top();
 
-  visit_children( ret );
-
-  update_debug_location( ret );
-  if ( !user_functions.empty() )
+  if ( user_function && user_function->type == UserFunctionType::Constructor )
   {
-    emit.return_from_user_function();
+    // Semantic analyzer will ensure a return statement in a constructor does not have any
+    // children, but lets be sure.
+    if ( !ret.children.empty() )
+    {
+      ret.internal_error( "return statement in constructor should not have children" );
+    }
+
+    // This emitter method also emits the `this` variable based off parameter offset.
+    emit.return_from_constructor_function( user_function->parameter_count() - 1 );
   }
   else
   {
-    emit.progend();
+    emit.debug_statementbegin();
+
+    visit_children( ret );
+
+    update_debug_location( ret );
+    if ( user_function )
+    {
+      emit.return_from_user_function();
+    }
+    else
+    {
+      emit.progend();
+    }
   }
 }
 
@@ -775,7 +885,7 @@ void InstructionGenerator::visit_user_function( UserFunction& user_function )
                                         user_function.parameter_count() );
   }
 
-  FlowControlLabel& label = user_function_labels[user_function.name];
+  FlowControlLabel& label = user_function_labels[user_function.scoped_name()];
   emit.label( label );
 
   // Pop function parameters
@@ -793,8 +903,15 @@ void InstructionGenerator::visit_user_function( UserFunction& user_function )
   {
     emit.debug_statementbegin();
     update_debug_location( user_function.endfunction_location );
-    emit.value( 0 );
-    emit.return_from_user_function();
+    if ( user_function.type == UserFunctionType::Constructor )
+    {
+      emit.return_from_constructor_function( user_function.parameter_count() - 1 );
+    }
+    else
+    {
+      emit.value( 0 );
+      emit.return_from_user_function();
+    }
   }
   unsigned last_instruction_address = emitter.next_instruction_address() - 1;
   emitter.debug_user_function( user_function.name, first_instruction_address,

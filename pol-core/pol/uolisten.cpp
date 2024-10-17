@@ -120,7 +120,6 @@ void UoClientListener::run()
     Clib::Socket newsck;
     if ( SL.GetConnection( &newsck, mstimeout ) && newsck.connected() )
     {
-      INFO_PRINTLN( "CONNECT" );
       // create an appropriate Client object
       if ( Plib::systemstate.config.use_single_thread_login )
       {
@@ -153,7 +152,6 @@ void UoClientListener::run()
           --login_clients_size;
           continue;
         }
-        INFO_PRINTLN( "LOOP" );
 
         if ( client->isConnected() && client->chr )
         {

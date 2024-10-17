@@ -1,15 +1,27 @@
 #include "InstructionEmitter.h"
 
+#include <limits>
+#include <list>
+#include <set>
+
 #include "StoredToken.h"
+#include "bscript/compiler/Report.h"
+#include "bscript/compiler/ast/ClassDeclaration.h"
 #include "bscript/compiler/ast/ModuleFunctionDeclaration.h"
 #include "bscript/compiler/ast/UserFunction.h"
 #include "bscript/compiler/codegen/CaseJumpDataBlock.h"
+#include "bscript/compiler/codegen/ClassDeclarationRegistrar.h"
 #include "bscript/compiler/codegen/FunctionReferenceRegistrar.h"
 #include "bscript/compiler/codegen/ModuleDeclarationRegistrar.h"
+#include "bscript/compiler/model/ClassLink.h"
 #include "bscript/compiler/model/FlowControlLabel.h"
+#include "bscript/compiler/model/FunctionLink.h"
 #include "bscript/compiler/model/LocalVariableScopeInfo.h"
+#include "bscript/compiler/model/ScopableName.h"
 #include "bscript/compiler/model/Variable.h"
+#include "bscript/compiler/representation/ClassDescriptor.h"
 #include "bscript/compiler/representation/CompiledScript.h"
+#include "bscript/compiler/representation/ConstructorDescriptor.h"
 #include "bscript/compiler/representation/ExportedFunction.h"
 #include "escriptv.h"
 #include "modules.h"
@@ -21,13 +33,17 @@ namespace Pol::Bscript::Compiler
 InstructionEmitter::InstructionEmitter( CodeSection& code, DataSection& data, DebugStore& debug,
                                         ExportedFunctions& exported_functions,
                                         ModuleDeclarationRegistrar& module_declaration_registrar,
-                                        FunctionReferenceRegistrar& function_reference_registrar )
+                                        FunctionReferenceRegistrar& function_reference_registrar,
+                                        ClassDeclarationRegistrar& class_declaration_registrar,
+                                        Report& report )
     : code_emitter( code ),
       data_emitter( data ),
       debug( debug ),
       exported_functions( exported_functions ),
       module_declaration_registrar( module_declaration_registrar ),
-      function_reference_registrar( function_reference_registrar )
+      function_reference_registrar( function_reference_registrar ),
+      class_declaration_registrar( class_declaration_registrar ),
+      report( report )
 {
   initialize_data();
 }
@@ -42,6 +58,126 @@ void InstructionEmitter::register_exported_function( FlowControlLabel& label,
                                                      const std::string& name, unsigned parameters )
 {
   exported_functions.emplace_back( name, parameters, label.address() );
+}
+
+void InstructionEmitter::register_class_declaration(
+    const ClassDeclaration& node, std::map<std::string, FlowControlLabel>& user_function_labels )
+{
+  std::set<std::string> visited;
+  std::set<std::string, Clib::ci_cmp_pred> visited_methods;
+  std::vector<ConstructorDescriptor> constructor_descriptors;
+  std::set<std::string> method_names;
+  std::vector<MethodDescriptor> method_descriptors;
+  std::list<const ClassDeclaration*> to_link( { &node } );
+
+  const auto& class_name = node.name;
+  auto class_name_offset = this->emit_data( class_name );
+  unsigned constructor_function_reference_index = std::numeric_limits<unsigned>::max();
+
+  report.debug( node, "Registering class: {}", node.name );
+
+  if ( node.constructor_link )
+  {
+    if ( auto uf = node.constructor_link->user_function() )
+    {
+      auto ctor_itr = user_function_labels.find( uf->scoped_name() );
+
+      if ( ctor_itr == user_function_labels.end() )
+      {
+        uf->internal_error(
+            fmt::format( "Constructor {} not found in user_function_labels", uf->scoped_name() ) );
+      }
+
+      function_reference_registrar.lookup_or_register_reference(
+          *uf, ctor_itr->second, constructor_function_reference_index );
+    }
+  }
+  if ( constructor_function_reference_index < std::numeric_limits<unsigned>::max() )
+    report.debug( node, " - Constructor at FuncRef index {}",
+                  constructor_function_reference_index );
+
+  for ( auto itr = to_link.begin(); itr != to_link.end(); ++itr )
+  {
+    auto cd = *itr;
+    if ( visited.find( cd->name ) != visited.end() )
+      continue;
+
+    visited.insert( cd->name );
+    report.debug( *cd, "Class {} with {} methods", cd->name, cd->methods.size() );
+
+    if ( cd->constructor_link && cd->constructor_link->user_function() )
+    {
+      auto type_tag_offset = emit_data( cd->type_tag() );
+      constructor_descriptors.push_back( type_tag_offset );
+    }
+
+    for ( const auto& [method, uf_link] : cd->methods )
+    {
+      auto uf = uf_link->user_function();
+
+      if ( !uf )
+      {
+        cd->internal_error( fmt::format( "method {}::{} no function linked", cd->name, method ) );
+      }
+
+      auto method_itr = user_function_labels.find( ScopableName( cd->name, method ).string() );
+      if ( method_itr == user_function_labels.end() )
+      {
+        report.debug( *cd, " - Method: {} label=???", method );
+        cd->internal_error( fmt::format( "Method {} not found in user_function_labels", method ) );
+      }
+      auto address = method_itr->second.address();
+      if ( address == 0 )
+      {
+        report.debug( *cd, " - Method: {} PC=???", method );
+        cd->internal_error( fmt::format( "Method {} has no PC for attached label", method ) );
+      }
+
+      bool use_method = method_names.find( method ) == method_names.end();
+
+      if ( use_method )
+      {
+        unsigned funcref_index;
+        function_reference_registrar.lookup_or_register_reference( *uf, method_itr->second,
+                                                                   funcref_index );
+        auto name_offset = this->emit_data( method );
+        method_descriptors.emplace_back( name_offset, address, funcref_index );
+        report.debug( *cd, " - Method: {} PC={} funcref_index={}", method,
+                      method_itr->second.address(), funcref_index );
+        method_names.insert( method );
+      }
+      else
+      {
+        report.debug( *cd, " - Method: {} PC={} [ignored]", method, method_itr->second.address() );
+      }
+    }
+
+    for ( const auto& base_cd_link : cd->base_class_links )
+    {
+      if ( auto base_cd = base_cd_link->class_declaration() )
+      {
+        to_link.push_back( base_cd );
+      }
+    }
+  }
+  report.debug( node, fmt::format( "Class: {}", node.name ) );
+
+  for ( const auto& constructor : constructor_descriptors )
+  {
+    report.debug(
+        node, fmt::format( " - Constructor @ type_tag_offset={}", constructor.type_tag_offset ) );
+  }
+
+  for ( const auto& method_info : method_descriptors )
+  {
+    report.debug( node, fmt::format( " - Method @ PC={} name_offset={} funcref_index={} ",
+                                     method_info.address, method_info.name_offset,
+                                     method_info.function_reference_index ) );
+  }
+
+  class_declaration_registrar.register_class( class_name_offset,
+                                              constructor_function_reference_index,
+                                              constructor_descriptors, method_descriptors );
 }
 
 unsigned InstructionEmitter::enter_debug_block(
@@ -218,6 +354,16 @@ void InstructionEmitter::call_userfunc( FlowControlLabel& label )
   register_with_label( label, addr );
 }
 
+void InstructionEmitter::check_mro( unsigned offset )
+{
+  emit_token( INS_CHECK_MRO, TYP_CONTROL, offset );
+}
+
+void InstructionEmitter::classinst_create( unsigned index )
+{
+  emit_token( TOK_CLASSINST, TYP_OPERAND, index );
+}
+
 unsigned InstructionEmitter::casejmp()
 {
   return emit_token( INS_CASEJMP, TYP_RESERVED );
@@ -300,17 +446,15 @@ void InstructionEmitter::function_reference( const UserFunction& uf, FlowControl
 {
   unsigned index;
 
-  function_reference_registrar.lookup_or_register_reference( uf, index );
+  function_reference_registrar.lookup_or_register_reference( uf, label, index );
 
-  auto type = static_cast<BTokenType>( index );
-
-  register_with_label( label, emit_token( TOK_FUNCREF, type ) );
+  emit_token( TOK_FUNCREF, TYP_OPERAND, index );
 }
 
-void InstructionEmitter::functor_create( const UserFunction& uf )
+void InstructionEmitter::functor_create( const UserFunction& uf, FlowControlLabel& label )
 {
   unsigned reference_index;
-  function_reference_registrar.lookup_or_register_reference( uf, reference_index );
+  function_reference_registrar.lookup_or_register_reference( uf, label, reference_index );
   StoredToken token( static_cast<unsigned char>( Mod_Basic ), TOK_FUNCTOR,
                      static_cast<BTokenType>(
                          reference_index ),  // index to the EScriptProgram's function_references,
@@ -391,6 +535,15 @@ void InstructionEmitter::progend()
 void InstructionEmitter::return_from_user_function()
 {
   emit_token( RSV_RETURN, TYP_RESERVED );
+}
+
+void InstructionEmitter::return_from_constructor_function( unsigned this_offset )
+{
+  // Emit `this`
+  emit_token( TOK_LOCALVAR, TYP_OPERAND, this_offset );
+
+  // Emit a return
+  return_from_user_function();
 }
 
 void InstructionEmitter::set_member_id_consume( MemberID member_id )
@@ -545,6 +698,12 @@ void InstructionEmitter::debug_user_function( const std::string& name, unsigned 
 void InstructionEmitter::patch_offset( unsigned index, unsigned offset )
 {
   code_emitter.update_offset( index, offset );
+}
+
+bool InstructionEmitter::has_function_reference( const UserFunction& uf )
+{
+  unsigned index;
+  return function_reference_registrar.lookup_reference( uf, index );
 }
 
 void InstructionEmitter::register_with_label( FlowControlLabel& label, unsigned offset )

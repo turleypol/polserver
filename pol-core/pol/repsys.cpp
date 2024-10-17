@@ -22,7 +22,6 @@
 #include "fnsearch.h"
 #include "globals/settings.h"
 #include "globals/state.h"
-#include "globals/uvars.h"
 #include "guilds.h"
 #include "mobile/charactr.h"
 #include "mobile/npc.h"
@@ -772,9 +771,9 @@ void Character::restart_criminal_timer( Core::polclock_t until )
   {
     if ( criminal_until_ < Core::polclock() )
     {
-      Core::WorldIterator<Core::NPCFilter>::InRange( this, Core::gamestate.max_areaevent_range,
-                                                     [&]( Character* chr )
-                                                     { NpcPropagateCriminal( chr, this ); } );
+      // TODO Pos see realm.cpp
+      Core::WorldIterator<Core::NPCFilter>::InRange(
+          this, 32, [&]( Character* chr ) { NpcPropagateCriminal( chr, this ); } );
     }
     criminal_until_ = until;
   }

@@ -252,9 +252,9 @@ public:
 
   void update_range_from_multis();
   void update_range_from_client( u16 range );
-  u16 max_update_range;     // maximum update range (client view range/multi footprint) used as
-                            // "pre-filtering" of objects
-  u16 max_areaevent_range;  // maximum EnableEvent size used as "pre-filtering"
+  u16 max_update_range;  // maximum update range (client view range/multi footprint) used as
+                         // "pre-filtering" of objects
+
   void unload_npc_templates();
 
 private:

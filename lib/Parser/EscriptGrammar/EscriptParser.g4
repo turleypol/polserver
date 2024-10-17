@@ -44,9 +44,30 @@ topLevelDeclaration
     | includeDeclaration
     | programDeclaration
     | functionDeclaration
+    | classDeclaration
     | statement
     ;
 
+classDeclaration
+    : CLASS IDENTIFIER classParameters classBody ENDCLASS
+    ;
+
+classParameters
+    : '(' classParameterList? ')'
+    ;
+
+classParameterList
+    : IDENTIFIER (',' IDENTIFIER)*
+    ;
+
+classBody
+    : classStatement*
+    ;
+
+classStatement
+    : functionDeclaration
+    | varStatement
+    ;
 
 functionDeclaration
     : EXPORTED? FUNCTION IDENTIFIER functionParameters block ENDFUNCTION
@@ -145,6 +166,7 @@ forStatement
 foreachIterableExpression
     : functionCall
     | scopedFunctionCall
+    | scopedIdentifier
     | IDENTIFIER
     | parExpression
     | bareArrayInitializer
@@ -252,11 +274,11 @@ functionParameter
 // Currently no module functions return a function reference, so no need to
 // support eg. `uo::Foo( bar )( baz )`.
 scopedFunctionCall
-    : IDENTIFIER '::' functionCall
+    : IDENTIFIER? '::' functionCall
     ;
 
 functionReference
-    : '@' IDENTIFIER
+    : '@' (scope=IDENTIFIER? '::')? function=IDENTIFIER
     ;
 
 expression
@@ -270,6 +292,7 @@ expression
     | expression bop='?:' expression
     | expression bop='in' expression
     | expression bop=('<=' | '>=' | '>' | '<') expression
+    | expression bop='is' expression
     | expression bop='=' { notifyErrorListeners("Deprecated '=' found: did you mean '==' or ':='?\n"); } expression
     | expression bop=('==' | '!=' | '<>') expression
     | expression bop=('&&' | 'and') expression
@@ -286,6 +309,7 @@ primary
     | parExpression
     | functionCall
     | scopedFunctionCall
+    | scopedIdentifier
     | IDENTIFIER
     | functionReference
     | functionExpression
@@ -296,6 +320,9 @@ primary
     | bareArrayInitializer
     | interpolatedString
     ;
+
+scopedIdentifier
+    : scope=IDENTIFIER? '::' identifier=IDENTIFIER;
 
 functionExpression
     : AT functionParameters? LBRACE block RBRACE
@@ -350,7 +377,7 @@ indexList
     ;
 
 navigationSuffix
-    : '.' ( IDENTIFIER | STRING_LITERAL )
+    : '.' ( IDENTIFIER | STRING_LITERAL | FUNCTION )
     ;
 
 methodCallSuffix

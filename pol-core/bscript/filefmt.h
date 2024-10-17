@@ -38,6 +38,7 @@ namespace Bscript
 #define ESCRIPT_FILE_VER_0010 0x0010 /*interpolated strings*/
 #define ESCRIPT_FILE_VER_0011 0x0011 /*uninit keyword*/
 #define ESCRIPT_FILE_VER_0012 0x0012 /*funcref table*/
+#define ESCRIPT_FILE_VER_0013 0x0013 /*classes*/
 
 /*
     NOTE: Update ESCRIPT_FILE_VER_CURRENT when you make a
@@ -45,7 +46,7 @@ namespace Bscript
     and report this to users when an older compiled version
     is attempted to be executed - TJ
     */
-#define ESCRIPT_FILE_VER_CURRENT ( ESCRIPT_FILE_VER_0012 )
+#define ESCRIPT_FILE_VER_CURRENT ( ESCRIPT_FILE_VER_0013 )
 
 struct BSCRIPT_FILE_HDR
 {
@@ -71,6 +72,7 @@ enum BSCRIPT_SECTION
   BSCRIPT_SECTION_GLOBALVARNAMES = 5,
   BSCRIPT_SECTION_EXPORTED_FUNCTIONS = 6,
   BSCRIPT_SECTION_FUNCTION_REFERENCES = 7,
+  BSCRIPT_SECTION_CLASS_TABLE = 8,
 };
 
 
@@ -127,11 +129,51 @@ static_assert( sizeof( BSCRIPT_EXPORTED_FUNCTION ) == 41, "size missmatch" );
 
 struct BSCRIPT_FUNCTION_REFERENCE
 {
+  unsigned address;
   int parameter_count;
   int capture_count;
   bool is_variadic;
+  unsigned class_index;
+  bool is_constructor;
+  unsigned default_parameter_count;
 };
-static_assert( sizeof( BSCRIPT_FUNCTION_REFERENCE ) == 9, "size missmatch" );
+static_assert( sizeof( BSCRIPT_FUNCTION_REFERENCE ) == 22, "size missmatch" );
+
+struct BSCRIPT_FUNCTION_REFERENCE_DEFAULT_PARAMETER
+{
+  unsigned address;
+};
+static_assert( sizeof( BSCRIPT_FUNCTION_REFERENCE_DEFAULT_PARAMETER ) == 4, "size missmatch" );
+
+struct BSCRIPT_CLASS_TABLE
+{
+  unsigned class_count;
+};
+
+static_assert( sizeof( BSCRIPT_CLASS_TABLE ) == 4, "size missmatch" );
+
+struct BSCRIPT_CLASS_TABLE_ENTRY
+{
+  unsigned name_offset;
+  unsigned constructor_function_reference_index;
+  unsigned constructor_count;
+  unsigned method_count;
+};
+static_assert( sizeof( BSCRIPT_CLASS_TABLE_ENTRY ) == 16, "size missmatch" );
+
+struct BSCRIPT_CLASS_TABLE_CONSTRUCTOR_ENTRY
+{
+  unsigned type_tag_offset;
+};
+static_assert( sizeof( BSCRIPT_CLASS_TABLE_CONSTRUCTOR_ENTRY ) == 4, "size missmatch" );
+
+struct BSCRIPT_CLASS_TABLE_METHOD_ENTRY
+{
+  unsigned name_offset;
+  unsigned function_reference_index;
+};
+
+static_assert( sizeof( BSCRIPT_CLASS_TABLE_METHOD_ENTRY ) == 8, "size missmatch" );
 
 #pragma pack( pop )
 }  // namespace Bscript

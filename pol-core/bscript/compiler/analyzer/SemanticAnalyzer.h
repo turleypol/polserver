@@ -5,10 +5,12 @@
 
 #include <map>
 #include <memory>
+#include <stack>
 
 #include "bscript/compiler/analyzer/FlowControlScopes.h"
 #include "bscript/compiler/analyzer/LocalVariableScopes.h"
 #include "bscript/compiler/analyzer/Variables.h"
+#include "bscript/compiler/model/ScopeName.h"
 
 namespace Pol::Bscript::Compiler
 {
@@ -29,6 +31,7 @@ public:
 
   void visit_basic_for_loop( BasicForLoop& ) override;
   void visit_block( Block& ) override;
+  void visit_class_declaration( ClassDeclaration& ) override;
   void visit_case_statement( CaseStatement& ) override;
   void visit_case_dispatch_group( CaseDispatchGroup& ) override;
   void visit_case_dispatch_selectors( CaseDispatchSelectors& ) override;
@@ -46,6 +49,7 @@ public:
   void visit_program( Program& ) override;
   void visit_program_parameter_declaration( ProgramParameterDeclaration& ) override;
   void visit_repeat_until_loop( RepeatUntilLoop& ) override;
+  void visit_return_statement( ReturnStatement& ) override;
   void visit_user_function( UserFunction& ) override;
   void visit_var_statement( VarStatement& ) override;
   void visit_variable_assignment_statement( VariableAssignmentStatement& ) override;
@@ -56,7 +60,7 @@ private:
                                       const std::string& element_description );
   static bool report_function_name_conflict( const CompilerWorkspace&, Report&,
                                              const SourceLocation&,
-                                             const std::string& function_name,
+                                             const std::string& scoped_function_name,
                                              const std::string& element_description );
 
   CompilerWorkspace& workspace;
@@ -69,6 +73,16 @@ private:
   FlowControlScopes continue_scopes;
   LocalVariableScopes local_scopes;
   LocalVariableScopes capture_scopes;
+  // Pushed and popped in visit_user_function. Needs to be a stack
+  // because we _do_ have nested functions (via function expressions).
+  //
+  // Used in visit_identifier. If the variable does not exist under `name`,
+  // check `current_scope::name` (if current scope exists).
+  std::stack<ScopeName> current_scope_names;
+  ScopeName& current_scope_name();
+
+  // Needed to handle super() calls
+  std::stack<UserFunction*> user_functions;
 };
 
 }  // namespace Pol::Bscript::Compiler

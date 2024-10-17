@@ -8,6 +8,7 @@
 #include "bscript/compiler/ast/Block.h"
 #include "bscript/compiler/ast/BooleanValue.h"
 #include "bscript/compiler/ast/BranchSelector.h"
+#include "bscript/compiler/ast/ClassDeclaration.h"
 #include "bscript/compiler/ast/ConstDeclaration.h"
 #include "bscript/compiler/ast/Identifier.h"
 #include "bscript/compiler/ast/IfThenElseStatement.h"
@@ -40,9 +41,11 @@ void Optimizer::optimize( CompilerWorkspace& workspace,
   workspace.accept( *this );
 
   std::vector<UserFunction*> all_user_functions;
-  if ( user_function_inclusion == UserFunctionInclusion::All )
+  for ( auto& user_function : workspace.user_functions )
   {
-    for ( auto& user_function : workspace.user_functions )
+    if ( user_function_inclusion == UserFunctionInclusion::All ||
+         user_function->type == UserFunctionType::Method ||
+         user_function->type == UserFunctionType::Constructor )
     {
       all_user_functions.push_back( user_function.get() );
     }
@@ -65,12 +68,18 @@ void Optimizer::optimize( CompilerWorkspace& workspace,
   {
     gatherer.reference( uf );
   }
-  if ( user_function_inclusion == UserFunctionInclusion::All )
+  for ( auto& uf : all_user_functions )
   {
-    for ( auto& uf : all_user_functions )
+    if ( user_function_inclusion == UserFunctionInclusion::All ||
+         uf->type == UserFunctionType::Method || uf->type == UserFunctionType::Constructor )
     {
       gatherer.reference( uf );
     }
+  }
+
+  for ( auto& cd : workspace.class_declarations )
+  {
+    cd->accept( gatherer );
   }
 
   workspace.referenced_module_function_declarations =
@@ -194,10 +203,15 @@ void Optimizer::visit_const_declaration( ConstDeclaration& constant )
 
 void Optimizer::visit_identifier( Identifier& identifier )
 {
-  if ( auto constant = constants.find( identifier.name ) )
+  // We don't have scoped constants, so only global identifiers can be optimized.
+  if ( identifier.scoped_name.scope.global() )
   {
-    SimpleValueCloner cloner( report, identifier.source_location );
-    optimized_replacement = cloner.clone( constant->expression() );
+    auto name = identifier.string();
+    if ( auto constant = constants.find( name ) )
+    {
+      SimpleValueCloner cloner( report, identifier.source_location );
+      optimized_replacement = cloner.clone( constant->expression() );
+    }
   }
 }
 

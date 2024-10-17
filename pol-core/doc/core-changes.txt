@@ -1,4 +1,32 @@
 -- POL100.2.0 --
+10-16-2024 Turley:
+    Fixed: os::OpenConnection with keep_connection did not stop correctly if the socket was closed from the other side
+  Changed: pol.cfg UseSingleThreadLogin is by default now active
+           in the general case it improves the performance and stability
+           pol.cfg renamed SelectTimeout to LoginServerSelectTimeout,
+           since its only used in this case.
+           The unit is now millisec and the new default is the former effective minimum value.
+10-14-2024 Turley:
+    Added: pol.cfg LoginServerDisconnectUnknownPkts
+           during login process disconnect connection if unknown/non-allowed pkt is received
+    Fixed: improved performance when non allowed pkts arrive
+10-09-2024 Kevin:
+    Added: Escript now supports classes! Classes are a way to bundle attributes (members) and functionality (methods) together:
+
+             class Fighter()
+               function Fighter( this, name )
+                 this.name := name;
+               endfunction
+
+               function Attack( this, what )
+                 print( $"{this.name} attacks {what}!" );
+               endfunction
+             endclass
+
+             var person = Fighter( "Alice" );
+             person.Attack( "Bob" );
+
+           See the Racalac Escript Guide for additional details.
 09-27-2024 Turley:
     Fixed: EScript formatter missing spaces while packing function refs, better packing of function calls in eg structs
 09-12-2024 Turley:

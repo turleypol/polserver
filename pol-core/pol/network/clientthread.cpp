@@ -56,8 +56,8 @@ void report_weird_packet( Network::ThreadedClient* session,
 
 void set_polling_timeouts( Clib::SinglePoller& poller, bool single_threaded_login )
 {
-  poller.set_timeout( single_threaded_login ? 1000 * Plib::systemstate.config.select_timeout_usecs
-                                            : 2000 );
+  poller.set_timeout(
+      single_threaded_login ? Plib::systemstate.config.loginserver_select_timeout_msecs : 2000 );
 }
 
 // Taking a reference to SinglePoller is ugly here. But io_step, io_loop and clientpoller will
@@ -65,7 +65,6 @@ void set_polling_timeouts( Clib::SinglePoller& poller, bool single_threaded_logi
 bool threadedclient_io_step( Network::ThreadedClient* session, Clib::SinglePoller& clientpoller,
                              int& nidle )
 {
-  INFO_PRINTLN( "STEP" );
   SESSION_CHECKPOINT( 1 );
   if ( !clientpoller.prepare( session->have_queued_data() ) )
   {
@@ -135,7 +134,6 @@ bool threadedclient_io_step( Network::ThreadedClient* session, Clib::SinglePolle
     {
       SESSION_CHECKPOINT( 17 );
       PolLock lck;
-      INFO_PRINTLN( "LOCK PROCSUCC" );
 
       // reset packet timer
       session->last_packet_at = polclock();
@@ -401,7 +399,6 @@ bool process_data( Network::ThreadedClient* session )
       if ( session->msgtype_filter->msgtype_allowed[msgtype] )
       {
         PolLock lck;  // multithread
-        INFO_PRINTLN( "LOCK PROC2" );
         // it can happen that a client gets disconnected while waiting for the lock.
         if ( !session->isConnected() )
           return false;

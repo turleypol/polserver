@@ -95,10 +95,9 @@ public:
   bool listens_to( unsigned int eventflag ) const;
   bool signal_event( Bscript::BObjectImp* eventimp );
 
-  u16 get_areaevent_range() const;
-  void set_areaevent_range( u16 range );
   unsigned int eventmask;
   unsigned char area_mask;
+  unsigned short area_size;
   unsigned short speech_size;
 
 
@@ -164,18 +163,11 @@ public:
                       const Realms::Realm* realm = nullptr );
   bool getPos4dParam( unsigned xparam, unsigned yparam, unsigned zparam, unsigned realmparam,
                       Pos4d* pos );
-
-private:
-  u16 area_size;
 };
 
 inline bool UOExecutor::listens_to( unsigned int eventflag ) const
 {
   return ( eventmask & eventflag ) ? true : false;
-}
-inline u16 UOExecutor::get_areaevent_range() const
-{
-  return area_size;
 }
 
 }  // namespace Core

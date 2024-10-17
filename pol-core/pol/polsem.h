@@ -7,6 +7,9 @@
 #ifndef POLSEM_H
 #define POLSEM_H
 
+// define to debug PolLocks, log each lock entry
+// #define POLLOCK_TRACE
+
 // TODO: encapsulate the "locker" variable to remove those includes from here. Would a size_t work?
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -15,7 +18,9 @@
 #include <pthread.h>
 #include <unistd.h>
 #endif
+#ifdef POLLOCK_TRACE
 #include "clib/logfacility.h"
+#endif
 #include <atomic>
 
 namespace Pol
@@ -41,7 +46,7 @@ extern pthread_mutex_t polsem;
 void polsem_lock();
 void polsem_unlock();
 
-
+#ifdef POLLOCK_TRACE
 class PolLockD
 {
 public:
@@ -53,6 +58,14 @@ inline void noop(){};
   noop();                                           \
   INFO_PRINTLN( "lock {} {}", __FILE__, __LINE__ ); \
   Core::PolLockD
+#else
+class PolLock
+{
+public:
+  PolLock() { polsem_lock(); }
+  ~PolLock() { polsem_unlock(); }
+};
+#endif
 
 class PolLock2
 {

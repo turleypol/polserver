@@ -1,4 +1,4 @@
-/*@file
+/** @file
  *
  * @par History
  * - 2005/03/02 Shinigami: internal_MoveItem - item took from container don't had the correct realm
@@ -2888,7 +2888,7 @@ BObjectImp* UOExecutorModule::mf_EnableEvents()
         if ( eventmask & ( EVID_SPOKE ) )
           uoex.speech_size = range;
         if ( eventmask & ( EVID_ENTEREDAREA | EVID_LEFTAREA ) )
-          uoex.set_areaevent_range( range );
+          uoex.area_size = range;
       }
       else
       {

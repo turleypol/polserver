@@ -9,11 +9,13 @@
 #define BSCRIPT_EPROG_H
 
 #include <iosfwd>
+#include <map>
 #include <stdio.h>
 #include <string>
 #include <vector>
 
 #include "../clib/boostutils.h"
+#include "../clib/maputil.h"
 #include "../clib/rawtypes.h"
 #include "../clib/refptr.h"
 #include "executortype.h"
@@ -78,15 +80,47 @@ struct EPExportedFunction
 
 struct EPFunctionReference
 {
+  unsigned address;
   int parameter_count;
   int capture_count;
   bool is_variadic;
+  unsigned class_index;  // max = no class
+  bool is_constructor;
+  std::vector<unsigned> default_parameter_addresses;
+
+  unsigned default_parameter_count() const
+  {
+    return static_cast<unsigned>( default_parameter_addresses.size() );
+  }
 
   bool operator==( const EPFunctionReference& other ) const
   {
-    return parameter_count == other.parameter_count && capture_count == other.capture_count &&
-           is_variadic == other.is_variadic;
+    return address == other.address && parameter_count == other.parameter_count &&
+           capture_count == other.capture_count && is_variadic == other.is_variadic &&
+           class_index == other.class_index && is_constructor == other.is_constructor &&
+           default_parameter_addresses == other.default_parameter_addresses;
   }
+};
+
+struct EPMethodDescriptor
+{
+  unsigned function_reference_index;
+};
+struct EPConstructorDescriptor
+{
+  unsigned type_tag_offset;
+};
+
+using EPConstructorList = std::vector<EPConstructorDescriptor>;
+
+using EPMethodMap = std::map<unsigned /* name_offset */, EPMethodDescriptor>;
+
+struct EPClassDescriptor
+{
+  unsigned name_offset;
+  unsigned constructor_function_reference_index;
+  EPConstructorList constructors;
+  EPMethodMap methods;
 };
 
 struct EPDbgFunction
@@ -132,6 +166,7 @@ public:
   int read_globalvarnames( FILE* fp );
   int read_exported_functions( FILE* fp, BSCRIPT_SECTION_HDR* hdr );
   int read_function_references( FILE* fp, BSCRIPT_SECTION_HDR* hdr );
+  int read_class_table( FILE* fp );
   int _readToken( Token& token, unsigned position ) const;
   int create_instructions();
 
@@ -146,6 +181,7 @@ public:
 
   std::vector<EPExportedFunction> exported_functions;
   std::vector<EPFunctionReference> function_references;
+  std::vector<EPClassDescriptor> class_descriptors;
 
   // executor only:
   unsigned short version;

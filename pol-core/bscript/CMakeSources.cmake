@@ -50,6 +50,16 @@ set (bscript_sources    # sorted !
   compiler/ast/CaseDispatchSelectors.h
   compiler/ast/CaseStatement.cpp
   compiler/ast/CaseStatement.h
+  compiler/ast/ClassBody.cpp
+  compiler/ast/ClassBody.h
+  compiler/ast/ClassDeclaration.cpp
+  compiler/ast/ClassDeclaration.h
+  compiler/ast/ClassInstance.cpp
+  compiler/ast/ClassInstance.h
+  compiler/ast/ClassParameterDeclaration.cpp
+  compiler/ast/ClassParameterDeclaration.h
+  compiler/ast/ClassParameterList.cpp
+  compiler/ast/ClassParameterList.h
   compiler/ast/ConditionalOperator.cpp
   compiler/ast/ConditionalOperator.h
   compiler/ast/ConstDeclaration.cpp
@@ -152,6 +162,8 @@ set (bscript_sources    # sorted !
   compiler/ast/StructInitializer.h
   compiler/ast/StructMemberInitializer.cpp
   compiler/ast/StructMemberInitializer.h
+  compiler/ast/GeneratedFunction.cpp
+  compiler/ast/GeneratedFunction.h
   compiler/ast/TopLevelStatements.cpp
   compiler/ast/TopLevelStatements.h
   compiler/ast/UnaryOperator.cpp
@@ -170,7 +182,8 @@ set (bscript_sources    # sorted !
   compiler/ast/VarStatement.h
   compiler/ast/WhileLoop.cpp
   compiler/ast/WhileLoop.h
-  compiler/astbuilder/AvailableUserFunction.h
+  compiler/astbuilder/AvailableParseTree.cpp
+  compiler/astbuilder/AvailableParseTree.h
   compiler/astbuilder/BuilderWorkspace.cpp
   compiler/astbuilder/BuilderWorkspace.h
   compiler/astbuilder/CompilerWorkspaceBuilder.cpp
@@ -181,6 +194,8 @@ set (bscript_sources    # sorted !
   compiler/astbuilder/ExpressionBuilder.h
   compiler/astbuilder/FunctionResolver.cpp
   compiler/astbuilder/FunctionResolver.h
+  compiler/astbuilder/GeneratedFunctionBuilder.cpp
+  compiler/astbuilder/GeneratedFunctionBuilder.h
   compiler/astbuilder/ModuleDeclarationBuilder.cpp
   compiler/astbuilder/ModuleDeclarationBuilder.h
   compiler/astbuilder/ModuleProcessor.cpp
@@ -203,6 +218,8 @@ set (bscript_sources    # sorted !
   compiler/astbuilder/ValueBuilder.h
   compiler/codegen/CaseDispatchGroupVisitor.cpp
   compiler/codegen/CaseDispatchGroupVisitor.h
+  compiler/codegen/ClassDeclarationRegistrar.cpp
+  compiler/codegen/ClassDeclarationRegistrar.h
   compiler/codegen/CaseJumpDataBlock.cpp
   compiler/codegen/CaseJumpDataBlock.h
   compiler/codegen/CodeEmitter.cpp
@@ -247,6 +264,8 @@ set (bscript_sources    # sorted !
   compiler/format/ListingWriter.h
   compiler/format/StoredTokenDecoder.cpp
   compiler/format/StoredTokenDecoder.h
+  compiler/model/ClassLink.cpp
+  compiler/model/ClassLink.h
   compiler/model/CompilerWorkspace.cpp
   compiler/model/CompilerWorkspace.h
   compiler/model/FlowControlLabel.cpp
@@ -254,8 +273,13 @@ set (bscript_sources    # sorted !
   compiler/model/FunctionLink.cpp
   compiler/model/FunctionLink.h
   compiler/model/LocalVariableScopeInfo.h
+  compiler/model/ScopableName.cpp
+  compiler/model/ScopableName.h
+  compiler/model/ScopeName.cpp
+  compiler/model/ScopeName.h
   compiler/model/SimpleTypes.h
   compiler/model/UserFunctionInclusion.h
+  compiler/model/UserFunctionType.h
   compiler/model/Variable.cpp
   compiler/model/Variable.h
   compiler/model/VariableScope.h
@@ -280,8 +304,12 @@ set (bscript_sources    # sorted !
   compiler/optimizer/UnaryOperatorOptimizer.h
   compiler/optimizer/ValueConsumerOptimizer.cpp
   compiler/optimizer/ValueConsumerOptimizer.h
+  compiler/representation/ClassDescriptor.cpp
+  compiler/representation/ClassDescriptor.h
   compiler/representation/CompiledScript.cpp
   compiler/representation/CompiledScript.h
+  compiler/representation/ConstructorDescriptor.cpp
+  compiler/representation/ConstructorDescriptor.h
   compiler/representation/DebugBlock.cpp
   compiler/representation/DebugBlock.h
   compiler/representation/DebugStore.cpp
@@ -290,6 +318,8 @@ set (bscript_sources    # sorted !
   compiler/representation/ExportedFunction.h
   compiler/representation/FunctionReferenceDescriptor.cpp
   compiler/representation/FunctionReferenceDescriptor.h
+  compiler/representation/MethodDescriptor.cpp
+  compiler/representation/MethodDescriptor.h
   compiler/representation/ModuleDescriptor.cpp
   compiler/representation/ModuleDescriptor.h
   compiler/representation/ModuleFunctionDescriptor.cpp
@@ -297,6 +327,8 @@ set (bscript_sources    # sorted !
   compiler/Profile.h
   compiler/Report.cpp
   compiler/Report.h
+  bclassinstance.cpp
+  bclassinstance.h
   berror.cpp
   berror.h
   blong.cpp

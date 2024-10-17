@@ -292,7 +292,6 @@ bool Socket::has_incoming_data( unsigned int waitms, int* result )
     *result = res;
   if ( poller.error() )
   {
-    INFO_PRINTLN( "HAS ERROR" );
     HandleError();
     close();
   }

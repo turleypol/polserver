@@ -47,6 +47,8 @@ DEFAULT:            'default';
 ENDCASE:            'endcase';
 ENUM:               'enum';
 ENDENUM:            'endenum';
+CLASS:              'class';
+ENDCLASS:           'endclass';
 
 // Reserved words (future)
 DOWNTO:             'downto';
@@ -64,7 +66,6 @@ REAL:               'real';
 FLOAT:              'float';
 DOUBLE:             'double';
 AS:                 'as';
-IS:                 'is';
 ELLIPSIS:           '...';
 
 // Operators
@@ -89,6 +90,7 @@ TOK_IN:             'in';
 UNINIT:             'uninit';
 BOOL_TRUE:          'true';
 BOOL_FALSE:         'false';
+IS:                 'is';
 
 // Literals
 
@@ -184,7 +186,7 @@ COLON:              ':'
             int ind = 1;
             bool switchToFormatString = true;
 
-            while (_input->LA(ind) != '}')
+            while ( _input->LA( ind ) != '}' && _input->LA( ind ) != CharStream::EOF )
             {
                 if (_input->LA(ind) == ':' || _input->LA(ind) == ')')
                 {

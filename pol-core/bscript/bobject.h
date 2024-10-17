@@ -38,6 +38,7 @@
 #include <iosfwd>
 #include <stack>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace Pol
@@ -64,6 +65,8 @@ class BStruct;
 class BDictionary;
 class BBoolean;
 class BFunctionRef;
+class BClassInstance;
+class BClassInstanceRef;
 class BContinuation;
 class BSpread;
 
@@ -128,11 +131,13 @@ public:
     OTFuncRef = 39,
     OTExportScript = 40,
     OTStorageArea = 41,
+    OTClassInstanceRef = 42,
 
     // Used internally only during executor runtime. Can be modified without
     // breaking compatibility.
     OTContinuation = 100,
     OTSpread = 101,
+    OTClassInstance = 102,
   };
 
 #if INLINE_BOBJECTIMP_CTOR
@@ -177,6 +182,9 @@ public:
   virtual bool operator>( const BObjectImp& objimp ) const;
   virtual bool operator>=( const BObjectImp& objimp ) const;
   virtual bool operator!=( const BObjectImp& objimp ) const;
+
+  virtual BObjectImp* selfIsObjImp( const BObjectImp& objimp ) const;
+  virtual BObjectImp* selfIsObj( const BObjectImp& objimp ) const;
 
   virtual BObjectImp* selfPlusObjImp( const BObjectImp& objimp ) const;
   virtual BObjectImp* selfPlusObj( const BObjectImp& objimp ) const;
@@ -411,6 +419,9 @@ T* impptrIf( BObjectImp* objimp )
   impif_e( BObjectImp::OTStruct, BStruct );
   impif_e( BObjectImp::OTBoolean, BBoolean );
   impif_e( BObjectImp::OTFuncRef, BFunctionRef );
+  // BClassInstance objects are never given to scripts directly, so no need for
+  // inclusion here (so far...)
+  impif_e( BObjectImp::OTClassInstanceRef, BClassInstanceRef );
   impif_e( BObjectImp::OTContinuation, BContinuation );
   impif_e( BObjectImp::OTSpread, BSpread );
   else static_assert( always_false<T>::value, "unsupported type" );
@@ -420,13 +431,13 @@ T* impptrIf( BObjectImp* objimp )
 #undef impif_test
 }
 
-class BObject final : public ref_counted
+class BObject : public ref_counted
 {
 public:
   explicit BObject( BObjectImp* objimp ) : ref_counted(), objimp( objimp ) { passert( objimp ); }
   BObject( const BObject& obj ) : ref_counted(), objimp( obj.objimp ) {}
-  ~BObject() = default;
-  // NOTE: BObject should not be derived from!
+  virtual ~BObject() = default;
+  BObject& operator=( const BObject& ) = delete;
   size_t sizeEstimate() const;
 
   void* operator new( std::size_t len );
@@ -441,7 +452,6 @@ public:
 
   BObjectImp* operator->() const { return objimp.get(); }
   bool isTrue() const { return objimp->isTrue(); }
-  void assign( const BObjectImp& objimp );
 
   BObject* clone() const;
 
@@ -462,12 +472,20 @@ public:
   template <typename T = BObjectImp>
   const T& impref() const;
 
-  void setimp( BObjectImp* imp );
+  virtual void setimp( BObjectImp* imp );
 
 private:
   ref_ptr<BObjectImp> objimp;
+};
 
-  BObject& operator=( const BObject& obj );
+class BConstObject : public BObject
+{
+public:
+  explicit BConstObject( BObjectImp* objimp ) : BObject( objimp ) {}
+  ~BConstObject() override = default;
+  void setimp( BObjectImp* ) override{ /* do nothing */ };
+  // This class does not use a specific fixed allocator, sharing the BObject
+  // one. Do not add new members to this class.
 };
 
 typedef std::vector<ref_ptr<BObjectImp>> BObjectImpRefVec;
@@ -888,7 +906,7 @@ class BFunctionRef final : public BObjectImp
   typedef BObjectImp base;
 
 public:
-  BFunctionRef( ref_ptr<EScriptProgram> program, int progcounter, int param_count, bool variadic,
+  BFunctionRef( ref_ptr<EScriptProgram> program, unsigned function_reference_index,
                 std::shared_ptr<ValueStackCont> globals, ValueStackCont&& captures );
   BFunctionRef( const BFunctionRef& B );
 
@@ -899,15 +917,25 @@ public:
   virtual size_t sizeEstimate() const override;
   bool validCall( const int id, Executor& ex, Instruction* inst ) const;
   bool validCall( const char* methodname, Executor& ex, Instruction* inst ) const;
-  size_t numParams() const;
+  int numParams() const;
+  unsigned pc() const;
   bool variadic() const;
   ref_ptr<EScriptProgram> prog() const;
+  unsigned class_index() const;
+  bool constructor() const;
+  bool class_method() const;
+  const std::vector<unsigned>& default_parameter_addresses() const;
+  int default_parameter_count() const;
+
+  // Does not consider variadic functions. Caller must handle variadic()
+  // explicitly!
+  std::pair<int /*min count*/, int /*max count*/> expected_args() const;
 
 public:  // Class Machinery
   virtual BObjectImp* copy() const override;
   virtual bool isTrue() const override;
   virtual bool operator==( const BObjectImp& objimp ) const override;
-
+  virtual BObjectImp* selfIsObjImp( const BObjectImp& ) const override;
   virtual std::string getStringRep() const override;
 
   virtual BObjectImp* call_method( const char* methodname, Executor& ex ) override;
@@ -918,9 +946,7 @@ private:
   // Need to reference the program, not the Executor, as the exec that created
   // this funcref could be destroyed by the time the funcref gets called
   ref_ptr<EScriptProgram> prog_;
-  unsigned int pc_;
-  int num_params_;
-  bool variadic_;
+  unsigned function_reference_index_;
 
 public:
   std::shared_ptr<ValueStackCont> globals;

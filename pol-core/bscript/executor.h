@@ -19,11 +19,13 @@
 #endif
 
 #include <exception>
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
 #include <stack>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "../clib/refptr.h"
@@ -336,6 +338,7 @@ public:
   void ins_bool( const Instruction& ins );
   void ins_long( const Instruction& ins );
   void ins_double( const Instruction& ins );
+  void ins_classinst( const Instruction& ins );
   void ins_string( const Instruction& ins );
   void ins_error( const Instruction& ins );
   void ins_struct( const Instruction& ins );
@@ -389,6 +392,8 @@ public:
   void ins_div( const Instruction& ins );
   void ins_modulus( const Instruction& ins );
 
+  void ins_is( const Instruction& ins );
+
   void ins_interpolate_string( const Instruction& ins );
   void ins_format_expression( const Instruction& ins );
 
@@ -421,6 +426,7 @@ public:
   void ins_statementbegin( const Instruction& ins );
   void ins_progend( const Instruction& ins );
   void ins_makelocal( const Instruction& ins );
+  void ins_check_mro( const Instruction& ins );
   void ins_jsr_userfunc( const Instruction& ins );
   void ins_pop_param( const Instruction& ins );
   void ins_pop_param_byref( const Instruction& ins );
@@ -523,6 +529,16 @@ private:
 #endif
 protected:
   void cleanup();
+
+  struct ClassMethodKey
+  {
+    ref_ptr<EScriptProgram> prog;
+    unsigned index;
+    std::string method_name;
+    bool operator<( const ClassMethodKey& other ) const;
+  };
+
+  std::map<ClassMethodKey, BObjectRef /*function ref*/> class_methods;
 };
 
 inline const std::string& Executor::scriptname() const

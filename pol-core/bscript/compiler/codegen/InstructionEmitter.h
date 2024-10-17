@@ -1,6 +1,7 @@
 #ifndef POLSERVER_INSTRUCTIONEMITTER_H
 #define POLSERVER_INSTRUCTIONEMITTER_H
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -32,24 +33,29 @@ class CompiledScript;
 class FlowControlLabel;
 class LocalVariableScopeInfo;
 class ModuleDeclarationRegistrar;
+class ClassDeclaration;
+class ClassDeclarationRegistrar;
 class ModuleFunctionDeclaration;
 class FunctionReferenceRegistrar;
 class UserFunction;
 class Node;
 class Variable;
 class SourceLocation;
+class Report;
 
 class InstructionEmitter
 {
 public:
   InstructionEmitter( CodeSection& code, DataSection& data, DebugStore& debug,
                       ExportedFunctions& exported_functions, ModuleDeclarationRegistrar&,
-                      FunctionReferenceRegistrar& );
+                      FunctionReferenceRegistrar&, ClassDeclarationRegistrar&, Report& );
 
   void initialize_data();
 
   void register_exported_function( FlowControlLabel& label, const std::string& name,
                                    unsigned arguments );
+  void register_class_declaration( const ClassDeclaration&,
+                                   std::map<std::string, FlowControlLabel>& );
 
   unsigned enter_debug_block( const LocalVariableScopeInfo& );
   void set_debug_block( unsigned );
@@ -68,10 +74,12 @@ public:
   void basic_for_init( FlowControlLabel& );
   void basic_for_next( FlowControlLabel& );
   void binary_operator( BTokenId token_id );
+  void check_mro( unsigned offset );
   void call_method( const std::string& name, unsigned argument_count );
   void call_method_id( MethodID method_id, unsigned argument_count );
   void call_modulefunc( const ModuleFunctionDeclaration& );
   void call_userfunc( FlowControlLabel& );
+  void classinst_create( unsigned index );
   unsigned casejmp();
   unsigned case_dispatch_table( const CaseJumpDataBlock& );
   void consume();
@@ -85,7 +93,7 @@ public:
   void foreach_init( FlowControlLabel& );
   void foreach_step( FlowControlLabel& );
   void function_reference( const UserFunction&, FlowControlLabel& );
-  void functor_create( const UserFunction& uf );
+  void functor_create( const UserFunction&, FlowControlLabel& );
   void get_arg( const std::string& name );
   void get_member( const std::string& name );
   void get_member_id( MemberID );
@@ -99,6 +107,8 @@ public:
   void pop_param_byref( const std::string& name );
   void progend();
   void return_from_user_function();
+  // Emit the 'this' variable, always stored at local `this_offset`.
+  void return_from_constructor_function( unsigned int this_offset );
   unsigned skip_if_true_else_consume();
   void set_member( const std::string& name );
   void set_member_id( MemberID member_id );
@@ -128,6 +138,8 @@ public:
 
   void patch_offset( unsigned index, unsigned offset );
 
+  bool has_function_reference( const UserFunction& );
+
 private:
   unsigned emit_data( const std::string& );
   unsigned emit_token( BTokenId id, BTokenType type, unsigned offset = 0 );
@@ -140,8 +152,10 @@ private:
   ExportedFunctions& exported_functions;
   ModuleDeclarationRegistrar& module_declaration_registrar;
   FunctionReferenceRegistrar& function_reference_registrar;
+  ClassDeclarationRegistrar& class_declaration_registrar;
 
   DebugStore::InstructionInfo debug_instruction_info{};
+  Report& report;
 };
 }  // namespace Pol::Bscript::Compiler
 

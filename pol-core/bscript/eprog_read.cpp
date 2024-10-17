@@ -6,6 +6,7 @@
 
 #include <cstdio>
 #include <exception>
+#include <map>
 #include <string>
 
 #include "../clib/logfacility.h"
@@ -117,6 +118,14 @@ int EScriptProgram::read( const char* fname )
         {
           ERROR_PRINTLN( "Error loading script {}: error reading function references section",
                          fname );
+          fclose( fp );
+          return -1;
+        }
+        break;
+      case BSCRIPT_SECTION_CLASS_TABLE:
+        if ( read_class_table( fp ) )
+        {
+          ERROR_PRINTLN( "Error loading script {}: error reading class table section", fname );
           fclose( fp );
           return -1;
         }
@@ -293,6 +302,7 @@ int EScriptProgram::_readToken( Token& token, unsigned position ) const
   case INS_SET_MEMBER_ID:
   case INS_SET_MEMBER_ID_CONSUME:
   case INS_CALL_METHOD_ID:
+  case INS_CHECK_MRO:
   case INS_SET_MEMBER_ID_CONSUME_PLUSEQUAL:
   case INS_SET_MEMBER_ID_CONSUME_MINUSEQUAL:
   case INS_SET_MEMBER_ID_CONSUME_TIMESEQUAL:
@@ -411,6 +421,7 @@ int EScriptProgram::read_exported_functions( FILE* fp, BSCRIPT_SECTION_HDR* hdr 
 int EScriptProgram::read_function_references( FILE* fp, BSCRIPT_SECTION_HDR* hdr )
 {
   BSCRIPT_FUNCTION_REFERENCE bfr;
+  BSCRIPT_FUNCTION_REFERENCE_DEFAULT_PARAMETER bfrdp;
 
   unsigned nfuncrefs = hdr->length / sizeof bfr;
   while ( nfuncrefs-- )
@@ -418,11 +429,68 @@ int EScriptProgram::read_function_references( FILE* fp, BSCRIPT_SECTION_HDR* hdr
     if ( fread( &bfr, sizeof bfr, 1, fp ) != 1 )
       return -1;
     EPFunctionReference fr;
+    fr.address = bfr.address;
     fr.parameter_count = bfr.parameter_count;
     fr.capture_count = bfr.capture_count;
     fr.is_variadic = bfr.is_variadic;
+    fr.class_index = bfr.class_index;
+    fr.is_constructor = bfr.is_constructor;
+
+    auto default_parameter_count = bfr.default_parameter_count;
+
+    while ( default_parameter_count-- )
+    {
+      if ( fread( &bfrdp, sizeof bfrdp, 1, fp ) != 1 )
+        return -1;
+
+      fr.default_parameter_addresses.push_back( bfrdp.address );
+    }
 
     function_references.push_back( fr );
+  }
+  return 0;
+}
+
+int EScriptProgram::read_class_table( FILE* fp )
+{
+  BSCRIPT_CLASS_TABLE bct;
+  if ( fread( &bct, sizeof bct, 1, fp ) != 1 )
+    return -1;
+
+  // For each class...
+  while ( bct.class_count-- )
+  {
+    // Handle class
+    BSCRIPT_CLASS_TABLE_ENTRY bcte;
+    if ( fread( &bcte, sizeof bcte, 1, fp ) != 1 )
+      return -1;
+
+    // Handle constructors
+    EPConstructorList constructors;
+    constructors.reserve( bcte.constructor_count );
+
+    while ( bcte.constructor_count-- )
+    {
+      BSCRIPT_CLASS_TABLE_CONSTRUCTOR_ENTRY bctce;
+      if ( fread( &bctce, sizeof bctce, 1, fp ) != 1 )
+        return -1;
+      constructors.push_back( EPConstructorDescriptor{ bctce.type_tag_offset } );
+    }
+
+    // Handle methods
+    EPMethodMap methods;
+    while ( bcte.method_count-- )
+    {
+      BSCRIPT_CLASS_TABLE_METHOD_ENTRY bctme;
+      if ( fread( &bctme, sizeof bctme, 1, fp ) != 1 )
+        return -1;
+
+      methods[bctme.name_offset] = EPMethodDescriptor{ bctme.function_reference_index };
+    }
+
+    class_descriptors.push_back(
+        EPClassDescriptor{ bcte.name_offset, bcte.constructor_function_reference_index,
+                           std::move( constructors ), std::move( methods ) } );
   }
   return 0;
 }

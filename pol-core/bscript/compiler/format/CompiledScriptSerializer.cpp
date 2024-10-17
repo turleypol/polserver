@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "StoredToken.h"
+#include "bscript/compiler/representation/ClassDescriptor.h"
 #include "bscript/compiler/representation/CompiledScript.h"
 #include "bscript/compiler/representation/ExportedFunction.h"
 #include "bscript/compiler/representation/FunctionReferenceDescriptor.h"
@@ -107,10 +108,63 @@ void CompiledScriptSerializer::write( const std::string& pathname ) const
     ofs.write( reinterpret_cast<const char*>( &sechdr ), sizeof sechdr );
     for ( auto& elem : compiled_script.function_references )
     {
+      bfr.address = elem.address();
       bfr.parameter_count = elem.parameter_count();
       bfr.capture_count = elem.capture_count();
       bfr.is_variadic = elem.is_variadic();
+      bfr.class_index = elem.class_index();
+      bfr.is_constructor = elem.is_constructor();
+      bfr.default_parameter_count =
+          static_cast<unsigned>( elem.default_parameter_addresses().size() );
+
       ofs.write( reinterpret_cast<const char*>( &bfr ), sizeof bfr );
+
+      for ( const auto& default_parameter_address : elem.default_parameter_addresses() )
+      {
+        BSCRIPT_FUNCTION_REFERENCE_DEFAULT_PARAMETER bfrdp{};
+        bfrdp.address = default_parameter_address;
+        ofs.write( reinterpret_cast<const char*>( &bfrdp ), sizeof bfrdp );
+      }
+    }
+  }
+
+  if ( !compiled_script.class_descriptors.empty() )
+  {
+    BSCRIPT_CLASS_TABLE bct{};
+    sechdr.type = BSCRIPT_SECTION_CLASS_TABLE;
+    sechdr.length = static_cast<unsigned int>( sizeof bct );
+    ofs.write( reinterpret_cast<const char*>( &sechdr ), sizeof sechdr );
+
+    bct.class_count = static_cast<unsigned int>( compiled_script.class_descriptors.size() );
+    ofs.write( reinterpret_cast<const char*>( &bct ), sizeof bct );
+
+    // For each class...
+    for ( const auto& elem : compiled_script.class_descriptors )
+    {
+      // Handle class entry
+      BSCRIPT_CLASS_TABLE_ENTRY bcte{};
+      bcte.name_offset = elem.name_offset;
+      bcte.constructor_function_reference_index = elem.constructor_function_reference_index;
+      bcte.constructor_count = static_cast<unsigned>( elem.constructors.size() );
+      bcte.method_count = static_cast<unsigned>( elem.methods.size() );
+      ofs.write( reinterpret_cast<const char*>( &bcte ), sizeof bcte );
+
+      // Handle constructors
+      for ( const auto& constructor : elem.constructors )
+      {
+        BSCRIPT_CLASS_TABLE_CONSTRUCTOR_ENTRY bctce{};
+        bctce.type_tag_offset = constructor.type_tag_offset;
+        ofs.write( reinterpret_cast<const char*>( &bctce ), sizeof bctce );
+      }
+
+      // Handle methods
+      for ( const auto& method : elem.methods )
+      {
+        BSCRIPT_CLASS_TABLE_METHOD_ENTRY bctme{};
+        bctme.name_offset = method.name_offset;
+        bctme.function_reference_index = method.function_reference_index;
+        ofs.write( reinterpret_cast<const char*>( &bctme ), sizeof bctme );
+      }
     }
   }
 }

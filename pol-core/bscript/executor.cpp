@@ -20,6 +20,7 @@
 #include "../clib/passert.h"
 #include "../clib/stlutil.h"
 #include "../clib/strutil.h"
+#include "bclassinstance.h"
 #include "berror.h"
 #include "config.h"
 #include "continueimp.h"
@@ -2091,6 +2092,20 @@ void Executor::ins_modulus( const Instruction& /*ins*/ )
 
   leftref.set( new BObject( right.impref().selfModulusObjImp( left.impref() ) ) );
 }
+
+// TOK_IS:
+void Executor::ins_is( const Instruction& /*ins*/ )
+{
+  BObjectRef rightref = ValueStack.back();
+  ValueStack.pop_back();
+  BObjectRef& leftref = ValueStack.back();
+
+  BObject& right = *rightref;
+  BObject& left = *leftref;
+
+  leftref.set( new BObject( right.impref().selfIsObjImp( left.impref() ) ) );
+}
+
 // TOK_BSRIGHT:
 void Executor::ins_bitshift_right( const Instruction& /*ins*/ )
 {
@@ -2644,6 +2659,18 @@ void Executor::ins_call_method_id( const Instruction& ins )
     if ( auto* funcr = ValueStack.back()->impptr_if<BFunctionRef>() )
     {
       Instruction jmp;
+      bool add_new_classinst = ins.token.lval == MTH_NEW;
+
+      if ( add_new_classinst )
+      {
+        if ( funcr->constructor() )
+        {
+          fparams.insert( fparams.begin(),
+                          BObjectRef( new BConstObject( new BClassInstanceRef(
+                              new BClassInstance( prog_, funcr->class_index(), Globals2 ) ) ) ) );
+        }
+      }
+
       if ( funcr->validCall( continuation ? MTH_CALL : ins.token.lval, *this, &jmp ) )
       {
         BObjectRef funcobj( ValueStack.back() );  // valuestack gets modified, protect BFunctionRef
@@ -2734,12 +2761,90 @@ void Executor::ins_call_method_id( const Instruction& ins )
 void Executor::ins_call_method( const Instruction& ins )
 {
   unsigned nparams = ins.token.lval;
-  getParams( nparams );
+  auto method_name = ins.token.tokval();
 
-  if ( auto* funcr = ValueStack.back()->impptr_if<BFunctionRef>() )
+  getParams( nparams );
+  BObjectImp* callee = ValueStack.back()->impptr();
+
+  if ( auto* classinstref = ValueStack.back()->impptr_if<BClassInstanceRef>() )
+  {
+    BFunctionRef* funcr = nullptr;
+    auto classinst = classinstref->instance();
+
+    // Prefer members over class methods by checking contents first.
+    auto member_itr = classinst->contents().find( method_name );
+
+    if ( member_itr != classinst->contents().end() )
+    {
+      // If the member exists and is NOT a function reference, we will still try
+      // to "call" it. This is _intentional_, and will result in a runtime
+      // BError. This is similar to `var foo := 3; print(foo.bar());`, resulting
+      // in a "Method 'bar' not found" error.
+      callee = member_itr->second.get()->impptr();
+
+      funcr = member_itr->second.get()->impptr_if<BFunctionRef>();
+    }
+    else
+    {
+      // Have we already looked up this method?
+      ClassMethodKey key{ prog_, classinst->index(), method_name };
+      auto cache_itr = class_methods.find( key );
+      if ( cache_itr != class_methods.end() )
+      {
+        // Switch the callee to the function reference: if the
+        // funcr->validCall fails, we will go into the funcref
+        // ins_call_method, giving the error about invalid parameter counts.
+        funcr = cache_itr->second->impptr_if<BFunctionRef>();
+        callee = funcr;
+        method_name = getObjMethod( MTH_CALL_METHOD )->code;
+      }
+      else
+      {
+        // Does the class define this method?
+        funcr = classinst->makeMethod( method_name );
+
+        if ( funcr != nullptr )
+        {
+          // Cache the method for future lookups
+          class_methods[key] = BObjectRef( funcr );
+
+          // Switch the callee to the function reference.
+          callee = funcr;
+          method_name = getObjMethod( MTH_CALL_METHOD )->code;
+        }
+      }
+    }
+
+    if ( funcr != nullptr )
+    {
+      Instruction jmp;
+      int id;
+
+      // Add `this` to the front of the argument list only for class methods,
+      // skipping eg. an instance member function reference set via
+      // `this.foo := @(){};`.
+      if ( funcr->class_method() )
+      {
+        id = MTH_CALL_METHOD;
+        fparams.insert( fparams.begin(), ValueStack.back() );
+      }
+      else
+      {
+        id = MTH_CALL;
+      }
+
+      if ( funcr->validCall( id, *this, &jmp ) )
+      {
+        BObjectRef funcobj( funcr );  // valuestack gets modified, protect BFunctionRef
+        call_function_reference( funcr, nullptr, jmp );
+        return;
+      }
+    }
+  }
+  else if ( auto* funcr = ValueStack.back()->impptr_if<BFunctionRef>() )
   {
     Instruction jmp;
-    if ( funcr->validCall( ins.token.tokval(), *this, &jmp ) )
+    if ( funcr->validCall( method_name, *this, &jmp ) )
     {
       BObjectRef funcobj( ValueStack.back() );  // valuestack gets modified, protect BFunctionRef
       call_function_reference( funcr, nullptr, jmp );
@@ -2750,7 +2855,7 @@ void Executor::ins_call_method( const Instruction& ins )
   size_t stacksize = ValueStack.size();  // ValueStack can grow
 #ifdef ESCRIPT_PROFILE
   std::stringstream strm;
-  strm << "MTH_" << ValueStack.back()->impptr()->typeOf() << " ." << ins.token.tokval();
+  strm << "MTH_" << callee->typeOf() << " ." << method_name;
   if ( !fparams.empty() )
     strm << " [" << fparams[0].get()->impptr()->typeOf() << "]";
   std::string name( strm.str() );
@@ -2759,12 +2864,12 @@ void Executor::ins_call_method( const Instruction& ins )
 #ifdef BOBJECTIMP_DEBUG
   BObjectImp* imp;
 
-  if ( strcmp( ins.token.tokval(), "impptr" ) == 0 )
-    imp = new String( fmt::format( "{}", static_cast<void*>( this ) ) );
+  if ( strcmp( method_name, "impptr" ) == 0 )
+    imp = new String( fmt::format( "{}", static_cast<void*>( callee ) ) );
   else
-    imp = ValueStack.back()->impptr()->call_method( ins.token.tokval(), *this );
+    imp = callee->call_method( method_name, *this );
 #else
-  BObjectImp* imp = ValueStack.back()->impptr()->call_method( ins.token.tokval(), *this );
+  BObjectImp* imp = callee->call_method( method_name, *this );
 #endif
 #ifdef ESCRIPT_PROFILE
   profile_escript( name, profile_start );
@@ -2816,6 +2921,55 @@ void Executor::ins_makelocal( const Instruction& /*ins*/ )
   if ( Locals2 )
     upperLocals2.push_back( Locals2 );
   Locals2 = new BObjectRefVec;
+}
+
+void Executor::ins_check_mro( const Instruction& ins )
+{
+  auto classinst_offset = ins.token.lval;
+
+  if ( classinst_offset > static_cast<int>( ValueStack.size() ) || ValueStack.empty() )
+  {
+    POLLOG_ERRORLN( "Fatal error: Check MRO offset error! offset={}, ValueStack.size={} ({},PC={})",
+                    classinst_offset, ValueStack.size(), prog_->name, PC );
+    seterror( true );
+    return;
+  }
+
+  const auto& classinst_ref = ValueStack.at( ValueStack.size() - classinst_offset - 1 );
+
+  if ( nLines < PC + 1 )
+  {
+    POLLOG_ERRORLN( "Fatal error: Check MRO instruction out of bounds! nLines={} ({},PC={})",
+                    nLines, prog_->name, PC );
+    seterror( true );
+    return;
+  }
+
+  const Instruction& jsr_ins = prog_->instr.at( PC + 1 );
+  if ( jsr_ins.func != &Executor::ins_jsr_userfunc )
+  {
+    POLLOG_ERRORLN( "Fatal error: Check MRO instruction not followed by JSR_USERFUNC! ({},PC={})",
+                    prog_->name, PC );
+    seterror( true );
+    return;
+  }
+
+  auto ctor_addr = jsr_ins.token.lval;
+
+  auto classinstref = classinst_ref->impptr_if<BClassInstanceRef>();
+
+  if ( classinstref != nullptr && classinstref->instance()->constructors_called.find( ctor_addr ) ==
+                                      classinstref->instance()->constructors_called.end() )
+  {
+    classinstref->instance()->constructors_called.insert( ctor_addr );
+  }
+  else
+  {
+    // Constructor has been called, or `this` is not a class instance: clear
+    // arguments and skip jump instructions (makelocal, jsr_userfunc)
+    ValueStack.resize( ValueStack.size() - ins.token.lval );
+    PC += 2;
+  }
 }
 
 // CTRL_JSR_USERFUNC:
@@ -3030,6 +3184,13 @@ void Executor::ins_double( const Instruction& ins )
 {
   ValueStack.push_back( BObjectRef( new BObject( new Double( ins.token.dval ) ) ) );
 }
+
+void Executor::ins_classinst( const Instruction& ins )
+{
+  ValueStack.push_back( BObjectRef( new BConstObject(
+      new BClassInstanceRef( new BClassInstance( prog_, ins.token.lval, Globals2 ) ) ) ) );
+}
+
 void Executor::ins_string( const Instruction& ins )
 {
   ValueStack.push_back( BObjectRef( new BObject( new String( ins.token.tokval() ) ) ) );
@@ -3184,13 +3345,18 @@ void Executor::ins_bitwise_not( const Instruction& /*ins*/ )
 // case TOK_FUNCREF:
 void Executor::ins_funcref( const Instruction& ins )
 {
-  auto funcref_index = static_cast<int>( ins.token.type );
+  if ( ins.token.lval >= static_cast<int>( prog_->function_references.size() ) )
+  {
+    POLLOG_ERRORLN( "Function reference index out of bounds: {} >= {}", ins.token.lval,
+                    prog_->function_references.size() );
+    seterror( true );
+    return;
+  }
 
-  const auto& ep_funcref = prog_->function_references[funcref_index];
+  auto funcref_index = static_cast<unsigned>( ins.token.lval );
 
   ValueStack.push_back(
-      BObjectRef( new BFunctionRef( prog_, ins.token.lval, ep_funcref.parameter_count,
-                                    ep_funcref.is_variadic, Globals2, {} /* captures */ ) ) );
+      BObjectRef( new BFunctionRef( prog_, funcref_index, Globals2, {} /* captures */ ) ) );
 }
 
 void Executor::ins_functor( const Instruction& ins )
@@ -3209,8 +3375,7 @@ void Executor::ins_functor( const Instruction& ins )
     capture_count--;
   }
 
-  auto func = new BFunctionRef( prog_, PC, ep_funcref.parameter_count, ep_funcref.is_variadic,
-                                Globals2, std::move( captures ) );
+  auto func = new BFunctionRef( prog_, funcref_index, Globals2, std::move( captures ) );
 
   ValueStack.push_back( BObjectRef( func ) );
 
@@ -3256,6 +3421,8 @@ ExecInstrFunc Executor::GetInstrFunc( const Token& token )
     return &Executor::ins_struct;
   case TOK_SPREAD:
     return &Executor::ins_spread;
+  case TOK_CLASSINST:
+    return &Executor::ins_classinst;
   case TOK_ARRAY:
     return &Executor::ins_array;
   case TOK_DICTIONARY:
@@ -3356,6 +3523,8 @@ ExecInstrFunc Executor::GetInstrFunc( const Token& token )
     return &Executor::ins_statementbegin;
   case CTRL_MAKELOCAL:
     return &Executor::ins_makelocal;
+  case INS_CHECK_MRO:
+    return &Executor::ins_check_mro;
   case CTRL_JSR_USERFUNC:
     return &Executor::ins_jsr_userfunc;
   case INS_POP_PARAM:
@@ -3414,6 +3583,8 @@ ExecInstrFunc Executor::GetInstrFunc( const Token& token )
     return &Executor::ins_dictionary_addmember;
   case TOK_IN:
     return &Executor::ins_in;
+  case TOK_IS:
+    return &Executor::ins_is;
   case INS_ADDMEMBER2:
     return &Executor::ins_addmember2;
   case INS_ADDMEMBER_ASSIGN:
@@ -3584,14 +3755,23 @@ void Executor::call_function_reference( BFunctionRef* funcr, BContinuation* cont
   for ( auto& p : funcr->captures )
     ValueStack.push_back( p );
 
-  if ( funcr->variadic() )
+  auto nparams = static_cast<int>( fparams.size() );
+
+  // Handle variadic functions special. Construct an array{} corresponding to
+  // the rest parameter (the last parameter for the function). The logic for the
+  // condition:
+  // - if true, the last argument in the call may not be an array{}, so we need
+  //   to construct one (which is why the condition is `>=` and not `>`).
+  // - if false, then the address we're jumping to will be a "default argument
+  //   address" and _not_ the user function directly, which will create the
+  //   array{}. (NB: The address/PC comes from BFunctionRef::validCall)
+  if ( funcr->variadic() && nparams >= funcr->numParams() )
   {
-    passert_always( funcr->numParams() > 0 );
-    auto num_nonrest_args = static_cast<unsigned>( funcr->numParams() - 1 );
+    auto num_nonrest_args = funcr->numParams() - 1;
 
     auto rest_arg = std::make_unique<ObjArray>();
 
-    for ( size_t i = 0; i < fparams.size(); ++i )
+    for ( int i = 0; i < static_cast<int>( fparams.size() ); ++i )
     {
       auto& p = fparams[i];
 
@@ -3606,6 +3786,9 @@ void Executor::call_function_reference( BFunctionRef* funcr, BContinuation* cont
     }
     ValueStack.push_back( BObjectRef( rest_arg.release() ) );
   }
+  // The array{} will be created via the regular default-parameter handling by
+  // jumping to the address/PC which pushes an empty array{} on the ValueStack
+  // prior to jumping to the user function.
   else
   {
     for ( auto& p : fparams )
@@ -3888,6 +4071,7 @@ size_t Executor::sizeEstimate() const
   size += Clib::memsize( execmodules ) + Clib::memsize( availmodules );
   size += dbg_env_ != nullptr ? dbg_env_->sizeEstimate() : 0;
   size += func_result_ != nullptr ? func_result_->sizeEstimate() : 0;
+  size += Clib::memsize( class_methods );
   return size;
 }
 
@@ -3976,7 +4160,7 @@ BContinuation* Executor::withContinuation( BContinuation* continuation, BObjectR
 
   // Add function arguments to value stack. Add arguments if there are not enough.  Remove if
   // there are too many
-  while ( func->numParams() > args.size() )
+  while ( func->numParams() > static_cast<int>( args.size() ) )
   {
     args.push_back( BObjectRef( new BObject( UninitObject::create() ) ) );
   }
@@ -3988,6 +4172,24 @@ BContinuation* Executor::withContinuation( BContinuation* continuation, BObjectR
   continuation->args = std::move( args );
 
   return continuation;
+}
+
+bool Executor::ClassMethodKey::operator<( const ClassMethodKey& other ) const
+{
+  // Compare the program pointers
+  if ( prog < other.prog )
+    return true;
+  if ( prog > other.prog )
+    return false;
+
+  // Compare the indices
+  if ( index < other.index )
+    return true;
+  if ( index > other.index )
+    return false;
+
+  // Perform a case-insensitive comparison for method_name using stricmp
+  return stricmp( method_name.c_str(), other.method_name.c_str() ) < 0;
 }
 }  // namespace Bscript
 }  // namespace Pol

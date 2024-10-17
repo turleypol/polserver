@@ -26,7 +26,7 @@ namespace Clib
 class PollingWithPoll
 {
 public:
-  explicit PollingWithPoll( SOCKET socket ) : timeoutms( 1 ), processed( false )
+  explicit PollingWithPoll( SOCKET socket ) : timeoutms( 0 ), processed( false )
   {
     fdList.fd = socket;
     reset();

@@ -31,6 +31,7 @@
 #include "bscript/compiler/ast/WhileLoop.h"
 #include "bscript/compiler/astbuilder/BuilderWorkspace.h"
 #include "bscript/compiler/model/CompilerWorkspace.h"
+#include "bscript/compiler/model/ScopeName.h"
 
 using EscriptGrammar::EscriptParser;
 
@@ -43,7 +44,7 @@ namespace Pol::Bscript::Compiler
 {
 CompoundStatementBuilder::CompoundStatementBuilder(
     const SourceFileIdentifier& source_file_identifier, BuilderWorkspace& workspace )
-  : SimpleStatementBuilder( source_file_identifier, workspace )
+    : SimpleStatementBuilder( source_file_identifier, workspace )
 {
 }
 
@@ -65,7 +66,7 @@ void CompoundStatementBuilder::add_statements( EscriptParser::StatementContext* 
   }
   else if ( auto var_statement = ctx->varStatement() )
   {
-    add_var_statements( var_statement, statements );
+    add_var_statements( var_statement, "", statements );
   }
   else if ( auto return_st = ctx->returnStatement() )
   {
@@ -143,7 +144,7 @@ std::unique_ptr<BasicForLoop> CompoundStatementBuilder::basic_for_loop(
 }
 
 std::vector<std::unique_ptr<Statement>> CompoundStatementBuilder::block_statements(
-        EscriptParser::BlockContext* ctx )
+    EscriptParser::BlockContext* ctx )
 {
   std::vector<std::unique_ptr<Statement>> statements;
 
@@ -271,13 +272,17 @@ std::unique_ptr<Statement> CompoundStatementBuilder::for_loop( EscriptParser::Fo
 std::unique_ptr<Expression> CompoundStatementBuilder::foreach_iterable_expression(
     EscriptParser::ForeachIterableExpressionContext* ctx )
 {
-  if ( auto identifier = ctx->IDENTIFIER() )
+  if ( auto scoped_ident = ctx->scopedIdentifier() )
+  {
+    return scoped_identifier( scoped_ident );
+  }
+  else if ( auto identifier = ctx->IDENTIFIER() )
   {
     return std::make_unique<Identifier>( location_for( *identifier ), text( identifier ) );
   }
   else if ( auto m_call = ctx->functionCall() )
   {
-    return function_call( m_call, "" );
+    return function_call( m_call, ScopeName::None );
   }
   else if ( auto scoped_call = ctx->scopedFunctionCall() )
   {
@@ -384,7 +389,7 @@ std::unique_ptr<WhileLoop> CompoundStatementBuilder::while_loop(
   auto predicate = expression( ctx->parExpression()->expression() );
   auto body = block( ctx->block() );
   return std::make_unique<WhileLoop>( source_location, std::move( label ), std::move( predicate ),
-                                        std::move( body ) );
+                                      std::move( body ) );
 }
 
 }  // namespace Pol::Bscript::Compiler

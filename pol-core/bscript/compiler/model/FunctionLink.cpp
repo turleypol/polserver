@@ -6,8 +6,12 @@
 
 namespace Pol::Bscript::Compiler
 {
-FunctionLink::FunctionLink( const SourceLocation& source_location )
-    : source_location( source_location ), linked_function( nullptr )
+FunctionLink::FunctionLink( const SourceLocation& source_location, std::string calling_scope,
+                            bool require_ctor )
+    : source_location( source_location ),
+      calling_scope( std::move( calling_scope ) ),
+      require_ctor( require_ctor ),
+      linked_function( nullptr )
 {
 }
 

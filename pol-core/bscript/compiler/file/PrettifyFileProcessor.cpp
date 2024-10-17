@@ -603,6 +603,8 @@ antlrcpp::Any PrettifyFileProcessor::expression_suffix(
       make_string_literal( string_literal );
     else if ( auto identifier = member->IDENTIFIER() )
       make_identifier( identifier );
+    else if ( auto function_keyword = member->FUNCTION() )
+      make_identifier( function_keyword );
   }
   else if ( auto method = expr_suffix_ctx->methodCallSuffix() )
   {
@@ -647,6 +649,10 @@ antlrcpp::Any PrettifyFileProcessor::visitForeachIterableExpression(
   else if ( auto functionCall = ctx->functionCall() )
   {
     visitFunctionCall( functionCall );
+  }
+  else if ( auto scopedIdentifier = ctx->scopedIdentifier() )
+  {
+    visitScopedIdentifier( scopedIdentifier );
   }
   else if ( auto scopedFunctionCall = ctx->scopedFunctionCall() )
   {
@@ -856,6 +862,62 @@ antlrcpp::Any PrettifyFileProcessor::visitCaseStatement( EscriptParser::CaseStat
   return {};
 }
 
+antlrcpp::Any PrettifyFileProcessor::visitClassBody(
+    EscriptGrammar::EscriptParser::ClassBodyContext* ctx )
+{
+  ++_currindent;
+  visitChildren( ctx );
+  --_currindent;
+  return {};
+}
+
+antlrcpp::Any PrettifyFileProcessor::visitClassDeclaration(
+    EscriptGrammar::EscriptParser::ClassDeclarationContext* ctx )
+{
+  addToken( "class", ctx->CLASS(), FmtToken::SPACE );
+  make_identifier( ctx->IDENTIFIER() );
+  visitClassParameters( ctx->classParameters() );
+
+  visitClassBody( ctx->classBody() );
+
+  addToken( "endclass", ctx->ENDCLASS(), FmtToken::SPACE );
+  linebuilder.buildLine( _currindent );
+  return {};
+}
+
+antlrcpp::Any PrettifyFileProcessor::visitClassParameters(
+    EscriptGrammar::EscriptParser::ClassParametersContext* ctx )
+{
+  addToken( "(", ctx->LPAREN(), linebuilder.openingParenthesisStyle(),
+            FmtContext::PREFERRED_BREAK_START );
+
+  bool argcount = false;
+  if ( auto args = ctx->classParameterList() )
+    argcount = std::any_cast<bool>( visitClassParameterList( args ) );
+
+  auto closingstyle = linebuilder.closingParenthesisStyle( argcount );
+  if ( _suppressnewline )  // add space if newline is suppressed
+    closingstyle |= FmtToken::SPACE;
+  addToken( ")", ctx->RPAREN(), closingstyle, FmtContext::PREFERRED_BREAK_END );
+  if ( !_suppressnewline )
+    linebuilder.buildLine( _currindent );
+  return {};
+}
+
+antlrcpp::Any PrettifyFileProcessor::visitClassParameterList(
+    EscriptGrammar::EscriptParser::ClassParameterListContext* ctx )
+{
+  auto params = ctx->IDENTIFIER();
+  for ( size_t i = 0; i < params.size(); ++i )
+  {
+    make_identifier( params[i] );
+    if ( i < params.size() - 1 )
+      addToken( ",", ctx->COMMA( i ), linebuilder.delimiterStyle() | FmtToken::PREFERRED_BREAK );
+  }
+
+  return !params.empty();
+}
+
 antlrcpp::Any PrettifyFileProcessor::visitContinueStatement(
     EscriptParser::ContinueStatementContext* ctx )
 {
@@ -929,9 +991,20 @@ antlrcpp::Any PrettifyFileProcessor::visitReturnStatement(
 antlrcpp::Any PrettifyFileProcessor::visitScopedFunctionCall(
     EscriptParser::ScopedFunctionCallContext* ctx )
 {
-  make_identifier( ctx->IDENTIFIER() );  // scope
+  if ( ctx->IDENTIFIER() )
+    make_identifier( ctx->IDENTIFIER() );  // scope
   addToken( "::", ctx->COLONCOLON(), FmtToken::ATTACHED );
   visitFunctionCall( ctx->functionCall() );
+  return {};
+}
+
+antlrcpp::Any PrettifyFileProcessor::visitScopedIdentifier(
+    EscriptGrammar::EscriptParser::ScopedIdentifierContext* ctx )
+{
+  if ( ctx->scope )
+    addToken( ctx->scope->getText(), ctx->scope, FmtToken::NONE );
+  addToken( "::", ctx->COLONCOLON(), FmtToken::ATTACHED );
+  addToken( ctx->identifier->getText(), ctx->identifier, FmtToken::NONE );
   return {};
 }
 
@@ -939,7 +1012,14 @@ antlrcpp::Any PrettifyFileProcessor::visitFunctionReference(
     EscriptParser::FunctionReferenceContext* ctx )
 {
   addToken( "@", ctx->AT(), FmtToken::NONE );
-  make_identifier( ctx->IDENTIFIER() );
+
+  if ( ctx->scope )
+  {
+    addToken( ctx->scope->getText(), ctx->scope, FmtToken::NONE );
+    addToken( "::", ctx->COLONCOLON(), FmtToken::ATTACHED );
+  }
+
+  addToken( ctx->function->getText(), ctx->function, FmtToken::SPACE );
   return {};
 }
 
@@ -1159,6 +1239,8 @@ antlrcpp::Any PrettifyFileProcessor::visitPrimary( EscriptParser::PrimaryContext
     return visitParExpression( parExpression );
   else if ( auto functionCall = ctx->functionCall() )
     return visitFunctionCall( functionCall );
+  else if ( auto scopedIdentifier = ctx->scopedIdentifier() )
+    return visitScopedIdentifier( scopedIdentifier );
   else if ( auto scopedFunctionCall = ctx->scopedFunctionCall() )
     return visitScopedFunctionCall( scopedFunctionCall );
   else if ( auto identifier = ctx->IDENTIFIER() )

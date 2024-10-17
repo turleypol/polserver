@@ -2,6 +2,7 @@
 #define POLSERVER_EXPRESSIONBUILDER_H
 
 #include "bscript/compiler/astbuilder/ValueBuilder.h"
+#include "bscript/compiler/model/ScopeName.h"
 
 #ifndef __TOKENS_H
 #include "bscript/tokens.h"
@@ -20,6 +21,7 @@ class ErrorInitializer;
 class Expression;
 class FormatExpression;
 class FunctionCall;
+class Identifier;
 class InterpolateString;
 class MemberAccess;
 class MethodCall;
@@ -68,7 +70,7 @@ public:
       std::vector<EscriptGrammar::EscriptParser::InterpolatedStringPartContext*> );
 
   std::unique_ptr<FunctionCall> function_call( EscriptGrammar::EscriptParser::FunctionCallContext*,
-                                               const std::string& scope );
+                                               const ScopeName& scope );
 
   std::unique_ptr<FunctionCall> function_call(
       std::unique_ptr<Expression> lhs, EscriptGrammar::EscriptParser::FunctionCallSuffixContext* );
@@ -78,6 +80,7 @@ public:
 
   std::unique_ptr<MemberAccess> navigation(
       std::unique_ptr<Expression> lhs, EscriptGrammar::EscriptParser::NavigationSuffixContext* );
+
   std::unique_ptr<Expression> expression_suffix(
       std::unique_ptr<Expression> lhs,
       EscriptGrammar::EscriptParser::ExpressionSuffixContext* );
@@ -92,6 +95,8 @@ public:
 
   std::unique_ptr<FunctionCall> scoped_function_call(
       EscriptGrammar::EscriptParser::ScopedFunctionCallContext* );
+  std::unique_ptr<Identifier> scoped_identifier(
+      EscriptGrammar::EscriptParser::ScopedIdentifierContext* );
 
   std::unique_ptr<Expression> struct_initializer(
       EscriptGrammar::EscriptParser::ExplicitStructInitializerContext* );
