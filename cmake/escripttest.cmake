@@ -105,7 +105,7 @@ function (testwithcompiler formatoption)
   #    if(${out} LESS 0)
   #      continue()
   # endif()
-  set(script ${scripttest})
+  set(script ${subtest}/${scripttest})
     string(REPLACE ".src" "" scriptname "${script}")
 
     if (EXISTS "${testdir}/${scriptname}.out" AND NOT ${formatoption} STREQUAL "")
