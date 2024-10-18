@@ -166,16 +166,24 @@ foreach(child ${children})
     if(${out} EQUAL 0)
       continue()
     endif()
-    add_test(NAME escript_${child}
+    file(GLOB scripts RELATIVE ${testdir}/${child} ${testdir}/${child}/*)
+    foreach(script ${scripts})
+      string(FIND "${script}" ".src" out)
+    if(${out} LESS 0)
+      continue()
+    endif()
+    add_test(NAME escript_${child}_${script}
       COMMAND ${CMAKE_COMMAND}
         -Dtestdir=${testdir}
         -Dsubtest=${child}
+        -Dscripttest=${script}
         -Decompile=${output_bin_dir}/ecompile
         -Drunecl=${output_bin_dir}/runecl
         -Derrfilesuffix=1
         -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/escripttest.cmake
       WORKING_DIRECTORY ${testdir}
     )
+  endforeach()
   endif()
 endforeach()
 include(cmake/core_tests.cmake)
@@ -208,7 +216,7 @@ message("adding test targets")
 message("  test_escript")
 add_custom_target(test_escript
   COMMAND ${CMAKE_CTEST_COMMAND}
-    -j6 --schedule-random --output-on-failure -R escript_ -C ${CMAKE_BUILD_TYPE}
+    -j6 --output-on-failure -R escript_ -C ${CMAKE_BUILD_TYPE}
   COMMENT "Run escript tests"
   VERBATIM
   USES_TERMINAL
