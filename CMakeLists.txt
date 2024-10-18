@@ -219,7 +219,7 @@ set_target_properties(test_escript PROPERTIES FOLDER !BuildTargets)
 message("  test_pol")
 add_custom_target(test_pol
   COMMAND ${CMAKE_CTEST_COMMAND}
-    -j2 --output-on-failure -E escript_ -C ${CMAKE_BUILD_TYPE}
+    -j4 --output-on-failure -E escript_ -C ${CMAKE_BUILD_TYPE}
   COMMENT "Run pol tests"
   VERBATIM
   USES_TERMINAL

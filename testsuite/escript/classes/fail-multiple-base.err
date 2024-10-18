@@ -1,0 +1,1 @@
+:4:27: error: Class 'Animal' references base class 'BaseClass1' multiple times.

@@ -1,0 +1,8 @@
+class Animal()
+  function Animal( this, name )
+    this.name := name;
+  endfunction
+endclass
+
+class Animal()
+endclass

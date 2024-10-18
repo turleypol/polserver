@@ -1,0 +1,12 @@
+1
+2
+3
+a
+b
+c
+-----
+Animal::StaticFunc foo=string
+::StaticFunc foo=gnirts
+-----
+1
+100
