@@ -721,7 +721,7 @@ void Client::set_update_range( u8 range )
 
   // remove all objects, but not if its the first pkt
   if ( old_range != range && gd->original_client_update_range != 0 )
-    Core::remove_objects_in_range( this );
+    Core::remove_objects_inrange( this );
 
   gd->update_range = range;
 
