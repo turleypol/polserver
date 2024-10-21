@@ -3,6 +3,7 @@
 
 #include "../clib/stlutil.h"
 #include "pkg.h"
+#include "pol/objtype.h"
 #include "tiles.h"
 
 namespace Pol

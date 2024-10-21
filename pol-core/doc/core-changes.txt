@@ -1,4 +1,12 @@
 -- POL100.2.0 --
+10-19-2024 Kukkino:
+    Added: DefaultVisualRange setting to servspecopt.cfg. This setting declares how far clients can see by default.
+           Note that the same value needs to be set on both server and in client (usually 18 or 21).
+10-18-2024 Kevin:
+    Fixed: Correctly declare parameters in generated super() function as used.
+    Fixed: Correctly handle case insensitivity with classes.
+10-17-2024 Turley:
+    Fixed: Fixed crash when too many items exists an a boat.
 10-16-2024 Turley:
     Fixed: os::OpenConnection with keep_connection did not stop correctly if the socket was closed from the other side
   Changed: pol.cfg UseSingleThreadLogin is by default now active
