@@ -4937,7 +4937,7 @@ BObjectImp* Client::set_script_member_id( const int id, int value )
     {
       set_update_range( gd->original_client_update_range
                             ? gd->original_client_update_range
-                            : settingsManager.ssopt.default_visual_range );
+                            : Core::settingsManager.ssopt.default_visual_range );
       gd->script_defined_update_range = false;
     }
     else
