@@ -52,7 +52,7 @@ ClientGameData::ClientGameData()
       custom_house_chrserial( 0 ),
       script_defined_update_range( false ),
       update_range( Core::settingsManager.ssopt.default_visual_range ),
-      original_client_update_range( update_range )
+      original_client_update_range( 0 )
 {
 }
 

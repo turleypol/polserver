@@ -4935,7 +4935,9 @@ BObjectImp* Client::set_script_member_id( const int id, int value )
   case MBR_VISUAL_RANGE:
     if ( value == 0 )
     {
-      set_update_range( gd->original_client_update_range );
+      set_update_range( gd->original_client_update_range
+                            ? gd->original_client_update_range
+                            : settingsManager.ssopt.default_visual_range );
       gd->script_defined_update_range = false;
     }
     else
