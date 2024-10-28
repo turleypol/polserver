@@ -711,6 +711,37 @@ weak_ptr<Client> Client::getWeakPtr() const
 {
   return weakptr;
 }
+void Client::set_update_range_by_client( u8 range )
+{
+  // only allow a change if allowed and not modified by script
+  if ( Core::settingsManager.ssopt.allow_visual_range_modification )
+  {
+    if ( !gd->script_defined_update_range )
+      set_update_range( range );
+    gd->original_client_update_range = range;
+  }
+  else
+  {
+    PktHelper::PacketOut<Network::PktOut_C8> outMsg;
+    outMsg->Write<u8>( update_range() );
+    outMsg.Send( this );
+  }
+}
+
+void Client::set_update_range_by_script( u8 range )
+{
+  if ( range == 0 )
+  {
+    range = gd->original_client_update_range ? gd->original_client_update_range
+                                             : Core::settingsManager.ssopt.default_visual_range;
+    gd->script_defined_update_range = false;
+  }
+  else
+  {
+    gd->script_defined_update_range = true;
+  }
+  set_update_range( range );
+}
 
 void Client::set_update_range( u8 range )
 {
@@ -726,10 +757,10 @@ void Client::set_update_range( u8 range )
   gd->update_range = range;
 
   PktHelper::PacketOut<PktOut_C8> outMsg;
-  outMsg->Write<u8>( update_range() );
+  outMsg->Write<u8>( range );
   outMsg.Send( this );
 
-  if ( old_range != update_range() )
+  if ( old_range != range )
   {
     // update global updaterange (maximum multi radius/client view range)
     Core::gamestate.update_range_from_client( range );

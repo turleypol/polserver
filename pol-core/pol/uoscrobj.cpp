@@ -4933,18 +4933,7 @@ BObjectImp* Client::set_script_member_id( const int id, int value )
     disable_inactivity_timeout( value );
     return new BLong( disable_inactivity_timeout() );
   case MBR_VISUAL_RANGE:
-    if ( value == 0 )
-    {
-      set_update_range( gd->original_client_update_range
-                            ? gd->original_client_update_range
-                            : Core::settingsManager.ssopt.default_visual_range );
-      gd->script_defined_update_range = false;
-    }
-    else
-    {
-      set_update_range( Clib::clamp_convert<u8>( value ) );
-      gd->script_defined_update_range = true;
-    }
+    set_update_range_by_script( Clib::clamp_convert<u8>( value ) );
     return new BLong( update_range() );
   default:
     return nullptr;
