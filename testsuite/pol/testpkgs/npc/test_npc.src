@@ -65,7 +65,7 @@ function npc_test_areaevents( template, expected_to_see )
   if ( ready.errortext )
     return ready;
   endif
-print($"create {npc.serial}");
+
   // test if it can see npcs created at the four borders of the event range
   var probe_npc1 := CreateNPCFromTemplate( ":testnpc:probe_npc", x + range, y + range, 0 );
   var probe_npc2 := CreateNPCFromTemplate( ":testnpc:probe_npc", x - range, y - range, 0 );
@@ -91,7 +91,6 @@ print($"create {npc.serial}");
   var in_range_npcs := { probe_npc1.serial, probe_npc2.serial, probe_npc3.serial,
                          probe_npc4.serial, probe_npc_outside_then_in.serial };
   var nExpected := in_range_npcs.size();
-  print($"in range def: {in_range_npcs}");
 
   if ( !expected_to_see )
     var who_entered := wait_for_prop( npc, "who_entered", max_try := 3 );
@@ -117,7 +116,6 @@ print($"create {npc.serial}");
                                                                                      nExpected ) );
     endif
 
-  print($"who entered: {who_entered}");
     foreach serial in who_entered
       var idx := serial in in_range_npcs;
       if ( !idx )
@@ -167,7 +165,6 @@ print($"create {npc.serial}");
                                                                                   nExpected ) );
     endif
 
-  print($"who left: {who_left}");
     foreach serial in who_left
       var idx := serial in in_range_npcs;
       if ( !idx )
