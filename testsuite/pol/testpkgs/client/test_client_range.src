@@ -193,7 +193,7 @@ exported function update_range_change( res_m )
   var item := res_m.CreateItemAtLocation( char.x + 20, char.y, char.z, 0xf3f );
   while ( !waitForClient( 0, { EVT_OWNCREATE } ) )
   endwhile
-  char.client.visual_range=20;
+  char.client.visual_range:=20;
   var ev := waitForClient( 0, { EVT_NEW_ITEM } );
   if ( !ev )
     return ev;
@@ -201,7 +201,7 @@ exported function update_range_change( res_m )
   if ( ev["serial"] != item.serial )
     return ret_error( "wrong item visible" );
   endif
-  char.client.visual_range=0; // back to default
+  char.client.visual_range:=0; // back to default
   var ev := waitForClient( 0, { EVT_REMOVED_OBJ } );
   if ( !ev )
     return ev;
