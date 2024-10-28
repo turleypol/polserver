@@ -725,6 +725,7 @@ void Client::set_update_range_by_client( u8 range )
     PktHelper::PacketOut<Network::PktOut_C8> outMsg;
     outMsg->Write<u8>( update_range() );
     outMsg.Send( this );
+    gd->original_client_update_range = Core::settingsManager.ssopt.default_visual_range;
   }
 }
 

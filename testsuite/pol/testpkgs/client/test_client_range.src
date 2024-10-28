@@ -184,7 +184,9 @@ exported function update_range_change( resmngr )
   var item := resmngr.CreateItemAtLocation( char.x + 20, char.y, char.z, 0xf3f );
   while ( !waitForClient( 0, { EVT_OWNCREATE } ) )
   endwhile
+  print($"item {hex(item.serial)} {item.serial}");
   Clear_Event_Queue();
+  print("    changing size");
   char.client.visual_range := 20;
   var ev := waitForClient( 0, { EVT_NEW_ITEM } );
   if ( !ev )
@@ -193,6 +195,7 @@ exported function update_range_change( resmngr )
   if ( ev["serial"] != item.serial )
     return ret_error( "wrong item visible" );
   endif
+  print("    changing size");
   char.client.visual_range := 0; // back to default
   ev := waitForClient( 0, { EVT_REMOVED_OBJ } );
   if ( !ev )
