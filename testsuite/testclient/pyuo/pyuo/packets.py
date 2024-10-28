@@ -1560,6 +1560,20 @@ class ClilocMsgPacket(Packet):
     self.speaker_name = self.dstring(30)
     self.unicode_string = self.rpb(self.length-48)
 
+class VisualRangePacket(Packet):
+  ''' visual range both directions '''
+
+  cmd = 0xc8
+  length = 2
+
+  def decodeChild(self):
+    self.visualrange = self.duchar()
+  
+  def fill(self,visualrange):
+    self.visualrange=visualrange
+
+  def encodeChild(self):
+    self.euchar(self.visualrange)
 
 class MegaClilocRevPacket(Packet):
   ''' SE Introduced Revision '''
