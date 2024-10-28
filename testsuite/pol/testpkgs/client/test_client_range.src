@@ -194,7 +194,7 @@ exported function update_range_change( resmngr )
     return ret_error( "wrong item visible" );
   endif
   char.client.visual_range := 0; // back to default
-  var ev := waitForClient( 0, { EVT_REMOVED_OBJ } );
+  ev := waitForClient( 0, { EVT_REMOVED_OBJ } );
   if ( !ev )
     return ev;
   endif
