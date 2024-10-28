@@ -188,29 +188,25 @@ exported function multi_update_range()
 endfunction
 
 
-exported function update_range_change()
+exported function update_range_change( res_m )
   MoveObjectToLocation( char, 100, 100, 0, flags := MOVEOBJECT_FORCELOCATION );
-  var item := CreateItemAtLocation( char.x + 20, char.y, char.z, 0xf3f );
+  var item := res_m.CreateItemAtLocation( char.x + 20, char.y, char.z, 0xf3f );
   while ( !waitForClient( 0, { EVT_OWNCREATE } ) )
   endwhile
   char.client.visual_range=20;
   var ev := waitForClient( 0, { EVT_NEW_ITEM } );
   if ( !ev )
-    DestroyItem( item );
     return ev;
   endif
   if ( ev["serial"] != item.serial )
-    DestroyItem( item );
     return ret_error( "wrong item visible" );
   endif
   char.client.visual_range=0; // back to default
   var ev := waitForClient( 0, { EVT_REMOVED_OBJ } );
   if ( !ev )
-    DestroyItem( item );
     return ev;
   endif
   if ( ev["serial"] != item.serial )
-    DestroyItem( item );
     return ret_error( "wrong item got deleted" );
   endif
   return 1;
