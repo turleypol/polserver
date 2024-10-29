@@ -37,6 +37,7 @@
 #include "../mobile/attribute.h"
 #include "../multi/boat.h"
 #include "../multi/multidef.h"
+#include "../network/client.h"
 #include "../npctmpl.h"
 #include "../objecthash.h"
 #include "../party.h"
