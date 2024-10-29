@@ -205,7 +205,7 @@ exported function update_range_change( resmngr )
   char.client.visual_range := 0; // back to default
   i := 10;
   while ( --i > 0 )
-    ev := waitForClient( 0, { EVT_REMOVED_OBJ } );
+    var ev := waitForClient( 0, { EVT_REMOVED_OBJ } );
     if ( !ev )
       return ev;
     endif
