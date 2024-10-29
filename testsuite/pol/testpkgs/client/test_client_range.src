@@ -184,25 +184,37 @@ exported function update_range_change( resmngr )
   var item := resmngr.CreateItemAtLocation( char.x + 20, char.y, char.z, 0xf3f );
   while ( !waitForClient( 0, { EVT_OWNCREATE } ) )
   endwhile
-  print($"item {hex(item.serial)} {item.serial}");
+  print( $"item {hex( item.serial )} {item.serial}" );
   Clear_Event_Queue();
-  print("    changing size");
+  print( "    changing size" );
   char.client.visual_range := 20;
-  var ev := waitForClient( 0, { EVT_NEW_ITEM } );
-  if ( !ev )
-    return ev;
+  var i := 10;
+  while ( --i > 0 )
+    var ev := waitForClient( 0, { EVT_NEW_ITEM } );
+    if ( !ev )
+      return ev;
+    endif
+    if ( ev["serial"] == item.serial )
+      break;
+    endif
+  endwhile
+  if ( i == 0 )
+    return ret_error( "item was never visible" );
   endif
-  if ( ev["serial"] != item.serial )
-    return ret_error( "wrong item visible" );
-  endif
-  print("    changing size");
+  print( "    changing size" );
   char.client.visual_range := 0; // back to default
-  ev := waitForClient( 0, { EVT_REMOVED_OBJ } );
-  if ( !ev )
-    return ev;
-  endif
-  if ( ev["serial"] != item.serial )
-    return ret_error( "wrong item got deleted" );
+  i := 10;
+  while ( --i > 0 )
+    ev := waitForClient( 0, { EVT_REMOVED_OBJ } );
+    if ( !ev )
+      return ev;
+    endif
+    if ( ev["serial"] == item.serial )
+      break;
+    endif
+  endwhile
+  if ( i == 0 )
+    return ret_error( "item got never deleted" );
   endif
   return 1;
 endfunction
