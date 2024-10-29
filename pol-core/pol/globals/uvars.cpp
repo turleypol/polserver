@@ -60,6 +60,7 @@
 #include "regions/musicrgn.h"
 #include "regions/resource.h"
 #include "script_internals.h"
+#include "settings.h"
 #include "ucfg.h"
 
 #ifdef _MSC_VER
@@ -213,6 +214,17 @@ void GameState::update_range_from_client( u16 range )
   if ( range > max_update_range_client )
   {
     max_update_range_client = range;
+    max_update_range = max_update_range_multi + max_update_range_client;
+  }
+  else if ( range < max_update_range_client )
+  {
+    u16 newrange = settingsManager.ssopt.default_visual_range;
+    for ( auto* client : networkManager.clients )
+    {
+      if ( client->update_range() > newrange )
+        newrange = client->update_range();
+    }
+    max_update_range_client = newrange;
     max_update_range = max_update_range_multi + max_update_range_client;
   }
 }
