@@ -4398,7 +4398,7 @@ void Character::update_objects_on_range_change( u8 newrange )
         if ( !was_inrange && is_inrange )
           Core::send_owncreate( client, zonechr );
         else if ( was_inrange && !is_inrange )
-          Core::send_remove_character( client, zonechar, msgremove );
+          Core::send_remove_character( client, zonechr, msgremove );
       } );
 
   Core::WorldIterator<Core::ItemFilter>::InRange(
