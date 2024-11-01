@@ -716,6 +716,9 @@ void Client::set_update_range_by_client( u8 range )
   // only allow a change if allowed and not modified by script
   if ( Core::settingsManager.ssopt.allow_visual_range_modification )
   {
+    // limit range to defined min/max
+    range = std::clamp( range, Core::settingsManager.ssopt.min_visual_range,
+                        Core::settingsManager.ssopt.max_visual_range );
     if ( !gd->script_defined_update_range )
       set_update_range( range );
     gd->original_client_update_range = range;
@@ -741,15 +744,13 @@ void Client::set_update_range_by_script( u8 range )
   {
     gd->script_defined_update_range = true;
   }
+  // no limit check here, script is allowed to use different values
   set_update_range( range );
 }
 
 void Client::set_update_range( u8 range )
 {
   auto old_range = update_range();
-  // limit range to defined min/max
-  range = std::clamp( range, Core::settingsManager.ssopt.min_visual_range,
-                      Core::settingsManager.ssopt.max_visual_range );
   // delete/send all objects, but not if its the first pkt
   if ( old_range != range && gd->original_client_update_range != 0 )
     chr->update_objects_on_range_change( range );

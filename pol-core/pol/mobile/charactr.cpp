@@ -4389,7 +4389,7 @@ void Character::update_objects_on_range_change( u8 newrange )
       this, std::max( newrange, los_size() ),
       [&]( Mobile::Character* zonechr )
       {
-        if ( this == zonechar || !is_visible_to_me( zonechr, false /*rangecheck*/ ) )
+        if ( this == zonechr || !is_visible_to_me( zonechr, false /*rangecheck*/ ) )
           return;
         bool was_inrange = in_range( zonechr, los_size() + zonechr->visible_size() );
         bool is_inrange = in_range( zonechr, newrange + zonechr->visible_size() );
@@ -4402,7 +4402,7 @@ void Character::update_objects_on_range_change( u8 newrange )
       } );
 
   Core::WorldIterator<Core::ItemFilter>::InRange(
-      this, Core::gamestate.max_update_range_multi + std::max( newrange, los_size() ),
+      this, Core::gamestate.max_update_range_multi_only() + std::max( newrange, los_size() ),
       [&]( Items::Item* zoneitem )
       {
         bool was_inrange = in_range( zoneitem, los_size() + zoneitem->visible_size() );
@@ -4416,7 +4416,7 @@ void Character::update_objects_on_range_change( u8 newrange )
       } );
 
   Core::WorldIterator<Core::MultiFilter>::InRange(
-      this, Core::gamestate.max_update_range_multi + std::max( newrange, los_size() ),
+      this, Core::gamestate.max_update_range_multi_only() + std::max( newrange, los_size() ),
       [&]( Multi::UMulti* zonemulti )
       {
         bool was_inrange = in_range( zonemulti, los_size() + zonemulti->visible_size() );
