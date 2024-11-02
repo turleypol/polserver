@@ -32,10 +32,10 @@
 #include "../plib/systemstate.h"
 #include "../plib/uoinstallfinder.h"
 // TODO: get rid of the dependencies and move to plib
+#include "../plib/objtype.h"
 #include "globals/settings.h"
 #include "globals/state.h"  // todo polsig dependency
 #include "globals/uvars.h"
-#include "objtype.h"
 #include "proplist.h"  // todo like uvars
 
 namespace Pol

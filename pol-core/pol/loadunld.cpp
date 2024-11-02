@@ -28,7 +28,7 @@
 #include "landtile.h"
 #include "mobile/attribute.h"
 #include "multi/multidef.h"
-#include "objtype.h"
+#include "plib/objtype.h"
 #include "polcfg.h"
 
 namespace Pol
