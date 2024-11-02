@@ -89,9 +89,6 @@ struct PolConfig
   bool retain_cleartext_passwords;
   bool discard_old_events;
 
-  int shutdown_save_type;  // either SAVE_FULL or SAVE_INCREMENTAL
-  int assertion_shutdown_save_type;
-
   std::string minidump_type;
 
   int account_save;

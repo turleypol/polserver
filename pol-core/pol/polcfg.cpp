@@ -32,12 +32,9 @@
 #include "../plib/systemstate.h"
 #include "../plib/uoinstallfinder.h"
 // TODO: get rid of the dependencies and move to plib
-#include "core.h"  // todo save_full does not belong here
 #include "globals/settings.h"
 #include "globals/state.h"  // todo polsig dependency
-#include "globals/uvars.h"  // todo split write task
 #include "objtype.h"
-#include "polsig.h"    // thread_checkpoint
 #include "proplist.h"  // todo like uvars
 
 namespace Pol
@@ -133,21 +130,6 @@ void PolConfig::read( bool initial_load )
   passert_dump_stack = elem.remove_bool( "DumpStackOnAssertionFailure", false );
   passert_failure_action =
       Clib::strlowerASCII( elem.remove_string( "AssertionFailureAction", "abort" ) );
-  std::string tmp = Clib::strlowerASCII( elem.remove_string( "ShutdownSaveType", "full" ) );
-  if ( tmp == "full" )
-  {
-    shutdown_save_type = SAVE_FULL;
-  }
-  else if ( tmp == "incremental" )
-  {
-    shutdown_save_type = SAVE_INCREMENTAL;
-  }
-  else
-  {
-    shutdown_save_type = SAVE_FULL;
-    POLLOG_ERRORLN( "Unknown pol.cfg ShutdownSaveType value: {} (expected full or incremental)",
-                    tmp );
-  }
 
   display_unknown_packets = elem.remove_bool( "DisplayUnknownPackets", false );
   exp_los_checks_map = elem.remove_bool( "ExpLosChecksMap", true );
@@ -223,48 +205,29 @@ void apply_polcfg( bool initial )
     Clib::passert_shutdown = false;
     Clib::passert_nosave = false;
     Clib::passert_abort = true;
-    config.assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
   }
   else if ( config.passert_failure_action == "continue" )
   {
     Clib::passert_shutdown = false;
     Clib::passert_nosave = false;
     Clib::passert_abort = false;
-    config.assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
   }
   else if ( config.passert_failure_action == "shutdown" )
   {
     Clib::passert_shutdown = true;
     Clib::passert_nosave = false;
     Clib::passert_abort = false;
-    config.assertion_shutdown_save_type = SAVE_FULL;
   }
   else if ( config.passert_failure_action == "shutdown-nosave" )
   {
     Clib::passert_shutdown = true;
     Clib::passert_nosave = true;
     Clib::passert_abort = false;
-    config.assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
-  }
-  else if ( config.passert_failure_action == "shutdown-save-full" )
-  {
-    Clib::passert_shutdown = true;
-    Clib::passert_nosave = false;
-    Clib::passert_abort = false;
-    config.assertion_shutdown_save_type = SAVE_FULL;
-  }
-  else if ( config.passert_failure_action == "shutdown-save-incremental" )
-  {
-    Clib::passert_shutdown = true;
-    Clib::passert_nosave = false;
-    Clib::passert_abort = false;
-    config.assertion_shutdown_save_type = SAVE_INCREMENTAL;
   }
   else
   {
     Clib::passert_shutdown = false;
     Clib::passert_abort = true;
-    config.assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
     POLLOG_ERRORLN(
         "Unknown pol.cfg AssertionFailureAction value: {} (expected abort, continue, shutdown, or "
         "shutdown-nosave)",

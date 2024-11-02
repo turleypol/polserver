@@ -1205,18 +1205,8 @@ int xmain_inner( bool testing )
     long long elapsed_ms;
     int savetype;
 
-    if ( Clib::passert_shutdown_due_to_assertion )
-      savetype = Plib::systemstate.config.assertion_shutdown_save_type;
-    else
-      savetype = Plib::systemstate.config.shutdown_save_type;
-
-    // TODO: full save if incremental_saves_disabled ?
-    // otherwise could have really, really bad timewarps
     Tools::Timer<> timer;
-    if ( savetype == Core::SAVE_FULL )
-      Core::write_data( dirty, clean, elapsed_ms );
-    else
-      Core::save_incremental( dirty, clean, elapsed_ms );
+    Core::write_data( dirty, clean, elapsed_ms );
     Core::SaveContext::ready();
     POLLOG_INFOLN( "Data save completed in {} ms. {} total.", elapsed_ms, timer.ellapsed() );
   }
