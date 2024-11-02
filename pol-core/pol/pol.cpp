@@ -1203,7 +1203,6 @@ int xmain_inner( bool testing )
     Core::PolLock lck;
     unsigned int dirty, clean;
     long long elapsed_ms;
-    int savetype;
 
     Tools::Timer<> timer;
     Core::write_data( dirty, clean, elapsed_ms );
