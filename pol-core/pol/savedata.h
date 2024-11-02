@@ -59,9 +59,6 @@ public:
   static void ready();
 };
 
-int save_incremental( unsigned int& dirty_writes, unsigned int& clean_objects,
-                      long long& elapsed_ms );
-
 void write_system_data( Clib::StreamWriter& sw );
 void write_global_properties( Clib::StreamWriter& sw );
 void write_shadow_realms( Clib::StreamWriter& sw );
