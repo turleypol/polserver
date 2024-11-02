@@ -19,6 +19,7 @@
 #include "checkpnt.h"
 #include "cmbtcfg.h"
 #include "console.h"
+#include "core.h"
 #include "extobj.h"
 #include "globals/multidefs.h"
 #include "globals/settings.h"
@@ -29,7 +30,6 @@
 #include "mobile/attribute.h"
 #include "multi/multidef.h"
 #include "plib/objtype.h"
-#include "polcfg.h"
 
 namespace Pol
 {

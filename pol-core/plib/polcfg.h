@@ -8,9 +8,7 @@
  */
 
 
-#ifndef POLCFG_H
-#define POLCFG_H
-
+#pragma once
 #include <atomic>
 #include <string>
 #include <vector>
@@ -19,9 +17,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #endif
-namespace Pol
-{
-namespace Core
+namespace Pol::Plib
 {
 struct PolConfig
 {
@@ -106,10 +102,6 @@ struct PolConfig
   bool show_warning_boat_move;
 
   /**
-   * @brief Returns true if program aborts are reported
-   */
-  bool report_program_aborts();
-  /**
    * crash reporting system with some early default values
    */
   bool report_active;
@@ -124,7 +116,4 @@ struct PolConfig
   void read( bool initial_load );
   static struct stat pol_cfg_stat;
 };
-void apply_polcfg( bool initial );
-}  // namespace Core
-}  // namespace Pol
-#endif
+}  // namespace Pol::Plib

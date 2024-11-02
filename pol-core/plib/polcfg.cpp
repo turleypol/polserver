@@ -20,27 +20,15 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#include "../bscript/config.h"
-#include "../clib/Debugging/ExceptionParser.h"
 #include "../clib/cfgelem.h"
 #include "../clib/cfgfile.h"
 #include "../clib/fileutil.h"
 #include "../clib/logfacility.h"
-#include "../clib/mdump.h"
-#include "../clib/passert.h"
 #include "../clib/strutil.h"
-#include "../plib/systemstate.h"
-#include "../plib/uoinstallfinder.h"
-// TODO: get rid of the dependencies and move to plib
-#include "../plib/objtype.h"
-#include "globals/settings.h"
-#include "globals/state.h"  // todo polsig dependency
-#include "globals/uvars.h"
-#include "proplist.h"  // todo like uvars
+#include "objtype.h"
+#include "uoinstallfinder.h"
 
-namespace Pol
-{
-namespace Core
+namespace Pol::Plib
 {
 struct stat PolConfig::pol_cfg_stat;
 
@@ -187,77 +175,4 @@ void PolConfig::read( bool initial_load )
   enable_colored_output = elem.remove_bool( "EnableColoredOutput", true );
 }
 
-void apply_polcfg( bool initial )
-{
-  auto& config = Plib::systemstate.config;
-  if ( initial )
-  {
-    if ( config.account_save > 0 )
-    {
-      gamestate.write_account_task->set_secs( config.account_save );
-      gamestate.write_account_task->start();
-    }
-  }
-  Bscript::escript_config.max_call_depth = config.max_call_depth;
-  Clib::passert_dump_stack = config.passert_dump_stack;
-
-  if ( config.passert_failure_action == "abort" )
-  {
-    Clib::passert_shutdown = false;
-    Clib::passert_nosave = false;
-    Clib::passert_abort = true;
-  }
-  else if ( config.passert_failure_action == "continue" )
-  {
-    Clib::passert_shutdown = false;
-    Clib::passert_nosave = false;
-    Clib::passert_abort = false;
-  }
-  else if ( config.passert_failure_action == "shutdown" )
-  {
-    Clib::passert_shutdown = true;
-    Clib::passert_nosave = false;
-    Clib::passert_abort = false;
-  }
-  else if ( config.passert_failure_action == "shutdown-nosave" )
-  {
-    Clib::passert_shutdown = true;
-    Clib::passert_nosave = true;
-    Clib::passert_abort = false;
-  }
-  else
-  {
-    Clib::passert_shutdown = false;
-    Clib::passert_abort = true;
-    POLLOG_ERRORLN(
-        "Unknown pol.cfg AssertionFailureAction value: {} (expected abort, continue, shutdown, or "
-        "shutdown-nosave)",
-        config.passert_failure_action );
-  }
-
-  Clib::LogfileTimestampEveryLine = config.logfile_timestamp_everyline;
-  if ( !config.enable_debug_log )
-    DISABLE_DEBUGLOG();
-
-#ifdef _WIN32
-  Clib::MiniDumper::SetMiniDumpType( config.minidump_type );
-#endif
-
-  Clib::ExceptionParser::configureProgramAbortReportingSystem(
-      config.report_active, config.report_server, config.report_url, config.report_admin_email );
-
-
-  /// The profiler needs to gather some data before the pol.cfg file gets loaded, so when it
-  /// turns out to be disabled, or when it was enabled before, but is being disabled now,
-  /// run "garbage collection" to free the allocated resources
-  if ( !config.profile_cprops )
-    Core::CPropProfiler::instance().clear();
-}
-
-
-bool PolConfig::report_program_aborts()
-{
-  return Clib::ExceptionParser::programAbortReporting();
-}
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Plib

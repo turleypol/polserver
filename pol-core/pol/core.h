@@ -37,6 +37,8 @@ class Realm;
 }
 namespace Core
 {
+void apply_polcfg( bool initial );
+
 class ItemsVector;
 enum Priority
 {

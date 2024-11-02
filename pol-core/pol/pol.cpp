@@ -116,7 +116,6 @@
 #include "network/pktin.h"
 #include "network/sockio.h"
 #include "party.h"
-#include "polcfg.h"
 #include "polclock.h"
 #include "poldbg.h"
 #include "polsem.h"
