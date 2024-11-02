@@ -252,10 +252,10 @@ void PolConfig::read( bool initial_load )
 
   debug_level = elem.remove_ushort( "DebugLevel", 0 );
 
-  auto allowed_environmentvariables_access =
+  auto allowed_environmentvariables_access_str =
       elem.remove_string( "AllowedEnvironmentVariablesAccess", "" );
   allowed_environmentvariables_access.clear();
-  std::stringstream ss( allowed_environmentvariables_access );
+  std::stringstream ss( allowed_environmentvariables_access_str );
   while ( ss.good() )
   {
     std::string substr;
