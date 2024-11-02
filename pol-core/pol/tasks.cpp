@@ -16,6 +16,7 @@
 #include "../bscript/berror.h"
 #include "../bscript/escriptv.h"
 #include "../clib/logfacility.h"
+#include "../plib/polcfg.h"
 #include "../plib/systemstate.h"
 #include "cmbtcfg.h"
 #include "core.h"
@@ -315,11 +316,11 @@ void reload_pol_cfg()
     struct stat newst;
     stat( "pol.cfg", &newst );
 
-    if ( ( newst.st_mtime != PolConfig::pol_cfg_stat.st_mtime ) &&
+    if ( ( newst.st_mtime != Plib::PolConfig::pol_cfg_stat.st_mtime ) &&
          ( newst.st_mtime < time( nullptr ) - 10 ) )
     {
       POLLOG_INFO( "Reloading pol.cfg..." );
-      memcpy( &PolConfig::pol_cfg_stat, &newst, sizeof PolConfig::pol_cfg_stat );
+      memcpy( &Plib::PolConfig::pol_cfg_stat, &newst, sizeof Plib::PolConfig::pol_cfg_stat );
 
       Plib::systemstate.config.read( false );
       apply_polcfg( false );
