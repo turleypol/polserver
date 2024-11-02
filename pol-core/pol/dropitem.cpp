@@ -53,7 +53,6 @@
 #include "network/pktboth.h"
 #include "network/pktdef.h"
 #include "network/pktin.h"
-#include "plib/uobject.h"
 #include "realms/realm.h"
 #include "reftypes.h"
 #include "statmsg.h"
@@ -61,6 +60,7 @@
 #include "syshook.h"
 #include "systems/suspiciousacts.h"
 #include "ufunc.h"
+#include "uobject.h"
 #include "uoscrobj.h"
 #include "uworld.h"
 
