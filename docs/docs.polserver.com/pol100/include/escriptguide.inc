@@ -1,5 +1,8 @@
-<h1>Racalac's eScript Reference and Guide (POL 100.1.0)<br>
-<font size="2">(Last Updated: March 14, 2021)</font></h1>
+<h1>
+  Racalac's eScript Reference and Guide (POL 100.2.0)
+  <div style="font-size: 0.82em">(Last Updated: August 5, 2024)</div>
+</h1>
+<br/>
 
 <!-- TODO:
 	- talk about ecompile.cfg and recursive compiling, mention POL ignores
@@ -75,18 +78,32 @@ apologies if I explain some things in annoyingly simple terms.</p>
 
 <p><b><a href="#chap11">Chapter 11: Advanced Data Types and Functions</a></b>
 
-</p><ul>
-  <li><a href="#chap11a">Global Properties</a>
-  </li><li><a href="#chap11b">Arrays</a>
-  </li><li><a href="#chap11c">Structs</a>
-  </li><li><a href="#chap11d">Dictionaries</a>
-  </li><li><a href="#chap11e">Function Calls by Reference</a>
-  </li><li><a href="#chap11f">Interpolated Strings</a></li></ul>
-<p></p>
+</p>
+<ul>
+  <li><a href="#chap11a">Global Properties</a></li>
+  <li><a href="#chap11b">Arrays</a></li>
+  <li><a href="#chap11c">Structs</a></li>
+  <li><a href="#chap11d">Dictionaries</a></li>
+  <li><a href="#chap11e">Function Calls by Reference</a></li>
+  <li><a href="#chap11f">Interpolated Strings</a></li></li>
+  <li><a href="#chap11g">Function Objects</a></li></li>
+  <li><a href="#chap11h">Function Expressions</a></li></li>
+  <li><a href="#chap11i">Spread Operator</a></li>
+</ul>
+
+<p><b><a href="#chap12">Chapter 12: Classes</a></b></p>
+<ul>
+  <li><a href="#chap12a">Advanced Techniques</a>
+</ul>
+
 
 <p><b><a href="#app2">Appendix A: Gump Tag Descriptions</a></b></p>
 
 <p><b><a href="#appB">Appendix B: Operator Precedence</a></b></p>
+
+<p><b><a href="#appC">Appendix C: Functional Programming with Arrays</a></b></p>
+
+<p><b><a href="#appD">Appendix D: Variadic User Functions</a></b></p>
 
 <p><b><a href="#appX">Appendix X: Revision History</a></b></p>
 
@@ -694,7 +711,7 @@ if (var1 != var2) //TRUE
 <p>The logical operators in eScript are (evaluated left-to-right)</p>
 
 <p>== equal-to<br>!= not-equal-to<br>&gt; greater-than<br>&lt; less-than
-<br>&lt;= less-or-equal-to <br>&gt;= greater-or-equal-to</p>
+<br>&lt;= less-or-equal-to <br>&gt;= greater-or-equal-to<br>is</p>
 
 <p>Also, you can use the Boolean operators:</p>
 
@@ -766,6 +783,7 @@ if ( !valid ) //same as "if valid is non-zero, then false"
 endif</pre></div>
 <br/>
 <p><b><a name="chap3b">Binary Operators</a></b></p>
+<br/>
 <p><b>Elvis operator:</b></p>
 <p>Short-circuit binary operator EXPR_LHS ?: EXPR_RHS<br/>
 This operator evaluates the left-hand-side operand and keeps its value if it is a true value.<br/>
@@ -794,6 +812,11 @@ to this:
                                              targetsquare.objtype ?: locinfo.landtile,<br/>
                                              who.realm);</pre></div></p>
 
+<p><b><code>is</code> operator:</b></p>
+
+The <code>is</code> operator can be used to check if the left operand (typically
+a class instance) is an instance of the right operand (typically a function
+reference). See <a href="#chap12">Chapter 12</a> for more information.<br/>
 
 <p><b><a name="chap3b2">Conditional (Ternary) Operator</a></b></p>
 <br />
@@ -2499,9 +2522,200 @@ specify <i>two</i> of the same brace:</p>
   Print($"{{ hello }}"); // will print "{ hello }"
 </pre></div>
 
-<br />
+<br/>
 <br/>
 
+<p><b><a name="chap11g">Function Objects</a></b></p>
+<br />
+<p>A user function can be utilized as a value (eg. used as an argument to a
+function) by referencing the function with a <code>@</code> prefix. The
+referenced function can be executed via the 'call' method --
+<code>value.call( arguments... )</code>.</p>
+
+<p>Starting with POL 100.2.0, a function object can be executed via the regular
+function call syntax -- <code>value( arguments... )</code>.</p>
+
+<div class="doc-guide-pre"><pre>
+use os;
+use uo;
+
+// A function that logs to the console
+function ConsoleLogger( message )
+  Print( message );
+endfunction
+
+// A function that logs to all players via broadcast
+function BroadcastLogger( message )
+  Broadcast( message );
+endfunction
+
+program main( who )
+ // Use a logger based on some runtime configuration
+ var logger := ( GetEnvironmentVariable( "POL_ENV" ) == "development" ) ?
+    @BroadcastLogger :
+    @ConsoleLogger;
+
+  logger.call( "Activity started". );
+  // Or in POL 100.2+: logger( "Activity started." );
+
+  // ...
+endprogram
+</pre></div>
+
+<br/>
+<br/>
+
+<p><b><a name="chap11h">Function Expressions</a></b></p>
+<br />
+<p>Added in: POL 100.2.0</p>
+<br />
+<p>A function expression is a convenient way of defining an anonymous function
+object (a closure) right at the location where it's invoked or created. A
+function expression is created via the syntax <code>@(param1, param2, ...,
+paramN) { ... }</code>. This will create a new Function Object, automatically
+capturing any variables within the function body that are defined in the current
+scope.</p>
+
+<div class="doc-guide-pre"><pre>
+
+program test_filter( who )
+  var items := EnumerateItemsInContainer( who.backpack );
+
+  var colored_items := items.filter( @( item ) {
+    var has_color := item.color > 0;
+
+    // Capture the 'who' variable
+    SendSysMessage( who, $"Is {item.desc} colored? {has_color}" );
+
+    return has_color;
+  });
+
+  SendSysMessage(who, $"You have {colored_items.size()} colored items.");
+endprogram
+</pre></div>
+
+Variables are captured <i>by reference</i>, meaning that any modification to the
+variable's value will reflect in any other locations that access the variable.
+This is useful for creating closures that can be used to encapsulate stateful
+behavior.
+
+<br/>
+<br/>
+<!-- ====================================================================== -->
+<p><b><a name="chap11i">Spread Operator</a></b></p>
+
+<br/>
+<p>Added in: POL 100.2.0</p>
+<br/>
+<p>
+  The spread operator is a convenient way to expand an array into individual
+  elements. This is useful when you want to pass an array as arguments to a
+  function. It can also be used in the array initializer when creating a new
+  array. The spread operator is denoted by the
+  <code>...</code> syntax.
+</p>
+
+<div class="doc-guide-pre"><pre>
+function Sum( numbers... )
+  var total := 0;
+  foreach number in numbers
+    total += number;
+  endforeach
+
+  return total;
+endfunction
+
+program main( who )
+  var numbers1 := array{ 1, 2, 3 };
+  var numbers2 := array{ 4, 5, 6 };
+  var total := Sum( numbers1..., numbers2... );
+  Print( total ); // Output: 21
+endprogram
+</pre></div>
+
+<p>
+  The spread operator can also be used in the array initializer to concatenate
+  multiple arrays into a single array.
+</p>
+
+<div class="doc-guide-pre"><pre>
+program main( who )
+  var numbers1 := array{ 1, 2, 3 };
+  var numbers2 := array{ 4, 5, 6 };
+
+  var numbers := array{ numbers1..., numbers2... };
+  Print( numbers ); // Output: { 1, 2, 3, 4, 5, 6 }
+endprogram
+</pre></div>
+
+<p>
+For function calls, the spread operator can only be used on variadic functions,
+ie. those that accept a variable number of arguments. Using the spread operator
+with non-variadic functions will result in a compile-time error. To bypass this,
+you can use the "expression-as-callee" syntax, calling the the function through
+a function object via <code>@</code>. If the correct number of arguments are not
+passed after spreading arguments, an error will be returned instead of executing
+the function.
+</p>
+
+</p>
+
+<div class="doc-guide-pre"><pre>
+function Sum( a, b, c )
+  return a + b + c;
+endfunction
+
+program main( who )
+  var numbers, total, sum;
+
+  numbers := array{ 1, 2, 3 };
+
+  // Compile-time error! Spread operator can only be used in variadic functions
+  // total := Sum( numbers... );
+
+  // Okay! Use the expression-as-callee syntax
+  total := (@Sum)( numbers... );  // Or: @Sum.call( numbers... )
+  Print( total ); // Output: 6
+
+  // Calling @Sum with the wrong number of arguments will result in an error:
+  numbers := { 1, 2 };
+  total := (@Sum)( numbers... );
+  Print( total ); // Output: Invalid argument count: expected 3, got 2
+
+endprogram
+
+</pre></div>
+
+<p>
+  Using the spread operator on dictionaries and structs result in
+  expanding the values of that object:
+</p>
+
+<div class="doc-guide-pre"><pre>
+function Sum( numbers... )
+  var total := 0;
+  foreach number in numbers
+    total += number;
+  endforeach
+
+  return total;
+endfunction
+
+program main( who )
+  // Spread a dictionary's values into a function
+  var dict := dictionary{ "a" -> 1, "b" -> 2, "c" -> 3 };
+  var total := Sum( dict... );
+  Print( total ); // Output: 6
+
+  // Spread a struct's values into an array.
+  // `lastcoords` is a struct{ x := 123, y := 456, z := 789 }
+  var coords := array{ who.lastcoords... };
+  Print( ", ".join( coords ) ); // Output: 123, 456, 789
+endprogram
+</pre></div>
+
+<br/>
+<br/>
 <!-- ====================================================================== -->
 
 </p><h3><a name="app2">Appendix A: GUMP Tag Descriptions</a></h3>
@@ -2802,6 +3016,620 @@ specify <i>two</i> of the same brace:</p>
 <br/>
 
 <!-- ====================================================================== -->
+<h3><a name="appC">Functional Programming with Arrays</a></h3>
+<br/>
+<p>Added in: POL 100.2.0</p>
+<br/>
+<p>
+  Arrays now offer several methods that accept a user function as an argument.
+  This allows better use of functional programming within Escript. Functional
+  programming is a way of writing code where you use functions to work with data.
+  This makes your code cleaner and easier to understand. One of the places where
+  this is really helpful is when working with arrays. Escript has some built-in
+  methods that make it easy to use functional programming with arrays. These
+  methods include <code>filter</code>, <code>map</code>, <code>find</code>,
+  <code>findIndex</code>, and <code>reduce</code>. Let's take a look at what
+  each of these does and how you can use them.
+</p>
+<br/>
+
+<h4><code>filter</code></h4>
+<br/>
+<p>
+  The filter method lets you create a new array with only the elements that
+  pass a test you provide.
+</p>
+
+<div class="doc-guide-pre"><pre>
+var hidden_players := EnumerateOnlinePlayers()
+  .filter( @( player ) {
+    return player.hidden;
+  });
+</pre></div>
+
+<p>
+  In this example, <code>filter</code> checks each player to see if it is hidden
+  and creates a new array with only the hidden players.
+</p>
+<br/>
+
+<h4><code>map</code></h4>
+<br/>
+<p>
+  The <code>map</code> method creates a new array by applying a function to each
+  element of the original array.
+</p>
+
+<div class="doc-guide-pre"><pre>
+var serials := ListItemsNearLocation( x, y, z, range )
+  .map( @( item ) {
+    return item.serial
+  });
+</pre></div>
+
+<p>
+  Here, <code>map</code> takes each item near location <code>(x, y, z)</code>
+  and gets its serial, then puts the results in a new array.
+</p>
+<br/>
+
+<h4><code>find</code></h4>
+<br/>
+<p>
+  The <code>find</code> method returns the first element in the array that
+  passes a test you provide. If no elements pass the test, it returns
+  <code>&lt;uninitialized object&gt;</code>.
+</p>
+
+<div class="doc-guide-pre"><pre>
+var locked_item := EnumerateItemsInContainer( container )
+  .find( @( item ) {
+    return item.locked;
+  });
+</pre></div>
+
+<p>This example finds the locked item in the container.</p>
+<br/>
+
+<h4><code>findIndex</code></h4>
+<br/>
+<p>
+  The <code>findIndex</code> method works like find, but instead of returning
+  the element, it returns the index (position) of the first element that passes
+  the test. If no elements pass the test, it returns <code>0</code>.
+</p>
+
+<div class="doc-guide-pre"><pre>
+// Get a list of quests
+var quests := array{
+  struct{ completed := true, name := "Quest 1" },
+  struct{ completed := false, name := "Quest 2" },
+  // ...
+};
+
+var incomplete_quest_index := quests
+  .findIndex( @( quest ) {
+    return !quest.completed;
+  });
+</pre></div>
+
+<p>
+  In this example, <code>findIndex</code> gives the position of the first
+  incomplete quest in the array.
+</p>
+<br/>
+
+<h4><code>reduce</code></h4>
+<br/>
+<p>
+  The <code>reduce</code> method combines all elements in the array into a
+  single value by applying a function you provide. This is useful for tasks like
+  summing up values. It behaves differently depending on if an optional initial
+  value is provided.
+</p>
+
+<div class="doc-guide-pre"><pre>
+var total_arrows = EnumerateItemsInContainer( who.backpack )
+  .reduce( @( sum, item ) {
+    return item.objtype == 0x0f3f ? ( sum + item.amount ) : sum;
+  }, 0);
+</pre></div>
+
+<p>
+  Here, reduce calculates the total number of arrows by adding the item amount,
+  only if the item's object type is <code>0x0f3f</code> -- arrows. <code>0</code>
+  is passed as the initial value parameter to <code>.reduce()</code>, meaning that
+  the sum starts at <code>0</code> and <code>item</code> will be the first item in
+  the list of items inside the container. If the item is an arrow, we return
+  <code>sum</code> plus the item's amount. Otherwise, we return <code>sum</code>
+  as is.
+</p>
+
+<div class="doc-guide-pre"><pre>
+var total = array{ 1, 5, 12, 4 }
+  .reduce( @( sum, element ) {
+    return sum + element
+  });
+</pre></div>
+
+<p>
+  Here, reduce calculates the sum of the elements. Since no initial value is
+  provided, the first element in the array is used as the initial value for
+  <code>sum</code>. The second element is passed as <code>element</code>. The
+  function returns the sum of the two elements. This sum is then used as the
+  new <code>sum</code> for the next iteration, and so on.
+</p>
+<br/>
+
+<h4><b>Advanced Techniques</b></h4>
+<br/>
+<p>
+  Each of the functional array methods receive two additional arguments: the
+  index of the current element and the array itself. This allows you to write more
+  complex functions that depend on the position of the element in the array or the
+  array itself.
+</p>
+
+<div class="doc-guide-pre"><pre>
+var players_with_ranking := "".join(
+  EnumerateOnlinePlayers()
+    .map( @( player, index, arr ) {
+      return $"{index} / {arr.size()} -> {player.name}";
+    })
+);
+</pre></div>
+
+<p>
+  This example uses <code>map</code> to create a new array of strings, each
+  containing a player's name and their position in the array. Since the original
+  array is passed as a parameter (as <code>arr</code>), you do not need to call
+  <code>EnumerateOnlinePlayers()</code> again to find their position!
+</p>
+
+<br/>
+<br/>
+
+<!-- ====================================================================== -->
+<h3><a name="appD">Variadic User Functions</a></h3>
+<br/>
+<p>Added in: POL 100.2.0</p>
+<br/>
+<p>
+  User functions can accept any number of arguments by using the 'rest
+  parameter' syntax. This allows you to write functions that can take a variable
+  number of arguments, making your code more flexible and easier to use. To
+  create a variadic user function, you use the <code>...</code> syntax in the
+  function definition. The rest parameter is an array that contains all the
+  arguments passed to the function. Here's an example of a variadic user
+  function that calculates the sum of all its arguments:
+</p>
+
+<div class="doc-guide-pre"><pre>
+  function Sum( numbers... )
+    var total := 0;
+
+    foreach number in numbers
+      total += number;
+    endforeach
+
+    return total;
+  endfunction
+</pre></div>
+
+<p>You can call this function with any number of arguments:</p>
+
+<div class="doc-guide-pre"><pre>
+  var sum1 := Sum( 1, 2, 3 ); // sum1 = 6
+  var sum2 := Sum( 1, 2, 3, 4, 5 ); // sum2 = 15
+</pre></div>
+
+<p>
+  The rest parameter can be used with other parameters as well. The rest
+  parameter must be the last parameter in the function definition. When calling
+  a variadic user function with multiple parameters, each parameter prior to the
+  rest parameter <b>must</b> be provided. The rest parameter will then capture
+  any remaining arguments.
+</p>
+
+<div class="doc-guide-pre"><pre>
+  function SendMessageToPlayers( message, players... )
+    foreach player in players
+      SendSysMessage( player, $"[Server] {message}" );
+    endforeach
+  endfunction
+
+  SendMessageToPlayers( "Hello!", player1, player2, player3 );
+</pre></div>
+
+<br/>
+<br/>
+
+<!-- ====================================================================== -->
+
+<h3><a name="chap12">Chapter 12</a></h3>
+<br/>
+<p>Added in: POL 100.1.0</p>
+<br/>
+<p>Classes in EScript are a powerful feature that allows you to create custom
+data structures with encapsulated behaviors, following an object-oriented
+programming (OOP) paradigm. Similar to Python and other object-oriented
+languages, classes in EScript provide a way to bundle data (members) and
+functions (methods) that operate on that data into cohesive units called
+objects. This makes it easier to model real-world entities and complex systems
+by representing them as objects with properties and behaviors.</p>
+<br/>
+
+<p><b>Key Concepts</b></p>
+<br/>
+
+<ul>
+<li><strong>Class Definition</strong>: A class in EScript is defined using the
+<code>class</code> keyword followed by the class name. A class can include methods, which
+define the behaviors, and members, which store the state of an object.</li>
+<li><strong>Constructor Method</strong>: The constructor method in EScript is a
+special function that is called when a new object of the class is created. In
+EScript, the constructor has the same name as the class itself. This method is
+typically used to initialize the object's members.</li>
+<li><strong>Object Creation and Usage</strong>: To create an object in EScript,
+simply call the class like a function, passing any required arguments to the
+constructor. Once created, you can interact with the object's methods and
+members using dot notation, like other built-in objects.</li>
+<li><strong>Instance Methods</strong>: These are functions defined within a
+class that operate on the instance of the class. They are defined with the
+<code>function</code> keyword and take <code>this</code> as the first parameter,
+which refers to the current instance of the class.</li>
+<li><strong>Inheritance</strong>: EScript supports inheritance, allowing you to
+create new classes based on existing ones. This feature promotes code reuse and
+the creation of hierarchical relationships between classes. EScript also
+supports multiple inheritance, where a class can inherit from more than one base
+class. The <code>super</code> keyword is used to call the constructors of parent
+classes.</li>
+<li><strong>Scoped Global Variables</strong>: A class can have a global
+variables and user functions that do not interfere with others of the same name.
+This allows implementations, for example to use global variables without
+worrying about clashing names from other included files, or define a user
+function that has the same name as a module function.</li>
+<li><strong>Reference Type</strong>: A class in EScript is a reference type,
+meaning that when you assign an object to a variable, you are assigning a
+reference to the object, not the object itself. This means that changes made to
+the object's members will affect all references to that object. This is
+similar to other built-in reference types, like <code>ItemRef</code>: every
+script that has variables for the same <code>Item</code> object will access the
+same item.</li>
+</ul>
+<br/>
+
+<p><b>Example: Creating a Simple Class</b></p>
+
+<div class="doc-guide-pre"><pre>
+class Person()
+  function Person( this, name, age )
+    this.name := name;
+    this.age := age;
+  endfunction
+
+  function greeting( this )
+    return $"Hello, my name is {this.name} and I am {this.age} years old.";
+  endfunction
+
+  function rename( this, new_name )
+    this.name := new_name;
+    Print( $"Name changed to {this.name}" );
+  endfunction
+endclass
+
+var john := Person( "John", 30 );
+var greeting := john.greeting();
+
+Print( greeting ); // Output: Hello, my name is John and I am 30 years old.
+
+john.rename( "Johnny" ); // Output: Name changed to Johnny
+</pre></div>
+<br/>
+
+<p>The example above defines a class <code>Person</code> with a constructor that
+initializes the <code>name</code> and <code>age</code> attributes. It also
+includes two instance methods: <code>greeting</code> and <code>rename</code>. An
+object <code>john</code> is created from the <code>Person</code> class, and its
+methods are called to interact with the object's state.</p>
+<br/>
+
+<p>A class that does not define a constructor <strong>cannot</strong> be
+instantiated.</p>
+<br/>
+
+
+<p><b>Example: Scoped Variables and Functions</b></p>
+<br/>
+
+<p>Similar to scoping a module function call (eg. <code>basicio::Print</code>),
+a class' global variables and user functions are accessed with <code>::</code>.
+
+<div class="doc-guide-pre"><pre>
+  class Animal()
+  var animal_count := 0;
+
+  function Animal( this, type )
+    this.type := type;
+    this.id := ++animal_count;
+  endfunction
+
+  function Print( this )
+    basicio::Print( $"Animal {this.id} is a {this.type}" );
+  endfunction
+endclass
+
+var dog := Animal( "dog" );
+print( dog.id );  // Output: 1
+
+dog.Print(); // Output: Animal 1 is a dog
+Animal::Print( dog ); // Output: Animal 1 is a dog
+
+print( Animal::animal_count ); // Output: 1
+
+var cat := Animal( "cat" );
+cat.Print(); // Output: Animal 2 is a cat
+
+// print( animal_count ); // Compiler error!
+</pre></div>
+<br/>
+
+<p><b>Example: Inheritance in EScript</b></p>
+<br/>
+
+<p>EScript supports inheritance, allowing you to create new classes based on
+existing ones. Inheritance is a way to create new things by building on what's
+already there.</p>
+
+<div class="doc-guide-pre"><pre>
+class Person()
+  function Person( this, name )
+    this.name := name;
+  endfunction
+
+  function Say( what )
+    Print( what );
+  endfunction
+endclass
+
+class Wizard( Person )
+  function Wizard( this, name )
+    super( name );
+  endfunction
+
+  function Attack( this )
+    Say( $"{this.name} casts a spell!" );
+  endfunction
+endclass
+
+class Fighter( Person )
+  function Fighter( this, name )
+    super( name );
+  endfunction
+
+  function Attack( this )
+    Say( $"{this.name} swings a sword!" );
+  endfunction
+endclass
+
+var gandalf := Wizard( "Gandalf" );
+var aragorn := Fighter( "Aragorn" );
+
+gandalf.Attack(); // Output: Gandalf casts a spell!
+aragorn.Attack(); // Output: Aragorn swings a sword!
+</pre></div>
+
+<p><b>NOTE:</b> It is important to call <code>super()</code> within your constructor to
+ensure the base class constructor(s) are called to set the attributes for the
+instance!</p>
+<br/>
+
+
+
+<p><b>Example: Multiple Inheritance</b></p>
+
+<p>A class can have multiple base classes in which it inherits from. When using <code>super()</code>,
+the constructors of the base classes are called in the order they are listed in the class definition. Likewise, the arguments passed to <code>super()</code>
+are passed to the base class constructors in the same order.</p>
+</p>
+<br/>
+
+<div class="doc-guide-pre"><pre>
+class Colorable()
+  function Colorable( this, color )
+    this.color := color;
+  endfunction
+endclass
+
+class Drawable()
+  function Drawable( this, x, y )
+    this.x := x;
+    this.y := y;
+  endfunction
+endclass
+
+class Shape( Colorable, Drawable )
+  function Shape( this, color, x, y )
+    super( color, x, y );
+  endfunction
+endclass
+
+var shape := Shape( "red", 1, 2 );
+print( $"{shape.color} {shape.x} {shape.y}" ); // Output: red 1 2
+</pre></div>
+
+<p><b><a name="chap12a">Advanced Techniques</a></b></p>
+<br/>
+
+<p><b>Method versus Function Call</b></p>
+<br/>
+
+<p>There are multiple ways to call class instance methods in EScript. The most
+common way is to use the dot notation as a <i>method call</i>, as shown in the examples above. However,
+you can also use a <i>function call</i> on the instance, which is useful when you want to use named arguments.</p>
+
+<div class="doc-guide-pre"><pre>
+var john := Person( "John", 30 );
+john.rename( "Johnny" ); // Method call
+Person::rename( john, "Johnny" ); // Function call
+</pre></div>
+
+<p>This may be useful when you want to use named arguments, as named arguments
+cannot be used in a method call.</p>
+<br/>
+
+<p><b><code>super()</code> and Constructor Order</b></p>
+<br/>
+
+<p>When a class inherits from another class, using <code>super()</code> is a
+convenient way to call the constructor of the base class(es). Each base class
+constructor will be called in the order they are listed in the class definition.</p>
+
+<div class="doc-guide-pre"><pre>
+class A()
+  function A( this )
+    Print( "A constructor" );
+  endfunction
+endclass
+
+class B()
+  function B( this )
+    Print( "B constructor" );
+  endfunction
+endclass
+
+class C( A, B )
+  function C( this )
+    super();
+    Print( "C constructor" );
+  endfunction
+endclass
+
+var c := C(); // Output: A constructor, B constructor, C constructor
+</pre></div>
+
+<p>If you want to change the order of constructor calls done by
+<code>super()</code>, then you must change the order of the base classes in the
+declaration. It is possible to explicitly use a <i>function reference call</i> to a
+specific constructor for even greater control of constructor call order:</p>
+
+<div class="doc-guide-pre"><pre>
+class C( A, B )
+  function C( this )
+    @B::B( this );
+    @A::A( this );
+    Print( "C constructor" );
+  endfunction
+endclass
+
+var c := C(); // Output: B constructor, A constructor, C constructor
+</pre></div>
+
+<p><b><code>super()</code> and Argument Order</b></p>
+<br/>
+
+<p>Arguments used to a <code>super()</code> call are passed in order of the base
+classes listed in the class definition. Additionally, you can use named
+arguments to specify each base class constructor's arguments, allowing you to
+not worry about the argument order:</p>
+
+<div class="doc-guide-pre"><pre>
+class GreenShape( Colorable, Drawable )
+  function GreenShape( this )
+    super( color := "green", x := 10, y := 20 );
+  endfunction
+endclass
+
+var shape := GreenShape();
+print( $"{shape.color} {shape.x} {shape.y}" ); // Output: green 10 20
+</pre></div>
+
+<p>If multiple base classes define the same parameter, you must specify the scope for each argument:</p>
+
+<div class="doc-guide-pre"><pre>
+class Item()
+  function Item( this, name )
+    this.description := name;
+  endfunction
+endclass
+
+class Color()
+  function Color( this, name )
+    this.color := name;
+  endfunction
+endclass
+
+class RedDagger( Item, Color )
+  function RedDagger( this )
+    super( Item::name := "dagger", Color::name := "red" ); // Using only `name` would give an ambiguous error!
+  endfunction
+endclass
+
+var item := RedDagger();
+
+print( $"{item.color} {item.description}" ); // Output: red dagger
+</pre></div>
+
+<p><b><code>is</code> Operator</b></p>
+<br/>
+
+<p>You can use the <code>is</code> binary operator to check if a class instance
+is of the class type provided (via function reference). The test includes any
+ancestor class. Continuing the above example with <code>A</code>,
+<code>B</code>, and <code>C</code>:</p>
+
+<div class="doc-guide-pre"><pre>
+class A()
+  function A( this )
+  endfunction
+endclass
+
+class B()
+  function B( this )
+  endfunction
+endclass
+
+class C( A, B )
+  function C( this )
+    super();
+  endfunction
+endclass
+
+var c := C();
+Print( c is @C ); // Output: 1
+Print( c is @A ); // Output: 1 (since C is a subclass of A)
+
+var b := B();
+Print( b is @C ); // Output: 0
+</pre></div>
+
+<p><b>Class Instance <code>function</code> Member</b></p>
+<br/>
+
+<p>A class instance has a <code>function</code> member that is a function
+reference to its constructor. To construct a new instance, use the
+<code>new()</code> method on the function reference. This allows creating new
+objects of the same class type as the instance without knowing what the instance
+is at compile-time:</p>
+
+<div class="doc-guide-pre"><pre>
+class Person()
+  function Person( this, name, age )
+    this.name := name;
+    this.age := age;
+  endfunction
+endclass
+
+var person := Person( "Alice", 25 );
+var other_person := person.function.new( "Bob", 30 );
+
+print( $"{other_person.name} is {other_person.age} years old." ); // Output: Bob is 30 years old.
+</pre></div>
+
+
+<br/>
+<br/>
+<!-- ====================================================================== -->
 <h3><a name="appX">Appendix X: Revision History</a></h3>
 <br/>
 
@@ -2845,4 +3673,16 @@ Cleaned HTML code. - Bodom</p>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Added documentation for Interpolated Strings by Kevin<br>
 <p>v0.11: 14/03/2020<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Added documentation for Conditional Operator, Operator Precendences by Kevin<br>
+</p>
+<p>v0.12: 29/07/2024<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Added documentation for Function Expressions by Kevin<br>
+</p>
+<p>v0.13: 02/08/2024<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Added documentation for Functional Programming with Arrays by Kevin<br>
+</p>
+<p>v0.14: 04/08/2024<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Added documentation for Variadic User Functions by Kevin<br>
+</p>
+<p>v0.15: 05/08/2024<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Added documentation for Spread Operator by Kevin<br>
 </p>

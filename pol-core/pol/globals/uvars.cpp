@@ -219,6 +219,7 @@ void GameState::update_range_from_client( u16 range )
   }
   else if ( range < max_update_range_client )
   {
+    // shrink range to new maximum
     u16 newrange = settingsManager.ssopt.default_visual_range;
     for ( auto* client : networkManager.clients )
     {

@@ -2,9 +2,284 @@
 <ESCRIPT>
 	<header>
 		<topic>Latest Core Changes</topic>
-		<datemodified>06-14-2024</datemodified>
+		<datemodified>11-01-2024</datemodified>
 	</header>
 	<version name="POL100.2.0">
+		<entry>
+			<date>11-01-2024</date>
+			<author>Turley:</author>
+			<change type="Added">servspecopt.cfg AllowVisualRangeModification 0/1 default 0<br/>
+MinimumVisualRange default 5<br/>
+MaximumVisualRange default 24<br/>
+if AllowVisualRangeModification is active client can define its update range</change>
+			<change type="Added">client.visual_range member r/w<br/>
+returns the client setting of visual range, or overwrites the current range.<br/>
+If set to 0 the client given range will be used.<br/>
+As long as the visual range is set via script the client can no longer modify the range.<br/>
+VisualRangeMin/Max limit is not taken into account.</change>
+		</entry>
+		<entry>
+			<date>10-27-2024</date>
+			<author>Kevin:</author>
+			<change type="Fixed">Correctly load packages when running ecompile in non-autocompile mode.</change>
+		</entry>
+		<entry>
+			<date>10-24-2024</date>
+			<author>Kevin:</author>
+			<change type="Fixed">Correctly link method calls to base classes when using `super::`-scoped function calls.</change>
+		</entry>
+		<entry>
+			<date>10-20-2024</date>
+			<author>Kukkino:</author>
+			<change type="Added">Added moved_at and position_changed_at members to characters. Values signify when was the last time character<br/>
+walked or changed position (for example with walking or MoveObjectToLocation)</change>
+		</entry>
+		<entry>
+			<date>10-20-2024</date>
+			<author>Kevin:</author>
+			<change type="Fixed">Correct behavior with classes when using a class-scoped variable as a function callee.</change>
+		</entry>
+		<entry>
+			<date>10-19-2024</date>
+			<author>Kukkino:</author>
+			<change type="Added">DefaultVisualRange setting to servspecopt.cfg. This setting declares how far clients can see by default.<br/>
+Note that the same value needs to be set on both server and in client (usually 18 or 21).</change>
+		</entry>
+		<entry>
+			<date>10-18-2024</date>
+			<author>Kevin:</author>
+			<change type="Fixed">Correctly declare parameters in generated super() function as used.</change>
+			<change type="Fixed">Correctly handle case insensitivity with classes.</change>
+		</entry>
+		<entry>
+			<date>10-17-2024</date>
+			<author>Turley:</author>
+			<change type="Fixed">Fixed crash when too many items exists an a boat.</change>
+		</entry>
+		<entry>
+			<date>10-16-2024</date>
+			<author>Turley:</author>
+			<change type="Fixed">os::OpenConnection with keep_connection did not stop correctly if the socket was closed from the other side</change>
+			<change type="Changed">pol.cfg UseSingleThreadLogin is by default now active<br/>
+in the general case it improves the performance and stability<br/>
+pol.cfg renamed SelectTimeout to LoginServerSelectTimeout,<br/>
+since its only used in this case.<br/>
+The unit is now millisec and the new default is the former effective minimum value.</change>
+		</entry>
+		<entry>
+			<date>10-14-2024</date>
+			<author>Turley:</author>
+			<change type="Added">pol.cfg LoginServerDisconnectUnknownPkts<br/>
+during login process disconnect connection if unknown/non-allowed pkt is received</change>
+			<change type="Fixed">improved performance when non allowed pkts arrive</change>
+		</entry>
+		<entry>
+			<date>10-09-2024</date>
+			<author>Kevin:</author>
+			<change type="Added">Escript now supports classes! Classes are a way to bundle attributes (members) and functionality (methods) together:<br/>
+  class Fighter()<br/>
+    function Fighter( this, name )<br/>
+      this.name := name;<br/>
+    endfunction<br/>
+    function Attack( this, what )<br/>
+      print( $&quot;{this.name} attacks {what}!&quot; );<br/>
+    endfunction<br/>
+  endclass<br/>
+  var person = Fighter( &quot;Alice&quot; );<br/>
+  person.Attack( &quot;Bob&quot; );<br/>
+See the Racalac Escript Guide for additional details.</change>
+		</entry>
+		<entry>
+			<date>09-27-2024</date>
+			<author>Turley:</author>
+			<change type="Fixed">EScript formatter missing spaces while packing function refs, better packing of function calls in eg structs</change>
+		</entry>
+		<entry>
+			<date>09-12-2024</date>
+			<author>Turley:</author>
+			<change type="Fixed">multiple problems with the EScript formatter</change>
+			<change type="Added">more ecompile.cfg options for the formatter, see ecompile.cfg.example for details<br/>
+FormatterBracketAttachToType, FormatterFormatInsideComments, FormatterAlignTrailingComments,<br/>
+FormatterAllowShortCaseLabelsOnASingleLine, FormatterAllowShortFuncRefsOnASingleLine, FormatterAlignConsecutiveShortCaseStatements</change>
+			<change type="Note">should be now &quot;production&quot; ready, default settings are just our personal preferences</change>
+		</entry>
+		<entry>
+			<date>08-30-2024</date>
+			<author>Kevin:</author>
+			<change type="Added">Performance improvements to the compiler</change>
+		</entry>
+		<entry>
+			<date>08-27-2024</date>
+			<author>Reloecc:</author>
+			<change type="Changed">ssopt.MobilesBlockNpcMovement now accepts values 0/1/2. Earlier 0 = false, 1 = true.<br/>
+2 = new behavior, where npcs of the same master are allowed to walk on top of each other. Backward compatible.</change>
+		</entry>
+		<entry>
+			<date>08-24-2024</date>
+			<author>Kevin:</author>
+			<change type="Fixed">Resolved an issue where the Z coordinate of objects on a boat was incorrectly<br/>
+calculated during turns (introduced in the 07-08-2024 nightly build).</change>
+		</entry>
+		<entry>
+			<date>08-11-2024</date>
+			<author>Turley:</author>
+			<change type="Changed">EScript Formatter<br/>
+variable declaration list if it doesnt fit to the line, split on the commas.<br/>
+if a newline happens while a parenthesis is open align the following line with this parenthesis.</change>
+		</entry>
+		<entry>
+			<date>08-08-2024</date>
+			<author>Kevin:</author>
+			<change type="Added">Function Objects can now be called across different scripts.<br/>
+For example, an item use script can pass to pass an &quot;initializer&quot;<br/>
+function to another script that provides a new color for the item as<br/>
+a parameter:<br/>
+  program item_usescript( who, item )<br/>
+    // Find the color changer process.<br/>
+    var color_changer := GetProcess( ... );<br/>
+    // Send it an event, containing the item and the initializer function.<br/>
+    color_changer.SendEvent( struct{<br/>
+      type := &quot;new&quot;,<br/>
+      item := item,<br/>
+      initializer := @SetupItem<br/>
+    } );<br/>
+    // Wait for the script to send us a result.<br/>
+    do<br/>
+      if ( Wait_For_Event( 1 ) )<br/>
+        break;<br/>
+      endif<br/>
+    while ( true );<br/>
+    SendSysMessage( who, $&quot;Item color changed: {item.color}&quot; );<br/>
+  endprogram<br/>
+  function SetupItem( item, color )<br/>
+    Print( $&quot;Changing color: {item.color} -&gt; {color}&quot; );<br/>
+    item.color := color;<br/>
+  endfunction</change>
+		</entry>
+		<entry>
+			<date>08-06-2024</date>
+			<author>Kevin:</author>
+			<change type="Changed">Performance improvements handling function references in the executor during runtime.<br/>
+These changes increases the Escript version, therefore a recompilation of all scripts is required.</change>
+		</entry>
+		<entry>
+			<date>08-05-2024</date>
+			<author>Kevin:</author>
+			<change type="Added">Support for spread operator -- used to expand an array's elements into arguments of<br/>
+a function call or elements of a new array.<br/>
+For example, to pass an array's elements as arguments to a function call:<br/>
+  function SendMessageToPlayers( message, players... )<br/>
+    foreach player in players<br/>
+      SendSysMessage( player, $&quot;[Server] {message}&quot; );<br/>
+     endforeach<br/>
+  endfunction<br/>
+  var players := array{};<br/>
+  if (condition1)<br/>
+    // Add a single player to the array<br/>
+    players.append( player1 );<br/>
+  endif<br/>
+  if (condition2)<br/>
+    // Get an array of players from somewhere else<br/>
+    var more_players := GetMorePlayers();<br/>
+    // Set `players` to a new array of the elements from both `players` and `more_players`<br/>
+    players := { players..., more_players... };<br/>
+  endif<br/>
+  // Pass all the elements of `players` as arguments<br/>
+  SendMessageToPlayers( &quot;Hello!&quot;, players... );<br/>
+See the Racalac Escript Guide for additional details.</change>
+		</entry>
+		<entry>
+			<date>08-04-2024</date>
+			<author>Kevin:</author>
+			<change type="Added">Support for variadic user functions -- user functions that accept any number of arguments.<br/>
+For example, to define a function that sends a message to any number of players:<br/>
+  function SendMessageToPlayers( message, players... )<br/>
+     foreach player in players<br/>
+       SendSysMessage( player, $&quot;[Server] {message}&quot; );<br/>
+     endforeach<br/>
+   endfunction<br/>
+   SendMessageToPlayers( &quot;Hello!&quot;, player1, player2, player3 );<br/>
+See the Racalac Escript Guide for additional details.</change>
+		</entry>
+		<entry>
+			<date>08-03-2024</date>
+			<author>Kevin:</author>
+			<change type="Added">House script method `set_multiid( int multiid | string name )`</change>
+		</entry>
+		<entry>
+			<date>08-02-2024</date>
+			<author>Kevin:</author>
+			<change type="Added">Array script method `find(FunctionObject testFn)`.</change>
+			<change type="Added">Array script method `findIndex(FunctionObject testFn)`.</change>
+			<change type="Added">Array script method `map(FunctionObject mapFn)`.</change>
+			<change type="Added">Array script method `reduce(FunctionObject testFn, [initialValue])`.</change>
+		</entry>
+		<entry>
+			<date>08-01-2024</date>
+			<author>Kevin:</author>
+			<change type="Fixed">Resolved an issue where function expression assignments to locals and captures was mis-targetted.</change>
+			<change type="Fixed">Resolved an issue where function expression captures were not being captured by reference.</change>
+		</entry>
+		<entry>
+			<date>07-31-2024</date>
+			<author>Turley:</author>
+			<change type="Improved">EScript ECompile Formatter: formatting of if statements and function parameters</change>
+		</entry>
+		<entry>
+			<date>07-29-2024</date>
+			<author>Kevin:</author>
+			<change type="Added">Compiler support for function expressions via syntax `@(param1, param2, ..., paramN) { ... }`.<br/>
+For example, to get all hidden online players:<br/>
+ var all_hidden := EnumerateOnlinePlayers()<br/>
+   .filter( @( player ) {<br/>
+     return player.hidden;<br/>
+   });<br/>
+See the Racalac Escript Guide for additional details.</change>
+		</entry>
+		<entry>
+			<date>07-28-2024</date>
+			<author>Kevin:</author>
+			<change type="Added">Array script method `filter(FunctionObject testFn)`.</change>
+			<change type="Added">The compiler now supports any expression as the callee for a function call,</change>
+			<change type="eg">`var func := @FunctionObject; func( 1, 2, 3 )` or `func( 1 )( 2 )( 3 )`.<br/>
+For now, only function references (ie. a variable that holds or a function<br/>
+that returns a `@FunctionObject`) can be called in this manner.</change>
+		</entry>
+		<entry>
+			<date>07-21-2024</date>
+			<author>Kukkino:</author>
+			<change type="Fixed">Changing realm will now send full status to player to prevent showing scaled hp/maxhp.</change>
+		</entry>
+		<entry>
+			<date>07-16-2024</date>
+			<author>Kevin:</author>
+			<change type="Added">When using the debugger, an attached script's `Print()` calls will now show in the Debug Console.<br/>
+The log message includes the source location of the `Print()` call.</change>
+		</entry>
+		<entry>
+			<date>07-14-2024</date>
+			<author>Turley:</author>
+			<change type="Removed">pol.cfg SingleThreadDecay setting</change>
+			<change type="Changed">syshook CanDecay: returning 2 skips further core checks.<br/>
+Currently meaning that the item will decay even if inside of a multi and decayonmulti is false.<br/>
+Returning true/false or 1/0 still have the same meaning.</change>
+		</entry>
+		<entry>
+			<date>07-13-2024</date>
+			<author>Kevin:</author>
+			<change type="Fixed">An attacking character will now attack immediately when their opponent unhides.</change>
+		</entry>
+		<entry>
+			<date>07-11-2024</date>
+			<author>Kevin:</author>
+			<change type="Fixed">A hidden, attacking character will now attack immediately when unhidden.</change>
+		</entry>
+		<entry>
+			<date>07-10-2024</date>
+			<author>Turley:</author>
+			<change type="Fixed">Boat movement to the edge of a realm no more crashes</change>
+			<change type="Fixed">Moving a Boat via MoveObjectToLocation checks realms boundary and returns an error if it doesnt fit.</change>
+		</entry>
 		<entry>
 			<date>06-14-2024</date>
 			<author>Kukkino:</author>
@@ -38,8 +313,7 @@ the backpack weigh 203 stone.</change>
 		<entry>
 			<date>04-24-2024</date>
 			<author>Reloecc:</author>
-			<change type="Added">`NpcMinimumMovementDelay` parameter to `servspecopt.cfg`.<br/>
-It controls maximum movement speed of NPCs.</change>
+			<change type="Added">`NpcMinimumMovementDelay` parameter to `servspecopt.cfg`. It controls maximum movement speed of NPCs.</change>
 		</entry>
 		<entry>
 			<date>04-14-2024</date>

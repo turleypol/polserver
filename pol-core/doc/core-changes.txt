@@ -1,4 +1,23 @@
 -- POL100.2.0 --
+11-01-2024 Turley:
+    Added: servspecopt.cfg AllowVisualRangeModification 0/1 default 0
+           MinimumVisualRange default 5
+           MaximumVisualRange default 24
+           if AllowVisualRangeModification is active client can define its update range
+    Added: client.visual_range member r/w
+           returns the client setting of visual range, or overwrites the current range.
+           If set to 0 the client given range will be used.
+           As long as the visual range is set via script the client can no longer modify the range.
+           VisualRangeMin/Max limit is not taken into account.
+10-27-2024 Kevin:
+    Fixed: Correctly load packages when running ecompile in non-autocompile mode.
+10-24-2024 Kevin:
+    Fixed: Correctly link method calls to base classes when using `super::`-scoped function calls.
+10-20-2024 Kukkino:
+    Added: Added moved_at and position_changed_at members to characters. Values signify when was the last time character
+           walked or changed position (for example with walking or MoveObjectToLocation)
+10-20-2024 Kevin:
+    Fixed: Correct behavior with classes when using a class-scoped variable as a function callee.
 10-19-2024 Kukkino:
     Added: DefaultVisualRange setting to servspecopt.cfg. This setting declares how far clients can see by default.
            Note that the same value needs to be set on both server and in client (usually 18 or 21).
