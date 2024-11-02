@@ -61,6 +61,11 @@ struct PolConfig
   unsigned int max_objtype;
   unsigned short max_anim_id;
 
+  unsigned int max_call_depth;
+  bool passert_dump_stack;
+  std::string passert_failure_action;
+  bool logfile_timestamp_everyline;
+
   unsigned short max_clients;
   unsigned short character_slots;
   unsigned short max_clients_bypass_cmdlevel;
@@ -110,6 +115,7 @@ struct PolConfig
   /**
    * crash reporting system with some early default values
    */
+  bool report_active;
   std::string report_admin_email;
   std::string report_server;
   std::string report_url;
@@ -121,7 +127,7 @@ struct PolConfig
   void read( bool initial_load );
   static struct stat pol_cfg_stat;
 };
-void polcfg_after_load( bool initial );
+void apply_polcfg( bool initial );
 }  // namespace Core
 }  // namespace Pol
 #endif

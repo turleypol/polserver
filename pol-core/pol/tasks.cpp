@@ -322,7 +322,7 @@ void reload_pol_cfg()
       memcpy( &PolConfig::pol_cfg_stat, &newst, sizeof PolConfig::pol_cfg_stat );
 
       Plib::systemstate.config.read( false );
-      polcfg_after_load( false );
+      apply_polcfg( false );
       POLLOG_INFOLN( "Done!" );
     }
   }

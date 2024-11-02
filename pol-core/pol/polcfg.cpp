@@ -129,69 +129,16 @@ void PolConfig::read( bool initial_load )
 
   min_cmdlevel_to_login = elem.remove_ushort( "MinCmdlevelToLogin", 0 );
 
-  Bscript::escript_config.max_call_depth = elem.remove_ulong( "MaxCallDepth", 100 );
-  Clib::passert_dump_stack = elem.remove_bool( "DumpStackOnAssertionFailure", false );
-
-  std::string tmp = elem.remove_string( "AssertionFailureAction", "abort" );
-  if ( Clib::strlowerASCII( tmp ) == "abort" )
-  {
-    Clib::passert_shutdown = false;
-    Clib::passert_nosave = false;
-    Clib::passert_abort = true;
-    assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
-  }
-  else if ( Clib::strlowerASCII( tmp ) == "continue" )
-  {
-    Clib::passert_shutdown = false;
-    Clib::passert_nosave = false;
-    Clib::passert_abort = false;
-    assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
-  }
-  else if ( Clib::strlowerASCII( tmp ) == "shutdown" )
-  {
-    Clib::passert_shutdown = true;
-    Clib::passert_nosave = false;
-    Clib::passert_abort = false;
-    assertion_shutdown_save_type = SAVE_FULL;
-  }
-  else if ( Clib::strlowerASCII( tmp ) == "shutdown-nosave" )
-  {
-    Clib::passert_shutdown = true;
-    Clib::passert_nosave = true;
-    Clib::passert_abort = false;
-    assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
-  }
-  else if ( Clib::strlowerASCII( tmp ) == "shutdown-save-full" )
-  {
-    Clib::passert_shutdown = true;
-    Clib::passert_nosave = false;
-    Clib::passert_abort = false;
-    assertion_shutdown_save_type = SAVE_FULL;
-  }
-  else if ( Clib::strlowerASCII( tmp ) == "shutdown-save-incremental" )
-  {
-    Clib::passert_shutdown = true;
-    Clib::passert_nosave = false;
-    Clib::passert_abort = false;
-    assertion_shutdown_save_type = SAVE_INCREMENTAL;
-  }
-  else
-  {
-    Clib::passert_shutdown = false;
-    Clib::passert_abort = true;
-    assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
-    POLLOG_ERRORLN(
-        "Unknown pol.cfg AssertionFailureAction value: {} (expected abort, continue, shutdown, or "
-        "shutdown-nosave)",
-        tmp );
-  }
-
-  tmp = elem.remove_string( "ShutdownSaveType", "full" );
-  if ( Clib::strlowerASCII( tmp ) == "full" )
+  max_call_depth = elem.remove_ulong( "MaxCallDepth", 100 );
+  passert_dump_stack = elem.remove_bool( "DumpStackOnAssertionFailure", false );
+  passert_failure_action =
+      Clib::strlowerASCII( elem.remove_string( "AssertionFailureAction", "abort" ) );
+  std::string tmp = Clib::strlowerASCII( elem.remove_string( "ShutdownSaveType", "full" ) );
+  if ( tmp == "full" )
   {
     shutdown_save_type = SAVE_FULL;
   }
-  else if ( Clib::strlowerASCII( tmp ) == "incremental" )
+  else if ( tmp == "incremental" )
   {
     shutdown_save_type = SAVE_INCREMENTAL;
   }
@@ -218,8 +165,7 @@ void PolConfig::read( bool initial_load )
   minidump_type = elem.remove_string( "MiniDumpType", "variable" );
   retain_cleartext_passwords = elem.remove_bool( "RetainCleartextPasswords", false );
   discard_old_events = elem.remove_bool( "DiscardOldEvents", false );
-  Clib::LogfileTimestampEveryLine =
-      elem.remove_bool( "TimestampEveryLine", false );  // clib/logfacility.h bool
+  logfile_timestamp_everyline = elem.remove_bool( "TimestampEveryLine", false );
   use_single_thread_login = elem.remove_bool( "UseSingleThreadLogin", true );
   loginserver_disconnect_unknown_pkts =
       elem.remove_bool( "LoginServerDisconnectUnknownPkts", false );
@@ -235,20 +181,10 @@ void PolConfig::read( bool initial_load )
   show_warning_cursor_seq = elem.remove_bool( "ShowWarningCursorSequence", true );
   show_warning_boat_move = elem.remove_bool( "ShowWarningBoatMove", true );
 
-  // store the configuration for the reporting system in the ExceptionParser
-  bool reportingActive = elem.remove_bool( "ReportCrashsAutomatically", false );
-  std::string reportingAdminEmail = elem.remove_string( "ReportAdminEmail", "" );
-  std::string reportingServer = elem.remove_string( "ReportServer", "polserver.com" );
-  std::string reportingUrl = elem.remove_string( "ReportURL", "/pol/report_program_abort.php" );
-  Pol::Clib::ExceptionParser::configureProgramAbortReportingSystem(
-      reportingActive, reportingServer, reportingUrl, reportingAdminEmail );
-
-#ifdef _WIN32
-  Clib::MiniDumper::SetMiniDumpType( minidump_type );
-#endif
-
-  if ( !enable_debug_log )
-    DISABLE_DEBUGLOG();
+  report_active = elem.remove_bool( "ReportCrashsAutomatically", false );
+  report_admin_email = elem.remove_string( "ReportAdminEmail", "" );
+  report_server = elem.remove_string( "ReportServer", "polserver.com" );
+  report_url = elem.remove_string( "ReportURL", "/pol/report_program_abort.php" );
 
   debug_level = elem.remove_ushort( "DebugLevel", 0 );
 
@@ -268,7 +204,7 @@ void PolConfig::read( bool initial_load )
   enable_colored_output = elem.remove_bool( "EnableColoredOutput", true );
 }
 
-void polcfg_after_load( bool initial )
+void apply_polcfg( bool initial )
 {
   auto& config = Plib::systemstate.config;
   if ( initial )
@@ -279,6 +215,74 @@ void polcfg_after_load( bool initial )
       gamestate.write_account_task->start();
     }
   }
+  Bscript::escript_config.max_call_depth = config.max_call_depth;
+  Clib::passert_dump_stack = config.passert_dump_stack;
+
+  if ( config.passert_failure_action == "abort" )
+  {
+    Clib::passert_shutdown = false;
+    Clib::passert_nosave = false;
+    Clib::passert_abort = true;
+    config.assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
+  }
+  else if ( config.passert_failure_action == "continue" )
+  {
+    Clib::passert_shutdown = false;
+    Clib::passert_nosave = false;
+    Clib::passert_abort = false;
+    config.assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
+  }
+  else if ( config.passert_failure_action == "shutdown" )
+  {
+    Clib::passert_shutdown = true;
+    Clib::passert_nosave = false;
+    Clib::passert_abort = false;
+    config.assertion_shutdown_save_type = SAVE_FULL;
+  }
+  else if ( config.passert_failure_action == "shutdown-nosave" )
+  {
+    Clib::passert_shutdown = true;
+    Clib::passert_nosave = true;
+    Clib::passert_abort = false;
+    config.assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
+  }
+  else if ( config.passert_failure_action == "shutdown-save-full" )
+  {
+    Clib::passert_shutdown = true;
+    Clib::passert_nosave = false;
+    Clib::passert_abort = false;
+    config.assertion_shutdown_save_type = SAVE_FULL;
+  }
+  else if ( config.passert_failure_action == "shutdown-save-incremental" )
+  {
+    Clib::passert_shutdown = true;
+    Clib::passert_nosave = false;
+    Clib::passert_abort = false;
+    config.assertion_shutdown_save_type = SAVE_INCREMENTAL;
+  }
+  else
+  {
+    Clib::passert_shutdown = false;
+    Clib::passert_abort = true;
+    config.assertion_shutdown_save_type = SAVE_FULL;  // should never come into play
+    POLLOG_ERRORLN(
+        "Unknown pol.cfg AssertionFailureAction value: {} (expected abort, continue, shutdown, or "
+        "shutdown-nosave)",
+        config.passert_failure_action );
+  }
+
+  Clib::LogfileTimestampEveryLine = config.logfile_timestamp_everyline;
+  if ( !config.enable_debug_log )
+    DISABLE_DEBUGLOG();
+
+#ifdef _WIN32
+  Clib::MiniDumper::SetMiniDumpType( config.minidump_type );
+#endif
+
+  Clib::ExceptionParser::configureProgramAbortReportingSystem(
+      config.report_active, config.report_server, config.report_url, config.report_admin_email );
+
+
   /// The profiler needs to gather some data before the pol.cfg file gets loaded, so when it
   /// turns out to be disabled, or when it was enabled before, but is being disabled now,
   /// run "garbage collection" to free the allocated resources
