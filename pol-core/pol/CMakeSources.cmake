@@ -284,7 +284,6 @@ set (pol_sources  # sorted !
   npctmpl.h
   objecthash.cpp
   objecthash.h
-  objtype.h
   packetscrobj.cpp
   packetscrobj.h
   party.cpp

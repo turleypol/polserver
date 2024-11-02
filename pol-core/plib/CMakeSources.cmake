@@ -23,6 +23,7 @@ set (plib_sources  # sorted !
   mapwriter.h
   mul/map.h
   mul/tiledata.h
+  objtype.h
   pkg.cpp 
   pkg.h
   polfile.h
