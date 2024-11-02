@@ -77,9 +77,6 @@ const int VENDOR_BUYABLE_CONTAINER_FILTER = 0x02;
 
 const int SENDDIALOGMENU_FORCE_OLD = 0x01;
 
-const int SAVE_FULL = 0x00;
-const int SAVE_INCREMENTAL = 0x01;
-
 const int LOG_DATETIME = 0x01;
 
 const int FINDOBJTYPE_IGNORE_LOCKED = 0x01;
