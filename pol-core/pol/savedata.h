@@ -19,7 +19,6 @@ namespace Core
 {
 class SaveContext
 {
-  // typedef Clib::ThreadedOFStreamWriter SaveStrategy; // too many context switches!
   typedef Clib::StreamWriter SaveStrategy;
 
 private:
@@ -64,7 +63,6 @@ void write_global_properties( Clib::StreamWriter& sw );
 void write_shadow_realms( Clib::StreamWriter& sw );
 
 bool commit( const std::string& basename );
-void commit_incremental_saves();
 bool should_write_data();
 }  // namespace Core
 }  // namespace Pol

@@ -90,13 +90,6 @@ std::shared_future<bool> SaveContext::finished;
 // Dave changed 3/8/3 to use objecthash
 void read_character( Clib::ConfigElem& elem )
 {
-  // if this object is modified in a subsequent incremental save,
-  // don't load it now.
-  pol_serial_t serial = 0;
-  elem.get_prop( "SERIAL", &serial );
-  if ( get_save_index( serial ) > objStorageManager.current_incremental_save )
-    return;
-
   CharacterRef chr( new Mobile::Character( elem.remove_ushort( "OBJTYPE" ) ) );
 
   try
@@ -123,13 +116,6 @@ void read_character( Clib::ConfigElem& elem )
 // Dave changed 3/8/3 to use objecthash
 void read_npc( Clib::ConfigElem& elem )
 {
-  // if this object is modified in a subsequent incremental save,
-  // don't load it now.
-  pol_serial_t serial = 0;
-  elem.get_prop( "SERIAL", &serial );
-  if ( get_save_index( serial ) > objStorageManager.current_incremental_save )
-    return;
-
   NpcRef npc( new Mobile::NPC( elem.remove_ushort( "OBJTYPE" ), elem ) );
 
   try
@@ -220,14 +206,6 @@ static ContStack parent_conts;
 
 void read_global_item( Clib::ConfigElem& elem, int /*sysfind_flags*/ )
 {
-  // if this object is modified in a subsequent incremental save,
-  // don't load it now.
-  pol_serial_t serial = 0;
-  elem.get_prop( "SERIAL", &serial );
-  if ( get_save_index( serial ) > objStorageManager.current_incremental_save )
-    return;
-
-
   u32 container_serial = 0;  // defaults to item in the world's top-level
   (void)elem.remove_prop( "CONTAINER",
                           &container_serial );  // therefore we don't need to check the return value
@@ -326,13 +304,7 @@ void read_shadow_realms( Clib::ConfigElem& elem )
 
 void read_multi( Clib::ConfigElem& elem )
 {
-  // if this object is modified in a subsequent incremental save,
-  // don't load it now.
   pol_serial_t serial = 0;
-  elem.get_prop( "SERIAL", &serial );
-  if ( get_save_index( serial ) > objStorageManager.current_incremental_save )
-    return;
-
   u32 objtype;
   if ( elem.remove_prop( "SERIAL", &serial ) == false )
   {
@@ -646,8 +618,6 @@ int read_data()
 
   rename_dat_files();
 
-  load_incremental_indexes();
-
   read_pol_dat();
 
   // POL clock should be paused at this point.
@@ -666,10 +636,8 @@ int read_data()
   Module::read_datastore_dat();
   read_party_dat();
 
-  read_incremental_saves();
   insert_deferred_items();
 
-  register_deleted_serials();
   clear_save_index();
 
   import_new_data();
@@ -1265,8 +1233,6 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
     Accounts::write_account_data();
   }
 
-  commit_incremental_saves();
-  objStorageManager.incremental_save_count = 0;
   timer.stop();
   objStorageManager.objecthash.ClearDeleted();
   // optimize_zones(); // shrink zone vectors TODO this takes way to much time!
@@ -1277,7 +1243,6 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
   dirty_writes = UObject::dirty_writes;
   elapsed_ms = timer.ellapsed();
 
-  objStorageManager.incremental_saves_disabled = false;
   return 0;
 }
 
