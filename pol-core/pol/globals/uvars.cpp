@@ -107,7 +107,7 @@ GameState::GameState()
       reload_accounts_task( new PeriodicTask( Accounts::reload_account_data, 30, "LOADACCT" ) ),
       write_account_task( new PeriodicTask( Accounts::write_account_data_task, 60, "WRITEACCT" ) ),
       update_sysload_task( new PeriodicTask( update_sysload, 1, "SYSLOAD" ) ),
-      reload_pol_cfg_task( new PeriodicTask( PolConfig::reload_pol_cfg, 30, "LOADPOLCFG" ) ),
+      reload_pol_cfg_task( new PeriodicTask( reload_pol_cfg, 30, "LOADPOLCFG" ) ),
 
       attributes(),
       numAttributes( 0 ),

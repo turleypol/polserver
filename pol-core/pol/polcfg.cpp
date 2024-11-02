@@ -99,11 +99,6 @@ void PolConfig::read( bool initial_load )
     debug_local_only = elem.remove_bool( "DebugLocalOnly", true );
 
     account_save = elem.remove_int( "AccountDataSave", -1 );
-    if ( account_save > 0 )
-    {
-      gamestate.write_account_task->set_secs( account_save );
-      gamestate.write_account_task->start();
-    }
   }
   verbose = elem.remove_bool( "Verbose", false );
   watch_mapcache = elem.remove_bool( "WatchMapCache", false );
@@ -271,38 +266,26 @@ void PolConfig::read( bool initial_load )
   }
 
   enable_colored_output = elem.remove_bool( "EnableColoredOutput", true );
+}
 
+void polcfg_after_load( bool initial )
+{
+  auto& config = Plib::systemstate.config;
+  if ( initial )
+  {
+    if ( config.account_save > 0 )
+    {
+      gamestate.write_account_task->set_secs( config.account_save );
+      gamestate.write_account_task->start();
+    }
+  }
   /// The profiler needs to gather some data before the pol.cfg file gets loaded, so when it
   /// turns out to be disabled, or when it was enabled before, but is being disabled now,
   /// run "garbage collection" to free the allocated resources
-  if ( !profile_cprops )
+  if ( !config.profile_cprops )
     Core::CPropProfiler::instance().clear();
 }
 
-void PolConfig::reload_pol_cfg()
-{
-  THREAD_CHECKPOINT( tasks, 600 );
-  try
-  {
-    struct stat newst;
-    stat( "pol.cfg", &newst );
-
-    if ( ( newst.st_mtime != PolConfig::pol_cfg_stat.st_mtime ) &&
-         ( newst.st_mtime < time( nullptr ) - 10 ) )
-    {
-      POLLOG_INFO( "Reloading pol.cfg..." );
-      memcpy( &PolConfig::pol_cfg_stat, &newst, sizeof PolConfig::pol_cfg_stat );
-
-      Plib::systemstate.config.read( false );
-      POLLOG_INFOLN( "Done!" );
-    }
-  }
-  catch ( std::exception& ex )
-  {
-    POLLOG_ERRORLN( "Error rereading pol.cfg: {}", ex.what() );
-  }
-  THREAD_CHECKPOINT( tasks, 699 );
-}
 
 bool PolConfig::report_program_aborts()
 {

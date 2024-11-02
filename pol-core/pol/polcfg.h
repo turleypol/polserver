@@ -120,8 +120,8 @@ struct PolConfig
 
   void read( bool initial_load );
   static struct stat pol_cfg_stat;
-  static void reload_pol_cfg();
 };
+void polcfg_after_load( bool initial );
 }  // namespace Core
 }  // namespace Pol
 #endif

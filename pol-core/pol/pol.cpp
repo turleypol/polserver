@@ -1032,6 +1032,7 @@ int xmain_inner( bool testing )
 
   Core::checkpoint( "reading pol.cfg" );
   Plib::systemstate.config.read( true );
+  Core::polcfg_after_load( true );
 
   Core::checkpoint( "reading config/bannedips.cfg" );
   Network::read_bannedips_config( true );

@@ -24,6 +24,7 @@
 #include "globals/state.h"
 #include "globals/uvars.h"
 #include "mobile/charactr.h"
+#include "polcfg.h"
 #include "polclock.h"
 #include "polsig.h"
 #include "profile.h"
@@ -304,6 +305,32 @@ void update_sysload()
     stateManager.profilevars.sysload_nprocs += scriptScheduler.getRunlist().size();
   }
   THREAD_CHECKPOINT( tasks, 299 );
+}
+
+void reload_pol_cfg()
+{
+  THREAD_CHECKPOINT( tasks, 600 );
+  try
+  {
+    struct stat newst;
+    stat( "pol.cfg", &newst );
+
+    if ( ( newst.st_mtime != PolConfig::pol_cfg_stat.st_mtime ) &&
+         ( newst.st_mtime < time( nullptr ) - 10 ) )
+    {
+      POLLOG_INFO( "Reloading pol.cfg..." );
+      memcpy( &PolConfig::pol_cfg_stat, &newst, sizeof PolConfig::pol_cfg_stat );
+
+      Plib::systemstate.config.read( false );
+      polcfg_after_load( false );
+      POLLOG_INFOLN( "Done!" );
+    }
+  }
+  catch ( std::exception& ex )
+  {
+    POLLOG_ERRORLN( "Error rereading pol.cfg: {}", ex.what() );
+  }
+  THREAD_CHECKPOINT( tasks, 699 );
 }
 
 void start_tasks()
