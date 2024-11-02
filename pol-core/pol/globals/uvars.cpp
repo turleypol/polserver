@@ -41,7 +41,6 @@
 #include "../npctmpl.h"
 #include "../objecthash.h"
 #include "../party.h"
-#include "../polcfg.h"
 #include "../polsem.h"
 #include "../scrstore.h"
 #include "../spells.h"

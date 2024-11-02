@@ -75,7 +75,6 @@
 #include "network/packethelper.h"
 #include "network/pktdef.h"
 #include "objecthash.h"
-#include "polcfg.h"
 #include "polclass.h"
 #include "realms/realm.h"
 #include "regions/miscrgn.h"

@@ -31,7 +31,6 @@
 #include "../mobile/charactr.h"
 #include "../module/uomod.h"
 #include "../network/client.h"
-#include "../polcfg.h"
 #include "../proplist.h"
 #include "../scrdef.h"
 #include "../scrsched.h"

@@ -30,7 +30,6 @@
 #include "globals/state.h"
 #include "globals/uvars.h"
 #include "item/itemdesc.h"
-#include "polcfg.h"
 #include "proplist.h"
 #include "realms/realm.h"
 #include "realms/realms.h"

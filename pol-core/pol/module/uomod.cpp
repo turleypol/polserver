@@ -129,7 +129,6 @@
 #include "../network/pktboth.h"
 #include "../network/pktdef.h"
 #include "../npctmpl.h"
-#include "../polcfg.h"
 #include "../polclass.h"
 #include "../polclock.h"
 #include "../polobject.h"

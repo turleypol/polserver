@@ -53,7 +53,6 @@
 #include "network/pktdef.h"
 #include "network/pktin.h"
 #include "objtype.h"
-#include "polcfg.h"
 #include "realms/realm.h"
 #include "reftypes.h"
 #include "statmsg.h"

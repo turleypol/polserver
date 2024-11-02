@@ -31,7 +31,6 @@
 #include "item/item.h"
 #include "loaddata.h"
 #include "mkscrobj.h"
-#include "polcfg.h"
 #include "ufunc.h"
 
 namespace Pol

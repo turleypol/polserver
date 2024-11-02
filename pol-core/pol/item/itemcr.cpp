@@ -30,7 +30,6 @@
 #include "../mobile/corpse.h"
 #include "../module/uomod.h"
 #include "../multi/boatcomp.h"
-#include "../polcfg.h"
 #include "../scrdef.h"
 #include "../scrsched.h"
 #include "../spelbook.h"

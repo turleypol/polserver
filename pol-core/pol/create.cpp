@@ -37,7 +37,6 @@
 #include "network/pktdef.h"
 #include "network/pktin.h"
 #include "plib/objtype.h"
-#include "polcfg.h"
 #include "realms/WorldChangeReasons.h"
 #include "scrsched.h"
 #include "scrstore.h"
