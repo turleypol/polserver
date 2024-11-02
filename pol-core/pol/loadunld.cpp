@@ -275,7 +275,7 @@ void load_data()
 
 void reload_configuration()
 {
-  PolConfig::read_pol_config( false );
+  Plib::systemstate.config.read( false );
   ServSpecOpt::read_servspecopt();
   Network::read_bannedips_config( false );
   gamestate.unload_npc_templates();

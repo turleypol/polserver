@@ -1031,7 +1031,7 @@ int xmain_inner( bool testing )
   Core::stateManager.gflag_in_system_startup = true;
 
   Core::checkpoint( "reading pol.cfg" );
-  Core::PolConfig::read_pol_config( true );
+  Plib::systemstate.config.read( true );
 
   Core::checkpoint( "reading config/bannedips.cfg" );
   Network::read_bannedips_config( true );
