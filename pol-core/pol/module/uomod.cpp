@@ -3014,12 +3014,6 @@ BObjectImp* UOExecutorModule::mf_SystemFindObjectBySerial()
 BObjectImp* UOExecutorModule::mf_SaveWorldState()
 {
   update_gameclock();
-  int flags = 0;
-  if ( exec.hasParams( 1 ) )
-  {
-    if ( !getParam( 0, flags ) )
-      return new BError( "Invalid parameter type" );
-  }
   try
   {
     cancel_all_trades();
@@ -3028,19 +3022,9 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
 
     unsigned int dirty, clean;
     long long elapsed_ms;
-    int res;
-    if ( flags & SAVE_INCREMENTAL )
-    {
-      res = save_incremental( dirty, clean, elapsed_ms );
-    }
-    else
-    {
-      res = write_data( dirty, clean, elapsed_ms );
-    }
+    int res = write_data( dirty, clean, elapsed_ms );
     if ( res == 0 )
     {
-      // Code Analyze: C6246
-      //      BStruct* res = new BStruct();
       BStruct* ret = new BStruct();
       ret->addMember( "DirtyObjects", new BLong( dirty ) );
       ret->addMember( "CleanObjects", new BLong( clean ) );
