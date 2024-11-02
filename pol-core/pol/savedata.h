@@ -64,6 +64,7 @@ void write_shadow_realms( Clib::StreamWriter& sw );
 
 bool commit( const std::string& basename );
 bool should_write_data();
+int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long long& elapsed_ms );
 }  // namespace Core
 }  // namespace Pol
 #endif
