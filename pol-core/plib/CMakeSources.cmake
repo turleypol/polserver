@@ -26,6 +26,8 @@ set (plib_sources  # sorted !
   objtype.h
   pkg.cpp 
   pkg.h
+  polcfg.cpp
+  polcfg.h
   polfile.h
   polfile1.cpp
   polfile2.cpp
