@@ -244,6 +244,8 @@ void GameState::deinitialize()
 {
   INFO_PRINTLN( "Initiating POL Cleanup...." );
 
+  world_decay = WorldDecay();  // destruct existing (holds itemrefs)
+
   networkManager.deinialize();
   deinit_ipc_vars();
 
