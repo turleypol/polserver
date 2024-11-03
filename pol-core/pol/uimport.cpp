@@ -22,7 +22,6 @@
 #include <string>
 #include <time.h>
 
-#include "../clib/Program/ProgramConfig.h"
 #include "../clib/cfgelem.h"
 #include "../clib/cfgfile.h"
 #include "../clib/clib.h"
