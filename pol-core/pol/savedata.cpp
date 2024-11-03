@@ -13,6 +13,7 @@
 
 #include "../clib/Program/ProgramConfig.h"
 #include "../clib/clib_endian.h"
+#include "../clib/esignal.h"
 #include "../clib/fileutil.h"
 #include "../clib/iohelp.h"
 #include "../clib/logfacility.h"
@@ -21,6 +22,7 @@
 #include "../clib/strutil.h"
 #include "../clib/timer.h"
 #include "../plib/systemstate.h"
+#include "accounts/accounts.h"
 #include "globals/object_storage.h"
 #include "globals/uvars.h"
 #include "item/item.h"
@@ -31,9 +33,11 @@
 #include "multi/multi.h"
 #include "objecthash.h"
 #include "realms/realm.h"
+#include "regions/resource.h"
 #include "storage.h"
 #include "ufunc.h"
 #include "uobject.h"
+#include "uworld.h"
 
 namespace Pol
 {
