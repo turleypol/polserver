@@ -91,15 +91,14 @@ void WorldDecay::decayTask()
     POLLOG_INFOLN(
         "DECAY STATISTICS: decayed: max {} mean {} variance {} runs {} active max {} "
         "mean "
-        "{} variance {} runs {}" )
-        << stateManager.decay_statistics.decayed.max()
-        << stateManager.decay_statistics.decayed.mean()
-        << stateManager.decay_statistics.decayed.variance()
-        << stateManager.decay_statistics.decayed.count()
-        << stateManager.decay_statistics.active_decay.max()
-        << stateManager.decay_statistics.active_decay.mean()
-        << stateManager.decay_statistics.active_decay.variance()
-        << stateManager.decay_statistics.active_decay.count();
+        "{} variance {} runs {}",
+        stateManager.decay_statistics.decayed.max(), stateManager.decay_statistics.decayed.mean(),
+        stateManager.decay_statistics.decayed.variance(),
+        stateManager.decay_statistics.decayed.count(),
+        stateManager.decay_statistics.active_decay.max(),
+        stateManager.decay_statistics.active_decay.mean(),
+        stateManager.decay_statistics.active_decay.variance(),
+        stateManager.decay_statistics.active_decay.count() );
   };
   // need to collect possible items
   // since script calls could add/remove in container
