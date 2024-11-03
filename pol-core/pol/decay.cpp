@@ -76,6 +76,11 @@ gameclock_t WorldDecay::getDecayTime( const Items::Item* obj ) const
   return entry->time;
 }
 
+size_t WorldDecay::activeObjects() const
+{
+  return decay_cont.size();
+}
+
 void WorldDecay::decayTask()
 {
   auto& indexByTime = decay_cont.get<IndexByTime>();

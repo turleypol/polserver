@@ -226,6 +226,12 @@ void decaytask_test()
     UnitTest::inc_failures();
     return;
   }
+  if ( decay.activeObjects() != 1 )
+  {
+    INFO_PRINTLN( "decay activeObjects 1!={}", decay.activeObjects() );
+    UnitTest::inc_failures();
+    return;
+  }
 
 
   UnitTest::inc_successes();
