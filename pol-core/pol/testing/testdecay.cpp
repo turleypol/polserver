@@ -16,6 +16,7 @@
 #include "../polclock.h"
 #include "../realms/realm.h"
 #include "../realms/realms.h"
+#include "../reftypes.h"
 #include "../ufunc.h"
 #include "../uworld.h"
 #include "testenv.h"
@@ -195,8 +196,8 @@ void decaytask_test()
   INFO_PRINTLN( "    create items" );
   auto* firstrealm = Core::gamestate.Realms[0];
 
-  auto* i1 = createitem( { 0, 0, 0, firstrealm }, 10 );
-  auto* i2 = createitem( { 0, 0, 0, firstrealm }, 60 );
+  auto i1 = Core::ItemRef( createitem( { 0, 0, 0, firstrealm }, 10 ) );
+  auto i2 = Core::ItemRef( createitem( { 0, 0, 0, firstrealm }, 60 ) );
   if ( !i1 || !i2 )
     return;
   if ( firstrealm->toplevel_item_count() != 2 )
@@ -220,9 +221,9 @@ void decaytask_test()
   Core::shift_clock_for_unittest( 10s );
 
   decay.decayTask();
-  if ( firstrealm->toplevel_item_count() != 1 )
+  if ( i1.get() || !i2.get() )
   {
-    INFO_PRINTLN( "first realm toplevelcount 1!={}", firstrealm->toplevel_item_count() );
+    INFO_PRINTLN( "first destroyed: {}, second not: {}", i1 == nullptr, i2 != nullptr );
     UnitTest::inc_failures();
     return;
   }
