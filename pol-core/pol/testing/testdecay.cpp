@@ -157,8 +157,17 @@ void decay_test()
   }
   UnitTest::inc_successes();
 }
+
 void decaytask_test()
 {
+  {
+    // wipe realms
+    for ( auto& realm : Core::gamestate.Realms )
+    {
+      Core::WorldIterator<Core::ItemFilter>::InBox(
+          realm->area(), realm, [&]( Items::Item* item ) { destroy_item( item ); } );
+    }
+  }
   auto& decay = Core::gamestate.world_decay;
   Plib::systemstate.config.decaytask = true;
   auto createitem = []( Core::Pos4d p, u32 /*decay*/ )
@@ -171,7 +180,7 @@ void decaytask_test()
   };
   INFO_PRINTLN( "    create items" );
   auto* firstrealm = Core::gamestate.Realms[0];
-  auto* secondrealm = Core::gamestate.Realms[1];
+  // auto* secondrealm = Core::gamestate.Realms[1];
 
   // create 3 items, two should decay
   auto* i1 = createitem( { 0, 0, 0, firstrealm }, 1 );
