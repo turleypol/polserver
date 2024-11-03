@@ -171,25 +171,37 @@ void decaytask_test()
   }
   auto& decay = Core::gamestate.world_decay;
   Plib::systemstate.config.decaytask = true;
-  auto createitem = []( Core::Pos4d p, u32 /*decay*/ )
+  auto now = Core::read_gameclock();
+  auto createitem = [&]( Core::Pos4d p, u32 decay )
   {
     auto item = Items::Item::create( 0x0eed );
     item->setposition( p );
     Core::add_item_to_world( item );
-    //    item->set_decay_after( decay );
+    if ( !item->has_decay_task() )
+    {
+      INFO_PRINTLN( "decay task not active for item" );
+      UnitTest::inc_failures();
+      return nullptr;
+    }
+    if ( decay.getDecayTime( item ) <= now )
+    {
+      INFO_PRINTLN( "decay time {}<{}", decay.getDecayTime( item ), now );
+      UnitTest::inc_failures();
+      return nullptr;
+    }
+    decay.addObject( item, decay );
     return item;
   };
   INFO_PRINTLN( "    create items" );
   auto* firstrealm = Core::gamestate.Realms[0];
-  // auto* secondrealm = Core::gamestate.Realms[1];
 
-  // create 3 items, two should decay
-  auto* i1 = createitem( { 0, 0, 0, firstrealm }, 1 );
+  auto* i1 = createitem( { 0, 0, 0, firstrealm }, 10 );
   auto* i2 = createitem( { 0, 0, 0, firstrealm }, 60 );
-  auto* i3 = createitem( { firstrealm->area().se() - Core::Vec2d( 1, 1 ), 0, firstrealm }, 1 );
-  if ( firstrealm->toplevel_item_count() != 3 )
+  if ( !i1 || !i2 )
+    return;
+  if ( firstrealm->toplevel_item_count() != 2 )
   {
-    INFO_PRINTLN( "first realm toplevelcount 3!={}", firstrealm->toplevel_item_count() );
+    INFO_PRINTLN( "first realm toplevelcount 2!={}", firstrealm->toplevel_item_count() );
     UnitTest::inc_failures();
     return;
   }
@@ -197,10 +209,25 @@ void decaytask_test()
   INFO_PRINTLN( "i1 {} {}", i1->has_decay_task(), decay.getDecayTime( i1 ) );
   INFO_PRINTLN( "i2 {} {}", i2->has_decay_task(), decay.getDecayTime( i1 ) );
   INFO_PRINTLN( "i3 {} {}", i3->has_decay_task(), decay.getDecayTime( i1 ) );
-  // time machine
-  Core::shift_clock_for_unittest( 2s );
+  decay.decayTask();  // should not destroy items
+  if ( firstrealm->toplevel_item_count() != 2 )
+  {
+    INFO_PRINTLN( "first realm toplevelcount 2!={}", firstrealm->toplevel_item_count() );
+    UnitTest::inc_failures();
+    return;
+  }
+  // time machine to first item
+  Core::shift_clock_for_unittest( 10s );
 
-  // decay thread doesnt run in test environment
-  // to be able to test realm add/delete the gamestate instance needs to be used
+  decay.decayTask();
+  if ( firstrealm->toplevel_item_count() != 1 )
+  {
+    INFO_PRINTLN( "first realm toplevelcount 1!={}", firstrealm->toplevel_item_count() );
+    UnitTest::inc_failures();
+    return;
+  }
+
+
+  UnitTest::inc_successes();
 }
 }  // namespace Pol::Testing

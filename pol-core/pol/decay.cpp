@@ -49,6 +49,7 @@ WorldDecay::WorldDecay() : decay_cont() {}
 
 void WorldDecay::addObject( Items::Item* item, gameclock_t decaytime )
 {
+  decaytime += read_gameclock();
   auto& indexByObj = decay_cont.get<IndexByObject>();
   auto res = indexByObj.emplace( decaytime, ItemRef( item ) );
   if ( !res.second )  // emplace failed, .first is itr of "blocking" entry
@@ -194,8 +195,8 @@ void WorldDecay::decayTask()
   }
   for ( const auto& item : delayeditems )
   {
-    if ( getDecayTime( item ) <= now )   // check if script has removed it or changed time
-      addObject( item, now + 10 * 60 );  // delay by 10minutes like old decay system would behave
+    if ( getDecayTime( item ) <= now )  // check if script has removed it or changed time
+      addObject( item, 10 * 60 );       // delay by 10minutes like old decay system would behave
   }
   if ( statistics )
     decayStats();
