@@ -207,8 +207,8 @@ void decaytask_test()
     return;
   }
   INFO_PRINTLN( "Gameclock {}", Core::read_gameclock() );
-  INFO_PRINTLN( "i1 {} {}", i1->has_decay_task(), decay.getDecayTime( i1 ) );
-  INFO_PRINTLN( "i2 {} {}", i2->has_decay_task(), decay.getDecayTime( i1 ) );
+  INFO_PRINTLN( "i1 {} {}", i1->has_decay_task(), decay.getDecayTime( *i1 ) );
+  INFO_PRINTLN( "i2 {} {}", i2->has_decay_task(), decay.getDecayTime( *i1 ) );
   decay.decayTask();  // should not destroy items
   if ( firstrealm->toplevel_item_count() != 2 )
   {
