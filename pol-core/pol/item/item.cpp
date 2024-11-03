@@ -402,7 +402,7 @@ void Item::printProperties( Clib::StreamWriter& sw ) const
   {
     auto dtime = Core::gamestate.world_decay.getDecayTime( this );
     if ( dtime != 0 )
-      sw( "DecayAt", dtime );
+      sw.add( "DecayAt", dtime );
   }
   else if ( decayat_gameclock_ != 0 )
     sw.add( "DecayAt", decayat_gameclock_ );
@@ -1217,7 +1217,7 @@ bool Item::can_add_to_decay_task( bool multi_check ) const
     return false;
   if ( multi_check && !itemdesc().decays_on_multis )
   {
-    if ( realm->find_supporting_multi( x, y, z ) != nullptr )
+    if ( realm()->find_supporting_multi( pos3d() ) != nullptr )
       return false;
   }
   return true;
