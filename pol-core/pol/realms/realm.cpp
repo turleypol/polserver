@@ -315,7 +315,7 @@ void Realm::add_multi( const Multi::UMulti& multi )
   if ( Plib::systemstate.config.decaytask )  // TODO DECAY ignore boats?
   {
     Core::WorldIterator<Core::ItemFilter>::InBox(
-        multi.current_box(), this,
+        multi.current_box().range(), this,  // TODO DECAY z check
         [&]( Items::Item* item )
         {
           if ( !item->has_decay_task() && item->can_add_to_decay_task() )
@@ -333,7 +333,7 @@ void Realm::remove_multi( const Multi::UMulti& multi )
   if ( Plib::systemstate.config.decaytask )  // TODO DECAY ignore boats?
   {
     Core::WorldIterator<Core::ItemFilter>::InBox(
-        multi.current_box(), this,
+        multi.current_box().range(), this,  // TODO DECAY z check?
         [&]( Items::Item* item )
         {
           if ( !item->has_decay_task() && item->can_add_to_decay_task() )
