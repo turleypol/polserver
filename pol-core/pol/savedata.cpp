@@ -11,6 +11,7 @@
 #include <exception>
 #include <fstream>
 
+#include "../clib/Program/ProgramConfig.h"
 #include "../clib/clib_endian.h"
 #include "../clib/fileutil.h"
 #include "../clib/iohelp.h"
@@ -25,7 +26,9 @@
 #include "item/item.h"
 #include "item/itemdesc.h"
 #include "objecthash.h"
+#include "realm/realm.h"
 #include "storage.h"
+#include "ufunc.h"
 #include "uobject.h"
 
 namespace Pol
@@ -208,6 +211,120 @@ void write_shadow_realms( Clib::StreamWriter& sw )
   }
 }
 
+// Austin (Oct. 17, 2006)
+// Added to handle gotten item saving.
+void WriteGottenItem( Mobile::Character* chr, Items::Item* item, Clib::StreamWriter& sw )
+{
+  if ( item == nullptr || item->orphan() )
+    return;
+  // For now, it just saves the item in items.txt
+  item->setposition( chr->pos() );
+
+  item->printOn( sw );
+
+  item->setposition(
+      Pos4d( 0, 0, 0,
+             item->realm() ) );  // TODO POS position should have no meaning remove this completely
+}
+
+void write_characters( Core::SaveContext& sc )
+{
+  for ( const auto& objitr : objStorageManager.objecthash )
+  {
+    UObject* obj = objitr.second.get();
+    if ( obj->ismobile() && !obj->orphan() )
+    {
+      Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
+      if ( !chr->isa( UOBJ_CLASS::CLASS_NPC ) )
+      {
+        chr->printOn( sc.pcs );
+        chr->clear_dirty();
+        chr->printWornItems( sc.pcs, sc.pcequip );
+      }
+    }
+  }
+}
+
+void write_npcs( Core::SaveContext& sc )
+{
+  for ( const auto& objitr : objStorageManager.objecthash )
+  {
+    UObject* obj = objitr.second.get();
+    if ( obj->ismobile() && !obj->orphan() )
+    {
+      Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
+      if ( chr->isa( UOBJ_CLASS::CLASS_NPC ) )
+      {
+        if ( chr->saveonexit() )
+        {
+          chr->printOn( sc.npcs );
+          chr->clear_dirty();
+          chr->printWornItems( sc.npcs, sc.npcequip );
+        }
+      }
+    }
+  }
+}
+
+void write_items( Clib::StreamWriter& sw_items )
+{
+  for ( const auto& realm : gamestate.Realms )
+  {
+    for ( const auto& p : realm->gridarea() )
+    {
+      for ( const auto& item : realm->getzone_grid( p ).items )
+      {
+        if ( item->itemdesc().save_on_exit && item->saveonexit() )
+        {
+          item->printOn( sw_items );
+          item->clear_dirty();
+        }
+      }
+    }
+  }
+
+  for ( const auto& objitr : objStorageManager.objecthash )
+  {
+    UObject* obj = objitr.second.get();
+    if ( obj->ismobile() && !obj->orphan() )
+    {
+      Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
+      if ( !chr->isa( UOBJ_CLASS::CLASS_NPC ) )
+      {
+        // Figure out where to save the 'gotten item' - Austin (Oct. 17, 2006)
+        if ( chr->has_gotten_item() )
+          WriteGottenItem( chr, chr->gotten_item().item(), sw_items );
+      }
+    }
+  }
+}
+
+void write_multis( Clib::StreamWriter& ofs )
+{
+  for ( const auto& realm : gamestate.Realms )
+  {
+    for ( const auto& p : realm->gridarea() )
+    {
+      for ( auto& multi : realm->getzone_grid( p ).multis )
+      {
+        if ( Clib::exit_signalled )  // drop waiting commit on shutdown
+        {
+          Multi::UHouse* house = multi->as_house();
+          if ( house != nullptr )
+          {
+            if ( house->IsCustom() )
+            {
+              if ( house->IsWaitingForAccept() )
+                house->AcceptHouseCommit( nullptr, false );
+            }
+          }
+        }
+        multi->printOn( ofs );
+        multi->clear_dirty();
+      }
+    }
+  }
+}
 bool should_write_data()
 {
   if ( Plib::systemstate.config.inhibit_saves )
@@ -501,119 +618,5 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
   return 0;
 }
 
-// Austin (Oct. 17, 2006)
-// Added to handle gotten item saving.
-inline void WriteGottenItem( Mobile::Character* chr, Items::Item* item, Clib::StreamWriter& sw )
-{
-  if ( item == nullptr || item->orphan() )
-    return;
-  // For now, it just saves the item in items.txt
-  item->setposition( chr->pos() );
-
-  item->printOn( sw );
-
-  item->setposition(
-      Pos4d( 0, 0, 0,
-             item->realm() ) );  // TODO POS position should have no meaning remove this completely
-}
-
-void write_characters( Core::SaveContext& sc )
-{
-  for ( const auto& objitr : objStorageManager.objecthash )
-  {
-    UObject* obj = objitr.second.get();
-    if ( obj->ismobile() && !obj->orphan() )
-    {
-      Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
-      if ( !chr->isa( UOBJ_CLASS::CLASS_NPC ) )
-      {
-        chr->printOn( sc.pcs );
-        chr->clear_dirty();
-        chr->printWornItems( sc.pcs, sc.pcequip );
-      }
-    }
-  }
-}
-
-void write_npcs( Core::SaveContext& sc )
-{
-  for ( const auto& objitr : objStorageManager.objecthash )
-  {
-    UObject* obj = objitr.second.get();
-    if ( obj->ismobile() && !obj->orphan() )
-    {
-      Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
-      if ( chr->isa( UOBJ_CLASS::CLASS_NPC ) )
-      {
-        if ( chr->saveonexit() )
-        {
-          chr->printOn( sc.npcs );
-          chr->clear_dirty();
-          chr->printWornItems( sc.npcs, sc.npcequip );
-        }
-      }
-    }
-  }
-}
-
-void write_items( Clib::StreamWriter& sw_items )
-{
-  for ( const auto& realm : gamestate.Realms )
-  {
-    for ( const auto& p : realm->gridarea() )
-    {
-      for ( const auto& item : realm->getzone_grid( p ).items )
-      {
-        if ( item->itemdesc().save_on_exit && item->saveonexit() )
-        {
-          item->printOn( sw_items );
-          item->clear_dirty();
-        }
-      }
-    }
-  }
-
-  for ( const auto& objitr : objStorageManager.objecthash )
-  {
-    UObject* obj = objitr.second.get();
-    if ( obj->ismobile() && !obj->orphan() )
-    {
-      Mobile::Character* chr = static_cast<Mobile::Character*>( obj );
-      if ( !chr->isa( UOBJ_CLASS::CLASS_NPC ) )
-      {
-        // Figure out where to save the 'gotten item' - Austin (Oct. 17, 2006)
-        if ( chr->has_gotten_item() )
-          WriteGottenItem( chr, chr->gotten_item().item(), sw_items );
-      }
-    }
-  }
-}
-
-void write_multis( Clib::StreamWriter& ofs )
-{
-  for ( const auto& realm : gamestate.Realms )
-  {
-    for ( const auto& p : realm->gridarea() )
-    {
-      for ( auto& multi : realm->getzone_grid( p ).multis )
-      {
-        if ( Clib::exit_signalled )  // drop waiting commit on shutdown
-        {
-          Multi::UHouse* house = multi->as_house();
-          if ( house != nullptr )
-          {
-            if ( house->IsCustom() )
-            {
-              if ( house->IsWaitingForAccept() )
-                house->AcceptHouseCommit( nullptr, false );
-            }
-          }
-        }
-        multi->printOn( ofs );
-        multi->clear_dirty();
-      }
-    }
-  }
-}
 }  // namespace Core
 }  // namespace Pol
