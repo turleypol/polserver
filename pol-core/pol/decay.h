@@ -7,6 +7,14 @@
 #include <atomic>
 
 #include "base/range.h"
+#include "gameclck.h"
+#include "reftypes.h"
+#include "uobject.h"
+
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/key_extractors.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index_container.hpp>
 
 namespace Pol::Testing
 {

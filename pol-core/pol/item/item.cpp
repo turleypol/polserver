@@ -115,6 +115,8 @@ Item* Item::clone() const
   item->luck( luck() );
   item->swing_speed_increase( swing_speed_increase() );
   item->weight_multiplier_mod( weight_multiplier_mod() );
+  item->min_attack_range_increase( min_attack_range_increase() );
+  item->max_attack_range_increase( max_attack_range_increase() );
 
 
   item->maxhp_mod( maxhp_mod() );
@@ -396,7 +398,13 @@ void Item::printProperties( Clib::StreamWriter& sw ) const
   if ( !snoop_script_.get().empty() )
     sw.add( "SnoopScript", snoop_script_.get() );
 
-  if ( decayat_gameclock_ != 0 )
+  if ( Plib::systemstate.config.decaytask )
+  {
+    auto dtime = Core::gamestate.world_decay.getDecayTime( this );
+    if ( dtime != 0 )
+      sw( "DecayAt", dtime );
+  }
+  else if ( decayat_gameclock_ != 0 )
     sw.add( "DecayAt", decayat_gameclock_ );
 
   if ( has_sellprice_() )
@@ -459,6 +467,10 @@ void Item::printProperties( Clib::StreamWriter& sw ) const
     sw.add( "Luck", luck().value );
   if ( has_swing_speed_increase() )
     sw.add( "SwingSpeedIncrease", swing_speed_increase().value );
+  if ( has_min_attack_range_increase() )
+    sw.add( "MinAttackRangeIncrease", min_attack_range_increase().value );
+  if ( has_max_attack_range_increase() )
+    sw.add( "MaxAttackRangeIncrease", max_attack_range_increase().value );
   // end new prop stuf
   if ( maxhp_mod_ )
     sw.add( "MaxHp_mod", maxhp_mod_ );
@@ -499,7 +511,27 @@ void Item::readProperties( Clib::ConfigElem& elem )
   unequip_script_ = elem.remove_string( "UNEQUIPSCRIPT", unequip_script_.get().c_str() );
   snoop_script_ = elem.remove_string( "SNOOPSCRIPT", snoop_script_.get().c_str() );
 
-  decayat_gameclock_ = elem.remove_ulong( "DECAYAT", 0 );
+  auto dtime = elem.remove_ulong( "DECAYAT", 0 );
+  if ( Plib::systemstate.config.decaytask )
+  {
+    if ( dtime > 0 )
+    {
+      // store relative time
+      // worldloading: WorldDecay::initialize handles add to decay (parent is unknown here)
+      // item creation: container also unknown and since its relative time, once its dropped on
+      // ground the time here defined is used
+      auto gmclock = Core::read_gameclock();
+      if ( dtime > gmclock )
+        reldecay_time_loaded( dtime - gmclock );
+      // else leftover or bug? use default time
+      else
+        disable_decay_task( true );
+    }
+  }
+  else
+    decayat_gameclock_ = dtime;
+
+
   sellprice_( elem.remove_ulong( "SELLPRICE", SELLPRICE_DEFAULT ) );
   buyprice_( elem.remove_ulong( "BUYPRICE", BUYPRICE_DEFAULT ) );
 
@@ -597,6 +629,13 @@ void Item::readProperties( Clib::ConfigElem& elem )
     swing_speed_increase( swing_speed_increase().setAsValue( value ) );
 
   weight_multiplier_mod( elem.remove_double( "WEIGHTMULTIPLIERMOD", 1.0 ) );
+
+  value = static_cast<s16>( elem.remove_int( "MINATTACKRANGEINCREASE", 0 ) );
+  if ( value != 0 )
+    min_attack_range_increase( min_attack_range_increase().setAsValue( value ) );
+  value = static_cast<s16>( elem.remove_int( "MAXATTACKRANGEINCREASE", 0 ) );
+  if ( value != 0 )
+    max_attack_range_increase( max_attack_range_increase().setAsValue( value ) );
 }
 
 void Item::builtin_on_use( Network::Client* client )
@@ -1024,6 +1063,17 @@ void Item::on_color_changed()
 void Item::on_movable_changed()
 {
   update_item_to_inrange( this );
+  if ( !Core::stateManager.gflag_in_system_load && Plib::systemstate.config.decaytask &&
+       objtype_ != UOBJ_CORPSE )
+  {
+    if ( movable() && !has_decay_task() )
+    {
+      if ( can_add_to_decay_task() )
+        Core::gamestate.world_decay.addObject( this, itemdesc().decay_time * 60 );
+    }
+    else if ( !movable() && has_decay_task() )
+      Core::gamestate.world_decay.removeObject( this );
+  }
 }
 
 void Item::on_invisible_changed()
@@ -1134,6 +1184,43 @@ void Item::disable_decay()
 {
   set_dirty();
   decayat_gameclock_ = 0;
+}
+
+bool Item::has_decay_task() const
+{
+  return flags_.get( Core::OBJ_FLAGS::DECAY_TASK );
+}
+
+void Item::set_decay_task( bool val )
+{
+  flags_.change( Core::OBJ_FLAGS::DECAY_TASK, val );
+  set_dirty();
+}
+
+bool Item::has_disabled_decay_task() const
+{
+  return flags_.get( Core::OBJ_FLAGS::DISABLE_DECAY_TASK );
+}
+
+void Item::disable_decay_task( bool val )
+{
+  flags_.change( Core::OBJ_FLAGS::DISABLE_DECAY_TASK, val );
+  if ( val && has_decay_task() )
+    Core::gamestate.world_decay.removeObject( this );
+  set_dirty();
+}
+
+bool Item::can_add_to_decay_task( bool multi_check ) const
+{
+  if ( orphan() || owner() != nullptr || has_disabled_decay_task() ||
+       ( !movable() && objtype_ != UOBJ_CORPSE ) )
+    return false;
+  if ( multi_check && !itemdesc().decays_on_multis )
+  {
+    if ( realm->find_supporting_multi( x, y, z ) != nullptr )
+      return false;
+  }
+  return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -15,8 +15,18 @@
 #include "plib/poltype.h"
 #include "plib/realmdescriptor.h"
 #include "plib/staticserver.h"
+#include "plib/systemstate.h"
 
+#include "decay.h"
+#include "gameclck.h"
+#include "globals/state.h"
+#include "globals/uvars.h"
+#include "item/item.h"
+#include "item/itemdesc.h"
 #include "mobile/charactr.h"
+#include "multi/multi.h"
+#include "multi/multidef.h"
+#include "polclass.h"
 #include "realms/WorldChangeReasons.h"
 #include "ufunc.h"
 #include "uworld.h"
@@ -272,6 +282,71 @@ void Realm::remove_mobile( const Mobile::Character& chr, WorldChangeReason reaso
 
   if ( chr.logged_in() )
     --_mobile_count;
+}
+
+void Realm::add_toplevel_item( Items::Item* item )
+{
+  ++_toplevel_item_count;
+  if ( !Core::stateManager.gflag_in_system_load && Plib::systemstate.config.decaytask &&
+       item->can_add_to_decay_task() )
+  {
+    // TODO see WorldDecay::initialize duplicate code
+    if ( item->has_reldecay_time_loaded() )  // use stored reltime
+    {
+      Core::gamestate.world_decay.addObject(
+          item, item->reldecay_time_loaded() + Core::read_gameclock() );
+      item->reldecay_time_loaded( 0 );
+    }
+    else
+      Core::gamestate.world_decay.addObject( item, item->itemdesc().decay_time * 60 );
+  }
+}
+
+void Realm::remove_toplevel_item( Items::Item* item )
+{
+  --_toplevel_item_count;
+  if ( Plib::systemstate.config.decaytask && item->has_decay_task() )
+    Core::gamestate.world_decay.removeObject( item );
+}
+
+void Realm::add_multi( const Multi::UMulti& multi )
+{
+  ++_multi_count;
+  if ( Plib::systemstate.config.decaytask &&
+       !multi.script_isa( Core::POLCLASS_BOAT ) )  // ignore boats
+  {
+    const Multi::MultiDef& md = multi.multidef();
+    short x1 = multi.x + md.minrx, y1 = multi.y + md.minry;
+    short x2 = multi.x + md.maxrx, y2 = multi.y + md.maxry;
+    Core::WorldIterator<Core::ItemFilter>::InBox(
+        x1, y1, x2, y2, this,
+        [&]( Items::Item* item )
+        {
+          if ( !item->has_decay_task() && item->can_add_to_decay_task() )
+            Core::gamestate.world_decay.addObject( item, item->itemdesc().decay_time * 60 );
+          else if ( item->has_decay_task() && !item->can_add_to_decay_task() )
+            Core::gamestate.world_decay.removeObject( item );
+        } );
+  }
+}
+
+void Realm::remove_multi( const Multi::UMulti& multi )
+{
+  --_multi_count;
+  if ( Plib::systemstate.config.decaytask &&
+       !multi.script_isa( Core::POLCLASS_BOAT ) )  // ignore boats
+  {
+    const Multi::MultiDef& md = multi.multidef();
+    short x1 = multi.x + md.minrx, y1 = multi.y + md.minry;
+    short x2 = multi.x + md.maxrx, y2 = multi.y + md.maxry;
+    Core::WorldIterator<Core::ItemFilter>::InBox(
+        x1, y1, x2, y2, this,
+        [&]( Items::Item* item )
+        {
+          if ( !item->has_decay_task() && item->can_add_to_decay_task() )
+            Core::gamestate.world_decay.addObject( item, item->itemdesc().decay_time * 60 );
+        } );
+  }
 }
 }  // namespace Realms
 }  // namespace Pol

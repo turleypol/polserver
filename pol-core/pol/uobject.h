@@ -136,11 +136,13 @@ enum class OBJ_FLAGS : u16
   MOVABLE = 1 << 4,
   IN_USE = 1 << 5,
   INVISIBLE = 1 << 6,
-  LOCKED = 1 << 7,              // ULockable flag
-  CONTENT_TO_GRAVE = 1 << 8,    // UCorpse flag
-  NO_DROP = 1 << 9,             // Item flag
-  NO_DROP_EXCEPTION = 1 << 10,  // Container/Character flag
-  CURSED = 1 << 11,             // Cursed
+  LOCKED = 1 << 7,               // ULockable flag
+  CONTENT_TO_GRAVE = 1 << 8,     // UCorpse flag
+  NO_DROP = 1 << 9,              // Item flag
+  NO_DROP_EXCEPTION = 1 << 10,   // Container/Character flag
+  CURSED = 1 << 11,              // Cursed
+  DECAY_TASK = 1 << 12,          // Item flag
+  DISABLE_DECAY_TASK = 1 << 13,  // Item flag
 };
 
 /**
@@ -303,6 +305,10 @@ public:
   DYN_PROPERTY( hit_chance, ValueModPack, PROP_HIT_CHANCE, ValueModPack::DEFAULT );
   DYN_PROPERTY( luck, ValueModPack, PROP_EXT_STATBAR_LUCK, ValueModPack::DEFAULT );
   DYN_PROPERTY( swing_speed_increase, ValueModPack, PROP_SWING_SPEED_INCREASE,
+                ValueModPack::DEFAULT );
+  DYN_PROPERTY( min_attack_range_increase, ValueModPack, PROP_MIN_ATTACK_RANGE_INCREASE,
+                ValueModPack::DEFAULT );
+  DYN_PROPERTY( max_attack_range_increase, ValueModPack, PROP_MAX_ATTACK_RANGE_INCREASE,
                 ValueModPack::DEFAULT );
 
 
