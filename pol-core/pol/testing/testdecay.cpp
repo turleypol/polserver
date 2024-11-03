@@ -10,6 +10,7 @@
 
 #include "../../clib/logfacility.h"
 #include "../../clib/rawtypes.h"
+#include "../../plib/systemstate.h"
 #include "../globals/uvars.h"
 #include "../item/item.h"
 #include "../polclock.h"
@@ -20,9 +21,10 @@
 
 namespace Pol::Testing
 {
+using namespace std::chrono_literals;
 void decay_test()
 {
-  using namespace std::chrono_literals;
+  Plib::systemstate.config.decaytask = false;
   auto createitem = []( Core::Pos4d p, u32 decay )
   {
     auto item = Items::Item::create( 0x0eed );
@@ -154,5 +156,41 @@ void decay_test()
     return;
   }
   UnitTest::inc_successes();
+}
+void decaytask_test()
+{
+  auto& decay = Core::gamestate.world_decay;
+  Plib::systemstate.config.decaytask = true;
+  auto createitem = []( Core::Pos4d p, u32 /*decay*/ )
+  {
+    auto item = Items::Item::create( 0x0eed );
+    item->setposition( p );
+    Core::add_item_to_world( item );
+    //    item->set_decay_after( decay );
+    return item;
+  };
+  INFO_PRINTLN( "    create items" );
+  auto* firstrealm = Core::gamestate.Realms[0];
+  auto* secondrealm = Core::gamestate.Realms[1];
+
+  // create 3 items, two should decay
+  auto* i1 = createitem( { 0, 0, 0, firstrealm }, 1 );
+  auto* i2 = createitem( { 0, 0, 0, firstrealm }, 60 );
+  auto* i3 = createitem( { firstrealm->area().se() - Core::Vec2d( 1, 1 ), 0, firstrealm }, 1 );
+  if ( firstrealm->toplevel_item_count() != 3 )
+  {
+    INFO_PRINTLN( "first realm toplevelcount 3!={}", firstrealm->toplevel_item_count() );
+    UnitTest::inc_failures();
+    return;
+  }
+  INFO_PRINTLN( "Gameclock {}", Core::read_gameclock() );
+  INFO_PRINTLN( "i1 {}", decay.getDecayTime( i1 ) );
+  INFO_PRINTLN( "i2 {}", decay.getDecayTime( i1 ) );
+  INFO_PRINTLN( "i3 {}", decay.getDecayTime( i1 ) );
+  // time machine
+  Core::shift_clock_for_unittest( 2s );
+
+  // decay thread doesnt run in test environment
+  // to be able to test realm add/delete the gamestate instance needs to be used
 }
 }  // namespace Pol::Testing
