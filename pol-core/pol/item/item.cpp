@@ -40,6 +40,7 @@
 #include "../ufunc.h"
 #include "../uoscrobj.h"
 #include "itemdesc.h"
+#include "realms/realm.h"
 #include "regions/resource.h"
 
 
