@@ -312,14 +312,10 @@ void Realm::remove_toplevel_item( Items::Item* item )
 void Realm::add_multi( const Multi::UMulti& multi )
 {
   ++_multi_count;
-  if ( Plib::systemstate.config.decaytask &&
-       !multi.script_isa( Core::POLCLASS_BOAT ) )  // ignore boats
+  if ( Plib::systemstate.config.decaytask )  // TODO DECAY ignore boats?
   {
-    const Multi::MultiDef& md = multi.multidef();
-    short x1 = multi.x + md.minrx, y1 = multi.y + md.minry;
-    short x2 = multi.x + md.maxrx, y2 = multi.y + md.maxry;
     Core::WorldIterator<Core::ItemFilter>::InBox(
-        x1, y1, x2, y2, this,
+        multi.current_box(), this,
         [&]( Items::Item* item )
         {
           if ( !item->has_decay_task() && item->can_add_to_decay_task() )
@@ -332,15 +328,12 @@ void Realm::add_multi( const Multi::UMulti& multi )
 
 void Realm::remove_multi( const Multi::UMulti& multi )
 {
+  // TODO DECAY oldpos is unknown
   --_multi_count;
-  if ( Plib::systemstate.config.decaytask &&
-       !multi.script_isa( Core::POLCLASS_BOAT ) )  // ignore boats
+  if ( Plib::systemstate.config.decaytask )  // TODO DECAY ignore boats?
   {
-    const Multi::MultiDef& md = multi.multidef();
-    short x1 = multi.x + md.minrx, y1 = multi.y + md.minry;
-    short x2 = multi.x + md.maxrx, y2 = multi.y + md.maxry;
     Core::WorldIterator<Core::ItemFilter>::InBox(
-        x1, y1, x2, y2, this,
+        multi.current_box(), this,
         [&]( Items::Item* item )
         {
           if ( !item->has_decay_task() && item->can_add_to_decay_task() )
