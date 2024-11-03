@@ -16,6 +16,7 @@
 #include "../polclock.h"
 #include "../realms/realm.h"
 #include "../realms/realms.h"
+#include "../ufunc.h"
 #include "../uworld.h"
 #include "testenv.h"
 
