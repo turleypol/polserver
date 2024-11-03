@@ -41,7 +41,7 @@ WorldDecay::SerialFromDecayItem::result_type WorldDecay::SerialFromDecayItem::op
 }
 
 WorldDecay::DecayItem::DecayItem( gameclock_t decaytime, ItemRef itemref )
-    : time( decaytime ), obj( itemref )
+    : time( decaytime ), obj( std::move( itemref ) )
 {
 }
 
@@ -64,7 +64,8 @@ void WorldDecay::removeObject( Items::Item* item )
   item->set_decay_task( false );
 }
 
-gameclock_t WorldDecay::getDecayTime( Items::Item* obj ) const
+// gameclock_t WorldDecay::getDecayTime( Items::Item* obj ) const
+gameclock_t WorldDecay::getDecayTime( const Items::Item* obj ) const
 {
   if ( !obj->has_decay_task() )
     return 0;
@@ -75,10 +76,10 @@ gameclock_t WorldDecay::getDecayTime( Items::Item* obj ) const
   return entry->time;
 }
 
-gameclock_t WorldDecay::getDecayTime( const Items::Item* obj ) const
+/*gameclock_t WorldDecay::getDecayTime( const Items::Item* obj ) const
 {
   return getDecayTime( const_cast<Items::Item*>( obj ) );
-}
+}*/
 
 void WorldDecay::decayTask()
 {
