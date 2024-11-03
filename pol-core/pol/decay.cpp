@@ -15,7 +15,7 @@
 #include "../clib/esignal.h"
 #include "../clib/logfacility.h"
 #include "../clib/timer.h"
-#include "../plib/objecttype.h"
+#include "../plib/objtype.h"
 #include "../plib/systemstate.h"
 #include "gameclck.h"
 #include "globals/state.h"
