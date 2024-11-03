@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import configparser
 import logging
 import json
@@ -191,27 +193,7 @@ class PolServer:
           else:
             self.log.error("invalid clientid")
 
-  def t(self):
-    sock = socket.create_connection((self.lconf.get('ip'), self.lconf.getint('port')))
-    sock.settimeout(20);
-
-    seed = bytes([0x01, 0x02, 0x03, 0x04,0x5,0x6,0x7]*10000)
-    bts = bytes([0xF1, 0x00, 0x04, 0xFF])
-    self.log.error("SEND------");
-    sock.send(seed)
-    sock.send(bts)
-
-    try:
-      while sock:
-        rcv = sock.recv(1024)
-        if (not rcv):
-          break
-    except:
-      pass
-
-    self.log.error('--------------End')
   def startclient(self,user,psw,charname,charidx,id):
-    #self.t()
     with self.clientLock:
       c = client.Client(id)
       self.clients.append(c)

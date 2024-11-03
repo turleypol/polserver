@@ -1,0 +1,40 @@
+// Parser tests where scoped identifiers have been added. Execution will change
+// once implementation is done. See comments for future changes.
+
+class Animal()
+  var arr := array{ 1, 2, 3 };
+  var str := "string";
+  var num := 1;
+
+  function StaticFunc( foo )
+    print( $"Animal::StaticFunc foo={foo}" );
+  endfunction
+endclass
+
+var arr := array{ "a", "b", "c" };
+var str := "gnirts";
+var num := 100;
+function StaticFunc( foo )
+  return print( $"::StaticFunc foo={foo}" );
+endfunction
+
+// foreachIterableExpression
+foreach foo in Animal::arr
+  print( foo );
+endforeach
+
+foreach foo in arr
+  print( foo );
+endforeach
+
+print( "-----" );
+
+// functionReference
+@Animal::StaticFunc.call( Animal::str);
+@StaticFunc.call( str );
+
+print( "-----" );
+
+// primary
+print( Animal::num);
+print( num );

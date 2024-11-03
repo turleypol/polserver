@@ -1180,7 +1180,7 @@ class Client(threading.Thread):
     po = packets.VisualRangePacket()
     po.fill(18)
     self.queue(po)
-  
+ 
   @logincomplete
   def sendLanguage(self):
     ''' Sends client lamguage to server, should not send it twice '''

@@ -1,0 +1,1 @@
+:4:3: error: Exported function 'Animal::foo' cannot be scoped.

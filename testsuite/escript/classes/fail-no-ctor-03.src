@@ -1,0 +1,8 @@
+class Animal()
+  // Missing 'this'
+  function Animal()
+  endfunction
+endclass
+
+var obj := Animal();
+print( obj );

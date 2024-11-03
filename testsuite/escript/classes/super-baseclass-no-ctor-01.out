@@ -1,0 +1,3 @@
+BaseClass1::BaseClass1 this=<class Animal>
+Animal::Animal this=<class Animal>
+BaseClass2::Method2 this=<class Animal>

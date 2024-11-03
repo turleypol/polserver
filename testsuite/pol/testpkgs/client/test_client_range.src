@@ -184,9 +184,7 @@ exported function update_range_change( resmngr )
   var item := resmngr.CreateItemAtLocation( char.x + 20, char.y, char.z, 0xf3f );
   while ( !waitForClient( 0, { EVT_OWNCREATE } ) )
   endwhile
-  print( $"item {hex( item.serial )} {item.serial}" );
   Clear_Event_Queue();
-  print( "    changing size" );
   char.client.visual_range := 20;
   var i := 10;
   while ( --i > 0 )
@@ -201,7 +199,6 @@ exported function update_range_change( resmngr )
   if ( i == 0 )
     return ret_error( "item was never visible" );
   endif
-  print( "    changing size" );
   char.client.visual_range := 0; // back to default
   i := 10;
   while ( --i > 0 )

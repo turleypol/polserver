@@ -1,0 +1,4 @@
+var a := { 82, 54, 22, "x" };
+foreach i in a
+  print( i );
+endforeach

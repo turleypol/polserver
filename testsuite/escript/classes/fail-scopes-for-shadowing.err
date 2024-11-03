@@ -1,0 +1,1 @@
+:5:9: error: FOR iterator 'variable' hides a local variable.

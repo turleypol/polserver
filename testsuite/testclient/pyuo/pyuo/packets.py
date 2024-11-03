@@ -1463,7 +1463,7 @@ class GeneralInfoPacket(Packet):
 
     if self.sub == self.SUB_LOGIN:
       self.euchar(0x0a)
-      self.euint(0x0)
+      self.euint(0x0) # uoexpansion flag
 
     elif self.sub == self.SUB_LANG:
       self.estring(self.lang, len(self.lang)+1)
@@ -1568,7 +1568,7 @@ class VisualRangePacket(Packet):
 
   def decodeChild(self):
     self.visualrange = self.duchar()
-  
+ 
   def fill(self,visualrange):
     self.visualrange=visualrange
 
