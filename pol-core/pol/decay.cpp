@@ -14,6 +14,8 @@
 
 #include "../clib/esignal.h"
 #include "../clib/logfacility.h"
+#include "../clib/timer.h"
+#include "../plib/objecttype.h"
 #include "../plib/systemstate.h"
 #include "gameclck.h"
 #include "globals/state.h"
@@ -146,7 +148,7 @@ void WorldDecay::decayTask()
     }
     if ( !item->itemdesc().decays_on_multis )
     {
-      auto multi = item->realm->find_supporting_multi( item->x, item->y, item->z );
+      auto multi = item->realm()->find_supporting_multi( item->pos3d() );
       if ( multi != nullptr )
       {
         POLLOG_INFOLN( "DECAY IS ON MULTI: 0x{:#x} {}", item->serial, item->name() );
@@ -174,7 +176,7 @@ void WorldDecay::decayTask()
     }
     Multi::UMulti* multi = nullptr;
     if ( descriptor.decays_on_multis )
-      multi = item->realm->find_supporting_multi( item->x, item->y, item->z );
+      multi = item->realm()->find_supporting_multi( item->pos3d() );
 
     item->spill_contents( multi );
     destroy_item( item );
@@ -206,7 +208,7 @@ void WorldDecay::initialize()
   for ( auto& realm : gamestate.Realms )
   {
     WorldIterator<ItemFilter>::InBox(
-        0, 0, realm->width(), realm->height(), realm,
+        realm->area(), realm,
         [&]( Items::Item* item )
         {
           if ( item->can_add_to_decay_task() )
