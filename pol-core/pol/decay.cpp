@@ -152,11 +152,12 @@ void WorldDecay::decayTask()
         delayeditems.push_back( item );
         continue;
       }
-      if ( res == SKIP_FURTHER_CHECKS )
+      if ( res == Decay::SKIP_FURTHER_CHECKS )
         skipchecks = true;
     }
     auto multi = item->realm()->find_supporting_multi( item->pos3d() );
     // TODO DECAY what to do with this dynamic skipcheck
+    // always add items in multis and remove them here once they would decay?
     if ( !skipchecks )
     {
       if ( !item->itemdesc().decays_on_multis )
