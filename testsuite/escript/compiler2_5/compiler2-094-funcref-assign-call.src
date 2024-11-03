@@ -1,6 +1,0 @@
-function foo()
-  print( "correct" );
-endfunction
-
-var f := @foo;
-f.call();

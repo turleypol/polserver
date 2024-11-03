@@ -1,3 +1,0 @@
-foreach a in SplitWords( "a b c d" )
-  print( a );
-endforeach

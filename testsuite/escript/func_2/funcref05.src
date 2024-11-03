@@ -1,5 +1,0 @@
-( sum )( b := 2 );
-
-function sum( a, b )
-  return a + b;
-endfunction

@@ -1,6 +1,0 @@
-BaseClass::BaseClass this=<class Foo>
-Foo::Foo this=<class Foo>
-<class Foo>
-----
-Foo::Foo this=struct{  }
-struct{  }

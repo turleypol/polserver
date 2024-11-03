@@ -1,7 +1,0 @@
-function foo( a, b )
-  print( a );
-  print( b );
-endfunction
-
-var f := @foo;
-f.call( "X", "yy" );

@@ -1,6 +1,0 @@
-
-program foo()
-
-  print( "abcd".Find( "b" ) );
-
-endprogram

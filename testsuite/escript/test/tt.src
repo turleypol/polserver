@@ -1,9 +1,0 @@
-var          items:={},item;items.append( struct{ graphic := CInt(
-                                item.ID ),
-                                x := CInt(
-                                item.OffsetX ),
-                                y := CInt(
-                                item.OffsetY )
-                        }
-                        );
-

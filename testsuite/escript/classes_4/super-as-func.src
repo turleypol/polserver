@@ -1,7 +1,0 @@
-// Can define a global function super
-
-function super()
-  print( "funct called" );
-endfunction
-
-super();

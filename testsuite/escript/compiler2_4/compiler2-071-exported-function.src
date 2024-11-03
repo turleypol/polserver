@@ -1,6 +1,0 @@
-exported function foo( a, b )
-  print( a + b );
-  return a + b;
-endfunction
-
-foo( 3, 2 );

@@ -1,2 +1,0 @@
-var d := dictionary{ 5 -> "hey", 7 -> "you" };
-print( d );

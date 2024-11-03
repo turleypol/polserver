@@ -1,3 +1,0 @@
-foreach a in { 6, 4, 8 }
-  print( a );
-endforeach

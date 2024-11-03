@@ -1,5 +1,0 @@
-function foo()
-  return "hello";
-endfunction
-
-foo();

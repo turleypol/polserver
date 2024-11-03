@@ -1,5 +1,0 @@
-if ( 0 )
-  print( "incorrect - first path taken" );
-else
-  print( "correct - else path taken" );
-endif

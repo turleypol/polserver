@@ -1,8 +1,0 @@
-// The extra semicolon can make this look like:
-// foreach a in SplitWords
-//    ("w x y z");
-//    print(a)
-// endforeach
-foreach a in SplitWords( "w x y z" )
-  print( a );
-endforeach

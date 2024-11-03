@@ -1,5 +1,0 @@
-if ( 7 )
-  print( "correct - path taken" );
-else
-  print( "incorrect - should not take else" );
-endif

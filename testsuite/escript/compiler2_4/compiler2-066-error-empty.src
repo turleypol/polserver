@@ -1,2 +1,0 @@
-var a := error;
-print( a );

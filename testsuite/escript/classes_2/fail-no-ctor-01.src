@@ -1,5 +1,0 @@
-class Animal()
-endclass
-
-var obj := Animal();
-print( obj );

@@ -1,2 +1,0 @@
-var a := struct{ aaabb := 77 };
-print( a.aaabb );

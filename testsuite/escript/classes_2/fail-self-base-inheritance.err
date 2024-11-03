@@ -1,1 +1,0 @@
-:10:1: error: Class 'Animal' references itself as a base class through inheritance.

@@ -1,2 +1,0 @@
-var s := "abcdef";
-print( s.find( "cd" ) );
