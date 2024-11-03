@@ -184,9 +184,9 @@ void decaytask_test()
     return;
   }
   INFO_PRINTLN( "Gameclock {}", Core::read_gameclock() );
-  INFO_PRINTLN( "i1 {}", decay.getDecayTime( i1 ) );
-  INFO_PRINTLN( "i2 {}", decay.getDecayTime( i1 ) );
-  INFO_PRINTLN( "i3 {}", decay.getDecayTime( i1 ) );
+  INFO_PRINTLN( "i1 {} {}", i1->has_decay_task(), decay.getDecayTime( i1 ) );
+  INFO_PRINTLN( "i2 {} {}", i2->has_decay_task(), decay.getDecayTime( i1 ) );
+  INFO_PRINTLN( "i3 {} {}", i3->has_decay_task(), decay.getDecayTime( i1 ) );
   // time machine
   Core::shift_clock_for_unittest( 2s );
 
