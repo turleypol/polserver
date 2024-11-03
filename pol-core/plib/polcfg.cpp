@@ -15,6 +15,7 @@
 
 #include <cstdio>
 #include <exception>
+#include <sstream>
 #include <string.h>
 #include <string>
 #include <sys/stat.h>
