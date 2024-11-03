@@ -64,7 +64,6 @@ void WorldDecay::removeObject( Items::Item* item )
   item->set_decay_task( false );
 }
 
-// gameclock_t WorldDecay::getDecayTime( Items::Item* obj ) const
 gameclock_t WorldDecay::getDecayTime( const Items::Item* obj ) const
 {
   if ( !obj->has_decay_task() )
@@ -75,11 +74,6 @@ gameclock_t WorldDecay::getDecayTime( const Items::Item* obj ) const
     return 0;  // TODO error
   return entry->time;
 }
-
-/*gameclock_t WorldDecay::getDecayTime( const Items::Item* obj ) const
-{
-  return getDecayTime( const_cast<Items::Item*>( obj ) );
-}*/
 
 void WorldDecay::decayTask()
 {
@@ -131,6 +125,7 @@ void WorldDecay::decayTask()
       destroyeditems.push_back( item );
       continue;
     }
+    // item::should_decay checks
     if ( item->inuse() )
     {
       delayeditems.push_back( item );
@@ -147,22 +142,30 @@ void WorldDecay::decayTask()
       POLLOG_INFOLN( "DECAY IS NOT MOVABLE: 0x{:#x} {}", item->serial, item->name() );
       continue;
     }
-    if ( !item->itemdesc().decays_on_multis )
-    {
-      auto multi = item->realm()->find_supporting_multi( item->pos3d() );
-      if ( multi != nullptr )
-      {
-        POLLOG_INFOLN( "DECAY IS ON MULTI: 0x{:#x} {}", item->serial, item->name() );
-        continue;
-      }
-    }
-
+    // check the CanDecay syshook first if it returns 1 go over to other checks
+    bool skipchecks = false;
     if ( gamestate.system_hooks.can_decay )
     {
-      if ( !gamestate.system_hooks.can_decay->call( item->make_ref() ) )
+      auto res = gamestate.system_hooks.can_decay->call_long( new Module::EItemRefObjImp( item ) );
+      if ( !res )
       {
         delayeditems.push_back( item );
         continue;
+      }
+      if ( res == SKIP_FURTHER_CHECKS )
+        skipchecks = true;
+    }
+    auto multi = item->realm()->find_supporting_multi( item->pos3d() );
+    // TODO DECAY what to do with this dynamic skipcheck
+    if ( !skipchecks )
+    {
+      if ( !item->itemdesc().decays_on_multis )
+      {
+        if ( multi != nullptr )
+        {
+          POLLOG_INFOLN( "DECAY IS ON MULTI: 0x{:#x} {}", item->serial, item->name() );
+          continue;
+        }
       }
     }
 
@@ -175,10 +178,6 @@ void WorldDecay::decayTask()
         continue;
       }
     }
-    Multi::UMulti* multi = nullptr;
-    if ( descriptor.decays_on_multis )
-      multi = item->realm()->find_supporting_multi( item->pos3d() );
-
     item->spill_contents( multi );
     destroy_item( item );
     destroyeditems.push_back( item );
