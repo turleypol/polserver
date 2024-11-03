@@ -88,10 +88,10 @@ void WorldDecay::decayTask()
     stateManager.decay_statistics.active_decay.update( indexByTime.size() );
   auto decayStats = []()
   {
-    POLLOG_INFO.Format(
+    POLLOG_INFOLN(
         "DECAY STATISTICS: decayed: max {} mean {} variance {} runs {} active max {} "
         "mean "
-        "{} variance {} runs {}\n" )
+        "{} variance {} runs {}" )
         << stateManager.decay_statistics.decayed.max()
         << stateManager.decay_statistics.decayed.mean()
         << stateManager.decay_statistics.decayed.variance()
@@ -137,12 +137,12 @@ void WorldDecay::decayTask()
     // testing code TODO remove
     if ( item->owner() != nullptr )
     {
-      POLLOG_INFO << "DECAY IS NOT TOPLEVEL: " << item->serial << " " << item->name() << "\n";
+      POLLOG_INFOLN( "DECAY IS NOT TOPLEVEL: 0x{:#x} {}", item->serial, item->name() );
       continue;
     }
     if ( !item->movable() && item->objtype_ != UOBJ_CORPSE )
     {
-      POLLOG_INFO << "DECAY IS NOT MOVABLE: " << item->serial << " " << item->name() << "\n";
+      POLLOG_INFOLN( "DECAY IS NOT MOVABLE: 0x{:#x} {}", item->serial, item->name() );
       continue;
     }
     if ( !item->itemdesc().decays_on_multis )
@@ -150,7 +150,7 @@ void WorldDecay::decayTask()
       auto multi = item->realm->find_supporting_multi( item->x, item->y, item->z );
       if ( multi != nullptr )
       {
-        POLLOG_INFO << "DECAY IS ON MULTI: " << item->serial << " " << item->name() << "\n";
+        POLLOG_INFOLN( "DECAY IS ON MULTI: 0x{:#x} {}", item->serial, item->name() );
         continue;
       }
     }
@@ -201,7 +201,7 @@ void WorldDecay::decayTask()
 
 void WorldDecay::initialize()
 {
-  POLLOG_INFO << "Initializing decay ";
+  POLLOG_INFO( "Initializing decay " );
   auto now = read_gameclock();
   Tools::Timer<> timer;
   for ( auto& realm : gamestate.Realms )
@@ -227,12 +227,13 @@ void WorldDecay::initialize()
             item->reldecay_time_loaded( 0 );
           }
         } );
-    POLLOG_INFO << ".";
+    POLLOG_INFO( "." );
   }
   timer.stop();
   auto& indexByTime = decay_cont.get<IndexByTime>();
-  POLLOG_INFO << " " << indexByTime.size() << " elements in " << timer.ellapsed() << " ms.\n";
+  POLLOG_INFOLN( " {} elements in {}ms.", indexByTime.size(), timer.ellapsed() );
 }
+
 ///
 /// [1] Item Decay Criteria
 ///     An Item is allowed to decay if ALL of the following are true:
