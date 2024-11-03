@@ -52,6 +52,7 @@
 #include "multi/multi.h"
 #include "objecthash.h"
 #include "polvar.h"
+#include "regions/resource.h"
 #include "savedata.h"
 #include "servdesc.h"
 #include "startloc.h"
