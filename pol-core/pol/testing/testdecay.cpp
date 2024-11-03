@@ -173,7 +173,7 @@ void decaytask_test()
   auto& decay = Core::gamestate.world_decay;
   Plib::systemstate.config.decaytask = true;
   auto now = Core::read_gameclock();
-  auto createitem = [&]( Core::Pos4d p, u32 decay )
+  auto createitem = [&]( Core::Pos4d p, u32 decaytime ) -> Items::Item*
   {
     auto item = Items::Item::create( 0x0eed );
     item->setposition( p );
@@ -190,7 +190,7 @@ void decaytask_test()
       UnitTest::inc_failures();
       return nullptr;
     }
-    decay.addObject( item, decay );
+    decay.addObject( item, decaytime );
     return item;
   };
   INFO_PRINTLN( "    create items" );
@@ -209,7 +209,6 @@ void decaytask_test()
   INFO_PRINTLN( "Gameclock {}", Core::read_gameclock() );
   INFO_PRINTLN( "i1 {} {}", i1->has_decay_task(), decay.getDecayTime( i1 ) );
   INFO_PRINTLN( "i2 {} {}", i2->has_decay_task(), decay.getDecayTime( i1 ) );
-  INFO_PRINTLN( "i3 {} {}", i3->has_decay_task(), decay.getDecayTime( i1 ) );
   decay.decayTask();  // should not destroy items
   if ( firstrealm->toplevel_item_count() != 2 )
   {
