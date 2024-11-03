@@ -207,8 +207,8 @@ void decaytask_test()
     return;
   }
   INFO_PRINTLN( "Gameclock {}", Core::read_gameclock() );
-  INFO_PRINTLN( "i1 {} {}", i1->has_decay_task(), decay.getDecayTime( *i1 ) );
-  INFO_PRINTLN( "i2 {} {}", i2->has_decay_task(), decay.getDecayTime( *i1 ) );
+  INFO_PRINTLN( "i1 {} {}", i1->has_decay_task(), decay.getDecayTime( i1.get() ) );
+  INFO_PRINTLN( "i2 {} {}", i2->has_decay_task(), decay.getDecayTime( i2.get() ) );
   decay.decayTask();  // should not destroy items
   if ( firstrealm->toplevel_item_count() != 2 )
   {
@@ -220,9 +220,9 @@ void decaytask_test()
   Core::shift_clock_for_unittest( 10s );
 
   decay.decayTask();
-  if ( i1.get() || !i2.get() )
+  if ( !i1->orphan() || i2->orphan() )
   {
-    INFO_PRINTLN( "first destroyed: {}, second not: {}", i1 == nullptr, i2 != nullptr );
+    INFO_PRINTLN( "first destroyed: {}, second not: {}", i1->orphan(), !i2->orphan() );
     UnitTest::inc_failures();
     return;
   }
