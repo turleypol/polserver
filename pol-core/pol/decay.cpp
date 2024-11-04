@@ -110,6 +110,8 @@ void WorldDecay::decayTask()
     if ( v.time > now )
       break;
     decayitems.push_back( v );
+    if ( decayitems.size() >= 100 )  // not more then 100 in a single run
+      break;
   }
   if ( decayitems.empty() )  // early out
   {
@@ -121,11 +123,12 @@ void WorldDecay::decayTask()
     return;
   }
 
-  std::vector<Items::Item*> destroyeditems;
-  std::vector<Items::Item*> delayeditems;
+  std::vector<ItemRef> destroyeditems;
+  std::vector<ItemRef> delayeditems;
   for ( auto& v : decayitems )
   {
-    auto item = v.obj.get();
+    auto& item = v.obj;
+
     if ( item->orphan() )
     {
       destroyeditems.push_back( item );
@@ -152,7 +155,12 @@ void WorldDecay::decayTask()
     bool skipchecks = false;
     if ( gamestate.system_hooks.can_decay )
     {
-      auto res = gamestate.system_hooks.can_decay->call_long( new Module::EItemRefObjImp( item ) );
+      auto res = gamestate.system_hooks.can_decay->call_long( item.make_ref() );
+      if ( item->orphan() )
+      {
+        destroyeditems.push_back( item );
+        continue;
+      }
       if ( !res )
       {
         delayeditems.push_back( item );
@@ -184,6 +192,11 @@ void WorldDecay::decayTask()
         delayeditems.push_back( item );
         continue;
       }
+      if ( item->orphan() )
+      {
+        destroyeditems.push_back( item );
+        continue;
+      }
     }
     item->spill_contents( multi );
     destroy_item( item );
@@ -200,8 +213,17 @@ void WorldDecay::decayTask()
   }
   for ( const auto& item : delayeditems )
   {
-    if ( getDecayTime( item ) <= now )  // check if script has removed it or changed time
-      addObject( item, 10 * 60 );       // delay by 10minutes like old decay system would behave
+    // check if script has removed it or changed time
+    if ( item->orphan )
+    {
+      indexByObj.erase( item->serial_ext );
+      item->set_decay_task( false );
+      continue;
+    }
+    if ( !item->has_decay_task() )
+      continue;
+    if ( getDecayTime( item ) <= now )
+      addObject( item, 10 * 60 );  // delay by 10minutes like old decay system would behave
   }
   if ( statistics )
     decayStats();
