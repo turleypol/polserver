@@ -172,6 +172,7 @@ void decaytask_test()
   }
   auto& decay = Core::gamestate.world_decay;
   Plib::systemstate.config.decaytask = true;
+  Plib::systemstate.config.thread_decay_statistics = true;
   auto now = Core::read_gameclock();
   auto createitem = [&]( Core::Pos4d p, u32 decaytime ) -> Items::Item*
   {
