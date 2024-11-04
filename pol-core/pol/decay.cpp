@@ -214,7 +214,7 @@ void WorldDecay::decayTask()
   for ( const auto& item : delayeditems )
   {
     // check if script has removed it or changed time
-    if ( item->orphan )
+    if ( item->orphan() )
     {
       indexByObj.erase( item->serial_ext );
       item->set_decay_task( false );
