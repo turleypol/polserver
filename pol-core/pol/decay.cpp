@@ -123,32 +123,49 @@ void WorldDecay::decayTask()
     return;
   }
 
-  std::vector<ItemRef> removeditems;  // TODO use lambda instead of additional vectors
-  std::vector<ItemRef> delayeditems;
+  size_t removeditems = 0;
+  auto removeitem = [&]( const ItemRef& item )
+  {
+    removeObject( item.get() );
+    ++removeditems;
+  };
+  auto delayitem = [&]( const ItemRef& item )
+  {
+    // check if script has removed it or changed time
+    if ( item->orphan() )
+    {
+      removeObject( item.get() );
+      continue;
+    }
+    if ( !getDecayTime( item.get() ) )  // disabled and already removed
+      continue;
+    addObject( item.get(), 10 * 60 );  // delay by 10minutes like old decay system would behave
+  };
+
   for ( auto& item : decayitems )
   {
     if ( item->orphan() )
     {
-      removeditems.push_back( item );
+      removeitem( item );
       continue;
     }
     // item::should_decay checks
     if ( item->inuse() )
     {
-      delayeditems.push_back( item );
+      delayitem( item );
       continue;
     }
     // testing code TODO remove
     if ( item->owner() != nullptr )
     {
       POLLOG_INFOLN( "DECAY IS NOT TOPLEVEL: 0x{:#x} {}", item->serial, item->name() );
-      removeditems.push_back( item );
+      removeitem( item );
       continue;
     }
     if ( !item->movable() && item->objtype_ != UOBJ_CORPSE )
     {
       POLLOG_INFOLN( "DECAY IS NOT MOVABLE: 0x{:#x} {}", item->serial, item->name() );
-      removeditems.push_back( item );
+      removeitem( item );
       continue;
     }
     // check the CanDecay syshook first if it returns 1 go over to other checks
@@ -158,12 +175,12 @@ void WorldDecay::decayTask()
       auto res = gamestate.system_hooks.can_decay->call_long( item->make_ref() );
       if ( item->orphan() )
       {
-        removeditems.push_back( item );
+        removeitem( item );
         continue;
       }
       if ( !res )
       {
-        delayeditems.push_back( item );  // TODO should it be really delayed by 10min?
+        delayitem( item );  // TODO should it be really delayed by 10min?
         continue;
       }
       if ( res == Decay::SKIP_FURTHER_CHECKS )
@@ -179,7 +196,7 @@ void WorldDecay::decayTask()
         if ( multi != nullptr )
         {
           POLLOG_INFOLN( "DECAY IS ON MULTI: 0x{:#x} {}", item->serial, item->name() );
-          removeditems.push_back( item );
+          removeitem( item );
           continue;
         }
       }
@@ -190,39 +207,22 @@ void WorldDecay::decayTask()
     {
       if ( !call_script( descriptor.destroy_script, item->make_ref() ) )
       {
-        delayeditems.push_back( item );
+        delayitem( item );
         continue;
       }
       if ( item->orphan() )
       {
-        removeditems.push_back( item );
+        removeitem( item );
         continue;
       }
     }
     item->spill_contents( multi );
     destroy_item( item.get() );
-    removeditems.push_back( item );
+    removeitem( item );
   }
 
-  auto& indexByObj = decay_cont.get<IndexByObject>();
   if ( statistics )
-    stateManager.decay_statistics.decayed.update( removeditems.size() );
-  for ( const auto& item : removeditems )
-  {
-    removeObject( item.get() );
-  }
-  for ( const auto& item : delayeditems )
-  {
-    // check if script has removed it or changed time
-    if ( item->orphan() )
-    {
-      removeObject( item.get() );
-      continue;
-    }
-    if ( !getDecayTime( item.get() ) )  // disabled and already removed
-      continue;
-    addObject( item.get(), 10 * 60 );  // delay by 10minutes like old decay system would behave
-  }
+    stateManager.decay_statistics.decayed.update( removeditems );
   if ( statistics )
     decayStats();
 }
