@@ -61,7 +61,7 @@ void WorldDecay::addObject( Items::Item* item, gameclock_t decaytime )
 void WorldDecay::removeObject( Items::Item* item )
 {
   auto& indexByObj = decay_cont.get<IndexByObject>();
-  indexByObj.erase( item->serial_ext );  // ignore error?
+  indexByObj.erase( item->serial_ext );  // ignore error
   item->set_decay_task( false );
 }
 
@@ -85,7 +85,6 @@ void WorldDecay::decayTask()
 {
   auto& indexByTime = decay_cont.get<IndexByTime>();
   auto now = read_gameclock();
-  std::vector<DecayItem> decayitems;
   bool statistics = Plib::systemstate.config.thread_decay_statistics;
   if ( statistics )
     stateManager.decay_statistics.active_decay.update( indexByTime.size() );
@@ -105,11 +104,12 @@ void WorldDecay::decayTask()
   };
   // need to collect possible items
   // since script calls could add/remove in container
+  std::vector<ItemRef> decayitems;
   for ( auto& v : indexByTime )
   {
     if ( v.time > now )
       break;
-    decayitems.push_back( v );
+    decayitems.push_back( v.obj );
     if ( decayitems.size() >= 100 )  // not more then 100 in a single run
       break;
   }
@@ -123,15 +123,13 @@ void WorldDecay::decayTask()
     return;
   }
 
-  std::vector<ItemRef> destroyeditems;
+  std::vector<ItemRef> removeditems;  // TODO use lambda instead of additional vectors
   std::vector<ItemRef> delayeditems;
-  for ( auto& v : decayitems )
+  for ( auto& item : decayitems )
   {
-    auto& item = v.obj;
-
     if ( item->orphan() )
     {
-      destroyeditems.push_back( item );
+      removeditems.push_back( item );
       continue;
     }
     // item::should_decay checks
@@ -144,11 +142,13 @@ void WorldDecay::decayTask()
     if ( item->owner() != nullptr )
     {
       POLLOG_INFOLN( "DECAY IS NOT TOPLEVEL: 0x{:#x} {}", item->serial, item->name() );
+      removeditems.push_back( item );
       continue;
     }
     if ( !item->movable() && item->objtype_ != UOBJ_CORPSE )
     {
       POLLOG_INFOLN( "DECAY IS NOT MOVABLE: 0x{:#x} {}", item->serial, item->name() );
+      removeditems.push_back( item );
       continue;
     }
     // check the CanDecay syshook first if it returns 1 go over to other checks
@@ -158,12 +158,12 @@ void WorldDecay::decayTask()
       auto res = gamestate.system_hooks.can_decay->call_long( item->make_ref() );
       if ( item->orphan() )
       {
-        destroyeditems.push_back( item );
+        removeditems.push_back( item );
         continue;
       }
       if ( !res )
       {
-        delayeditems.push_back( item );
+        delayeditems.push_back( item );  // TODO should it be really delayed by 10min?
         continue;
       }
       if ( res == Decay::SKIP_FURTHER_CHECKS )
@@ -179,6 +179,7 @@ void WorldDecay::decayTask()
         if ( multi != nullptr )
         {
           POLLOG_INFOLN( "DECAY IS ON MULTI: 0x{:#x} {}", item->serial, item->name() );
+          removeditems.push_back( item );
           continue;
         }
       }
@@ -194,36 +195,33 @@ void WorldDecay::decayTask()
       }
       if ( item->orphan() )
       {
-        destroyeditems.push_back( item );
+        removeditems.push_back( item );
         continue;
       }
     }
     item->spill_contents( multi );
     destroy_item( item.get() );
-    destroyeditems.push_back( item );
+    removeditems.push_back( item );
   }
 
   auto& indexByObj = decay_cont.get<IndexByObject>();
   if ( statistics )
-    stateManager.decay_statistics.decayed.update( destroyeditems.size() );
-  for ( const auto& item : destroyeditems )
+    stateManager.decay_statistics.decayed.update( removeditems.size() );
+  for ( const auto& item : removeditems )
   {
-    indexByObj.erase( item->serial_ext );
-    item->set_decay_task( false );
+    removeObject( item.get() );
   }
   for ( const auto& item : delayeditems )
   {
     // check if script has removed it or changed time
     if ( item->orphan() )
     {
-      indexByObj.erase( item->serial_ext );
-      item->set_decay_task( false );
+      removeObject( item.get() );
       continue;
     }
-    if ( !item->has_decay_task() )
+    if ( !getDecayTime( item.get() ) )  // disabled and already removed
       continue;
-    if ( getDecayTime( item.get() ) <= now )
-      addObject( item.get(), 10 * 60 );  // delay by 10minutes like old decay system would behave
+    addObject( item.get(), 10 * 60 );  // delay by 10minutes like old decay system would behave
   }
   if ( statistics )
     decayStats();
