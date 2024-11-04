@@ -155,7 +155,7 @@ void WorldDecay::decayTask()
     bool skipchecks = false;
     if ( gamestate.system_hooks.can_decay )
     {
-      auto res = gamestate.system_hooks.can_decay->call_long( item.make_ref() );
+      auto res = gamestate.system_hooks.can_decay->call_long( item->make_ref() );
       if ( item->orphan() )
       {
         destroyeditems.push_back( item );
@@ -199,7 +199,7 @@ void WorldDecay::decayTask()
       }
     }
     item->spill_contents( multi );
-    destroy_item( item );
+    destroy_item( item.get() );
     destroyeditems.push_back( item );
   }
 
@@ -222,8 +222,8 @@ void WorldDecay::decayTask()
     }
     if ( !item->has_decay_task() )
       continue;
-    if ( getDecayTime( item ) <= now )
-      addObject( item, 10 * 60 );  // delay by 10minutes like old decay system would behave
+    if ( getDecayTime( item.get() ) <= now )
+      addObject( item.get(), 10 * 60 );  // delay by 10minutes like old decay system would behave
   }
   if ( statistics )
     decayStats();
