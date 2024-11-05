@@ -57,6 +57,15 @@ void WorldDecay::addObject( Items::Item* item, gameclock_t decaytime )
   else
     item->set_decay_task( true );
 }
+void WorldDecay::addObjectAbsTime( Items::Item* item, gameclock_t decaytime )
+{
+  auto& indexByObj = decay_cont.get<IndexByObject>();
+  auto res = indexByObj.emplace( decaytime, ItemRef( item ) );
+  if ( !res.second )  // emplace failed, .first is itr of "blocking" entry
+    indexByObj.modify( res.first, [&decaytime]( DecayItem& i ) { i.time = decaytime; } );
+  else
+    item->set_decay_task( true );
+}
 
 void WorldDecay::removeObject( Items::Item* item )
 {
@@ -155,6 +164,11 @@ void WorldDecay::decayTask()
       delayitem( item );
       continue;
     }
+    if ( item->has_disabled_decay_task() )
+    {
+      removeitem( item );
+      continue;
+    }
     // testing code TODO remove
     if ( item->owner() != nullptr )
     {
@@ -242,7 +256,7 @@ void WorldDecay::initialize()
           {
             if ( item->has_reldecay_time_loaded() )  // use stored reltime
             {
-              Core::gamestate.world_decay.addObject( item, item->reldecay_time_loaded() + now );
+              Core::gamestate.world_decay.addObject( item, item->reldecay_time_loaded() );
               item->reldecay_time_loaded( 0 );
             }
             else

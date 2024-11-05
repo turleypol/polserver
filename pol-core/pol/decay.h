@@ -60,6 +60,7 @@ public:
   void initialize();
 
   void addObject( Items::Item* item, gameclock_t decaytime );
+  void addObjectAbsTime( Items::Item* item, gameclock_t decaytime );
   void removeObject( Items::Item* item );
   gameclock_t getDecayTime( const Items::Item* item ) const;
   void decayTask();
