@@ -212,6 +212,7 @@ protected:
   Bscript::BObjectImp* component_list( unsigned char type ) const;
 
   friend class Module::EUBoatRefObjImp;
+  friend class Core::PolApplicObj<ref_ptr<Multi::UBoat>>;
   friend struct BoatMoveGuard;
 
 private:
