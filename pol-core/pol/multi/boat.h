@@ -22,6 +22,7 @@
 #include "multi.h"
 #include "plib/poltype.h"
 #include "plib/uconst.h"
+#include "polobject.h"
 #include "reftypes.h"
 
 namespace Pol
