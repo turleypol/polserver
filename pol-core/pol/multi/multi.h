@@ -33,6 +33,11 @@ class BObjectImp;
 class BStruct;
 class Executor;
 }  // namespace Bscript
+namespace Clib
+{
+class ConfigElem;
+class StreamWriter;
+}  // namespace Clib
 namespace Plib
 {
 class MapShapeList;
@@ -105,6 +110,10 @@ protected:
   explicit UMulti( const Items::ItemDesc& itemdesc );
 
   virtual const char* classname() const override;
+
+  virtual void readProperties( Clib::ConfigElem& elem ) override;
+  virtual void printProperties( Clib::StreamWriter& sw ) const override;
+
   friend class ref_ptr<UMulti>;
 
   u16 multiid_;

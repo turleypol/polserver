@@ -3,8 +3,8 @@
 #ifndef BSCRIPT_BOBJECT_H
 #include "../bscript/bobject.h"
 #endif
-
 #include "../bscript/executor.h"
+#include "../bscript/impstr.h"
 #include "../bscript/objmembers.h"
 #include "uoexec.h"
 
@@ -88,7 +88,7 @@ Bscript::BObjectImp* PolApplicObj<T>::call_polmethod_id( const int id, Core::UOE
 }
 
 template <class T>
-Bscript::BObjectRef PolApplicObj<T>::set_member( const char* membername, BObjectImp* value,
+Bscript::BObjectRef PolApplicObj<T>::set_member( const char* membername, Bscript::BObjectImp* value,
                                                  bool copy )
 {
   Bscript::ObjMember* objmember = Bscript::getKnownObjMember( membername );
@@ -102,13 +102,13 @@ Bscript::BObjectRef PolApplicObj<T>::set_member_id( const int id, Bscript::BObje
                                                     bool /*copy*/ )
 {
   Bscript::BObjectImp* result = nullptr;
-  if ( auto* l = impptrIf<Bscript::BLong>( value ) )
+  if ( auto* l = Bscript::impptrIf<Bscript::BLong>( value ) )
     result = obj_->set_script_member_id( id, l->value() );
-  else if ( auto* s = impptrIf<Bscript::String>( value ) )
+  else if ( auto* s = Bscript::impptrIf<Bscript::String>( value ) )
     result = obj_->set_script_member_id( id, s->value() );
-  else if ( auto* d = impptrIf<Bscript::Double>( value ) )
+  else if ( auto* d = Bscript::impptrIf<Bscript::Double>( value ) )
     result = obj_->set_script_member_id_double( id, d->value() );
-  else if ( auto* b = impptrIf<Bscript::BBoolean>( value ) )
+  else if ( auto* b = Bscript::impptrIf<Bscript::BBoolean>( value ) )
     result = obj_->set_script_member_id( id, (int)b->value() );
   if ( result != nullptr )
     return Bscript::BObjectRef( result );

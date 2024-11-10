@@ -12,8 +12,10 @@
 #include "../../bscript/bstruct.h"
 #include "../../bscript/executor.h"
 #include "../../bscript/objmembers.h"
+#include "../../clib/cfgelem.h"
 #include "../../clib/logfacility.h"
 #include "../../clib/passert.h"
+#include "../../clib/streamsaver.h"
 #include "../../plib/uconst.h"
 #include "../baseobject.h"
 #include "../globals/state.h"
@@ -142,6 +144,30 @@ bool UMulti::get_method_hook( const char* methodname, Bscript::Executor* ex,
            Core::gamestate.system_hooks.multi_method_script.get(), methodname, ex, hook, PC ) )
     return true;
   return base::get_method_hook( methodname, ex, hook, PC );
+}
+
+void UMulti::readProperties( Clib::ConfigElem& elem )
+{
+  base::readProperties( elem );
+  // POL098 and earlier was not saving a MultiID in its data files,
+  // but it was using 0x4000 + id as graphic instead. Not respecting
+  // this would rotate most of the boats during POL098 -> POL99 migration
+  if ( as_boat() )
+  {
+    if ( Core::settingsManager.polvar.DataWrittenBy99OrLater )
+      multiid_ = elem.remove_ushort( "MultiID", this->multidef().multiid );
+  }
+  else
+    multiid_ = elem.remove_ushort( "MultiID", multidef().multiid );
+  decay_items_ = elem.remove_ushort( "DecayItems", itemdesc().decay_items );
+}
+
+void UMulti::printProperties( Clib::StreamWriter& sw ) const
+{
+  base::printProperties( sw );
+
+  sw.add( "MultiID", multiid_ );
+  sw.add( "DecayItems", decay_items_ );
 }
 
 size_t UMulti::estimatedSize() const
