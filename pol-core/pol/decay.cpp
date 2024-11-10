@@ -90,9 +90,9 @@ void Decay::decay_worldzone()
       }
 
       const Items::ItemDesc& descriptor = item->itemdesc();
+      auto* multi = realm->find_supporting_multi( item->pos3d() );
       if ( !skipchecks )
       {
-        auto* multi = realm->find_supporting_multi( item->pos3d() );
         if ( multi )
           if ( !multi->decay_items() && !descriptor.decays_on_multis )
             continue;
