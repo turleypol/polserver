@@ -261,7 +261,7 @@ public:
   virtual ~MultiDesc(){};
   virtual size_t estimatedSize() const override;
 
-  bool decay_items;
+  bool items_decay;
 };
 
 class BoatDesc final : public MultiDesc

@@ -33,12 +33,13 @@ namespace Multi
 {
 UMulti::UMulti( const Items::ItemDesc& itemdesc ) : Item( itemdesc, Core::UOBJ_CLASS::CLASS_MULTI )
 {
-  multiid_ = itemdesc.multiid;
-  decay_items_ = itemdesc.decay_items;
+  const auto& desc = static_cast<const Items::MultiDesc&>( itemdesc );
+  multiid_ = desc.multiid;
+  items_decay_ = desc.items_decay;
 
-  if ( !MultiDefByMultiIDExists( itemdesc.multiid ) )
+  if ( !MultiDefByMultiIDExists( desc.multiid ) )
   {
-    ERROR_PRINTLN( "Tried to create a Multi type {:#x}", itemdesc.objtype );
+    ERROR_PRINTLN( "Tried to create a Multi type {:#x}", desc.objtype );
     throw std::runtime_error( "Invalid Multi type" );
   }
   ++Core::stateManager.uobjcount.umulti_count;
@@ -113,8 +114,8 @@ Bscript::BObjectImp* UMulti::get_script_member_id( const int id ) const  /// id 
   {
   case Bscript::MBR_FOOTPRINT:
     return footprint();
-  case Bscript::MBR_DECAY_ITEMS:
-    return new Bscript::BLong( decay_items() );
+  case Bscript::MBR_ITEMS_DECAY:
+    return new Bscript::BLong( items_decay() );
   default:
     return nullptr;
   }
@@ -136,9 +137,9 @@ Bscript::BObjectImp* UMulti::set_script_member_id( const int id, int value )
 
   switch ( id )
   {
-  case Bscript::MBR_DECAY_ITEMS:
-    decay_items_ = value != 0;
-    return new Bscript::BLong( decay_items_ );
+  case Bscript::MBR_ITEMS_DECAY:
+    items_decay_ = value != 0;
+    return new Bscript::BLong( items_decay_ );
   default:
     break;
   }
@@ -167,7 +168,8 @@ void UMulti::readProperties( Clib::ConfigElem& elem )
   }
   else
     multiid_ = elem.remove_ushort( "MultiID", multidef().multiid );
-  decay_items_ = elem.remove_ushort( "DecayItems", itemdesc().decay_items );
+  const auto& desc = static_cast<const Items::MultiDesc&>( itemdesc );
+  items_decay_ = elem.remove_ushort( "ItemsDecay", desc().items_decay );
 }
 
 void UMulti::printProperties( Clib::StreamWriter& sw ) const
@@ -175,13 +177,13 @@ void UMulti::printProperties( Clib::StreamWriter& sw ) const
   base::printProperties( sw );
 
   sw.add( "MultiID", multiid_ );
-  sw.add( "DecayItems", decay_items_ );
+  sw.add( "ItemsDecay", items_decay_ );
 }
 
 size_t UMulti::estimatedSize() const
 {
   return base::estimatedSize() + sizeof( u16 ) /*multiid*/
-         sizeof( bool ) /*decay_items*/;
+         sizeof( bool ) /*items_decay*/;
 }
 }  // namespace Multi
 }  // namespace Pol

@@ -94,7 +94,7 @@ void Decay::decay_worldzone()
       if ( !skipchecks )
       {
         if ( multi )
-          if ( !multi->decay_items() && !descriptor.decays_on_multis )
+          if ( !multi->items_decay() && !descriptor.decays_on_multis )
             continue;
         auto* region = Core::gamestate.justicedef->getregion( item->pos() );
         if ( region && region->nodecay() )

@@ -78,7 +78,7 @@ public:
 
   u16 multiid() const { return multiid_; }
 
-  bool decay_items() const { return decay_items_; }
+  bool items_decay() const { return items_decay_; }
 
   virtual void double_click( Network::Client* client ) override;
   virtual void register_object( UObject* obj );
@@ -119,7 +119,7 @@ protected:
 
   u16 multiid_;
 
-  bool decay_items_;
+  bool items_decay_;
 
   // virtual void destroy(void);
 };
