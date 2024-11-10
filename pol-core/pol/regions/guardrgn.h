@@ -47,6 +47,8 @@ public:
   const std::string& entertext() const;
   const std::string& leavetext() const;
 
+  bool nodecay() const;
+
   bool RunEnterScript( Mobile::Character* chr );
   bool RunLeaveScript( Mobile::Character* chr );
   static bool RunNoCombatCheck( Network::Client* client );
@@ -56,6 +58,7 @@ public:
 private:
   bool guarded_;
   bool nocombat_;
+  bool nodecay_;
   std::string region_name_;
   std::string entertext_;
   std::string leavetext_;
@@ -77,6 +80,9 @@ inline const std::string& JusticeRegion::leavetext() const
 {
   return leavetext_;
 }
+inline bool JusticeRegion::nodecay() const
+{
+  return nodecay_;
 }
 }
 #endif
