@@ -131,7 +131,7 @@ Bscript::BObjectImp* UMulti::get_script_member( const char* membername ) const
 
 Bscript::BObjectImp* UMulti::set_script_member_id( const int id, int value )
 {
-  BObjectImp* imp = base::set_script_member_id( id, value );
+  auto* imp = base::set_script_member_id( id, value );
   if ( imp != nullptr )
     return imp;
 
@@ -168,7 +168,7 @@ void UMulti::readProperties( Clib::ConfigElem& elem )
   }
   else
     multiid_ = elem.remove_ushort( "MultiID", multidef().multiid );
-  const auto& desc = static_cast<const Items::MultiDesc&>( itemdesc );
+  const auto& desc = static_cast<const Items::MultiDesc&>( itemdesc() );
   items_decay_ = elem.remove_ushort( "ItemsDecay", desc().items_decay );
 }
 
