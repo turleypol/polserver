@@ -127,7 +127,7 @@ Bscript::BObjectRef PolApplicObj<T>::get_member( const char* membername )
 template <class T>
 Bscript::BObjectRef PolApplicObj<T>::get_member_id( const int id )
 {
-  Bscript::BObjectImp* result = obj_->get_script_member_id( id );
+  Bscript::BObjectImp* result = this->obj_->get_script_member_id( id );
   if ( result != nullptr )
     return Bscript::BObjectRef( result );
   return Bscript::BObjectRef( Bscript::UninitObject::create() );
