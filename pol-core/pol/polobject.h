@@ -1,14 +1,16 @@
-#pragma once
+#ifndef POLOBJECT_H
+#define POLOBJECT_H
 
 #ifndef BSCRIPT_BOBJECT_H
 #include "../bscript/bobject.h"
 #endif
+
 #include "../bscript/executor.h"
-#include "../bscript/impstr.h"
-#include "../bscript/objmembers.h"
 #include "uoexec.h"
 
-namespace Pol::Core
+namespace Pol
+{
+namespace Core
 {
 class UOExecutor;
 class PolObjectImp : public Bscript::BObjectImp
@@ -47,12 +49,6 @@ public:
   virtual Bscript::BObjectImp* call_polmethod( const char* methodname, Core::UOExecutor& ex );
   virtual Bscript::BObjectImp* call_polmethod_id( const int id, Core::UOExecutor& ex,
                                                   bool forcebuiltin = false );
-  virtual Bscript::BObjectRef set_member( const char* membername, Bscript::BObjectImp* value,
-                                          bool copy ) override;
-  virtual Bscript::BObjectRef set_member_id( const int id, Bscript::BObjectImp* value,
-                                             bool copy ) override;
-  virtual Bscript::BObjectRef get_member( const char* membername ) override;
-  virtual Bscript::BObjectRef get_member_id( const int id ) override;
 };
 
 template <class T>
@@ -86,50 +82,6 @@ Bscript::BObjectImp* PolApplicObj<T>::call_polmethod_id( const int id, Core::UOE
 {
   return Bscript::BObjectImp::call_method_id( id, uoex, forcebuiltin );
 }
-
-template <class T>
-Bscript::BObjectRef PolApplicObj<T>::set_member( const char* membername, Bscript::BObjectImp* value,
-                                                 bool copy )
-{
-  Bscript::ObjMember* objmember = Bscript::getKnownObjMember( membername );
-  if ( objmember != nullptr )
-    return set_member_id( objmember->id, value, copy );
-  return Bscript::BObjectRef( Bscript::UninitObject::create() );
-}
-
-template <class T>
-Bscript::BObjectRef PolApplicObj<T>::set_member_id( const int id, Bscript::BObjectImp* value,
-                                                    bool /*copy*/ )
-{
-  Bscript::BObjectImp* result = nullptr;
-  if ( auto* l = Bscript::impptrIf<Bscript::BLong>( value ) )
-    result = this->obj_->set_script_member_id( id, l->value() );
-  else if ( auto* s = Bscript::impptrIf<Bscript::String>( value ) )
-    result = this->obj_->set_script_member_id( id, s->value() );
-  else if ( auto* d = Bscript::impptrIf<Bscript::Double>( value ) )
-    result = this->obj_->set_script_member_id_double( id, d->value() );
-  else if ( auto* b = Bscript::impptrIf<Bscript::BBoolean>( value ) )
-    result = this->obj_->set_script_member_id( id, (int)b->value() );
-  if ( result != nullptr )
-    return Bscript::BObjectRef( result );
-  return Bscript::BObjectRef( Bscript::UninitObject::create() );
-}
-
-template <class T>
-Bscript::BObjectRef PolApplicObj<T>::get_member( const char* membername )
-{
-  Bscript::ObjMember* objmember = Bscript::getKnownObjMember( membername );
-  if ( objmember != nullptr )
-    return this->get_member_id( objmember->id );
-  return Bscript::BObjectRef( Bscript::UninitObject::create() );
-}
-
-template <class T>
-Bscript::BObjectRef PolApplicObj<T>::get_member_id( const int id )
-{
-  Bscript::BObjectImp* result = this->obj_->get_script_member_id( id );
-  if ( result != nullptr )
-    return Bscript::BObjectRef( result );
-  return Bscript::BObjectRef( Bscript::UninitObject::create() );
-}
-}  // namespace Pol::Core
+}  // namespace Core
+}  // namespace Pol
+#endif

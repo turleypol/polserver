@@ -144,6 +144,44 @@ BObjectImp* ECharacterRefObjImp::copy() const
   return new ECharacterRefObjImp( obj_.get() );
 }
 
+BObjectRef ECharacterRefObjImp::get_member_id( const int id )
+{
+  BObjectImp* result = obj_->get_script_member_id( id );
+  if ( result != nullptr )
+    return BObjectRef( result );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef ECharacterRefObjImp::get_member( const char* membername )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_member_id( objmember->id );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef ECharacterRefObjImp::set_member_id( const int id, BObjectImp* value, bool /*copy*/ )
+{
+  BObjectImp* result = nullptr;
+  if ( auto* l = impptrIf<BLong>( value ) )
+    result = obj_->set_script_member_id( id, l->value() );
+  else if ( auto* s = impptrIf<String>( value ) )
+    result = obj_->set_script_member_id( id, s->value() );
+  else if ( auto* d = impptrIf<Double>( value ) )
+    result = obj_->set_script_member_id_double( id, d->value() );
+  if ( result != nullptr )
+    return BObjectRef( result );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef ECharacterRefObjImp::set_member( const char* membername, BObjectImp* value, bool copy )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_member_id( objmember->id, value, copy );
+  return BObjectRef( UninitObject::create() );
+}
+
 BObjectImp* ECharacterRefObjImp::call_polmethod_id( const int id, Core::UOExecutor& ex,
                                                     bool forcebuiltin )
 {
@@ -259,6 +297,44 @@ BObjectImp* EItemRefObjImp::copy() const
   return new EItemRefObjImp( obj_.get() );
 }
 
+BObjectRef EItemRefObjImp::get_member_id( const int id )
+{
+  BObjectImp* result = obj_->get_script_member_id( id );
+  if ( result != nullptr )
+    return BObjectRef( result );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef EItemRefObjImp::get_member( const char* membername )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_member_id( objmember->id );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef EItemRefObjImp::set_member_id( const int id, BObjectImp* value, bool /*copy*/ )
+{
+  BObjectImp* result = nullptr;
+  if ( auto* l = impptrIf<BLong>( value ) )
+    result = obj_->set_script_member_id( id, l->value() );
+  else if ( auto* s = impptrIf<String>( value ) )
+    result = obj_->set_script_member_id( id, s->value() );
+  else if ( auto* d = impptrIf<Double>( value ) )
+    result = obj_->set_script_member_id_double( id, d->value() );
+  if ( result != nullptr )
+    return BObjectRef( result );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef EItemRefObjImp::set_member( const char* membername, BObjectImp* value, bool copy )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_member_id( objmember->id, value, copy );
+  return BObjectRef( UninitObject::create() );
+}
+
 BObjectImp* EItemRefObjImp::call_polmethod_id( const int id, Core::UOExecutor& ex,
                                                bool forcebuiltin )
 {
@@ -350,6 +426,44 @@ u8 EUBoatRefObjImp::typeOfInt() const
 BObjectImp* EUBoatRefObjImp::copy() const
 {
   return new EUBoatRefObjImp( obj_.get() );
+}
+
+BObjectRef EUBoatRefObjImp::get_member_id( const int id )
+{
+  BObjectImp* result = obj_->get_script_member_id( id );
+  if ( result != nullptr )
+    return BObjectRef( result );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef EUBoatRefObjImp::get_member( const char* membername )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_member_id( objmember->id );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef EUBoatRefObjImp::set_member_id( const int id, BObjectImp* value, bool /*copy*/ )
+{
+  BObjectImp* result = nullptr;
+  if ( auto* l = impptrIf<BLong>( value ) )
+    result = obj_->set_script_member_id( id, l->value() );
+  else if ( auto* s = impptrIf<String>( value ) )
+    result = obj_->set_script_member_id( id, s->value() );
+  else if ( auto* d = impptrIf<Double>( value ) )
+    result = obj_->set_script_member_id_double( id, d->value() );
+  if ( result != nullptr )
+    return BObjectRef( result );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef EUBoatRefObjImp::set_member( const char* membername, BObjectImp* value, bool copy )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_member_id( objmember->id, value, copy );
+  return BObjectRef( UninitObject::create() );
 }
 
 BObjectImp* EUBoatRefObjImp::call_polmethod_id( const int id, Core::UOExecutor& ex,
@@ -458,6 +572,43 @@ u8 EMultiRefObjImp::typeOfInt() const
 BObjectImp* EMultiRefObjImp::copy() const
 {
   return new EMultiRefObjImp( obj_.get() );
+}
+
+BObjectRef EMultiRefObjImp::get_member_id( const int id )
+{
+  BObjectImp* result = obj_->get_script_member_id( id );
+  if ( result != nullptr )
+    return BObjectRef( result );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef EMultiRefObjImp::get_member( const char* membername )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_member_id( objmember->id );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef EMultiRefObjImp::set_member_id( const int id, BObjectImp* value, bool /*copy*/ )
+{
+  BObjectImp* result = nullptr;
+  if ( auto* l = impptrIf<BLong>( value ) )
+    result = obj_->set_script_member_id( id, l->value() );
+  else if ( auto* s = impptrIf<String>( value ) )
+    result = obj_->set_script_member_id( id, s->value() );
+  else if ( auto* d = impptrIf<Double>( value ) )
+    result = obj_->set_script_member_id_double( id, d->value() );
+  if ( result != nullptr )
+    return BObjectRef( result );
+  return BObjectRef( UninitObject::create() );
+}
+BObjectRef EMultiRefObjImp::set_member( const char* membername, BObjectImp* value, bool copy )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_member_id( objmember->id, value, copy );
+  return BObjectRef( UninitObject::create() );
 }
 
 bool EMultiRefObjImp::isTrue() const
@@ -938,6 +1089,14 @@ BObjectImp* Item::get_script_member_id( const int id ) const
   }
 }
 
+BObjectImp* Item::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
+}
+
 BObjectImp* Item::set_script_member_id( const int id, const std::string& value )
 {
   BObjectImp* imp = base::set_script_member_id( id, value );
@@ -968,6 +1127,14 @@ BObjectImp* Item::set_script_member_id( const int id, const std::string& value )
   default:
     return nullptr;
   }
+}
+
+BObjectImp* Item::set_script_member( const char* membername, const std::string& value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
 }
 
 BObjectImp* Item::set_script_member_id( const int id, int value )
@@ -1419,6 +1586,14 @@ BObjectImp* Item::set_script_member_id( const int id, int value )
   default:
     return nullptr;
   }
+}
+
+BObjectImp* Item::set_script_member( const char* membername, int value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
 }
 
 BObjectImp* Item::set_script_member_id_double( const int id, double value )
@@ -2309,6 +2484,14 @@ BObjectImp* Character::get_script_member_id( const int id ) const
   return nullptr;
 }
 
+BObjectImp* Character::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
+}
+
 BObjectImp* Character::set_script_member_id( const int id, const std::string& value )
 {
   BObjectImp* imp = base::set_script_member_id( id, value );
@@ -2342,6 +2525,14 @@ BObjectImp* Character::set_script_member_id( const int id, const std::string& va
   if ( this->has_active_client() )
     send_object_cache_to_inrange( this );
   return ret;
+}
+
+BObjectImp* Character::set_script_member( const char* membername, const std::string& value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
 }
 
 BObjectImp* Character::set_script_member_id( const int id, int value )
@@ -2678,6 +2869,14 @@ BObjectImp* Character::set_script_member_id_double( const int id, double value )
   default:
     return nullptr;
   }
+}
+
+BObjectImp* Character::set_script_member( const char* membername, int value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
 }
 
 BObjectImp* Character::script_method_id( const int id, Core::UOExecutor& ex )
@@ -3427,6 +3626,14 @@ BObjectImp* NPC::get_script_member_id( const int id ) const
   }
 }
 
+BObjectImp* NPC::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
+}
+
 BObjectImp* NPC::set_script_member_id( const int id, const std::string& value )
 {
   BObjectImp* imp = base::set_script_member_id( id, value );
@@ -3439,6 +3646,14 @@ BObjectImp* NPC::set_script_member_id( const int id, const std::string& value )
   default:
     return nullptr;
   }
+}
+
+BObjectImp* NPC::set_script_member( const char* membername, const std::string& value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
 }
 
 BObjectImp* NPC::set_script_member_id( const int id, int value )
@@ -3468,6 +3683,13 @@ BObjectImp* NPC::set_script_member_id( const int id, int value )
   default:
     return nullptr;
   }
+}
+BObjectImp* NPC::set_script_member( const char* membername, int value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
 }
 
 BObjectImp* NPC::script_method_id( const int id, Core::UOExecutor& executor )
@@ -3541,6 +3763,14 @@ BObjectImp* ULockable::get_script_member_id( const int id ) const
   }
 }
 
+BObjectImp* ULockable::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
+}
+
 BObjectImp* ULockable::set_script_member_id( const int id, int value )
 {
   BObjectImp* imp = Item::set_script_member_id( id, value );
@@ -3554,6 +3784,14 @@ BObjectImp* ULockable::set_script_member_id( const int id, int value )
   default:
     return nullptr;
   }
+}
+
+BObjectImp* ULockable::set_script_member( const char* membername, int value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
 }
 
 BObjectImp* UContainer::get_script_member_id( const int id ) const
@@ -3580,6 +3818,14 @@ BObjectImp* UContainer::get_script_member_id( const int id ) const
   default:
     return nullptr;
   }
+}
+
+BObjectImp* UContainer::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
 }
 
 BObjectImp* UContainer::set_script_member_id( const int id, int value )
@@ -3644,6 +3890,14 @@ Bscript::BObjectImp* UContainer::set_script_member_id_double( const int id, doub
   return new BLong( value );
 }
 
+BObjectImp* UContainer::set_script_member( const char* membername, int value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
+}
+
 BObjectImp* UCorpse::get_script_member_id( const int id ) const
 {
   BObjectImp* imp = base::get_script_member_id( id );
@@ -3661,6 +3915,14 @@ BObjectImp* UCorpse::get_script_member_id( const int id ) const
   default:
     return nullptr;
   }
+}
+
+BObjectImp* UCorpse::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
 }
 
 BObjectImp* Spellbook::script_method_id( const int id, Core::UOExecutor& ex )
@@ -3860,6 +4122,14 @@ BObjectImp* UBoat::get_script_member_id( const int id ) const
   }
 }
 
+BObjectImp* UBoat::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
+}
+
 BObjectImp* UBoat::script_method_id( const int id, Core::UOExecutor& ex )
 {
   BObjectImp* imp = base::script_method_id( id, ex );
@@ -3963,6 +4233,14 @@ BObjectImp* UPlank::get_script_member_id( const int id ) const
   return base::get_script_member_id( id );
 }
 
+/* UObject defines a 'multi' also, so we have to trap that here first */
+BObjectImp* UPlank::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return base::get_script_member( membername );
+}
 }  // namespace Multi
 namespace Core
 {
@@ -3997,6 +4275,14 @@ BObjectImp* Map::get_script_member_id( const int id ) const
   }
 }
 
+BObjectImp* Map::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
+}
+
 BObjectImp* Map::set_script_member_id( const int id, int value )
 {
   BObjectImp* imp = base::set_script_member_id( id, value );
@@ -4025,6 +4311,13 @@ BObjectImp* Map::set_script_member_id( const int id, int value )
   default:
     return nullptr;
   }
+}
+BObjectImp* Map::set_script_member( const char* membername, int value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
 }
 
 BObjectImp* UObject::script_method_id( const int id, Core::UOExecutor& ex )
@@ -4142,6 +4435,14 @@ BObjectImp* UDoor::get_script_member_id( const int id ) const
   }
 }
 
+BObjectImp* UDoor::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
+}
+
 BObjectImp* UDoor::script_method_id( const int id, Core::UOExecutor& ex )
 {
   BObjectImp* imp = base::script_method_id( id, ex );
@@ -4192,6 +4493,13 @@ BObjectImp* Equipment::get_script_member_id( const int id ) const
     return nullptr;
   }
 }
+BObjectImp* Equipment::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
+}
 
 BObjectImp* Equipment::set_script_member_id( const int id, int value )
 {
@@ -4199,6 +4507,19 @@ BObjectImp* Equipment::set_script_member_id( const int id, int value )
   if ( imp != nullptr )
     return imp;
 
+  return nullptr;
+  /*
+  switch(id)
+  {
+  default: return nullptr;
+  }
+  */
+}
+BObjectImp* Equipment::set_script_member( const char* membername, int value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
   return nullptr;
 }
 
@@ -4209,6 +4530,12 @@ BObjectImp* Equipment::set_script_member_id_double( const int id, double value )
     return imp;
 
   return nullptr;
+  /*
+  switch(id)
+  {
+  default: return nullptr;
+  }
+  */
 }
 BObjectImp* Equipment::set_script_member_double( const char* membername, double value )
 {
@@ -4243,6 +4570,13 @@ BObjectImp* UWeapon::get_script_member_id( const int id ) const
     return nullptr;
   }
 }
+BObjectImp* UWeapon::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
+}
 
 BObjectImp* UWeapon::set_script_member_id( const int id, const std::string& value )
 {
@@ -4258,6 +4592,13 @@ BObjectImp* UWeapon::set_script_member_id( const int id, const std::string& valu
   default:
     return nullptr;
   }
+}
+BObjectImp* UWeapon::set_script_member( const char* membername, const std::string& value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
 }
 
 BObjectImp* UWeapon::set_script_member_id( const int id, int value )
@@ -4284,6 +4625,14 @@ BObjectImp* UWeapon::set_script_member_id( const int id, int value )
     return nullptr;
   }
   return new BLong( value );
+}
+
+BObjectImp* UWeapon::set_script_member( const char* membername, int value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
 }
 
 BObjectImp* UWeapon::set_script_member_id_double( const int id, double value )
@@ -4330,6 +4679,14 @@ BObjectImp* UArmor::get_script_member_id( const int id ) const
   }
 }
 
+BObjectImp* UArmor::get_script_member( const char* membername ) const
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->get_script_member_id( objmember->id );
+  return nullptr;
+}
+
 BObjectImp* UArmor::set_script_member_id( const int id, const std::string& value )
 {
   BObjectImp* imp = Item::set_script_member_id( id, value );
@@ -4343,6 +4700,14 @@ BObjectImp* UArmor::set_script_member_id( const int id, const std::string& value
   default:
     return nullptr;
   }
+}
+
+BObjectImp* UArmor::set_script_member( const char* membername, const std::string& value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
 }
 
 BObjectImp* UArmor::set_script_member_id( const int id, int value )
@@ -4370,6 +4735,13 @@ BObjectImp* UArmor::set_script_member_id( const int id, int value )
   }
 }
 
+BObjectImp* UArmor::set_script_member( const char* membername, int value )
+{
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_script_member_id( objmember->id, value );
+  return nullptr;
+}
 }  // namespace Items
 namespace Module
 {
@@ -4439,6 +4811,16 @@ BObjectRef EClientRefObjImp::get_member( const char* membername )
   ObjMember* objmember = getKnownObjMember( membername );
   if ( objmember != nullptr )
     return this->get_member_id( objmember->id );
+  return BObjectRef( UninitObject::create() );
+}
+
+BObjectRef EClientRefObjImp::set_member( const char* membername, BObjectImp* value, bool copy )
+{
+  if ( !obj_.exists() || !obj_->isConnected() )
+    return BObjectRef( new BError( "Client not ready or disconnected" ) );
+  ObjMember* objmember = getKnownObjMember( membername );
+  if ( objmember != nullptr )
+    return this->set_member_id( objmember->id, value, copy );
   return BObjectRef( UninitObject::create() );
 }
 

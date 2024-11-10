@@ -26,7 +26,6 @@ JusticeRegion::JusticeRegion( Clib::ConfigElem& elem, RegionId id )
     : Region( elem, id ),
       guarded_( elem.remove_bool( "Guarded", false ) ),
       nocombat_( elem.remove_bool( "NoCombat", false ) ),
-      nodecay_( elem.remove_string( "NoDecay", false ) ),
       region_name_( elem.rest() ),
       entertext_( elem.remove_string( "EnterText", "" ) ),
       leavetext_( elem.remove_string( "LeaveText", "" ) ),
@@ -99,5 +98,5 @@ bool JusticeRegion::RunNoCombatCheck( Network::Client* client )
 
   return no_combat;
 }
-}  // namespace Core
-}  // namespace Pol
+}
+}

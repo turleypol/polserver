@@ -5,27 +5,34 @@
  */
 
 
-#pragma once
+#ifndef GUARDRGN_H
+#define GUARDRGN_H
 
 #include <string>
 
 #include "regions/region.h"
 #include "zone.h"
 
-namespace Pol::Clib
+namespace Pol
+{
+namespace Clib
 {
 class ConfigElem;
-}
-namespace Pol::Network
+}  // namespace Clib
+}  // namespace Pol
+
+namespace Pol
+{
+namespace Network
 {
 class Client;
 }
-namespace Pol::Mobile
+namespace Mobile
 {
 class Character;
 }
 
-namespace Pol::Core
+namespace Core
 {
 void read_justice_zones();
 
@@ -40,8 +47,6 @@ public:
   const std::string& entertext() const;
   const std::string& leavetext() const;
 
-  bool nodecay() const;
-
   bool RunEnterScript( Mobile::Character* chr );
   bool RunLeaveScript( Mobile::Character* chr );
   static bool RunNoCombatCheck( Network::Client* client );
@@ -51,7 +56,6 @@ public:
 private:
   bool guarded_;
   bool nocombat_;
-  bool nodecay_;
   std::string region_name_;
   std::string entertext_;
   std::string leavetext_;
@@ -73,8 +77,6 @@ inline const std::string& JusticeRegion::leavetext() const
 {
   return leavetext_;
 }
-inline bool JusticeRegion::nodecay() const
-{
-  return nodecay_;
 }
-}  // namespace Pol::Core
+}
+#endif

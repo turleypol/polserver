@@ -77,7 +77,11 @@ protected:
   virtual void builtin_on_use( Network::Client* client ) override;
   virtual Bscript::BObjectImp* script_method( const char* methodname, UOExecutor& ex ) override;
   virtual Bscript::BObjectImp* script_method_id( const int id, UOExecutor& ex ) override;
+  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
+  // virtual Bscript::BObjectImp* set_script_member( const char *membername, const std::string&
+  // value );
+  virtual Bscript::BObjectImp* set_script_member( const char* membername, int value ) override;
   virtual Bscript::BObjectImp* set_script_member_id( const int id,
                                                      int value ) override;  // id test
   virtual bool get_method_hook( const char* methodname, Bscript::Executor* ex, ExportScript** hook,
@@ -88,8 +92,7 @@ protected:
   void printPinPoints( Clib::StreamWriter& sw ) const;
   virtual void readProperties( Clib::ConfigElem& elem ) override;
 
-  friend void handle_map_pin( Network::Client* client, PKTBI_56* msg );
-
+friend void handle_map_pin( Network::Client* client, PKTBI_56* msg );
 private:
   bool msgCoordsInBounds( PKTBI_56* msg, const Range2d& area ) const;
   Pos2d gumpToWorld( const Pos2d& gump, const Range2d& area ) const;

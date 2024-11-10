@@ -103,7 +103,11 @@ public:
 
   virtual void readProperties( Clib::ConfigElem& elem ) override;
 
+  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
+  virtual Bscript::BObjectImp* set_script_member( const char* membername, int value ) override;
+  virtual Bscript::BObjectImp* set_script_member( const char* membername,
+                                                  const std::string& ) override;
   virtual Bscript::BObjectImp* set_script_member_id( const int id,
                                                      int value ) override;  // id test
   virtual Bscript::BObjectImp* set_script_member_id( const int id,

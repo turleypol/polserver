@@ -75,7 +75,11 @@ protected:
   virtual void readProperties( Clib::ConfigElem& elem ) override;
   friend Items::Item* Items::Item::create( const Items::ItemDesc& itemdesc, u32 serial );
   // virtual Bscript::BObjectImp* script_member( const char *membername );
+  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
+  // virtual Bscript::BObjectImp* set_script_member( const char *membername, const std::string&
+  // value );
+  // virtual Bscript::BObjectImp* set_script_member( const char *membername, int value );
   virtual bool script_isa( unsigned isatype ) const override;
   std::vector<Core::ItemRef> can_equip_list_;
 };

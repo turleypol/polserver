@@ -302,7 +302,11 @@ public:
 
   virtual Bscript::BObjectImp* make_ref() override;
 
+  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  // id test
+  virtual Bscript::BObjectImp* set_script_member( const char* membername,
+                                                  const std::string& value ) override;
+  virtual Bscript::BObjectImp* set_script_member( const char* membername, int value ) override;
   virtual Bscript::BObjectImp* set_script_member_id(
       const int id, const std::string& value ) override;  // id test
   virtual Bscript::BObjectImp* set_script_member_id( const int id,

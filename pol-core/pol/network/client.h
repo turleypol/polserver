@@ -287,14 +287,6 @@ public:
   }
 
   Bscript::BObjectImp* set_script_member_id( const int id, int value );
-  Bscript::BObjectImp* set_script_member_id( const int /*id*/, const std::string& /*value*/ )
-  {
-    return nullptr;
-  }
-  Bscript::BObjectImp* set_script_member_id_double( const int /*id*/, double /*value*/ )
-  {
-    return nullptr;
-  }
   Bscript::BObjectImp* get_script_member_id( const int id );
 
 protected:

@@ -22,7 +22,6 @@
 #include "multi.h"
 #include "plib/poltype.h"
 #include "plib/uconst.h"
-#include "polobject.h"
 #include "reftypes.h"
 
 namespace Pol
@@ -203,6 +202,7 @@ protected:
   virtual void printProperties( Clib::StreamWriter& sw ) const override;
   friend class UMulti;
 
+  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
   virtual Bscript::BObjectImp* script_method( const char* methodname,
                                               Core::UOExecutor& ex ) override;
@@ -213,7 +213,6 @@ protected:
   Bscript::BObjectImp* component_list( unsigned char type ) const;
 
   friend class Module::EUBoatRefObjImp;
-  friend class Core::PolApplicObj<ref_ptr<Multi::UBoat>>;
   friend struct BoatMoveGuard;
 
 private:
