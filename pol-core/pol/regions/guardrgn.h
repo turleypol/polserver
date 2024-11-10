@@ -5,34 +5,27 @@
  */
 
 
-#ifndef GUARDRGN_H
-#define GUARDRGN_H
+#pragma once
 
 #include <string>
 
 #include "regions/region.h"
 #include "zone.h"
 
-namespace Pol
-{
-namespace Clib
+namespace Pol::Clib
 {
 class ConfigElem;
-}  // namespace Clib
-}  // namespace Pol
-
-namespace Pol
-{
-namespace Network
+}
+namespace Pol::Network
 {
 class Client;
 }
-namespace Mobile
+namespace Pol::Mobile
 {
 class Character;
 }
 
-namespace Core
+namespace Pol::Core
 {
 void read_justice_zones();
 
@@ -84,5 +77,4 @@ inline bool JusticeRegion::nodecay() const
 {
   return nodecay_;
 }
-}
-#endif
+}  // namespace Pol::Core
