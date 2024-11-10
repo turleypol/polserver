@@ -102,12 +102,8 @@ protected:
   virtual void printProperties( Clib::StreamWriter& sw ) const override;
   virtual void readProperties( Clib::ConfigElem& elem ) override;
   // BObjectImp* script_member( const char *membername );
-  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
 
-  virtual Bscript::BObjectImp* set_script_member( const char* membername,
-                                                  const std::string& value ) override;
-  virtual Bscript::BObjectImp* set_script_member( const char* membername, int value ) override;
   virtual Bscript::BObjectImp* set_script_member_double( const char* membername,
                                                          double value ) override;
   virtual Bscript::BObjectImp* set_script_member_id(

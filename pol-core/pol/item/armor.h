@@ -24,12 +24,12 @@ namespace Bscript
 class String;
 class BStruct;
 class Executor;
-}
+}  // namespace Bscript
 namespace Clib
 {
 class StreamWriter;
 class ConfigElem;
-}
+}  // namespace Clib
 namespace Plib
 {
 class Package;
@@ -38,7 +38,7 @@ namespace Core
 {
 class ExportScript;
 }
-}
+}  // namespace Pol
 #define ARMOR_TMPL ( static_cast<const ArmorDesc*>( tmpl ) )
 
 namespace Pol
@@ -70,12 +70,8 @@ public:
 protected:
   virtual void printProperties( Clib::StreamWriter& sw ) const override;
   virtual void readProperties( Clib::ConfigElem& elem ) override;
-  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
 
-  virtual Bscript::BObjectImp* set_script_member( const char* membername,
-                                                  const std::string& value ) override;
-  virtual Bscript::BObjectImp* set_script_member( const char* membername, int value ) override;
   virtual Bscript::BObjectImp* set_script_member_id(
       const int id, const std::string& value ) override;  // id test
   virtual Bscript::BObjectImp* set_script_member_id( const int id,
@@ -102,6 +98,6 @@ void unload_armor_templates();
 void validate_intrinsic_shield_template();
 UArmor* create_intrinsic_shield_from_npctemplate( Clib::ConfigElem& elem,
                                                   const Plib::Package* pkg );
-}
-}
+}  // namespace Items
+}  // namespace Pol
 #endif

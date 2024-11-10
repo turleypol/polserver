@@ -47,9 +47,7 @@ protected:
 
   virtual void printProperties( Clib::StreamWriter& sw ) const override;
   virtual void readProperties( Clib::ConfigElem& elem ) override;
-  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
-  virtual Bscript::BObjectImp* set_script_member( const char* membername, int value ) override;
   virtual Bscript::BObjectImp* set_script_member_id( const int id,
                                                      int value ) override;  // id test
   virtual bool get_method_hook( const char* methodname, Bscript::Executor* ex,
@@ -73,6 +71,6 @@ inline void ULockable::locked( bool newvalue )
 {
   flags_.change( OBJ_FLAGS::LOCKED, newvalue );
 }
-}
-}
+}  // namespace Core
+}  // namespace Pol
 #endif

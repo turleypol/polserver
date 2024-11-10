@@ -50,12 +50,11 @@ protected:
   friend Items::Item* Items::Item::create( const Items::ItemDesc& descriptor, u32 serial );
 
   virtual void destroy() override;
-  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
 
 private:
   ref_ptr<UBoat> boat_;
 };
-}
-}
+}  // namespace Multi
+}  // namespace Pol
 #endif

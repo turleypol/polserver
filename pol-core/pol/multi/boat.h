@@ -202,7 +202,6 @@ protected:
   virtual void printProperties( Clib::StreamWriter& sw ) const override;
   friend class UMulti;
 
-  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
   virtual Bscript::BObjectImp* script_method( const char* methodname,
                                               Core::UOExecutor& ex ) override;

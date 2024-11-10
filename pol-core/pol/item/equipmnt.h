@@ -36,7 +36,7 @@ namespace Bscript
 {
 class BObjectImp;
 class Executor;
-}
+}  // namespace Bscript
 namespace Clib
 {
 class ConfigElem;
@@ -45,7 +45,7 @@ namespace Core
 {
 class EquipDesc;
 class ExportScript;
-}
+}  // namespace Core
 namespace Items
 {
 class Equipment : public Item
@@ -62,11 +62,7 @@ protected:
              const Core::EquipDesc* permanent_descriptor );
   virtual void printProperties( Clib::StreamWriter& sw ) const override;
   virtual void readProperties( Clib::ConfigElem& elem ) override;
-  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
-  // virtual Bscript::BObjectImp* set_script_member( const char *membername, const std::string&
-  // value );
-  virtual Bscript::BObjectImp* set_script_member( const char* membername, int value ) override;
   virtual Bscript::BObjectImp* set_script_member_double( const char* membername,
                                                          double value ) override;
   virtual Bscript::BObjectImp* set_script_member_id( const int id,
@@ -89,6 +85,6 @@ void register_intrinsic_equipment( const std::string& name, Equipment* equip );
 void insert_intrinsic_equipment( const std::string& name, Equipment* equip );
 void allocate_intrinsic_equipment_serials();
 void load_npc_intrinsic_equip();
-}
-}
+}  // namespace Items
+}  // namespace Pol
 #endif

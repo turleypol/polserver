@@ -86,12 +86,6 @@ public:
                                                Core::UOExecutor& ex ) override;
   virtual Bscript::BObjectImp* call_polmethod_id( const int id, Core::UOExecutor& ex,
                                                   bool forcebuiltin = false ) override;
-  virtual Bscript::BObjectRef get_member( const char* membername ) override;
-  virtual Bscript::BObjectRef get_member_id( const int id ) override;  /// id test
-  virtual Bscript::BObjectRef set_member( const char* membername, Bscript::BObjectImp* value,
-                                          bool copy ) override;
-  virtual Bscript::BObjectRef set_member_id( const int id, Bscript::BObjectImp* value,
-                                             bool copy ) override;  // id test
 
   virtual bool isTrue() const override;
   virtual bool operator==( const Bscript::BObjectImp& objimp ) const override;
@@ -144,12 +138,6 @@ public:
                                                Core::UOExecutor& ex ) override;
   virtual Bscript::BObjectImp* call_polmethod_id( const int id, Core::UOExecutor& ex,
                                                   bool forcebuiltin = false ) override;
-  virtual Bscript::BObjectRef get_member( const char* membername ) override;
-  virtual Bscript::BObjectRef get_member_id( const int id ) override;  // id test
-  virtual Bscript::BObjectRef set_member( const char* membername, Bscript::BObjectImp* value,
-                                          bool copy ) override;
-  virtual Bscript::BObjectRef set_member_id( const int id, Bscript::BObjectImp* value,
-                                             bool copy ) override;  // id test
 
   virtual bool isTrue() const override;
   virtual bool operator==( const Bscript::BObjectImp& objimp ) const override;
@@ -174,12 +162,6 @@ public:
                                                Core::UOExecutor& ex ) override;
   virtual Bscript::BObjectImp* call_polmethod_id( const int id, Core::UOExecutor& ex,
                                                   bool forcebuiltin = false ) override;
-  virtual Bscript::BObjectRef get_member( const char* membername ) override;
-  virtual Bscript::BObjectRef get_member_id( const int id ) override;  // id test
-  virtual Bscript::BObjectRef set_member( const char* membername, Bscript::BObjectImp* value,
-                                          bool copy ) override;
-  virtual Bscript::BObjectRef set_member_id( const int id, Bscript::BObjectImp* value,
-                                             bool copy ) override;  // id test
 
   virtual bool isTrue() const override;
   virtual bool operator==( const Bscript::BObjectImp& objimp ) const override;
@@ -200,12 +182,6 @@ public:
   virtual const char* typeOf() const override;
   virtual u8 typeOfInt() const override;
   virtual Bscript::BObjectImp* copy() const override;
-  virtual Bscript::BObjectRef get_member( const char* membername ) override;
-  virtual Bscript::BObjectRef get_member_id( const int id ) override;  // id test
-  virtual Bscript::BObjectRef set_member( const char* membername, Bscript::BObjectImp* value,
-                                          bool copy ) override;
-  virtual Bscript::BObjectRef set_member_id( const int id, Bscript::BObjectImp* value,
-                                             bool copy ) override;  // test id
   virtual bool isTrue() const override;
   virtual Bscript::BObjectImp* call_polmethod( const char* methodname,
                                                Core::UOExecutor& ex ) override;
@@ -235,8 +211,6 @@ public:
                                                   bool forcebuiltin = false ) override;
   virtual Bscript::BObjectRef get_member( const char* membername ) override;
   virtual Bscript::BObjectRef get_member_id( const int id ) override;  // id test
-  virtual Bscript::BObjectRef set_member( const char* membername, Bscript::BObjectImp* value,
-                                          bool copy ) override;
   virtual Bscript::BObjectRef set_member_id( const int id, Bscript::BObjectImp* value,
                                              bool copy ) override;  // id test
 

@@ -304,15 +304,6 @@ Bscript::BObjectImp* UHouse::get_script_member_id( const int id ) const  /// id 
   }
 }
 
-Bscript::BObjectImp* UHouse::get_script_member( const char* membername ) const
-{
-  Bscript::ObjMember* objmember = Bscript::getKnownObjMember( membername );
-  if ( objmember != nullptr )
-    return this->get_script_member_id( objmember->id );
-  else
-    return nullptr;
-}
-
 Bscript::BObjectImp* UHouse::script_method_id( const int id, Core::UOExecutor& ex )
 {
   using namespace Bscript;

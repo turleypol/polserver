@@ -86,7 +86,6 @@ public:
   virtual class UBoat* as_boat();
   virtual class UHouse* as_house();
   virtual Bscript::BObjectImp* make_ref() override;
-  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;
   virtual Bscript::BObjectImp* set_script_member_id( const int id, int value ) override;
   virtual bool get_method_hook( const char* methodname, Bscript::Executor* ex,

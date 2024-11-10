@@ -118,15 +118,6 @@ Bscript::BObjectImp* UMulti::get_script_member_id( const int id ) const  /// id 
   }
 }
 
-Bscript::BObjectImp* UMulti::get_script_member( const char* membername ) const
-{
-  Bscript::ObjMember* objmember = Bscript::getKnownObjMember( membername );
-  if ( objmember != nullptr )
-    return this->get_script_member_id( objmember->id );
-  else
-    return nullptr;
-}
-
 Bscript::BObjectImp* UMulti::set_script_member_id( const int id, int value )
 {
   BObjectImp* imp = base::set_script_member_id( id, value );
