@@ -53,7 +53,6 @@ bool run_pol_tests()
   RUNTEST( test_curlfeatures )
 
   RUNTEST( decay_test )
-  RUNTEST( decaytask_test )
   //  RUNTEST( dummy )
 
   UnitTest::display_test_results();

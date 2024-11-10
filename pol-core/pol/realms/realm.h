@@ -67,6 +67,7 @@ public:
   bool is_shadowrealm;
   Realm* baserealm;
   const std::string shadowname;
+  bool has_decay;
 
   unsigned short width() const;
   unsigned short height() const;
@@ -94,8 +95,8 @@ public:
   void add_mobile( const Mobile::Character& chr, WorldChangeReason reason );
   void remove_mobile( const Mobile::Character& chr, WorldChangeReason reason );
 
-  void add_toplevel_item( Items::Item* item );
-  void remove_toplevel_item( Items::Item* item );
+  void add_toplevel_item( const Items::Item& item );
+  void remove_toplevel_item( const Items::Item& item );
 
   void add_multi( const Multi::UMulti& multi );
   void remove_multi( const Multi::UMulti& multi );
@@ -219,6 +220,24 @@ inline unsigned int Realm::toplevel_item_count() const
 inline unsigned int Realm::multi_count() const
 {
   return _multi_count;
+}
+
+inline void Realm::add_toplevel_item( const Items::Item& /*item*/ )
+{
+  ++_toplevel_item_count;
+}
+inline void Realm::remove_toplevel_item( const Items::Item& /*item*/ )
+{
+  --_toplevel_item_count;
+}
+
+inline void Realm::add_multi( const Multi::UMulti& /*multi*/ )
+{
+  ++_multi_count;
+}
+inline void Realm::remove_multi( const Multi::UMulti& /*multi*/ )
+{
+  --_multi_count;
 }
 
 inline unsigned Realm::getUOMapID() const

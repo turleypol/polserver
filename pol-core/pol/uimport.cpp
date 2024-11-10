@@ -219,10 +219,6 @@ void read_global_item( Clib::ConfigElem& elem, int /*sysfind_flags*/ )
   }
   else
   {
-    // after loading no item should have this prop
-    // non toplevel items will not be handled by WorldDecay::initialize
-    if ( item->has_reldecay_time_loaded() )
-      item->reldecay_time_loaded( 0 );
     if ( IsCharacter( container_serial ) )  // it's equipped on a character
     {
       Mobile::Character* chr = system_find_mobile( container_serial );
@@ -283,18 +279,33 @@ void read_system_vars( Clib::ConfigElem& elem )
       elem.remove_ulong( "LastCharSerialNumber", UINT_MAX );  // dave 3/9/3
 }
 
-void read_shadow_realms( Clib::ConfigElem& elem )
+void read_realms( Clib::ConfigElem& elem )
 {
   std::string name = elem.remove_string( "Name" );
-  Realms::Realm* baserealm = find_realm( elem.remove_string( "BaseRealm" ) );
-  if ( !baserealm )
-    elem.warn_with_line( "BaseRealm not found." );
-  else if ( defined_realm( name ) )
-    elem.warn_with_line( "Realmname already defined" );
+  bool has_decay = elem.remove_bool( "HasDecay", true );
+  if ( elem.has_prop( "BaseRealm" ) )
+  {
+    // this is shadow realm
+    Realms::Realm* baserealm = find_realm( elem.remove_string( "BaseRealm" ) );
+    if ( !baserealm )
+      elem.warn_with_line( "BaseRealm not found." );
+    else if ( defined_realm( name ) )
+      elem.warn_with_line( "Realmname already defined" );
+    else
+    {
+      add_realm( name, baserealm, has_decay );
+      INFO_PRINTLN( "\nShadowrealm {}", name );
+    }
+  }
   else
   {
-    add_realm( name, baserealm );
-    INFO_PRINTLN( "\nShadowrealm {}", name );
+    // these are dynamic settings for base realm
+    Realms::Realm* realm = find_realm( name );
+
+    if ( !realm )
+      elem.warn_with_line( "Realm not found." );
+    else
+      realm->has_decay = has_decay;
   }
 }
 
@@ -381,7 +392,7 @@ void slurp( const char* filename, const char* tags, int sysfind_flags )
           storage_area->load_item( elem );
         }
         else if ( elem.type_is( "REALM" ) )
-          read_shadow_realms( elem );
+          read_realms( elem );
       }
       catch ( std::exception& )
       {
@@ -661,7 +672,6 @@ int read_data()
   }
 
   stateManager.gflag_in_system_load = false;
-  gamestate.world_decay.initialize();
   return 0;
 }
 

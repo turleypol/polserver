@@ -32,6 +32,7 @@ namespace Multi
 UMulti::UMulti( const Items::ItemDesc& itemdesc ) : Item( itemdesc, Core::UOBJ_CLASS::CLASS_MULTI )
 {
   multiid_ = itemdesc.multiid;
+  decay_items_ = itemdesc.decay_items;
 
   if ( !MultiDefByMultiIDExists( itemdesc.multiid ) )
   {
@@ -110,7 +111,8 @@ Bscript::BObjectImp* UMulti::get_script_member_id( const int id ) const  /// id 
   {
   case Bscript::MBR_FOOTPRINT:
     return footprint();
-    break;
+  case Bscript::MBR_DECAY_ITEMS:
+    return decay_items();
   default:
     return nullptr;
   }
@@ -125,6 +127,23 @@ Bscript::BObjectImp* UMulti::get_script_member( const char* membername ) const
     return nullptr;
 }
 
+Bscript::BObjectImp* UMulti::set_script_member_id( const int id, int value )
+{
+  BObjectImp* imp = base::set_script_member_id( id, value );
+  if ( imp != nullptr )
+    return imp;
+
+  switch ( id )
+  {
+  case MBR_DECAY_ITEMS:
+    decay_items_ = value != 0;
+    return new BLong( decay_items_ );
+  default:
+    break;
+  }
+  return nullptr;
+}
+
 bool UMulti::get_method_hook( const char* methodname, Bscript::Executor* ex,
                               Core::ExportScript** hook, unsigned int* PC ) const
 {
@@ -137,7 +156,7 @@ bool UMulti::get_method_hook( const char* methodname, Bscript::Executor* ex,
 size_t UMulti::estimatedSize() const
 {
   return base::estimatedSize() + sizeof( u16 ) /*multiid*/
-      ;
+         sizeof( bool ) /*decay_items*/;
 }
 }  // namespace Multi
 }  // namespace Pol

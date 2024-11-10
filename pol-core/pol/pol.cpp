@@ -789,11 +789,8 @@ void start_threads()
 
   if ( settingsManager.ssopt.decay_items )
   {
-    if ( !Plib::systemstate.config.decaytask )
-    {
-      checkpoint( "start decay thread" );
-      threadhelp::start_thread( Decay::decay_thread, "Decay", nullptr );
-    }
+    checkpoint( "start decay thread" );
+    threadhelp::start_thread( Decay::decay_thread, "Decay", nullptr );
   }
   else
   {

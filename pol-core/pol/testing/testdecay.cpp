@@ -10,23 +10,19 @@
 
 #include "../../clib/logfacility.h"
 #include "../../clib/rawtypes.h"
-#include "../../plib/systemstate.h"
 #include "../globals/uvars.h"
 #include "../item/item.h"
 #include "../polclock.h"
 #include "../realms/realm.h"
 #include "../realms/realms.h"
-#include "../reftypes.h"
-#include "../ufunc.h"
 #include "../uworld.h"
 #include "testenv.h"
 
 namespace Pol::Testing
 {
-using namespace std::chrono_literals;
 void decay_test()
 {
-  Plib::systemstate.config.decaytask = false;
+  using namespace std::chrono_literals;
   auto createitem = []( Core::Pos4d p, u32 decay )
   {
     auto item = Items::Item::create( 0x0eed );
@@ -36,11 +32,10 @@ void decay_test()
   };
   auto decay_full_realm_loop = []( Core::Decay& d )
   {
-    for ( const auto& p : d.area )
+    do
     {
-      (void)p;
       d.step();
-    }
+    } while(d.area_itr != d.area.begin());
   };
   INFO_PRINTLN( "    create items" );
   auto* firstrealm = Core::gamestate.Realms[0];
@@ -73,6 +68,8 @@ void decay_test()
   // to be able to test realm add/delete the gamestate instance needs to be used
   auto& d = Core::gamestate.decay;
   d.calculate_sleeptime();
+  // first step will move onto first realm from uninitalized state
+  d.step();
 
   // first step should directly destroy on item
   INFO_PRINTLN( "    first zone sweep" );
@@ -99,6 +96,8 @@ void decay_test()
     UnitTest::inc_failures();
     return;
   }
+  // since switching realms is standalone step now, we need step again to clear 0,0
+  d.step();
   if ( secondrealm->toplevel_item_count() != 0 )
   {
     INFO_PRINTLN( "second realm toplevelcount 0!={}", secondrealm->toplevel_item_count() );
@@ -120,13 +119,24 @@ void decay_test()
 
   Core::add_realm( "firstshadow", firstrealm );
   Core::add_realm( "secondshadow", firstrealm );
+  Core::add_realm( "thirdshadow", firstrealm );
   auto* firstshadow = Core::gamestate.Realms[2];
   auto* secondshadow = Core::gamestate.Realms[3];
-  // last shadow realm one item should decay
+  auto* thirdshadow = Core::gamestate.Realms[4];
+  thirdshadow->has_decay = false;
+  // second shadow realm one item should decay
   createitem( { 0, 0, 0, secondshadow }, 1 );
   if ( secondshadow->toplevel_item_count() != 1 )
   {
     INFO_PRINTLN( "second shadow toplevelcount 1!={}", secondshadow->toplevel_item_count() );
+    UnitTest::inc_failures();
+    return;
+  }
+  // third shadow realm - create one item for decay, but it shouldn't as decay is disabled
+  createitem( { 0, 0, 0, thirdshadow }, 1 );
+  if ( thirdshadow->toplevel_item_count() != 1 )
+  {
+    INFO_PRINTLN( "third shadow toplevelcount 1!={}", thirdshadow->toplevel_item_count() );
     UnitTest::inc_failures();
     return;
   }
@@ -144,6 +154,8 @@ void decay_test()
 
   INFO_PRINTLN( "    remove active realm" );
   Core::remove_realm( firstshadow->name() );
+  // removing active realm will put us at the end of previous realm making the next step a
+  // realm switch
   d.step();
   if ( d.realm_index != 2 )
   {
@@ -151,89 +163,28 @@ void decay_test()
     UnitTest::inc_failures();
     return;
   }
+  decay_full_realm_loop( d );
   if ( secondshadow->toplevel_item_count() != 0 )
   {
     INFO_PRINTLN( "second shadow toplevelcount 0!={}", secondshadow->toplevel_item_count() );
     UnitTest::inc_failures();
     return;
   }
-  UnitTest::inc_successes();
-}
 
-void decaytask_test()
-{
+  if ( d.realm_index != 3 )
   {
-    // wipe realms
-    for ( auto& realm : Core::gamestate.Realms )
-    {
-      Core::WorldIterator<Core::ItemFilter>::InBox(
-          realm->area(), realm, [&]( Items::Item* item ) { destroy_item( item ); } );
-    }
-  }
-  auto& decay = Core::gamestate.world_decay;
-  Plib::systemstate.config.decaytask = true;
-  Plib::systemstate.config.thread_decay_statistics = true;
-  auto now = Core::read_gameclock();
-  auto createitem = [&]( Core::Pos4d p, u32 decaytime ) -> Items::Item*
-  {
-    auto item = Items::Item::create( 0x0eed );
-    item->setposition( p );
-    Core::add_item_to_world( item );
-    if ( !item->has_decay_task() )
-    {
-      INFO_PRINTLN( "decay task not active for item" );
-      UnitTest::inc_failures();
-      return nullptr;
-    }
-    if ( decay.getDecayTime( item ) <= now )
-    {
-      INFO_PRINTLN( "decay time {}<{}", decay.getDecayTime( item ), now );
-      UnitTest::inc_failures();
-      return nullptr;
-    }
-    decay.addObject( item, decaytime );
-    return item;
-  };
-  INFO_PRINTLN( "    create items" );
-  auto* firstrealm = Core::gamestate.Realms[0];
-
-  auto i1 = Core::ItemRef( createitem( { 0, 0, 0, firstrealm }, 10 ) );
-  auto i2 = Core::ItemRef( createitem( { 0, 0, 0, firstrealm }, 60 ) );
-  if ( !i1 || !i2 )
-    return;
-  if ( firstrealm->toplevel_item_count() != 2 )
-  {
-    INFO_PRINTLN( "first realm toplevelcount 2!={}", firstrealm->toplevel_item_count() );
+    INFO_PRINTLN( "active realm isnt third shadow 3!={}", d.realm_index );
     UnitTest::inc_failures();
     return;
   }
-  INFO_PRINTLN( "Gameclock {}", Core::read_gameclock() );
-  INFO_PRINTLN( "i1 {} {}", i1->has_decay_task(), decay.getDecayTime( i1.get() ) );
-  INFO_PRINTLN( "i2 {} {}", i2->has_decay_task(), decay.getDecayTime( i2.get() ) );
-  decay.decayTask();  // should not destroy items
-  if ( firstrealm->toplevel_item_count() != 2 )
+  decay_full_realm_loop( d );
+  // item has decay, but realm decay is disabled so it shouldn't disappear
+  if ( thirdshadow->toplevel_item_count() != 1 )
   {
-    INFO_PRINTLN( "first realm toplevelcount 2!={}", firstrealm->toplevel_item_count() );
+    INFO_PRINTLN( "third shadow toplevelcount 1!={}", thirdshadow->toplevel_item_count() );
     UnitTest::inc_failures();
     return;
   }
-  // time machine to first item
-  Core::shift_clock_for_unittest( 10s );
-
-  decay.decayTask();
-  if ( !i1->orphan() || i2->orphan() )
-  {
-    INFO_PRINTLN( "first destroyed: {}, second not: {}", i1->orphan(), !i2->orphan() );
-    UnitTest::inc_failures();
-    return;
-  }
-  if ( decay.activeObjects() != 1 )
-  {
-    INFO_PRINTLN( "decay activeObjects 1!={}", decay.activeObjects() );
-    UnitTest::inc_failures();
-    return;
-  }
-
 
   UnitTest::inc_successes();
 }

@@ -165,8 +165,6 @@ public:
   Realms::Realm* main_realm;
   std::vector<Realms::Realm*> Realms;
 
-  WorldDecay world_decay;
-
   // owned by task_queue
   PeriodicTask* update_rpm_task;
   PeriodicTask* regen_stats_task;
@@ -175,7 +173,6 @@ public:
   PeriodicTask* write_account_task;
   PeriodicTask* update_sysload_task;
   PeriodicTask* reload_pol_cfg_task;
-  PeriodicTask* decay_task;
 
   std::vector<Mobile::Attribute*> attributes;
   unsigned numAttributes;

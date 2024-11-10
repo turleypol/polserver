@@ -73,6 +73,8 @@ public:
 
   u16 multiid() const { return multiid_; }
 
+  bool decay_items() const { return decay_items_; }
+
   virtual void double_click( Network::Client* client ) override;
   virtual void register_object( UObject* obj );
   virtual void unregister_object( UObject* obj );
@@ -86,6 +88,7 @@ public:
   virtual Bscript::BObjectImp* make_ref() override;
   virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;
+  virtual Bscript::BObjectImp* set_script_member_id( const int id, int value ) override;
   virtual bool get_method_hook( const char* methodname, Bscript::Executor* ex,
                                 Core::ExportScript** hook, unsigned int* PC ) const override;
 
@@ -106,6 +109,8 @@ protected:
   friend class ref_ptr<UMulti>;
 
   u16 multiid_;
+
+  bool decay_items_;
 
   // virtual void destroy(void);
 };

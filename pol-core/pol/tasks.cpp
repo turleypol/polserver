@@ -343,8 +343,6 @@ void start_tasks()
   gamestate.reload_accounts_task->start();
   gamestate.update_sysload_task->start();
   gamestate.reload_pol_cfg_task->start();
-  if ( settingsManager.ssopt.decay_items && Plib::systemstate.config.decaytask )
-    gamestate.decay_task->start();
 }
 
 // script loads
