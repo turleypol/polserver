@@ -114,7 +114,7 @@ Bscript::BObjectImp* UMulti::get_script_member_id( const int id ) const  /// id 
   case Bscript::MBR_FOOTPRINT:
     return footprint();
   case Bscript::MBR_DECAY_ITEMS:
-    return decay_items();
+    return new Bscript::BLong( decay_items() );
   default:
     return nullptr;
   }
@@ -125,8 +125,7 @@ Bscript::BObjectImp* UMulti::get_script_member( const char* membername ) const
   Bscript::ObjMember* objmember = Bscript::getKnownObjMember( membername );
   if ( objmember != nullptr )
     return this->get_script_member_id( objmember->id );
-  else
-    return nullptr;
+  return nullptr;
 }
 
 Bscript::BObjectImp* UMulti::set_script_member_id( const int id, int value )
@@ -137,9 +136,9 @@ Bscript::BObjectImp* UMulti::set_script_member_id( const int id, int value )
 
   switch ( id )
   {
-  case MBR_DECAY_ITEMS:
+  case Bscript::MBR_DECAY_ITEMS:
     decay_items_ = value != 0;
-    return new BLong( decay_items_ );
+    return new Bscript::BLong( decay_items_ );
   default:
     break;
   }
