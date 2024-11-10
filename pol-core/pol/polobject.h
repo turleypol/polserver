@@ -92,45 +92,45 @@ template <class T>
 Bscript::BObjectRef PolApplicObj<T>::set_member( const char* membername, BObjectImp* value,
                                                  bool copy )
 {
-  ObjMember* objmember = getKnownObjMember( membername );
+  Bscript::ObjMember* objmember = Bscript::getKnownObjMember( membername );
   if ( objmember != nullptr )
     return set_member_id( objmember->id, value, copy );
-  return BObjectRef( UninitObject::create() );
+  return Bscript::BObjectRef( Bscript::UninitObject::create() );
 }
 
 template <class T>
 Bscript::BObjectRef PolApplicObj<T>::set_member_id( const int id, BObjectImp* value, bool /*copy*/ )
 {
-  BObjectImp* result = nullptr;
-  if ( auto* l = impptrIf<BLong>( value ) )
+  Bscript::BObjectImp* result = nullptr;
+  if ( auto* l = impptrIf<Bscript::BLong>( value ) )
     result = obj_->set_script_member_id( id, l->value() );
-  else if ( auto* s = impptrIf<String>( value ) )
+  else if ( auto* s = impptrIf<Bscript::String>( value ) )
     result = obj_->set_script_member_id( id, s->value() );
-  else if ( auto* d = impptrIf<Double>( value ) )
+  else if ( auto* d = impptrIf<Bscript::Double>( value ) )
     result = obj_->set_script_member_id_double( id, d->value() );
-  else if ( auto* b = impptrIf<BBoolean>( value ) )
+  else if ( auto* b = impptrIf<Bscript::BBoolean>( value ) )
     result = obj_->set_script_member_id( id, (int)b->value() );
   if ( result != nullptr )
-    return BObjectRef( result );
-  return BObjectRef( UninitObject::create() );
+    return BBscript::ObjectRef( result );
+  return BBscript::ObjectRef( Bscript::UninitObject::create() );
 }
 
 template <class T>
 Bscript::BObjectRef PolApplicObj<T>::get_member( const char* membername )
 {
-  ObjMember* objmember = getKnownObjMember( membername );
+  Bscript::ObjMember* objmember = Bscript::getKnownObjMember( membername );
   if ( objmember != nullptr )
     return this->get_member_id( objmember->id );
-  return BObjectRef( UninitObject::create() );
+  return Bscript::BObjectRef( Bscript::UninitObject::create() );
 }
 
 template <class T>
 Bscript::BObjectRef PolApplicObj<T>::get_member_id( const int id )
 {
-  BObjectImp* result = obj_->get_script_member_id( id );
+  Bscript::BObjectImp* result = obj_->get_script_member_id( id );
   if ( result != nullptr )
-    return BObjectRef( result );
-  return BObjectRef( UninitObject::create() );
+    return Bscript::BObjectRef( result );
+  return Bscript::BObjectRef( Bscript::UninitObject::create() );
 }
 }  // namespace Core
 }  // namespace Pol
