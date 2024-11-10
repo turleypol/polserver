@@ -107,13 +107,13 @@ public:
 
   virtual u8 visible_size() const override;
 
+  virtual void readProperties( Clib::ConfigElem& elem ) override;
+  virtual void printProperties( Clib::StreamWriter& sw ) const override;
+
 protected:
   explicit UMulti( const Items::ItemDesc& itemdesc );
 
   virtual const char* classname() const override;
-
-  virtual void readProperties( Clib::ConfigElem& elem ) override;
-  virtual void printProperties( Clib::StreamWriter& sw ) const override;
 
   friend class ref_ptr<UMulti>;
 
