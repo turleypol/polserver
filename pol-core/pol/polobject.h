@@ -103,13 +103,13 @@ Bscript::BObjectRef PolApplicObj<T>::set_member_id( const int id, Bscript::BObje
 {
   Bscript::BObjectImp* result = nullptr;
   if ( auto* l = Bscript::impptrIf<Bscript::BLong>( value ) )
-    result = obj_->set_script_member_id( id, l->value() );
+    result = this->obj_->set_script_member_id( id, l->value() );
   else if ( auto* s = Bscript::impptrIf<Bscript::String>( value ) )
-    result = obj_->set_script_member_id( id, s->value() );
+    result = this->obj_->set_script_member_id( id, s->value() );
   else if ( auto* d = Bscript::impptrIf<Bscript::Double>( value ) )
-    result = obj_->set_script_member_id_double( id, d->value() );
+    result = this->obj_->set_script_member_id_double( id, d->value() );
   else if ( auto* b = Bscript::impptrIf<Bscript::BBoolean>( value ) )
-    result = obj_->set_script_member_id( id, (int)b->value() );
+    result = this->obj_->set_script_member_id( id, (int)b->value() );
   if ( result != nullptr )
     return Bscript::BObjectRef( result );
   return Bscript::BObjectRef( Bscript::UninitObject::create() );
