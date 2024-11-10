@@ -169,7 +169,7 @@ void UMulti::readProperties( Clib::ConfigElem& elem )
   else
     multiid_ = elem.remove_ushort( "MultiID", multidef().multiid );
   const auto& desc = static_cast<const Items::MultiDesc&>( itemdesc() );
-  items_decay_ = elem.remove_ushort( "ItemsDecay", desc().items_decay );
+  items_decay_ = elem.remove_ushort( "ItemsDecay", desc.items_decay );
 }
 
 void UMulti::printProperties( Clib::StreamWriter& sw ) const
