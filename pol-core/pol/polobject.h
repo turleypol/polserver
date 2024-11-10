@@ -1,16 +1,14 @@
-#ifndef POLOBJECT_H
-#define POLOBJECT_H
+#pragma once
 
 #ifndef BSCRIPT_BOBJECT_H
 #include "../bscript/bobject.h"
 #endif
 
 #include "../bscript/executor.h"
+#include "../bscript/objmembers.h"
 #include "uoexec.h"
 
-namespace Pol
-{
-namespace Core
+namespace Pol::Core
 {
 class UOExecutor;
 class PolObjectImp : public Bscript::BObjectImp
@@ -51,7 +49,8 @@ public:
                                                   bool forcebuiltin = false );
   virtual Bscript::BObjectRef set_member( const char* membername, Bscript::BObjectImp* value,
                                           bool copy ) override;
-  virtual Bscript::BObjectRef set_member_id( const int id, BObjectImp* value, bool copy ) override;
+  virtual Bscript::BObjectRef set_member_id( const int id, Bscript::BObjectImp* value,
+                                             bool copy ) override;
   virtual Bscript::BObjectRef get_member( const char* membername ) override;
   virtual Bscript::BObjectRef get_member_id( const int id ) override;
 };
@@ -99,7 +98,8 @@ Bscript::BObjectRef PolApplicObj<T>::set_member( const char* membername, BObject
 }
 
 template <class T>
-Bscript::BObjectRef PolApplicObj<T>::set_member_id( const int id, BObjectImp* value, bool /*copy*/ )
+Bscript::BObjectRef PolApplicObj<T>::set_member_id( const int id, Bscript::BObjectImp* value,
+                                                    bool /*copy*/ )
 {
   Bscript::BObjectImp* result = nullptr;
   if ( auto* l = impptrIf<Bscript::BLong>( value ) )
@@ -111,8 +111,8 @@ Bscript::BObjectRef PolApplicObj<T>::set_member_id( const int id, BObjectImp* va
   else if ( auto* b = impptrIf<Bscript::BBoolean>( value ) )
     result = obj_->set_script_member_id( id, (int)b->value() );
   if ( result != nullptr )
-    return BBscript::ObjectRef( result );
-  return BBscript::ObjectRef( Bscript::UninitObject::create() );
+    return Bscript::BObjectRef( result );
+  return Bscript::BObjectRef( Bscript::UninitObject::create() );
 }
 
 template <class T>
@@ -132,6 +132,4 @@ Bscript::BObjectRef PolApplicObj<T>::get_member_id( const int id )
     return Bscript::BObjectRef( result );
   return Bscript::BObjectRef( Bscript::UninitObject::create() );
 }
-}  // namespace Core
-}  // namespace Pol
-#endif
+}  // namespace Pol::Core
