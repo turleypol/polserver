@@ -183,7 +183,7 @@ void UMulti::printProperties( Clib::StreamWriter& sw ) const
 size_t UMulti::estimatedSize() const
 {
   return base::estimatedSize() + sizeof( u16 ) /*multiid*/
-         sizeof( bool ) /*items_decay*/;
+         + sizeof( bool ) /*items_decay*/;
 }
 }  // namespace Multi
 }  // namespace Pol
