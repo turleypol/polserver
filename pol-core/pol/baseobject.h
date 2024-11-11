@@ -1,5 +1,4 @@
-#ifndef BASEOBJECT_H
-#define BASEOBJECT_H
+#pragma once
 
 #include "clib/rawtypes.h"
 
@@ -7,13 +6,11 @@
 
 #include <utility>
 
-namespace Pol
-{
-namespace Realms
+namespace Pol::Realms
 {
 class Realm;
 }
-namespace Core
+namespace Pol::Core
 {
 /**
  * This is meant to be coarse-grained. It's meant as an alternative to dynamic_cast.
@@ -64,9 +61,9 @@ public:
   const Pos4d& pos() const;
   const Pos3d& pos3d() const;
   const Pos2d& pos2d() const;
-  /*  u16 x() const;
-    u16 y() const;
-    s8 z() const;*/
+  u16 x() const;
+  u16 y() const;
+  s8 z() const;
   Realms::Realm* realm() const;
 
 private:
@@ -153,7 +150,7 @@ inline const Pos2d& ULWObject::pos2d() const
 }
 
 // TODO POS remove as final step
-/*inline u16 ULWObject::x() const
+inline u16 ULWObject::x() const
 {
   return position.x();
 }
@@ -164,13 +161,10 @@ inline u16 ULWObject::y() const
 inline s8 ULWObject::z() const
 {
   return position.z();
-}*/
+}
 inline Realms::Realm* ULWObject::realm() const
 {
   return position.realm();
 }
 
-}  // namespace Core
-}  // namespace Pol
-
-#endif
+}  // namespace Pol::Core
