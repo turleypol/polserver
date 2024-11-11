@@ -177,7 +177,8 @@ void UMulti::printProperties( Clib::StreamWriter& sw ) const
   base::printProperties( sw );
 
   sw.add( "MultiID", multiid_ );
-  sw.add( "ItemsDecay", items_decay_ );
+  if ( static_cast<const Items::MultiDesc&>( itemdesc() ).items_decay != items_decay_ )
+    sw.add( "ItemsDecay", items_decay_ );
 }
 
 void UMulti::items_decay( bool decay )
