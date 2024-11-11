@@ -66,8 +66,8 @@ public:
   const Pos2d& pos2d() const;
   /*  u16 x() const;
     u16 y() const;
-    s8 z() const;
-    Realms::Realm* realm() const;*/
+    s8 z() const;*/
+  Realms::Realm* realm() const;
 
 private:
   Pos4d position;
@@ -164,11 +164,11 @@ inline u16 ULWObject::y() const
 inline s8 ULWObject::z() const
 {
   return position.z();
-}
+}*/
 inline Realms::Realm* ULWObject::realm() const
 {
   return position.realm();
-}*/
+}
 
 }  // namespace Core
 }  // namespace Pol
