@@ -36,7 +36,7 @@ void decay_test()
   {
     const auto& id = Items::find_itemdesc( objtype );
     auto* multi = Multi::UMulti::scripted_create( id, p, 0 );
-    return multi;
+    return static_cast<Multi::UMulti*>( multi );
   };
   auto decay_full_realm_loop = []( Core::Decay& d )
   {
