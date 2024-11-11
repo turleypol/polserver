@@ -136,7 +136,6 @@ void decay_test()
   thirdshadow->has_decay = false;
   // second shadow realm one item should decay
   createitem( { 0, 0, 0, secondshadow }, 1 );
-  createitem( { 100, 0, 0, secondshadow }, 1 );
   auto* multi = createmulti( { 100, 0, 0, secondshadow }, 0x12000 );
   if ( !multi )
   {
@@ -145,9 +144,11 @@ void decay_test()
     return;
   }
   multi->items_decay( true );
-  if ( secondshadow->toplevel_item_count() != 3 )
+  // item inside multi which has decay enabled
+  createitem( { 100, 0, 0, secondshadow }, 1 );
+  if ( secondshadow->toplevel_item_count() != 2 )
   {
-    INFO_PRINTLN( "second shadow toplevelcount 3!={}", secondshadow->toplevel_item_count() );
+    INFO_PRINTLN( "second shadow toplevelcount 2!={}", secondshadow->toplevel_item_count() );
     UnitTest::inc_failures();
     return;
   }
