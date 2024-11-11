@@ -36,7 +36,7 @@ void decay_test()
   {
     const auto& id = Items::find_itemdesc( objtype );
     auto* multi = Multi::UMulti::create( id );
-    multi->setposition( pos );
+    multi->setposition( p );
     Core::add_multi_to_world( multi );
     return multi;
   };
