@@ -12,6 +12,8 @@
 #include "../../clib/rawtypes.h"
 #include "../globals/uvars.h"
 #include "../item/item.h"
+#include "../item/itemdesc.h"
+#include "../multi/multi.h"
 #include "../polclock.h"
 #include "../realms/realm.h"
 #include "../realms/realms.h"
@@ -30,12 +32,18 @@ void decay_test()
     Core::add_item_to_world( item );
     item->set_decay_after( decay );
   };
+  auto createmulti = []( Core::Pos4d p, u32 objtype )
+  {
+    const auto& id = Items::find_itemdesc( objtype );
+    auto* multi = Multi::UMulti::scripted_create( id, p, 0 );
+    return multi;
+  };
   auto decay_full_realm_loop = []( Core::Decay& d )
   {
     do
     {
       d.step();
-    } while(d.area_itr != d.area.begin());
+    } while ( d.area_itr != d.area.begin() );
   };
   INFO_PRINTLN( "    create items" );
   auto* firstrealm = Core::gamestate.Realms[0];
@@ -126,9 +134,18 @@ void decay_test()
   thirdshadow->has_decay = false;
   // second shadow realm one item should decay
   createitem( { 0, 0, 0, secondshadow }, 1 );
-  if ( secondshadow->toplevel_item_count() != 1 )
+  createitem( { 100, 0, 0, secondshadow }, 1 );
+  auto* multi = createmulti( { 100, 0, 0, secondshadow }, 0x12000 );
+  if ( !multi )
   {
-    INFO_PRINTLN( "second shadow toplevelcount 1!={}", secondshadow->toplevel_item_count() );
+    INFO_PRINTLN( "failed to create multi" );
+    UnitTest::inc_failures();
+    return;
+  }
+  multi->items_decay( true );
+  if ( secondshadow->toplevel_item_count() != 3 )
+  {
+    INFO_PRINTLN( "second shadow toplevelcount 3!={}", secondshadow->toplevel_item_count() );
     UnitTest::inc_failures();
     return;
   }

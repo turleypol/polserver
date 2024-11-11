@@ -180,6 +180,11 @@ void UMulti::printProperties( Clib::StreamWriter& sw ) const
   sw.add( "ItemsDecay", items_decay_ );
 }
 
+void UMulti::items_decay( bool decay )
+{
+  items_decay_ = decay;
+}
+
 size_t UMulti::estimatedSize() const
 {
   return base::estimatedSize() + sizeof( u16 ) /*multiid*/
