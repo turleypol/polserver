@@ -35,8 +35,10 @@ void decay_test()
   auto createmulti = []( Core::Pos4d p, u32 objtype )
   {
     const auto& id = Items::find_itemdesc( objtype );
-    auto* multi = Multi::UMulti::scripted_create( id, p, 0 );
-    return static_cast<Multi::UMulti*>( multi );
+    auto* multi = Multi::UMulti::create( id );
+    multi->setposition( pos );
+    Core::add_multi_to_world( multi );
+    return multi;
   };
   auto decay_full_realm_loop = []( Core::Decay& d )
   {
