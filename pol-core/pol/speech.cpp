@@ -385,13 +385,15 @@ void SendUnicodeSpeech( Network::Client* client, PKTIN_AD* msgin, const std::str
 }
 u16 Get12BitNumber( u8* thearray, u16 theindex )
 {
-  u16 theresult = 0;
   int thenibble = theindex * 3;
   int thebyte = thenibble / 2;
+
+  u16 theresult = 0;
+  memcpy( &theresult, thearray + thebyte, sizeof( u16 ) );
   if ( thenibble % 2 )
-    theresult = cfBEu16( *( (u16*)( thearray + thebyte ) ) ) & 0x0FFF;
+    theresult = cfBEu16( theresult ) & 0x0FFF;
   else
-    theresult = cfBEu16( *( (u16*)( thearray + thebyte ) ) ) >> 4;
+    theresult = cfBEu16( theresult ) >> 4;
   return theresult;
 }
 
