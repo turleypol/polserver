@@ -1161,9 +1161,9 @@ std::string String::fromUTF16( unsigned short code )
 std::string String::fromUTF16( const unsigned short* code, size_t len, bool big_endian )
 {
   std::string s;
-  std::vector<u16> blob;
-  blob.reserve( len );
-  memcpy( blob.data(), code, len );
+  std::vector<u16> blob{ code, code + len };
+  //  blob.reserve( len );
+  //  memcpy( blob.data(), code, len );
 
   size_t short_len = blob.size();
   if ( auto itr = std::find( blob.begin(), blob.end(), 0 ); itr != blob.end() )
