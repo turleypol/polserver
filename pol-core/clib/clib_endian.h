@@ -14,10 +14,10 @@
 #define U_LITTLE_ENDIAN
 #endif
 
-#define flipEndian32( x )                                                   \
-  ( ( (unsigned)( x ) >> 24 ) | ( ( (unsigned)( x ) >> 8 ) & 0x0000FF00 ) | \
-    ( ( ( x ) << 8 ) & 0x00FF0000 ) | ( ( x ) << 24 ) )
-#define flipEndian16( x ) ( ( ( ( x ) >> 8 ) & 0x00FF ) | ( ( ( x ) << 8 ) & 0xFF00 ) )
+#define flipEndian32( x )                                         \
+  ( ( (u32)( x ) >> 24 ) | ( ( (u32)( x ) >> 8 ) & 0x0000FF00 ) | \
+    ( ( (u32)( x ) << 8 ) & 0x00FF0000 ) | ( (u32)( x ) << 24 ) )
+#define flipEndian16( x ) ( ( ( (u16)( x ) >> 8 ) & 0x00FF ) | ( ( (u16)( x ) << 8 ) & 0xFF00 ) )
 
 #ifdef U_BIG_ENDIAN
 /* big endian */
