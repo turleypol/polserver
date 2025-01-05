@@ -86,9 +86,7 @@ void PolConfig::read( bool initial_load )
     debug_local_only = elem.remove_bool( "DebugLocalOnly", true );
 
     account_save = elem.remove_int( "AccountDataSave", -1 );
-
-    decaytask = elem.remove_bool( "DecayTask", false );
-  }  // initial_load
+  }
   verbose = elem.remove_bool( "Verbose", false );
   watch_mapcache = elem.remove_bool( "WatchMapCache", false );
   loglevel = elem.remove_ushort( "LogLevel", 0 );

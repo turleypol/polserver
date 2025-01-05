@@ -8,7 +8,9 @@
  */
 
 
-#pragma once
+#ifndef POLCFG_H
+#define POLCFG_H
+
 #include <atomic>
 #include <string>
 #include <vector>
@@ -17,7 +19,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #endif
-namespace Pol::Plib
+namespace Pol
+{
+namespace Core
 {
 struct PolConfig
 {
@@ -57,11 +61,6 @@ struct PolConfig
   unsigned int max_objtype;
   unsigned short max_anim_id;
 
-  unsigned int max_call_depth;
-  bool passert_dump_stack;
-  std::string passert_failure_action;
-  bool logfile_timestamp_everyline;
-
   unsigned short max_clients;
   unsigned short character_slots;
   unsigned short max_clients_bypass_cmdlevel;
@@ -85,6 +84,9 @@ struct PolConfig
   bool retain_cleartext_passwords;
   bool discard_old_events;
 
+  int shutdown_save_type;  // either SAVE_FULL or SAVE_INCREMENTAL
+  int assertion_shutdown_save_type;
+
   std::string minidump_type;
 
   int account_save;
@@ -102,9 +104,12 @@ struct PolConfig
   bool show_warning_boat_move;
 
   /**
+   * @brief Returns true if program aborts are reported
+   */
+  bool report_program_aborts();
+  /**
    * crash reporting system with some early default values
    */
-  bool report_active;
   std::string report_admin_email;
   std::string report_server;
   std::string report_url;
@@ -113,7 +118,10 @@ struct PolConfig
 
   bool enable_colored_output;
 
-  void read( bool initial_load );
+  static void read_pol_config( bool initial_load );
   static struct stat pol_cfg_stat;
+  static void reload_pol_cfg();
 };
-}  // namespace Pol::Plib
+}  // namespace Core
+}  // namespace Pol
+#endif

@@ -1161,37 +1161,36 @@ std::string String::fromUTF16( unsigned short code )
 std::string String::fromUTF16( const unsigned short* code, size_t len, bool big_endian )
 {
   std::string s;
-  std::vector<u16> blob{ code, code + len };  // copy data to prevent unaligned ptr access
-
-  size_t short_len = blob.size();
-  if ( auto itr = std::find( blob.begin(), blob.end(), 0 ); itr != blob.end() )
-    short_len = itr - blob.begin();
+  size_t short_len = 0;
+  // convert until the first null terminator
+  while ( code[short_len] != 0 && short_len < len )
+    ++short_len;
 
   // minimum incomplete iterator implementation, just for the internal usage with utf8lib to
   // directly decode flipped bytes
   struct BigEndianIterator
   {
-    std::vector<u16>::iterator itr;
-    BigEndianIterator( std::vector<u16>::iterator begin ) : itr( std::move( begin ) ){};
+    const u16* ptr;
+    BigEndianIterator( const u16* begin ) : ptr( begin ){};
     BigEndianIterator& operator++()
     {
-      ++itr;
+      ++ptr;
       return *this;
     };
     BigEndianIterator operator++( int )
     {
-      BigEndianIterator itr_( itr );
-      ++itr;
-      return itr_;
+      BigEndianIterator itr( ptr );
+      ++ptr;
+      return itr;
     };
-    u16 operator*() { return cfBEu16( *itr ); };
-    bool operator!=( const BigEndianIterator& o ) { return itr != o.itr; };
+    u16 operator*() { return cfBEu16( *ptr ); };
+    bool operator!=( const BigEndianIterator& o ) { return ptr != o.ptr; };
   };
   if ( big_endian )
-    utf8::unchecked::utf16to8( BigEndianIterator( blob.begin() ), BigEndianIterator( blob.end() ),
+    utf8::unchecked::utf16to8( BigEndianIterator( code ), BigEndianIterator( code + short_len ),
                                std::back_inserter( s ) );
   else
-    utf8::unchecked::utf16to8( blob.begin(), blob.end(), std::back_inserter( s ) );
+    utf8::unchecked::utf16to8( code, code + short_len, std::back_inserter( s ) );
   Clib::sanitizeUnicode( &s );
   return s;
 }

@@ -139,7 +139,7 @@ void decay_test()
   // one item inside a multi with decay disabled
   createitem( { 0, 0, 0, secondshadow }, 1 );
   auto* multi = createmulti( { 100, 0, 0, secondshadow }, 0x12000 );
-  auto* multi2 = createmulti( { 200, 0, 0, secondshadow }, 0x12000 );
+  createmulti( { 200, 0, 0, secondshadow }, 0x12000 );
   if ( !multi )
   {
     INFO_PRINTLN( "failed to create multi" );

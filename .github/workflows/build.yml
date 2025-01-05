@@ -2,6 +2,10 @@ name: Build
 
 on: [push, pull_request]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: ${{matrix.config.name}} Build
@@ -80,7 +84,6 @@ jobs:
 
           if ($version -ne 'default') {
             sudo apt-get install "$compiler-$version" -y
-            ${{compiler-version}} --version
           }
           sudo apt-get install libmysqlclient-dev -y
           sudo apt-get install kwstyle -y
@@ -140,7 +143,7 @@ jobs:
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          #cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
+          cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
       - name: Test (Shard Fixtures)
         if: matrix.config.nopch == 0
         run: |
