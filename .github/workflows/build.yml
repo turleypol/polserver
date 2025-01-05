@@ -80,7 +80,7 @@ jobs:
 
           if ($version -ne 'default') {
             sudo apt-get install "$compiler-$version" -y
-            echo "$compiler-$version --version"
+            $compiler-$version --version
           }
           sudo apt-get install libmysqlclient-dev -y
           sudo apt-get install kwstyle -y
