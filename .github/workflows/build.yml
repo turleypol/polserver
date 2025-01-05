@@ -88,7 +88,7 @@ jobs:
 
           $ninja_version = "1.12.1"
           $cmake_version = "3.31.3"
-          $cmake_archive = "cmake-$cmake_version-Linux-x86_64"
+          $cmake_archive = "cmake-$cmake_version-linux-x86_64"
           wget -q "https://github.com/ninja-build/ninja/releases/download/v$ninja_version/ninja-linux.zip"
           unzip -q ninja-linux.zip -d bin-build
           wget -q "https://github.com/Kitware/CMake/releases/download/v$cmake_version/$cmake_archive.tar.gz"
