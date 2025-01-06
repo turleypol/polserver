@@ -24,7 +24,7 @@ jobs:
           - os: "ubuntu-24.04"
             cxx-compiler: g++
             c-compiler: gcc
-            compiler-version: 12
+            compiler-version: default
             build-type: RelWithDebInfo
             nopch: 0
             name: Linux GCC
@@ -32,7 +32,7 @@ jobs:
           - os: "ubuntu-24.04"
             cxx-compiler: clang++
             c-compiler: clang
-            compiler-version: 15
+            compiler-version: default
             build-type: RelWithDebInfo
             nopch: 0
             name: Linux Clang
@@ -40,7 +40,7 @@ jobs:
           - os: "ubuntu-24.04"
             cxx-compiler: clang++
             c-compiler: clang
-            compiler-version: 15
+            compiler-version: default
             build-type: Release
             nopch: 1
             name: Linux Clang noPCH
