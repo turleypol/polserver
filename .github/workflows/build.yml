@@ -74,7 +74,7 @@ jobs:
           path: lib/cppdap-2a4c7cf
           key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-cppdap-2a4c7cf_1
       - name: Install Compiler and Dependencies
-        if: matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'ubuntu-24.04'
         shell: pwsh
         run: |
           sudo apt-get update
@@ -133,7 +133,7 @@ jobs:
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
 
       - name: Start MySQL
-        if: matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'ubuntu-24.04'
         shell: pwsh
         run: |
           sudo /etc/init.d/mysql start
@@ -184,7 +184,7 @@ jobs:
           mkdir release
           mv *.zip release
       - name: Create Artefact (dbg)
-        if: matrix.config.os == 'ubuntu-latest' && matrix.config.nopch == 0
+        if: matrix.config.os == 'ubuntu-24.04' && matrix.config.nopch == 0
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target create_dbg_zip
@@ -200,7 +200,7 @@ jobs:
 
   release:
     needs: build
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-24.04"
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Download artefacts
