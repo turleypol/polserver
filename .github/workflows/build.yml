@@ -21,7 +21,7 @@ jobs:
             nopch: 0
             name: Windows CL
 
-          - os: "ubuntu-latest"
+          - os: "ubuntu-24.04"
             cxx-compiler: g++
             c-compiler: gcc
             compiler-version: 12
@@ -29,7 +29,7 @@ jobs:
             nopch: 0
             name: Linux GCC
 
-          - os: "ubuntu-latest"
+          - os: "ubuntu-24.04"
             cxx-compiler: clang++
             c-compiler: clang
             compiler-version: 15
@@ -37,7 +37,7 @@ jobs:
             nopch: 0
             name: Linux Clang
 
-          - os: "ubuntu-latest"
+          - os: "ubuntu-24.04"
             cxx-compiler: clang++
             c-compiler: clang
             compiler-version: 15
