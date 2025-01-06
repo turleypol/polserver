@@ -1,7 +1,7 @@
 message("* libcppdap")
 
-set (CPPDAP_REPOSITORY "https://github.com/KevinEady/cppdap.git")
-set (CPPDAP_VERSION_REF "2a4c7cf")
+set (CPPDAP_REPOSITORY "https://github.com/google/cppdap")
+set (CPPDAP_VERSION_REF "82beeea")
 
 set (CPPDAP_SOURCE_DIR "${POL_EXT_LIB_DIR}/cppdap-${CPPDAP_VERSION_REF}")
 set (CPPDAP_INSTALL_DIR "${CPPDAP_SOURCE_DIR}/build")
@@ -26,9 +26,9 @@ set(CPPDAP_ARGS ${CPPDAP_FLAGS}
 
 if(NOT EXISTS ${CPPDAP_LIB})
   ExternalProject_Add(libcppdap_ext
-    URL   "../lib/cppdap1" #${CPPDAP_REPOSITORY}
-    #    GIT_TAG          ${CPPDAP_VERSION_REF}
-    #    GIT_SHALLOW      TRUE
+    GIT_REPOSITORY   ${CPPDAP_REPOSITORY}
+    GIT_TAG          ${CPPDAP_VERSION_REF}
+    GIT_SHALLOW      TRUE
     PREFIX           cppdap
     LIST_SEPARATOR |
     CMAKE_ARGS       ${CPPDAP_ARGS}
