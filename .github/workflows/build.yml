@@ -243,6 +243,10 @@ jobs:
     runs-on: "ubuntu-latest"
     if: failure()
     steps:
+      - name: boostls
+        run: |
+          ls lib/
+          ls lib/boost_1_87_0
       - name: Discord notification failure
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
