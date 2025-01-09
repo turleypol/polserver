@@ -43,7 +43,7 @@ else()
 endif()
 
 set(boost_needs_extract FALSE)
-#set(boost_needs_build FALSE)
+set(boost_needs_build FALSE)
 if (NOT EXISTS "${BOOST_SOURCE_DIR}/boost")
   message("  - will extract")
   ExternalProject_Add(libboost_ext
@@ -81,7 +81,7 @@ if(NOT EXISTS ${BOOST_STACKTRACE_LIB})
           LOG_OUTPUT_ON_FAILURE 1
           )
   if (boost_needs_extract)
-    add_dependencies(boost_build boost_extract)
+    add_dependencies(boost_build libboost_ext)
   endif()
   set_target_properties (boost_build PROPERTIES FOLDER 3rdParty)
   set(boost_needs_build TRUE)
