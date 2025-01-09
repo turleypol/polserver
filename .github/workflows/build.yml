@@ -168,6 +168,11 @@ jobs:
           cmake --build . --config ${{ matrix.config.build-type }} --target test_ecompile_watch
           #env:
           #POLCORE_TEST_FILTER: testitems
+      - name: boostls
+        if: always()
+        run: |
+          ls lib/
+          ls lib/boost_1_87_0
       - name: Upload coretest folder
         if: matrix.config.nopch == 0 && always()
         uses: actions/upload-artifact@v4
@@ -243,10 +248,6 @@ jobs:
     runs-on: "ubuntu-latest"
     if: failure()
     steps:
-      - name: boostls
-        run: |
-          ls lib/
-          ls lib/boost_1_87_0
       - name: Discord notification failure
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
