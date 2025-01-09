@@ -485,7 +485,7 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 catch ( const std::exception& exc )
                 {
                   POLLOG_ERRORLN( "failed to store npcs datafile!" );
-                  auto trace = boost::stacktrace::stacktrace();
+                  auto trace = boost::stacktrace::stacktrace::from_current_exception();
                   POLLOG_ERRORLN( " boost {}", boost::stacktrace::to_string( trace ) );
                   result = false;
                 }
