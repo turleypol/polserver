@@ -161,7 +161,7 @@ SaveContext::SaveContext()
   party.comment( "\n" );
 }
 
-SaveContext::~SaveContext()
+SaveContext::~SaveContext() noexcept( false )
 {
   pol.flush_file();
   objects.flush_file();
