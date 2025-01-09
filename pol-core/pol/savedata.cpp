@@ -7,6 +7,7 @@
 
 #include "savedata.h"
 
+#include <boost/stacktrace.hpp>
 #include <cerrno>
 #include <exception>
 #include <fstream>
@@ -210,7 +211,7 @@ void write_realms( Clib::StreamWriter& sw )
   for ( const auto& realm : gamestate.Realms )
   {
     sw.begin( "Realm" );
-    if (!realm->is_shadowrealm)
+    if ( !realm->is_shadowrealm )
     {
       sw.add( "Name", realm->name() );
     }
@@ -480,10 +481,11 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 {
                   write_npcs( sc );
                 }
-                catch ( ... )
+                catch ( const std::exception& exc )
                 {
                   POLLOG_ERRORLN( "failed to store npcs datafile!" );
-                  Clib::force_backtrace();
+                  auto trace = boost::stacktrace::stacktrace::from_current_exception();
+                  POLLOG_ERRORLN( "{}", boost::stacktrace::stacktrace::to_string( trace ) );
                   result = false;
                 }
               } ) );
