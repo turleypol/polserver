@@ -38,7 +38,7 @@ private:
 
 public:
   SaveContext();
-  ~SaveContext();
+  ~SaveContext() noexcept( false );
   SaveContext( const SaveContext& ) = delete;
   SaveContext& operator=( const SaveContext& ) = delete;
   SaveStrategy pol;
