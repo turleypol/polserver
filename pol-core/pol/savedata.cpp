@@ -278,6 +278,7 @@ void write_npcs( Core::SaveContext& sc )
       }
     }
   }
+  throw 1;
 }
 
 void write_items( Clib::StreamWriter& sw_items )
@@ -484,8 +485,8 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 catch ( const std::exception& exc )
                 {
                   POLLOG_ERRORLN( "failed to store npcs datafile!" );
-                  auto trace = boost::stacktrace::stacktrace::from_current_exception();
-                  POLLOG_ERRORLN( "{}", boost::stacktrace::stacktrace::to_string( trace ) );
+                  auto trace = boost::stacktrace::stacktrace();
+                  POLLOG_ERRORLN( " boost {}", boost::stacktrace::to_string( trace ) );
                   result = false;
                 }
               } ) );
