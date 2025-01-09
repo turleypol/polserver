@@ -23,7 +23,7 @@ endif()
 #endif()
 
 if (${windows})
-  set (BOOST_CONFIGURE_COMMAND "${BOOST_SOURCE_DIR}/bootstrap.bat")
+  set (BOOST_CONFIGURE_COMMAND "bootstrap.bat")
   set (BOOST_BUILD_COMMAND "b2.exe")
   set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_windbg.lib" )
   if (msvc)
@@ -32,7 +32,7 @@ if (${windows})
     set (BOOST_CXX_FLAGS "-fms-runtime-lib=static -DBOOST_STACKTRACE_LINK")
   endif()
 else()
-  set (BOOST_CONFIGURE_COMMAND "${BOOST_SOURCE_DIR}/bootstrap.sh")
+  set (BOOST_CONFIGURE_COMMAND "./bootstrap.sh")
   set (BOOST_BUILD_COMMAND "./b2")
   set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_basic.a" )
 
@@ -49,7 +49,7 @@ if (NOT EXISTS "${BOOST_SOURCE_DIR}/boost")
   ExternalProject_Add(libboost_ext
     URL "https://archives.boost.io/release/1.87.0/source/boost_1_87_0.tar.bz2"
     SOURCE_DIR "${BOOST_SOURCE_DIR}"
-    CONFIGURE_COMMAND "${BOOST_CONFIGURE_COMMAND} --with-toolset=${BOOST_TOOLSET}"
+    CONFIGURE_COMMAND ${BOOST_CONFIGURE_COMMAND} --with-toolset=${BOOST_TOOLSET}
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
     URL_HASH SHA256=af57be25cb4c4f4b413ed692fe378affb4352ea50fbe294a11ef548f4d527d89
