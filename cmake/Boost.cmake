@@ -117,7 +117,7 @@ if (${windows})
 else()
   set_property(TARGET libboost_stacktrace APPEND
       PROPERTY INTERFACE_LINK_LIBRARIES
-        libbacktrace
+        backtrace
         dl
   #      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.a"
     )
