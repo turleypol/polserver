@@ -497,6 +497,8 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 try
                 {
                   write_multis( sc.multis );
+                  auto trace = boost::stacktrace::stacktrace();
+                  POLLOG_ERRORLN( " boostmulti {}", boost::stacktrace::to_string( trace ) );
                 }
                 catch ( ... )
                 {
