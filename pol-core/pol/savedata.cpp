@@ -176,6 +176,7 @@ SaveContext::~SaveContext() noexcept( false )
   guilds.flush_file();
   datastore.flush_file();
   party.flush_file();
+  throw std::runtime_error( "eee" );
 }
 
 /// blocks till possible last commit finishes
@@ -595,6 +596,8 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
         }
         catch ( ... )
         {
+          auto trace = boost::stacktrace::stacktrace::from_current_exception();
+          POLLOG_ERRORLN( "FAILED {}", boost::stacktrace::to_string( trace ) );
           POLLOG_ERRORLN( "failed to save datafiles!" );
           Clib::force_backtrace();
           result = false;
