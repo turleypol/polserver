@@ -34,7 +34,7 @@ if (${windows})
 else()
   set (BOOST_CONFIGURE_COMMAND "./bootstrap.sh")
   set (BOOST_BUILD_COMMAND "./b2")
-  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_basic.a" )
+  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.a" )
 
   set (BOOST_CXX_FLAGS "-DBOOST_STACKTRACE_LINK")
   foreach(OSX_ARCHITECTURE ${CMAKE_OSX_ARCHITECTURES})
@@ -105,6 +105,18 @@ set_target_properties(libboost_stacktrace PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${BOOST_SOURCE_DIR}
   FOLDER 3rdParty
 )
+if (${windows})
+set_property(TARGET libboost_stacktrace APPEND
+    PROPERTY INTERFACE_LINK_LIBRARIES
+      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.lib")
+else()
+set_property(TARGET libboost_stacktrace APPEND
+    PROPERTY INTERFACE_LINK_LIBRARIES
+      libbacktrace
+      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.a"
+    )
+
+endif()
 if (boost_needs_build)
   add_dependencies(libboost_stacktrace boost_build)
 endif()
