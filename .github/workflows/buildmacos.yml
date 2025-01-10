@@ -85,6 +85,10 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 2
+      - name: boostls
+        if: always()
+        run: |
+          ls lib/boost_1_87_0/stage/lib
 
       - name: Test (EScript)
         run: |
