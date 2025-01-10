@@ -25,8 +25,8 @@ set (BOOST_ARC "")
 if (${windows})
   set (BOOST_CONFIGURE_COMMAND "bootstrap.bat")
   set (BOOST_BUILD_COMMAND "b2.exe")
-  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_windbg.lib")
-  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.lib")
+  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_windbg.lib")
+  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.lib")
   if (msvc)
     set (BOOST_CXX_FLAGS "/MT -DBOOST_STACKTRACE_LINK")
   else()
@@ -35,8 +35,8 @@ if (${windows})
 else()
   set (BOOST_CONFIGURE_COMMAND "./bootstrap.sh")
   set (BOOST_BUILD_COMMAND "./b2")
-  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_basic.a")
-  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.a" )
+  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_basic.a")
+  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.a" )
 
   set (BOOST_CXX_FLAGS "-DBOOST_STACKTRACE_LINK")
   if (APPLE)
@@ -44,6 +44,7 @@ else()
       set (BOOST_CXX_FLAGS "${BOOST_CXX_FLAGS} -arch ${OSX_ARCHITECTURE}")
     endforeach()
     set (BOOST_ARC "architecture=arm+x86")
+    set (BOOST_STACKTRACE_LIB ${BOOST_STACKTRACE_LIB2})
     set (BOOST_STACKTRACE_LIB2 "")
   endif()
 endif()
@@ -122,7 +123,7 @@ if (${windows})
 else()
   set_property(TARGET libboost_stacktrace APPEND
       PROPERTY INTERFACE_LINK_LIBRARIES
-        backtrace
+      #        backtrace
         dl
         ${BOOST_STACKTRACE_LIB2}
     )
