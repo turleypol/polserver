@@ -279,7 +279,7 @@ void write_npcs( Core::SaveContext& sc )
     }
   }
   INFO_PRINTLN( "NPX THEOW" );
-  throw std::exception( "blubb" );
+  throw std::runtime_error( "blubb" );
 }
 
 void write_items( Clib::StreamWriter& sw_items )
