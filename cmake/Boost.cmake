@@ -25,7 +25,8 @@ endif()
 if (${windows})
   set (BOOST_CONFIGURE_COMMAND "bootstrap.bat")
   set (BOOST_BUILD_COMMAND "b2.exe")
-  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_windbg.lib" )
+  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.lib")
+  #libboost_stacktrace_windbg.lib" )
   if (msvc)
     set (BOOST_CXX_FLAGS "/MT -DBOOST_STACKTRACE_LINK")
   else()
@@ -106,14 +107,14 @@ set_target_properties(libboost_stacktrace PROPERTIES
   FOLDER 3rdParty
 )
 if (${windows})
-set_property(TARGET libboost_stacktrace APPEND
-    PROPERTY INTERFACE_LINK_LIBRARIES
-      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.lib")
+  #set_property(TARGET libboost_stacktrace APPEND
+  #    PROPERTY INTERFACE_LINK_LIBRARIES
+  #      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.lib")
 else()
-set_property(TARGET libboost_stacktrace APPEND
-    PROPERTY INTERFACE_LINK_LIBRARIES
-      libbacktrace
-      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.a"
+  set_property(TARGET libboost_stacktrace APPEND
+      PROPERTY INTERFACE_LINK_LIBRARIES
+        libbacktrace
+  #      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.a"
     )
 
 endif()
