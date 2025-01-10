@@ -25,9 +25,8 @@ set (BOOST_ARC "")
 if (${windows})
   set (BOOST_CONFIGURE_COMMAND "bootstrap.bat")
   set (BOOST_BUILD_COMMAND "b2.exe")
-  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.lib")
-  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_windbg.lib")
-  #libboost_stacktrace_windbg.lib" )
+  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_windbg.lib")
+  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.lib")
   if (msvc)
     set (BOOST_CXX_FLAGS "/MT -DBOOST_STACKTRACE_LINK")
   else()
@@ -36,14 +35,17 @@ if (${windows})
 else()
   set (BOOST_CONFIGURE_COMMAND "./bootstrap.sh")
   set (BOOST_BUILD_COMMAND "./b2")
-  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.a" )
-  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_basic.a")
+  set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_basic.a")
+  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.a" )
 
   set (BOOST_CXX_FLAGS "-DBOOST_STACKTRACE_LINK")
-  foreach(OSX_ARCHITECTURE ${CMAKE_OSX_ARCHITECTURES})
-    set (BOOST_CXX_FLAGS "${BOOST_CXX_FLAGS} -arch ${OSX_ARCHITECTURE}")
+  if (APPLE)
+    foreach(OSX_ARCHITECTURE ${CMAKE_OSX_ARCHITECTURES})
+      set (BOOST_CXX_FLAGS "${BOOST_CXX_FLAGS} -arch ${OSX_ARCHITECTURE}")
+    endforeach()
     set (BOOST_ARC "architecture=arm+x86")
-  endforeach()
+    set (BOOST_STACKTRACE_LIB2 "")
+  endif()
 endif()
 
 set(boost_needs_extract FALSE)
@@ -113,18 +115,17 @@ set_target_properties(libboost_stacktrace PROPERTIES
 if (${windows})
   set_property(TARGET libboost_stacktrace APPEND
       PROPERTY INTERFACE_LINK_LIBRARIES
-      dbgeng
-      ole32
-      "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_windbg.lib"
+        dbgeng
+        ole32
+        ${BOOST_STACKTRACE_LIB2}
     )
 else()
   set_property(TARGET libboost_stacktrace APPEND
       PROPERTY INTERFACE_LINK_LIBRARIES
         backtrace
         dl
-        "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_basic.a"
+        ${BOOST_STACKTRACE_LIB2}
     )
-
 endif()
 if (boost_needs_build)
   add_dependencies(libboost_stacktrace boost_build)
