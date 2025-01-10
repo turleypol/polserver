@@ -278,6 +278,7 @@ void write_npcs( Core::SaveContext& sc )
       }
     }
   }
+  INFO_PRINTLN( "NPX THEOW" );
   throw 1;
 }
 
@@ -482,7 +483,7 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 {
                   write_npcs( sc );
                 }
-                catch ( const std::exception& exc )
+                catch ( ... )
                 {
                   POLLOG_ERRORLN( "failed to store npcs datafile!" );
                   auto trace = boost::stacktrace::stacktrace::from_current_exception();
