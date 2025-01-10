@@ -76,7 +76,7 @@ if(NOT EXISTS ${BOOST_STACKTRACE_LIB})
           CONFIGURE_COMMAND ""
           DOWNLOAD_COMMAND ""
           BUILD_COMMAND ${BOOST_BUILD_COMMAND} cxxflags=${BOOST_CXX_FLAGS} address-model=${ARCH_BITS} toolset=${BOOST_TOOLSET} variant=release link=static runtime-link=static --layout=system --with-stacktrace stage
-          BUILD_BYPRODUCTS ${BOOST_REGEX_LIB} ${BOOST_SYSTEM_LIB} ${BOOST_THREAD_LIB}
+          BUILD_BYPRODUCTS ${BOOST_STACKTRACE_LIB}
           LOG_BUILD 1
           BUILD_IN_SOURCE 1
           LOG_OUTPUT_ON_FAILURE 1
