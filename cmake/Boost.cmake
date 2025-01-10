@@ -42,7 +42,7 @@ else()
   set (BOOST_CXX_FLAGS "-DBOOST_STACKTRACE_LINK")
   foreach(OSX_ARCHITECTURE ${CMAKE_OSX_ARCHITECTURES})
     set (BOOST_CXX_FLAGS "${BOOST_CXX_FLAGS} -arch ${OSX_ARCHITECTURE}")
-    set (BOOST_ARC "architecture=combined")
+    set (BOOST_ARC "architecture=arm+x86")
   endforeach()
 endif()
 
