@@ -107,13 +107,16 @@ set_target_properties(libboost_stacktrace PROPERTIES
   FOLDER 3rdParty
 )
 if (${windows})
-  #set_property(TARGET libboost_stacktrace APPEND
-  #    PROPERTY INTERFACE_LINK_LIBRARIES
-  #      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.lib")
+  set_property(TARGET libboost_stacktrace APPEND
+      PROPERTY INTERFACE_LINK_LIBRARIES
+      dbgeng
+      ole32
+      #      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.lib")
 else()
   set_property(TARGET libboost_stacktrace APPEND
       PROPERTY INTERFACE_LINK_LIBRARIES
         libbacktrace
+        libdl
   #      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.a"
     )
 
