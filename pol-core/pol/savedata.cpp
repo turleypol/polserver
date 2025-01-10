@@ -479,6 +479,7 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
           critical_parts.push_back( gamestate.task_thread_pool.checked_push(
               [&]()
               {
+                boost::stacktrace::this_thread::set_capture_stacktraces_at_throw();
                 try
                 {
                   write_npcs( sc );
