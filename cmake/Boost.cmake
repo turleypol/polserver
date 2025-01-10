@@ -21,7 +21,7 @@ endif()
 #if (NOT DEFINED BOOST_TOOLSET)
 #  message(FATAL_ERROR "Unknown boost toolset to build")
 #endif()
-
+set (BOOST_ARC "")
 if (${windows})
   set (BOOST_CONFIGURE_COMMAND "bootstrap.bat")
   set (BOOST_BUILD_COMMAND "b2.exe")
@@ -42,6 +42,7 @@ else()
   set (BOOST_CXX_FLAGS "-DBOOST_STACKTRACE_LINK")
   foreach(OSX_ARCHITECTURE ${CMAKE_OSX_ARCHITECTURES})
     set (BOOST_CXX_FLAGS "${BOOST_CXX_FLAGS} -arch ${OSX_ARCHITECTURE}")
+    set (BOOST_ARC "architecture=combined")
   endforeach()
 endif()
 
@@ -77,7 +78,7 @@ if(NOT EXISTS ${BOOST_STACKTRACE_LIB})
           INSTALL_COMMAND ""
           CONFIGURE_COMMAND ""
           DOWNLOAD_COMMAND ""
-          BUILD_COMMAND ${BOOST_BUILD_COMMAND} cxxflags=${BOOST_CXX_FLAGS} cflags=${BOOST_CXX_FLAGS} address-model=${ARCH_BITS} toolset=${BOOST_TOOLSET} variant=release link=static runtime-link=static --layout=system --with-stacktrace stage
+          BUILD_COMMAND ${BOOST_BUILD_COMMAND} cxxflags=${BOOST_CXX_FLAGS} cflags=${BOOST_CXX_FLAGS} address-model=${ARCH_BITS} toolset=${BOOST_TOOLSET} ${BOOST_ARC} variant=release link=static runtime-link=static --layout=system --with-stacktrace stage
           BUILD_BYPRODUCTS ${BOOST_STACKTRACE_LIB} ${BOOST_STACKTRACE_LIB2}
           LOG_BUILD 1
           BUILD_IN_SOURCE 1
