@@ -112,14 +112,14 @@ if (${windows})
       PROPERTY INTERFACE_LINK_LIBRARIES
       dbgeng
       ole32
-      #      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.lib"
+      "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_windbg.lib"
     )
 else()
   set_property(TARGET libboost_stacktrace APPEND
       PROPERTY INTERFACE_LINK_LIBRARIES
         backtrace
         dl
-  #      "${BOOST_STAGE_LIB_DIR}/boost_stacktrace_from_exception.a"
+        "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_backtrace.a"
     )
 
 endif()
