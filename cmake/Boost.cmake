@@ -37,7 +37,7 @@ else()
   set (BOOST_CONFIGURE_COMMAND "./bootstrap.sh")
   set (BOOST_BUILD_COMMAND "./b2")
   set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.a" )
-  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_backtrace.a")
+  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_basic.a")
 
   set (BOOST_CXX_FLAGS "-DBOOST_STACKTRACE_LINK")
   foreach(OSX_ARCHITECTURE ${CMAKE_OSX_ARCHITECTURES})
@@ -121,7 +121,7 @@ else()
       PROPERTY INTERFACE_LINK_LIBRARIES
         backtrace
         dl
-        "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_backtrace.a"
+        "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_basic.a"
     )
 
 endif()
