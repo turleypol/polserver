@@ -171,8 +171,7 @@ jobs:
       - name: boostls
         if: always()
         run: |
-          ls lib/
-          ls lib/boost_1_87_0
+          ls lib/boost_1_87_0/stage/lib
       - name: Upload coretest folder
         if: matrix.config.nopch == 0 && always()
         uses: actions/upload-artifact@v4
