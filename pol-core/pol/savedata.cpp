@@ -54,7 +54,7 @@ void write_party( Clib::StreamWriter& sw );
 void write_guilds( Clib::StreamWriter& sw );
 
 std::shared_future<bool> SaveContext::finished;
-gameclock_t SaveContext::last_worldsave_success = 0;
+std::atomic<gameclock_t> SaveContext::last_worldsave_success = 0;
 
 SaveContext::SaveContext()
     : _pol(),
