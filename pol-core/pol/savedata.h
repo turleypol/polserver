@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <fstream>
 #include <future>
 #include <optional>
@@ -55,7 +56,7 @@ public:
   SaveStrategy party;
   static std::shared_future<bool> finished;
   static void ready();
-  static gameclock_t last_worldsave_success;
+  static std::atomic<gameclock_t> last_worldsave_success;
 };
 
 void write_system_data( Clib::StreamWriter& sw );

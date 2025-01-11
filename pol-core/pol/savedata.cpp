@@ -625,7 +625,7 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
           commit( "guilds" );
           commit( "datastore" );
           commit( "parties" );
-          last_worldsave_success = read_gameclock();
+          SaveContext::last_wordsave_success = read_gameclock();
         }
         return true;
       } );
