@@ -1892,6 +1892,7 @@ BObjectImp* GetCoreVariable( const char* corevar )
   LONG_COREVAR( instr_per_min, stateManager.profilevars.last_sipm );
   LONG_COREVAR( priority_divide, scriptScheduler.priority_divide );
   LONG_COREVAR( update_range, gamestate.max_update_range );
+  LONG_COREVAR( last_worldsave_success, SaveContext::lastwordsave_success );
   if ( stricmp( corevar, "version" ) == 0 )
     return new String( POL_VERSION_STR );
   if ( stricmp( corevar, "verstr" ) == 0 )

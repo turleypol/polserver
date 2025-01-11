@@ -3,19 +3,17 @@
  * @par History
  */
 
-
-#ifndef SAVEDATA_H
-#define SAVEDATA_H
+#pragma once
 
 #include <fstream>
 #include <future>
+#include <optional>
 #include <string>
 
 #include "../clib/streamsaver.h"
+#include "gameclck.h"
 
-namespace Pol
-{
-namespace Core
+namespace Pol::Core
 {
 class SaveContext
 {
@@ -38,7 +36,8 @@ private:
 
 public:
   SaveContext();
-  ~SaveContext();  // noexcept( false );
+  // allow exception without direct terminate, performs fileoperations which can fail eg diskfull
+  ~SaveContext() noexcept( false );
   SaveContext( const SaveContext& ) = delete;
   SaveContext& operator=( const SaveContext& ) = delete;
   SaveStrategy pol;
@@ -56,6 +55,7 @@ public:
   SaveStrategy party;
   static std::shared_future<bool> finished;
   static void ready();
+  static gameclock_t last_worldsave_success;
 };
 
 void write_system_data( Clib::StreamWriter& sw );
@@ -64,7 +64,6 @@ void write_shadow_realms( Clib::StreamWriter& sw );
 
 bool commit( const std::string& basename );
 bool should_write_data();
-int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long long& elapsed_ms );
-}  // namespace Core
-}  // namespace Pol
-#endif
+std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_writes,
+                                long long& elapsed_ms );
+}  // namespace Pol::Core

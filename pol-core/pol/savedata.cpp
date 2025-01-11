@@ -8,6 +8,7 @@
 #include "savedata.h"
 
 #include <boost/stacktrace.hpp>
+
 #include <cerrno>
 #include <exception>
 #include <fstream>
@@ -53,6 +54,7 @@ void write_party( Clib::StreamWriter& sw );
 void write_guilds( Clib::StreamWriter& sw );
 
 std::shared_future<bool> SaveContext::finished;
+gameclock_t SaveContext::last_worldsave_success = 0;
 
 SaveContext::SaveContext()
     : _pol(),
@@ -161,7 +163,7 @@ SaveContext::SaveContext()
   party.comment( "\n" );
 }
 
-SaveContext::~SaveContext()  // noexcept( false )
+SaveContext::~SaveContext() noexcept( false )
 {
   pol.flush_file();
   objects.flush_file();
@@ -176,7 +178,6 @@ SaveContext::~SaveContext()  // noexcept( false )
   guilds.flush_file();
   datastore.flush_file();
   party.flush_file();
-  throw std::runtime_error( "eee" );
 }
 
 /// blocks till possible last commit finishes
@@ -279,8 +280,6 @@ void write_npcs( Core::SaveContext& sc )
       }
     }
   }
-  INFO_PRINTLN( "NPX THEOW" );
-  throw std::runtime_error( "blubb" );
 }
 
 void write_items( Clib::StreamWriter& sw_items )
@@ -398,14 +397,15 @@ bool commit( const std::string& basename )
   return any;
 }
 
-int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long long& elapsed_ms )
+std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_writes,
+                                long long& elapsed_ms )
 {
   SaveContext::ready();  // allow only one active
   if ( !should_write_data() )
   {
     dirty_writes = clean_writes = 0;
     elapsed_ms = 0;
-    return -1;
+    return {};
   }
 
   UObject::dirty_writes = 0;
@@ -444,8 +444,9 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 }
                 catch ( ... )
                 {
-                  POLLOG_ERRORLN( "failed to store pol datafile!" );
-                  Clib::force_backtrace();
+                  POLLOG_ERRORLN( "failed to store pol datafile!\n{}",
+                                  boost::stacktrace::to_string(
+                                      boost::stacktrace::stacktrace::from_current_exception() ) );
                   result = false;
                 }
               } ) );
@@ -458,8 +459,9 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 }
                 catch ( ... )
                 {
-                  POLLOG_ERRORLN( "failed to store items datafile!" );
-                  Clib::force_backtrace();
+                  POLLOG_ERRORLN( "failed to store items datafile!\n{}",
+                                  boost::stacktrace::to_string(
+                                      boost::stacktrace::stacktrace::from_current_exception() ) );
                   result = false;
                 }
               } ) );
@@ -472,24 +474,24 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 }
                 catch ( ... )
                 {
-                  POLLOG_ERRORLN( "failed to store character datafile!" );
-                  Clib::force_backtrace();
+                  POLLOG_ERRORLN( "failed to store character datafile!\n{}",
+                                  boost::stacktrace::to_string(
+                                      boost::stacktrace::stacktrace::from_current_exception() ) );
                   result = false;
                 }
               } ) );
           critical_parts.push_back( gamestate.task_thread_pool.checked_push(
               [&]()
               {
-                boost::stacktrace::this_thread::set_capture_stacktraces_at_throw();
                 try
                 {
                   write_npcs( sc );
                 }
-                catch ( const std::exception& )
+                catch ( ... )
                 {
-                  POLLOG_ERRORLN( "failed to store npcs datafile!" );
-                  auto trace = boost::stacktrace::stacktrace::from_current_exception();
-                  POLLOG_ERRORLN( " boost {}", boost::stacktrace::to_string( trace ) );
+                  POLLOG_ERRORLN( "failed to store npcs datafile!\n{}",
+                                  boost::stacktrace::to_string(
+                                      boost::stacktrace::stacktrace::from_current_exception() ) );
                   result = false;
                 }
               } ) );
@@ -499,13 +501,12 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 try
                 {
                   write_multis( sc.multis );
-                  auto trace = boost::stacktrace::stacktrace();
-                  POLLOG_ERRORLN( " boostmulti {}", boost::stacktrace::to_string( trace ) );
                 }
                 catch ( ... )
                 {
-                  POLLOG_ERRORLN( "failed to store multis datafile!" );
-                  Clib::force_backtrace();
+                  POLLOG_ERRORLN( "failed to store multis datafile!\n{}",
+                                  boost::stacktrace::to_string(
+                                      boost::stacktrace::stacktrace::from_current_exception() ) );
                   result = false;
                 }
               } ) );
@@ -518,8 +519,10 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 }
                 catch ( ... )
                 {
-                  POLLOG_ERRORLN( "failed to store storage datafile!" );
-                  Clib::force_backtrace();
+                  POLLOG_ERRORLN( "failed to store storage datafile!\n{}",
+                                  boost::stacktrace::to_string(
+                                      boost::stacktrace::stacktrace::from_current_exception() ) );
+
                   result = false;
                 }
               } ) );
@@ -532,8 +535,9 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 }
                 catch ( ... )
                 {
-                  POLLOG_ERRORLN( "failed to store resource datafile!" );
-                  Clib::force_backtrace();
+                  POLLOG_ERRORLN( "failed to store resource datafile!\n{}",
+                                  boost::stacktrace::to_string(
+                                      boost::stacktrace::stacktrace::from_current_exception() ) );
                   result = false;
                 }
               } ) );
@@ -546,8 +550,9 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 }
                 catch ( ... )
                 {
-                  POLLOG_ERRORLN( "failed to store guilds datafile!" );
-                  Clib::force_backtrace();
+                  POLLOG_ERRORLN( "failed to store guilds datafile!\n{}",
+                                  boost::stacktrace::to_string(
+                                      boost::stacktrace::stacktrace::from_current_exception() ) );
                   result = false;
                 }
               } ) );
@@ -562,8 +567,9 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 }
                 catch ( ... )
                 {
-                  POLLOG_ERRORLN( "failed to store datastore datafile!" );
-                  Clib::force_backtrace();
+                  POLLOG_ERRORLN( "failed to store datastore datafile!\n{}",
+                                  boost::stacktrace::to_string(
+                                      boost::stacktrace::stacktrace::from_current_exception() ) );
                   result = false;
                 }
               } ) );
@@ -576,8 +582,9 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
                 }
                 catch ( ... )
                 {
-                  POLLOG_ERRORLN( "failed to store party datafile!" );
-                  Clib::force_backtrace();
+                  POLLOG_ERRORLN( "failed to store party datafile!\n{}",
+                                  boost::stacktrace::to_string(
+                                      boost::stacktrace::stacktrace::from_current_exception() ) );
                   result = false;
                 }
               } ) );
@@ -590,16 +597,17 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
         }  // deconstructor of the SaveContext flushes and joins the queues
         catch ( std::ios_base::failure& e )
         {
-          POLLOG_ERRORLN( "failed to save datafiles! {}:{}", e.what(), std::strerror( errno ) );
-          Clib::force_backtrace();
+          POLLOG_ERRORLN( "failed to save datafiles! {}:{}\n{}", e.what(), std::strerror( errno ),
+                          boost::stacktrace::to_string(
+                              boost::stacktrace::stacktrace::from_current_exception() ) );
+
           result = false;
         }
         catch ( ... )
         {
-          auto trace = boost::stacktrace::stacktrace::from_current_exception();
-          POLLOG_ERRORLN( "FAILED {}", boost::stacktrace::to_string( trace ) );
-          POLLOG_ERRORLN( "failed to save datafiles!" );
-          Clib::force_backtrace();
+          POLLOG_ERRORLN( "failed to save datafiles!\n{}",
+                          boost::stacktrace::to_string(
+                              boost::stacktrace::stacktrace::from_current_exception() ) );
           result = false;
         }
         if ( result )
@@ -617,10 +625,11 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
           commit( "guilds" );
           commit( "datastore" );
           commit( "parties" );
+          last_worldsave_success = read_gameclock();
         }
         return true;
       } );
-  critical_future.wait();  // wait for end of critical part
+  auto res = critical_future.get();  // wait for end of critical part
 
   if ( Plib::systemstate.accounts_txt_dirty )  // write accounts extra, since it uses extra thread
                                                // for io operations would be to many threads working
@@ -638,7 +647,7 @@ int write_data( unsigned int& dirty_writes, unsigned int& clean_writes, long lon
   dirty_writes = UObject::dirty_writes;
   elapsed_ms = timer.ellapsed();
 
-  return 0;
+  return res;
 }
 
 }  // namespace Core
