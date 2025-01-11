@@ -123,7 +123,6 @@ if (${windows})
 else()
   set_property(TARGET libboost_stacktrace APPEND
       PROPERTY INTERFACE_LINK_LIBRARIES
-      #        backtrace
         dl
         ${BOOST_STACKTRACE_LIB2}
     )
