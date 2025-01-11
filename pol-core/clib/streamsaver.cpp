@@ -25,7 +25,7 @@ StreamWriter::StreamWriter( std::ofstream* stream )
 {
 }
 
-StreamWriter::~StreamWriter()
+StreamWriter::~StreamWriter() noexcept( false )
 {
 #if 0
   if ( !_buf.empty() )
@@ -38,6 +38,7 @@ StreamWriter::~StreamWriter()
 #else
   if ( !_buf.empty() && _stream )
     *_stream << _buf;
+  throw 1;
 #endif
 }
 
