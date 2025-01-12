@@ -53,10 +53,10 @@ namespace Core
 void write_party( Clib::StreamWriter& sw );
 void write_guilds( Clib::StreamWriter& sw );
 
-std::shared_future<bool> SaveContext::finished;
+std::shared_future<void> SaveContext::finished;
 std::atomic<gameclock_t> SaveContext::last_worldsave_success = 0;
 
-SaveContext::SaveContext( std::atomic<bool>* res )
+SaveContext::SaveContext()
     : _pol(),
       _objects(),
       _pcs(),
@@ -70,7 +70,6 @@ SaveContext::SaveContext( std::atomic<bool>* res )
       _guilds(),
       _datastore(),
       _party(),
-      _res( res ),
       pol( &_pol ),
       objects( &_objects ),
       pcs( &_pcs ),
@@ -162,11 +161,11 @@ SaveContext::SaveContext( std::atomic<bool>* res )
   party.comment( "" );
   party.comment( " PARTIES.TXT: Party Data" );
   party.comment( "\n" );
-  Clib::StreamWriter::crash = true;
 }
 
 SaveContext::~SaveContext() noexcept( false )
 {
+  auto stack_unwinding = std::uncaught_exceptions();
   try
   {
     pol.flush_file();
@@ -185,7 +184,9 @@ SaveContext::~SaveContext() noexcept( false )
   }
   catch ( ... )
   {
-    *_res = false;
+    // during stack unwinding an exception would terminate
+    if ( !stack_unwinding )
+      throw;
   }
 }
 
@@ -427,182 +428,87 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
   // the remaining operations are only pure buffered i/o
   auto critical_promise = std::make_shared<std::promise<bool>>();
   auto critical_future = critical_promise->get_future();
+  auto set_promise = []( auto& promise, bool result )
+  {
+    try  // guard to be able to try to set it twice (exceptions)
+    {
+      promise->set_value( result );
+    }
+    catch ( ... )
+    {
+    }
+  };
   SaveContext::finished = std::async(
       std::launch::async,
-      [&, critical_promise]() -> bool
+      [&, critical_promise]()
       {
+        Tools::Timer<> timer_async;
         std::atomic<bool> result( true );
         try
         {
-          SaveContext sc( &result );
+          SaveContext sc;
           std::vector<std::future<bool>> critical_parts;
-          critical_parts.push_back( gamestate.task_thread_pool.checked_push(
-              [&]()
-              {
-                try
+          auto save = [&]( auto& func, std::string name )
+          {
+            critical_parts.push_back( gamestate.task_thread_pool.checked_push(
+                [&]()
                 {
-                  sc.pol.comment( "" );
-                  sc.pol.comment( " Created by Version: {}", POL_VERSION_ID );
-                  sc.pol.comment( " Mobiles: {}", get_mobile_count() );
-                  sc.pol.comment( " Top-level Items: {}", get_toplevel_item_count() );
-                  sc.pol.comment( "\n" );
+                  try
+                  {
+                    func();
+                  }
+                  catch ( ... )
+                  {
+                    POLLOG_ERRORLN( "failed to store {} datafile!\n{}", name,
+                                    boost::stacktrace::to_string(
+                                        boost::stacktrace::stacktrace::from_current_exception() ) );
+                    result = false;
+                  }
+                } ) );
+          };
 
-                  write_system_data( sc.pol );
-                  write_global_properties( sc.pol );
-                  write_realms( sc.pol );
-                }
-                catch ( ... )
-                {
-                  POLLOG_ERRORLN( "failed to store pol datafile!\n{}",
-                                  boost::stacktrace::to_string(
-                                      boost::stacktrace::stacktrace::from_current_exception() ) );
-                  result = false;
-                }
-              } ) );
-          critical_parts.push_back( gamestate.task_thread_pool.checked_push(
+          save(
               [&]()
               {
-                try
-                {
-                  write_items( sc.items );
-                }
-                catch ( ... )
-                {
-                  POLLOG_ERRORLN( "failed to store items datafile!\n{}",
-                                  boost::stacktrace::to_string(
-                                      boost::stacktrace::stacktrace::from_current_exception() ) );
-                  result = false;
-                }
-              } ) );
-          critical_parts.push_back( gamestate.task_thread_pool.checked_push(
-              [&]()
-              {
-                try
-                {
-                  write_characters( sc );
-                }
-                catch ( ... )
-                {
-                  POLLOG_ERRORLN( "failed to store character datafile!\n{}",
-                                  boost::stacktrace::to_string(
-                                      boost::stacktrace::stacktrace::from_current_exception() ) );
-                  result = false;
-                }
-              } ) );
-          critical_parts.push_back( gamestate.task_thread_pool.checked_push(
-              [&]()
-              {
-                try
-                {
-                  write_npcs( sc );
-                }
-                catch ( ... )
-                {
-                  POLLOG_ERRORLN( "failed to store npcs datafile!\n{}",
-                                  boost::stacktrace::to_string(
-                                      boost::stacktrace::stacktrace::from_current_exception() ) );
-                  result = false;
-                }
-              } ) );
-          critical_parts.push_back( gamestate.task_thread_pool.checked_push(
-              [&]()
-              {
-                try
-                {
-                  write_multis( sc.multis );
-                }
-                catch ( ... )
-                {
-                  POLLOG_ERRORLN( "failed to store multis datafile!\n{}",
-                                  boost::stacktrace::to_string(
-                                      boost::stacktrace::stacktrace::from_current_exception() ) );
-                  result = false;
-                }
-              } ) );
-          critical_parts.push_back( gamestate.task_thread_pool.checked_push(
-              [&]()
-              {
-                try
-                {
-                  gamestate.storage.print( sc.storage );
-                }
-                catch ( ... )
-                {
-                  POLLOG_ERRORLN( "failed to store storage datafile!\n{}",
-                                  boost::stacktrace::to_string(
-                                      boost::stacktrace::stacktrace::from_current_exception() ) );
+                sc.pol.comment( "" );
+                sc.pol.comment( " Created by Version: {}", POL_VERSION_ID );
+                sc.pol.comment( " Mobiles: {}", get_mobile_count() );
+                sc.pol.comment( " Top-level Items: {}", get_toplevel_item_count() );
+                sc.pol.comment( "\n" );
 
-                  result = false;
-                }
-              } ) );
-          critical_parts.push_back( gamestate.task_thread_pool.checked_push(
+                write_system_data( sc.pol );
+                write_global_properties( sc.pol );
+                write_realms( sc.pol );
+              },
+              "pol" );
+          save( [&]() { write_items( sc.items ); }, "items" );
+          save( [&]() { write_characters( sc ); }, "character" );
+          save( [&]() { write_npcs( sc ); }, "npcs" );
+          save( [&]() { write_multis( sc.multis ); }, "multis" );
+          save( [&]() { gamestate.storage.print( sc.storage ); }, "storage" );
+          save( [&]() { write_resources_dat( sc.resource ); }, "resource" );
+          save( [&]() { write_guilds( sc.guilds ); }, "guilds" );
+          save(
               [&]()
               {
-                try
-                {
-                  write_resources_dat( sc.resource );
-                }
-                catch ( ... )
-                {
-                  POLLOG_ERRORLN( "failed to store resource datafile!\n{}",
-                                  boost::stacktrace::to_string(
-                                      boost::stacktrace::stacktrace::from_current_exception() ) );
-                  result = false;
-                }
-              } ) );
-          critical_parts.push_back( gamestate.task_thread_pool.checked_push(
+                Module::write_datastore( sc.datastore );
+                // Atomically (hopefully) perform the switch.
+                Module::commit_datastore();
+              },
+              "datastore" );
+          save( [&]() { write_party( sc.party ); }, "party" );
+          save(
               [&]()
               {
-                try
-                {
-                  write_guilds( sc.guilds );
-                }
-                catch ( ... )
-                {
-                  POLLOG_ERRORLN( "failed to store guilds datafile!\n{}",
-                                  boost::stacktrace::to_string(
-                                      boost::stacktrace::stacktrace::from_current_exception() ) );
-                  result = false;
-                }
-              } ) );
-          critical_parts.push_back( gamestate.task_thread_pool.checked_push(
-              [&]()
-              {
-                try
-                {
-                  Module::write_datastore( sc.datastore );
-                  // Atomically (hopefully) perform the switch.
-                  Module::commit_datastore();
-                }
-                catch ( ... )
-                {
-                  POLLOG_ERRORLN( "failed to store datastore datafile!\n{}",
-                                  boost::stacktrace::to_string(
-                                      boost::stacktrace::stacktrace::from_current_exception() ) );
-                  result = false;
-                }
-              } ) );
-          critical_parts.push_back( gamestate.task_thread_pool.checked_push(
-              [&]()
-              {
-                try
-                {
-                  write_party( sc.party );
-                }
-                catch ( ... )
-                {
-                  POLLOG_ERRORLN( "failed to store party datafile!\n{}",
-                                  boost::stacktrace::to_string(
-                                      boost::stacktrace::stacktrace::from_current_exception() ) );
-                  result = false;
-                }
-              } ) );
+                if ( Plib::systemstate.accounts_txt_dirty )
+                  Accounts::write_account_data();
+              },
+              "accounts" );
+
           for ( auto& task : critical_parts )
             task.wait();
 
-          critical_promise->set_value( result );  // critical part end
-          // TODO: since promise can only be set one time move it into a method with a dedicated try
-          // block, now when in theory an upper part fails the promise gets never set
+          set_promise( critical_promise, result );  // critical part end
         }  // deconstructor of the SaveContext flushes and joins the queues
         catch ( std::ios_base::failure& e )
         {
@@ -611,6 +517,7 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
                               boost::stacktrace::stacktrace::from_current_exception() ) );
 
           result = false;
+          set_promise( critical_promise, result );
         }
         catch ( ... )
         {
@@ -618,6 +525,7 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
                           boost::stacktrace::to_string(
                               boost::stacktrace::stacktrace::from_current_exception() ) );
           result = false;
+          set_promise( critical_promise, result );
         }
         if ( result )
         {
@@ -636,22 +544,11 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
           commit( "parties" );
           SaveContext::last_worldsave_success = read_gameclock();
         }
-        return true;
       } );
   auto res = critical_future.get();  // wait for end of critical part
 
-  if ( Plib::systemstate.accounts_txt_dirty )  // write accounts extra, since it uses extra thread
-                                               // for io operations would be to many threads working
-  {
-    Accounts::write_account_data();
-  }
-
   timer.stop();
   objStorageManager.objecthash.ClearDeleted();
-  // optimize_zones(); // shrink zone vectors TODO this takes way to much time!
-
-  // cout << "Clean: " << UObject::clean_writes << " Dirty: " <<
-  // UObject::dirty_writes << endl;
   clean_writes = UObject::clean_writes;
   dirty_writes = UObject::dirty_writes;
   elapsed_ms = timer.ellapsed();
