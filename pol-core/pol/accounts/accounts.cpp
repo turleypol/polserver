@@ -227,10 +227,10 @@ void reload_account_data( void )
         }
         INFO_PRINTLN( "Done!" );
       }
-      if ( Plib::systemstate.accounts_txt_dirty )
-      {
-        write_account_data();
-      }
+      //      if ( Plib::systemstate.accounts_txt_dirty )
+      //      {
+      //        write_account_data();
+      //      }
     }
   }
   catch ( ... )
