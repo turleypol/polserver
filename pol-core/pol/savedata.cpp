@@ -56,7 +56,7 @@ void write_guilds( Clib::StreamWriter& sw );
 std::shared_future<bool> SaveContext::finished;
 std::atomic<gameclock_t> SaveContext::last_worldsave_success = 0;
 
-SaveContext::SaveContext()
+SaveContext::SaveContext( std::atomic<bool>* res )
     : _pol(),
       _objects(),
       _pcs(),
@@ -70,6 +70,7 @@ SaveContext::SaveContext()
       _guilds(),
       _datastore(),
       _party(),
+      _res( res ),
       pol( &_pol ),
       objects( &_objects ),
       pcs( &_pcs ),
