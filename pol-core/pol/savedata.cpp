@@ -165,19 +165,26 @@ SaveContext::SaveContext()
 
 SaveContext::~SaveContext() noexcept( false )
 {
-  pol.flush_file();
-  objects.flush_file();
-  pcs.flush_file();
-  pcequip.flush_file();
-  npcs.flush_file();
-  npcequip.flush_file();
-  items.flush_file();
-  multis.flush_file();
-  storage.flush_file();
-  resource.flush_file();
-  guilds.flush_file();
-  datastore.flush_file();
-  party.flush_file();
+  try
+  {
+    pol.flush_file();
+    objects.flush_file();
+    pcs.flush_file();
+    pcequip.flush_file();
+    npcs.flush_file();
+    npcequip.flush_file();
+    items.flush_file();
+    multis.flush_file();
+    storage.flush_file();
+    resource.flush_file();
+    guilds.flush_file();
+    datastore.flush_file();
+    party.flush_file();
+  }
+  catch ( ... )
+  {
+    *_res = false;
+  }
 }
 
 /// blocks till possible last commit finishes
@@ -425,7 +432,7 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
         std::atomic<bool> result( true );
         try
         {
-          SaveContext sc;
+          SaveContext sc( &result );
           std::vector<std::future<bool>> critical_parts;
           critical_parts.push_back( gamestate.task_thread_pool.checked_push(
               [&]()

@@ -34,9 +34,10 @@ private:
   std::ofstream _guilds;
   std::ofstream _datastore;
   std::ofstream _party;
+  std::atomic<bool>* _res;
 
 public:
-  SaveContext();
+  SaveContext( std::atomic<bool>* res );
   // allow exception without direct terminate, performs fileoperations which can fail eg diskfull
   ~SaveContext() noexcept( false );
   SaveContext( const SaveContext& ) = delete;
