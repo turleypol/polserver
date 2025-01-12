@@ -36,9 +36,18 @@ StreamWriter::~StreamWriter() noexcept( false )
   }
   ERROR_PRINTLN( "streamwriter {} io time {}", _stream_name, _fs_time.count() );
 #else
-  if ( !_buf.empty() && _stream )
-    *_stream << _buf;
-  throw 1;
+  try
+  {
+    if ( !_buf.empty() && _stream )
+      *_stream << _buf;
+    throw 1;
+    _buf.clear();
+  }
+  catch ( ... )
+  {
+    _buf.clear();
+    throw;
+  }
 #endif
 }
 
