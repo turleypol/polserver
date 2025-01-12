@@ -162,6 +162,7 @@ SaveContext::SaveContext( std::atomic<bool>* res )
   party.comment( "" );
   party.comment( " PARTIES.TXT: Party Data" );
   party.comment( "\n" );
+  StreamWriter::crash = true;
 }
 
 SaveContext::~SaveContext() noexcept( false )

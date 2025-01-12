@@ -40,7 +40,8 @@ StreamWriter::~StreamWriter() noexcept( false )
   {
     if ( !_buf.empty() && _stream )
       *_stream << _buf;
-    throw 1;
+    if ( crash )
+      throw 1;
     _buf.clear();
   }
   catch ( ... )
