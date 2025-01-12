@@ -18,7 +18,7 @@ namespace Clib
 class StreamWriter
 {
 public:
-  static bool crash = false;
+  static bool crash;
   StreamWriter( std::ofstream* stream );
   ~StreamWriter() noexcept( false );
   StreamWriter( const StreamWriter& ) = delete;

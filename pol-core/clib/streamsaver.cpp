@@ -9,7 +9,7 @@ namespace Pol
 namespace Clib
 {
 const std::size_t flush_limit = 10000;  // 500;
-
+bool StreamWriter::crash = false;
 void StreamWriter::flush_test()
 {
   if ( _buf.size() >= flush_limit )  // guard against to big objects
