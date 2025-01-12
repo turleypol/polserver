@@ -447,10 +447,10 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
         {
           SaveContext sc;
           std::vector<std::future<bool>> critical_parts;
-          auto save = [&]( auto&& func, std::string name )
+          auto save = [&]( auto func, std::string name )
           {
             critical_parts.push_back( gamestate.task_thread_pool.checked_push(
-                [&]()
+                [&, name, func = std::move( func )]() mutable
                 {
                   try
                   {
