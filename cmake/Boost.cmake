@@ -52,6 +52,12 @@ else()
     message("backtrace ${Backtrace_INCLUDE_DIRS}")
     message("backtraceI ${Backtrace_INCLUDE_DIR}")
     message("backtraceH ${Backtrace_HEADER}")
+    find_path(LIBBACKTRACE_INCLUDE_DIRS
+    NAMES backtrace.h
+    #    HINTS ${LIBBACKTRACE_PREFIX}/include ${HILTIDEPS}/include
+)
+message("backtraceHH ${LIBBACKTRACE_INCLUDE_DIRS}")
+
   endif()
 endif()
 
