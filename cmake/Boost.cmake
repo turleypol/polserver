@@ -39,41 +39,16 @@ else()
   set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.a" )
 
   set (BOOST_CXX_FLAGS "-DBOOST_STACKTRACE_LINK")
+  if (clang)
+    set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_addr2line.a")
+  endif()
   if (APPLE)
     foreach(OSX_ARCHITECTURE ${CMAKE_OSX_ARCHITECTURES})
       set (BOOST_CXX_FLAGS "${BOOST_CXX_FLAGS} -arch ${OSX_ARCHITECTURE}")
     endforeach()
     set (BOOST_ARC "architecture=arm+x86")
-    set (BOOST_STACKTRACE_LIB ${BOOST_STACKTRACE_LIB2})
+    set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_basic.a")
     set (BOOST_STACKTRACE_LIB2 "")
-  endif()
-find_path(LIBBACKTRACE_PREFIX
-    NAMES include/backtrace-supported.h
-)
-message("backtracep ${LIBBACKTRACE_PREFIX}")
-
-find_library(LIBBACKTRACE_LIBRARIES
-    NAMES libbacktrace.a libbacktrace.so
-    HINTS ${LIBBACKTRACE_PREFIX}/lib ${HILTIDEPS}/lib
-)
-
-find_path(LIBBACKTRACE_INCLUDE_DIRS
-    NAMES backtrace.h backtrace-supported.h
-    HINTS ${LIBBACKTRACE_PREFIX}/include ${HILTIDEPS}/include
-)
-
-find_path(LIBBACKTRACE_INCLUDE_DIRS
-    NAMES backtrace.h
-    HINTS ${LIBBACKTRACE_PREFIX}/include ${HILTIDEPS}/include
-)
-message("backtraceHH ${LIBBACKTRACE_INCLUDE_DIRS}")
-  if (clang)
-    Find_Package(Backtrace)
-    message("backtrace ${Backtrace_INCLUDE_DIRS}")
-    message("backtraceI ${Backtrace_INCLUDE_DIR}")
-    message("backtraceH ${Backtrace_HEADER}")
-
-  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_addr2line.a")
   endif()
 endif()
 
@@ -153,7 +128,7 @@ else()
       PROPERTY INTERFACE_LINK_LIBRARIES
         ${BOOST_STACKTRACE_LIB2}
         dl
-        backtrace
+        $<$<NOT:${APPLE}>:backtrace>
     )
 endif()
 if (boost_needs_build)
