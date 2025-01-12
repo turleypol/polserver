@@ -440,7 +440,7 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
   };
   SaveContext::finished = std::async(
       std::launch::async,
-      [&, critical_promise = std::move( critical_promise )]()
+      [&, critical_promise = std::move( critical_promise )]() mutable
       {
         std::atomic<bool> result( true );
         try
