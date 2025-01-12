@@ -35,7 +35,7 @@ if (${windows})
 else()
   set (BOOST_CONFIGURE_COMMAND "./bootstrap.sh")
   set (BOOST_BUILD_COMMAND "./b2")
-  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_basic.a")
+  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_backtrace.a")
   set (BOOST_STACKTRACE_LIB "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_from_exception.a" )
 
   set (BOOST_CXX_FLAGS "-DBOOST_STACKTRACE_LINK")
@@ -110,7 +110,7 @@ set_target_properties(libboost_stacktrace PROPERTIES
   IMPORTED_LOCATION ${BOOST_STACKTRACE_LIB}
   IMPORTED_IMPLIB ${BOOST_STACKTRACE_LIB}
   INTERFACE_INCLUDE_DIRECTORIES ${BOOST_SOURCE_DIR}
-  INTERFACE_COMPILE_DEFINITIONS BOOST_STACKTRACE_LINK
+  INTERFACE_COMPILE_DEFINITIONS BOOST_STACKTRACE_LINK BOOST_STACKTRACE_USE_BACKTRACE
   FOLDER 3rdParty
 )
 if (${windows})
@@ -124,6 +124,7 @@ else()
   set_property(TARGET libboost_stacktrace APPEND
       PROPERTY INTERFACE_LINK_LIBRARIES
         dl
+        backtrace
         ${BOOST_STACKTRACE_LIB2}
     )
 endif()
