@@ -426,13 +426,13 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
   // but wait till the first critical part is finished
   // which means all objects got written into a format object
   // the remaining operations are only pure buffered i/o
-  auto critical_promise = std::make_shared<std::promise<bool>>();
-  auto critical_future = critical_promise->get_future();
+  auto critical_promise = std::promise<bool>();
+  auto critical_future = critical_promise.get_future();
   auto set_promise = []( auto& promise, bool result )
   {
     try  // guard to be able to try to set it twice (exceptions)
     {
-      promise->set_value( result );
+      promise.set_value( result );
     }
     catch ( ... )
     {
@@ -440,7 +440,7 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
   };
   SaveContext::finished = std::async(
       std::launch::async,
-      [&, critical_promise]()
+      [&, std::move( critical_promise )]()
       {
         Tools::Timer<> timer_async;
         std::atomic<bool> result( true );
