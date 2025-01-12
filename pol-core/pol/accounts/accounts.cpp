@@ -242,8 +242,8 @@ void reload_account_data( void )
 
 void write_account_data_task( void )
 {
-  if ( Plib::systemstate.accounts_txt_dirty )
-    write_account_data();
+  //  if ( Plib::systemstate.accounts_txt_dirty )
+  //    write_account_data();
 }
 }  // namespace Accounts
 }  // namespace Pol

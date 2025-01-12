@@ -73,6 +73,7 @@ message("backtraceHH ${LIBBACKTRACE_INCLUDE_DIRS}")
     message("backtraceI ${Backtrace_INCLUDE_DIR}")
     message("backtraceH ${Backtrace_HEADER}")
 
+  set (BOOST_STACKTRACE_LIB2 "${BOOST_STAGE_LIB_DIR}/libboost_stacktrace_addr2line.a")
   endif()
 endif()
 
