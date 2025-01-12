@@ -440,9 +440,8 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
   };
   SaveContext::finished = std::async(
       std::launch::async,
-      [&, std::move( critical_promise )]()
+      [&, critical_promise = std::move( critical_promise )]()
       {
-        Tools::Timer<> timer_async;
         std::atomic<bool> result( true );
         try
         {
