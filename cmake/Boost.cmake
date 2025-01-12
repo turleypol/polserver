@@ -47,16 +47,30 @@ else()
     set (BOOST_STACKTRACE_LIB ${BOOST_STACKTRACE_LIB2})
     set (BOOST_STACKTRACE_LIB2 "")
   endif()
+find_path(LIBBACKTRACE_PREFIX
+    NAMES include/backtrace-supported.h
+)
+
+find_library(LIBBACKTRACE_LIBRARIES
+    NAMES libbacktrace.a libbacktrace.so
+    HINTS ${LIBBACKTRACE_PREFIX}/lib ${HILTIDEPS}/lib
+)
+
+find_path(LIBBACKTRACE_INCLUDE_DIRS
+    NAMES backtrace.h backtrace-supported.h
+    HINTS ${LIBBACKTRACE_PREFIX}/include ${HILTIDEPS}/include
+)
+
+find_path(LIBBACKTRACE_INCLUDE_DIRS
+    NAMES backtrace.h
+    #    HINTS ${LIBBACKTRACE_PREFIX}/include ${HILTIDEPS}/include
+)
+message("backtraceHH ${LIBBACKTRACE_INCLUDE_DIRS}")
   if (clang)
     Find_Package(Backtrace)
     message("backtrace ${Backtrace_INCLUDE_DIRS}")
     message("backtraceI ${Backtrace_INCLUDE_DIR}")
     message("backtraceH ${Backtrace_HEADER}")
-    find_path(LIBBACKTRACE_INCLUDE_DIRS
-    NAMES backtrace.h
-    #    HINTS ${LIBBACKTRACE_PREFIX}/include ${HILTIDEPS}/include
-)
-message("backtraceHH ${LIBBACKTRACE_INCLUDE_DIRS}")
 
   endif()
 endif()
