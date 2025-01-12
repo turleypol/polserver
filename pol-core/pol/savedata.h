@@ -37,7 +37,7 @@ private:
   std::atomic<bool>* _res;
 
 public:
-  SaveContext( std::atomic<bool>* res );
+  SaveContext();
   // allow exception without direct terminate, performs fileoperations which can fail eg diskfull
   ~SaveContext() noexcept( false );
   SaveContext( const SaveContext& ) = delete;
