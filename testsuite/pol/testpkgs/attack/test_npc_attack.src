@@ -27,6 +27,7 @@ program npc_ai()
   npc2.hitchance_mod := 1000;
   SetObjProperty( npc2, "#TestPid", GetPid() );
   SetName( npc2, "npc2" );
+  SaveWorldState();
 
   return 1;
 endprogram
