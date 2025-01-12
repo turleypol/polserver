@@ -50,6 +50,7 @@ else()
 find_path(LIBBACKTRACE_PREFIX
     NAMES include/backtrace-supported.h
 )
+message("backtracep ${LIBBACKTRACE_PREFIX}")
 
 find_library(LIBBACKTRACE_LIBRARIES
     NAMES libbacktrace.a libbacktrace.so
@@ -63,7 +64,7 @@ find_path(LIBBACKTRACE_INCLUDE_DIRS
 
 find_path(LIBBACKTRACE_INCLUDE_DIRS
     NAMES backtrace.h
-    #    HINTS ${LIBBACKTRACE_PREFIX}/include ${HILTIDEPS}/include
+    HINTS ${LIBBACKTRACE_PREFIX}/include ${HILTIDEPS}/include
 )
 message("backtraceHH ${LIBBACKTRACE_INCLUDE_DIRS}")
   if (clang)
