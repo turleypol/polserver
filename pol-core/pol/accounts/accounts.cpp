@@ -94,7 +94,7 @@ void write_account_data()
   }
   catch ( ... )
   {
-    POLLOG_ERRORLN( "failed to store accounts!\n{}", , Clib::ExceptionParser::getTrace() );
+    POLLOG_ERRORLN( "failed to store accounts!\n{}", Clib::ExceptionParser::getTrace() );
     result = false;
   }
   if ( !result )
