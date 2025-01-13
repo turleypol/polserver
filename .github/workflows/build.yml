@@ -25,7 +25,7 @@ jobs:
             cxx-compiler: g++
             c-compiler: gcc
             compiler-version: default
-            build-type: Debug
+            build-type: RelWithDebInfo
             nopch: 0
             name: Linux GCC
 
@@ -33,7 +33,7 @@ jobs:
             cxx-compiler: clang++
             c-compiler: clang
             compiler-version: default
-            build-type: Debug
+            build-type: RelWithDepInfo
             nopch: 0
             name: Linux Clang
 
