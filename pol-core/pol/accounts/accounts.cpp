@@ -90,6 +90,7 @@ void write_account_data()
     {
       Account* acct = account.get();
       acct->writeto( sw );
+      throw 1;
     }
   }
   catch ( ... )
