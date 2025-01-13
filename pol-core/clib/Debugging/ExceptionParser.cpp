@@ -552,6 +552,9 @@ string ExceptionParser::getTrace()
   auto stack = boost::stacktrace::stacktrace::from_current_exception();
   if ( stack.empty() )
     stack = boost::stacktrace::stacktrace();
+  for ( const auto f : stack )
+    POLLOG_ERROR( "name:{} addr:{} file:{} line:{}", f.name(), f.address(), f.source_file(),
+                  f.source_line() );
   return boost::stacktrace::to_string( stack );
 }
 
