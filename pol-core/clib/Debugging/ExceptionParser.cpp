@@ -550,9 +550,10 @@ void ExceptionParser::initGlobalExceptionCatching() {}
 string ExceptionParser::getTrace()
 {
   auto stack = boost::stacktrace::stacktrace::from_current_exception();
+  bool empty = stack.empty();
   if ( stack.empty() )
     stack = boost::stacktrace::stacktrace();
-  return ( stack.empty() ? std::string( "empty" ) : std::string( "" ) ) +
+  return ( empty ? std::string( "empty" ) : std::string( "" ) ) +
          boost::stacktrace::to_string( stack );
 }
 
