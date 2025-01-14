@@ -380,7 +380,7 @@ bool commit( const std::string& basename )
   catch ( const fs::filesystem_error& error )
   {
     POLLOG_ERRORLN( "Unable to commit worldsave: {}\n{}", error.what(),
-                    Clib::Debugging::ExceptionParser::getTrace() );
+                    Clib::ExceptionParser::getTrace() );
     return false;
   }
   return true;
