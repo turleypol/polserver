@@ -10,7 +10,7 @@ namespace Pol
 namespace Clib
 {
 const std::size_t flush_limit = 10000;  // 500;
-bool StreamWriter::crash = false;
+
 void StreamWriter::flush_test()
 {
   if ( _buf.size() >= flush_limit )  // guard against to big objects
@@ -42,13 +42,10 @@ StreamWriter::~StreamWriter() noexcept( false )
   {
     if ( !_buf.empty() && _stream )
       *_stream << _buf;
-    if ( crash )
-      throw 1;
-    _buf.clear();
   }
   catch ( ... )
   {
-    _buf.clear();
+    // during stack unwinding an exception would terminate
     if ( !stack_unwinding )
       throw;
   }

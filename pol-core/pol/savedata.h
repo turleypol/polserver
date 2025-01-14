@@ -34,7 +34,6 @@ private:
   std::ofstream _guilds;
   std::ofstream _datastore;
   std::ofstream _party;
-  std::atomic<bool>* _res;
 
 public:
   SaveContext();

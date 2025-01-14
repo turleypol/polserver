@@ -550,11 +550,12 @@ void ExceptionParser::initGlobalExceptionCatching() {}
 string ExceptionParser::getTrace()
 {
   auto stack = boost::stacktrace::stacktrace::from_current_exception();
-  bool empty = stack.empty();
+  // current_exception does not always work, eg no active exception
+  // and needs linking with libboost_stacktrace_backtrace, which as of now is not possible with
+  // Apple. Current stacktrace as fallback, which should give enough infos
   if ( stack.empty() )
     stack = boost::stacktrace::stacktrace();
-  return ( empty ? std::string( "empty" ) : std::string( "" ) ) +
-         boost::stacktrace::to_string( stack );
+  return boost::stacktrace::to_string( stack );
 }
 
 void ExceptionParser::configureProgramAbortReportingSystem( bool active, std::string server,
