@@ -1204,7 +1204,7 @@ int xmain_inner( bool testing )
     long long elapsed_ms;
 
     Tools::Timer<> timer;
-    Core::write_data( dirty, clean, elapsed_ms );
+    Core::write_data( {}, dirty, clean, elapsed_ms );
     Core::SaveContext::ready();
     POLLOG_INFOLN( "Data save completed in {} ms. {} total.", elapsed_ms, timer.ellapsed() );
   }

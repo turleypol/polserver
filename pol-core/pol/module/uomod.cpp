@@ -3020,9 +3020,12 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
 
     PolClockPauser pauser;
 
+    std::optional<weak_ptr<Core::UOExecutor>> exec;
+    if ( bool async; exec.hasParams( 1 ) && getParam( 0, &async ) && async )
+      exec = uoexec().weakptr;
     unsigned int dirty, clean;
     long long elapsed_ms;
-    auto res = write_data( dirty, clean, elapsed_ms );
+    auto res = write_data( exec, dirty, clean, elapsed_ms );
     if ( !res )
       return new BError( "pol.cfg has InhibitSaves=1" );
     if ( *res )

@@ -386,7 +386,8 @@ bool commit( const std::string& basename )
   return true;
 }
 
-std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_writes,
+std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
+                                unsigned int& dirty_writes, unsigned int& clean_writes,
                                 long long& elapsed_ms )
 {
   SaveContext::ready();  // allow only one active
@@ -419,7 +420,7 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
   };
   SaveContext::finished = std::async(
       std::launch::async,
-      [&, critical_promise = std::move( critical_promise )]() mutable
+      [&, critical_promise = std::move( critical_promise ), exec]() mutable
       {
         std::atomic<bool> result( true );
         try
@@ -510,16 +511,44 @@ std::optional<bool> write_data( unsigned int& dirty_writes, unsigned int& clean_
               std::all_of( files.begin(), files.end(), []( auto file ) { return commit( file ); } );
           if ( result )
             SaveContext::last_worldsave_success = read_gameclock();
+          if ( result && exec )
+          {
+            auto uoexec = *exec;
+            Core::PolLock lck;
+            if ( !uoexec.exists() )
+              INFO_PRINTLN( "Script has been destroyed" );
+            else
+            {
+              uoexec.get_weakptr()->ValueStack.back().set(
+                  new BObject( new BError( "Insufficient memory" ) ) );
+              uoexec.get_weakptr()->revive();
+            }
+          }
         }
       } );
   auto res = critical_future.get();  // wait for end of critical part
 
-  timer.stop();
-  objStorageManager.objecthash.ClearDeleted();
-  clean_writes = UObject::clean_writes;
-  dirty_writes = UObject::dirty_writes;
-  elapsed_ms = timer.ellapsed();
+  if ( exec )
+  {
+    auto uoexec = *exec;
+    if ( !uoexec->suspend() )
+    {
+      DEBUGLOGLN(
+          "Script Error in '{}' PC={}: \n"
+          "\tThe execution of this script can't be blocked!",
+          uoexec->scriptname(), uoexec->PC );
+      return new Bscript::BError( "Script can't be blocked" );
+    }
+  }
+  else
+  {
+    timer.stop();
 
+    objStorageManager.objecthash.ClearDeleted();
+    clean_writes = UObject::clean_writes;
+    dirty_writes = UObject::dirty_writes;
+    elapsed_ms = timer.ellapsed();
+  }
   return res;
 }
 
