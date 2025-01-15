@@ -15,6 +15,17 @@ exported function polcore_memory()
 endfunction
 
 exported function polcore_save()
-print(SaveWorldState(1));
-print(SaveWorldState());
+  var time := PolCore().worldsaved_at;
+  var res := SaveWorldState( 1 );
+  if ( !res.?ElapsedMillisecondsTotal )
+    return ret_error( $"non async save: {res}" );
+  endif
+  if ( PolCore().worldsaved_at == time )
+    return ret_error( "last save time didnt change" );
+  endif
+  res := SaveWorldState();
+  if ( res.?ElapsedMillisecondsTotal )
+    return ret_error( $"got async save token: {res}" );
+  endif
+  return 1;
 endfunction
