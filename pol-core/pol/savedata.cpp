@@ -404,18 +404,6 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
 
   Tools::Timer<> timer;
   Tools::Timer<> total_timer;
-  if ( exec )
-  {
-    auto uoexec = *exec;
-    if ( !uoexec->suspend() )
-    {
-      DEBUGLOGLN(
-          "Script Error in '{}' PC={}: \n"
-          "\tThe execution of this script can't be blocked!",
-          uoexec->scriptname(), uoexec->PC );
-      exec.reset();
-    }
-  }
   // launch complete save as seperate thread
   // but wait till the first critical part is finished
   // which means all objects got written into a format object
@@ -437,6 +425,7 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
       [&, critical_promise = std::move( critical_promise ), exec,
        total_timer = std::move( total_timer )]() mutable
       {
+        Tools::Timer<> blocking_timer;
         std::atomic<bool> result( true );
         try
         {
@@ -517,6 +506,7 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
           result = false;
           set_promise( critical_promise, result );
         }
+        blocking_timer.stop();
         if ( result )
         {
           auto files = { "pol",      "objects",   "pcs",    "pcequip", "npcs",
@@ -542,6 +532,8 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
               ret->addMember( "DirtyObjects", new Bscript::BLong( UObject::dirty_writes ) );
               ret->addMember( "CleanObjects", new Bscript::BLong( UObject::clean_writes ) );
               ret->addMember( "ElapsedMilliseconds",
+                              new Bscript::BLong( static_cast<int>( blocking_timer.ellapsed() ) ) );
+              ret->addMember( "ElapsedMillisecondsTotal",
                               new Bscript::BLong( static_cast<int>( total_timer.ellapsed() ) ) );
               uoexec.get_weakptr()->ValueStack.back().set( new Bscript::BObject( ret ) );
             }

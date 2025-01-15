@@ -3014,33 +3014,50 @@ BObjectImp* UOExecutorModule::mf_SystemFindObjectBySerial()
 BObjectImp* UOExecutorModule::mf_SaveWorldState()
 {
   update_gameclock();
+  std::optional<weak_ptr<Core::UOExecutor>> w_exec;
   try
   {
     cancel_all_trades();
 
     PolClockPauser pauser;
 
-    std::optional<weak_ptr<Core::UOExecutor>> w_exec;
     if ( bool async; exec.hasParams( 1 ) && getParam( 0, async ) && async )
+    {
       w_exec = uoexec().weakptr;
+      if ( uoexec().suspend() )
+      {
+        DEBUGLOGLN(
+            "Script Error in '{}' PC={}: \n"
+            "\tThe execution of this script can't be blocked!",
+            uoexec().scriptname(), uoexec().PC );
+        w_exec.reset();
+      }
+    }
     unsigned int dirty, clean;
     long long elapsed_ms;
+
     auto res = write_data( w_exec, dirty, clean, elapsed_ms );
     if ( !res )
       return new BError( "pol.cfg has InhibitSaves=1" );
     if ( *res )
     {
+      if ( w_exec )
+        return new BLong( 0 );
       BStruct* ret = new BStruct();
       ret->addMember( "DirtyObjects", new BLong( dirty ) );
       ret->addMember( "CleanObjects", new BLong( clean ) );
       ret->addMember( "ElapsedMilliseconds", new BLong( static_cast<int>( elapsed_ms ) ) );
       return ret;
     }
+    if ( w_exec )
+      uoexec().revive();
     return new BError( "Failed to save world" );
   }
   catch ( std::exception& ex )
   {
     POLLOGLN( "Exception during world save! ({})", ex.what() );
+    if ( w_exec )
+      uoexec().revive();
     return new BError( "Exception during world save" );
   }
 }

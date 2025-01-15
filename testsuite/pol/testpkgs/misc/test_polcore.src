@@ -13,3 +13,8 @@ exported function polcore_memory()
   PolCore().internal( 6, "scripts/tests.ecl" ); // memory estimation log (script)
   return 1;
 endfunction
+
+exported function polcore_save()
+print(SaveWorldState(1));
+print(SaveWorldState());
+endfunction
