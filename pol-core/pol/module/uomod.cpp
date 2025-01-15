@@ -3035,8 +3035,10 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
     }
     unsigned int dirty, clean;
     long long elapsed_ms;
+    auto callback = [exec = std::move( uoexec().weakptr.non_owning ()]( bool result ) mutable {
 
-    auto res = write_data( w_exec, dirty, clean, elapsed_ms );
+    };
+    auto res = write_data( w_exec, std::move( callback ), dirty, clean, elapsed_ms );
     if ( !res )
     {
       if ( w_exec )

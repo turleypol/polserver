@@ -388,8 +388,8 @@ bool commit( const std::string& basename )
 }
 
 std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
-                                unsigned int& dirty_writes, unsigned int& clean_writes,
-                                long long& elapsed_ms )
+                                std::function<void( bool )> callback, unsigned int& dirty_writes,
+                                unsigned int& clean_writes, long long& elapsed_ms )
 {
   SaveContext::ready();  // allow only one active
   if ( !should_write_data() )
@@ -423,7 +423,7 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
   SaveContext::finished = std::async(
       std::launch::async,
       [&, critical_promise = std::move( critical_promise ), exec,
-       total_timer = std::move( total_timer )]() mutable
+       total_timer = std::move( total_timer ), callback = std::move( callback )]() mutable
       {
         Tools::Timer<> blocking_timer;
         std::atomic<bool> result( true );
@@ -516,6 +516,8 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
               std::all_of( files.begin(), files.end(), []( auto file ) { return commit( file ); } );
           if ( result )
             SaveContext::last_worldsave_success = read_gameclock();
+          if ( callback )
+            callback( result.load() );
           if ( exec )
           {
             auto uoexec = *exec;

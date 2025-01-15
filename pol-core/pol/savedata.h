@@ -67,6 +67,6 @@ void write_shadow_realms( Clib::StreamWriter& sw );
 bool commit( const std::string& basename );
 bool should_write_data();
 std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
-                                unsigned int& dirty_writes, unsigned int& clean_writes,
-                                long long& elapsed_ms );
+                                std::function<void( bool )> callback, unsigned int& dirty_writes,
+                                unsigned int& clean_writes, long long& elapsed_ms );
 }  // namespace Pol::Core
