@@ -3024,7 +3024,7 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
     if ( bool async; exec.hasParams( 1 ) && getParam( 0, async ) && async )
     {
       w_exec = uoexec().weakptr;
-      if ( uoexec().suspend() )
+      if ( !uoexec().suspend() )
       {
         DEBUGLOGLN(
             "Script Error in '{}' PC={}: \n"
@@ -3038,7 +3038,11 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
 
     auto res = write_data( w_exec, dirty, clean, elapsed_ms );
     if ( !res )
+    {
+      if ( w_exec )
+        uoexec().revive();
       return new BError( "pol.cfg has InhibitSaves=1" );
+    }
     if ( *res )
     {
       if ( w_exec )
