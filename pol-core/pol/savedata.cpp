@@ -404,6 +404,7 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
   UObject::clean_writes = 0;
 
   Tools::Timer<> timer;
+  Tools::Timer<> total_timer;
   // launch complete save as seperate thread
   // but wait till the first critical part is finished
   // which means all objects got written into a format object
@@ -422,7 +423,8 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
   };
   SaveContext::finished = std::async(
       std::launch::async,
-      [&, critical_promise = std::move( critical_promise ), exec]() mutable
+      [&, critical_promise = std::move( critical_promise ), exec,
+       total_timer = std::move( total_timer )]() mutable
       {
         std::atomic<bool> result( true );
         try
@@ -513,23 +515,38 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
               std::all_of( files.begin(), files.end(), []( auto file ) { return commit( file ); } );
           if ( result )
             SaveContext::last_worldsave_success = read_gameclock();
-          if ( result && exec )
+          if ( exec )
           {
             auto uoexec = *exec;
             Core::PolLock lck;
+            total_timer.stop();
             if ( !uoexec.exists() )
+            {
               INFO_PRINTLN( "Script has been destroyed" );
+              return;
+            }
+            if ( result )
+            {
+              BStruct* ret = new BStruct();
+              ret->addMember( "DirtyObjects", new BLong( UObject::dirty_writes ) );
+              ret->addMember( "CleanObjects", new BLong( UObject::clean_writes ) );
+              ret->addMember( "ElapsedMilliseconds",
+                              new BLong( static_cast<int>( total_timer.ellapsed() ) ) );
+              uoexec.get_weakptr()->ValueStack.back().set(
+                  new BObject( ret );
+            }
             else
             {
               uoexec.get_weakptr()->ValueStack.back().set(
-                  new BObject( new BError( "Insufficient memory" ) ) );
-              uoexec.get_weakptr()->revive();
+                  new BObject( new BError("failed to save world!" );
             }
+            uoexec.get_weakptr()->revive();
           }
         }
       } );
   auto res = critical_future.get();  // wait for end of critical part
 
+  objStorageManager.objecthash.ClearDeleted();
   if ( exec )
   {
     auto uoexec = *exec;
@@ -539,14 +556,13 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
           "Script Error in '{}' PC={}: \n"
           "\tThe execution of this script can't be blocked!",
           uoexec->scriptname(), uoexec->PC );
-      return new Bscript::BError( "Script can't be blocked" );
+      //  return new Bscript::BError( "Script can't be blocked" );
     }
   }
   else
   {
     timer.stop();
 
-    objStorageManager.objecthash.ClearDeleted();
     clean_writes = UObject::clean_writes;
     dirty_writes = UObject::dirty_writes;
     elapsed_ms = timer.ellapsed();
