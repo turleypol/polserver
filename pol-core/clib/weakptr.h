@@ -151,7 +151,7 @@ void weak_ptr_owner<T>::set( T* obptr )
 template <class T>
 weak_ptr<T> weak_ptr_owner<T>::non_owning() const
 {
-  return this;
+  return *this;
 }
 
 #endif  // __WEAKPTR_H
