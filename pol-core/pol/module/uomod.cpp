@@ -3026,9 +3026,8 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
     {
       Tools::Timer<> total_timer;
       auto res = write_data(
-          [uoexec = std::move( uoexec().weakptr.non_owning() ),
-           total_timer = std::move( total_timer )]( bool result, u32 clean_writes, u32 dirty_writes,
-                                                    s64 ellapsed ) mutable
+          [uoexec = uoexec().weakptr.non_owning(), total_timer = std::move( total_timer )](
+              bool result, u32 clean_writes, u32 dirty_writes, s64 ellapsed ) mutable
           {
             Core::PolLock lck;
             if ( !uoexec.exists() )
