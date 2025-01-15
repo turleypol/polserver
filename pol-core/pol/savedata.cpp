@@ -387,23 +387,17 @@ bool commit( const std::string& basename )
   return true;
 }
 
-std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
-                                std::function<void( bool )> callback, unsigned int& dirty_writes,
-                                unsigned int& clean_writes, long long& elapsed_ms )
+std::optional<bool> write_data( std::function<void( bool, u32, u32, s64 )> callback,
+                                u32* dirty_writes, u32* clean_writes, s64* elapsed_ms )
 {
   SaveContext::ready();  // allow only one active
   if ( !should_write_data() )
-  {
-    dirty_writes = clean_writes = 0;
-    elapsed_ms = 0;
     return {};
-  }
 
   UObject::dirty_writes = 0;
   UObject::clean_writes = 0;
 
   Tools::Timer<> timer;
-  Tools::Timer<> total_timer;
   // launch complete save as seperate thread
   // but wait till the first critical part is finished
   // which means all objects got written into a format object
@@ -422,8 +416,8 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
   };
   SaveContext::finished = std::async(
       std::launch::async,
-      [&, critical_promise = std::move( critical_promise ), exec,
-       total_timer = std::move( total_timer ), callback = std::move( callback )]() mutable
+      [&, critical_promise = std::move( critical_promise ),
+       callback = std::move( callback )]() mutable
       {
         Tools::Timer<> blocking_timer;
         std::atomic<bool> result( true );
@@ -516,48 +510,22 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
               std::all_of( files.begin(), files.end(), []( auto file ) { return commit( file ); } );
           if ( result )
             SaveContext::last_worldsave_success = read_gameclock();
-          if ( callback )
-            callback( result.load() );
-          if ( exec )
-          {
-            auto uoexec = *exec;
-            Core::PolLock lck;
-            total_timer.stop();
-            if ( !uoexec.exists() )
-            {
-              INFO_PRINTLN( "Script has been destroyed" );
-              return;
-            }
-            if ( result )
-            {
-              auto* ret = new Bscript::BStruct();
-              ret->addMember( "DirtyObjects", new Bscript::BLong( UObject::dirty_writes ) );
-              ret->addMember( "CleanObjects", new Bscript::BLong( UObject::clean_writes ) );
-              ret->addMember( "ElapsedMilliseconds",
-                              new Bscript::BLong( static_cast<int>( blocking_timer.ellapsed() ) ) );
-              ret->addMember( "ElapsedMillisecondsTotal",
-                              new Bscript::BLong( static_cast<int>( total_timer.ellapsed() ) ) );
-              uoexec.get_weakptr()->ValueStack.back().set( new Bscript::BObject( ret ) );
-            }
-            else
-            {
-              uoexec.get_weakptr()->ValueStack.back().set(
-                  new Bscript::BObject( new Bscript::BError( "failed to save world!" ) ) );
-            }
-            INFO_PRINTLN( "RESULT {}", result.load() );
-            uoexec.get_weakptr()->revive();
-            INFO_PRINTLN( "REVIVED" );
-          }
         }
+        if ( callback )
+          callback( result.load(), UObject::clean_writes, UObject::dirty_writes,
+                    blocking_timer.ellapsed() );
       } );
   auto res = critical_future.get();  // wait for end of critical part
 
   objStorageManager.objecthash.ClearDeleted();
   timer.stop();
 
-  clean_writes = UObject::clean_writes;
-  dirty_writes = UObject::dirty_writes;
-  elapsed_ms = timer.ellapsed();
+  if ( clean_writes )
+    *clean_writes = UObject::clean_writes;
+  if ( dirty_writes )
+    *dirty_writes = UObject::dirty_writes;
+  if ( elapsed_ms )
+    *elapsed_ms = timer.ellapsed();
   return res;
 }
 

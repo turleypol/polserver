@@ -3014,58 +3014,72 @@ BObjectImp* UOExecutorModule::mf_SystemFindObjectBySerial()
 BObjectImp* UOExecutorModule::mf_SaveWorldState()
 {
   update_gameclock();
-  std::optional<weak_ptr<Core::UOExecutor>> w_exec;
-  try
+  cancel_all_trades();
+
+  PolClockPauser pauser;
+
+  if ( bool async; exec.hasParams( 1 ) && getParam( 0, async ) && async )
   {
-    cancel_all_trades();
-
-    PolClockPauser pauser;
-
-    if ( bool async; exec.hasParams( 1 ) && getParam( 0, async ) && async )
+    if ( uoexec().suspend() )
     {
-      w_exec = uoexec().weakptr;
-      if ( !uoexec().suspend() )
+      Tools::Timer<> total_timer;
+      auto res = write_data(
+          [uoexec = std::move( uoexec().weakptr.non_owning() ),
+           total_timer = std::move( total_timer )]( bool result, u32 clean_writes, u32 dirty_writes,
+                                                    s64 ellapsed ) mutable
+          {
+            Core::PolLock lck;
+            if ( !uoexec.exists() )
+              return;
+            if ( result )
+            {
+              auto* ret = new Bscript::BStruct();
+              ret->addMember( "DirtyObjects", new Bscript::BLong( dirty_writes ) );
+              ret->addMember( "CleanObjects", new Bscript::BLong( clean_writes ) );
+              ret->addMember( "ElapsedMilliseconds",
+                              new Bscript::BLong( Clib::clamp_convert<int>( ellapsed ) ) );
+              ret->addMember(
+                  "ElapsedMillisecondsTotal",
+                  new Bscript::BLong( Clib::clamp_convert<int>( total_timer.ellapsed() ) ) );
+              uoexec.get_weakptr()->ValueStack.back().set( new Bscript::BObject( ret ) );
+            }
+            else
+            {
+              uoexec.get_weakptr()->ValueStack.back().set(
+                  new Bscript::BObject( new Bscript::BError( "failed to save world!" ) ) );
+            }
+            uoexec.get_weakptr()->revive();
+          } );
+      if ( !res )
       {
-        DEBUGLOGLN(
-            "Script Error in '{}' PC={}: \n"
-            "\tThe execution of this script can't be blocked!",
-            uoexec().scriptname(), uoexec().PC );
-        w_exec.reset();
-      }
-    }
-    unsigned int dirty, clean;
-    long long elapsed_ms;
-    auto callback = [exec = std::move( uoexec().weakptr.non_owning ()]( bool result ) mutable {
-
-    };
-    auto res = write_data( w_exec, std::move( callback ), dirty, clean, elapsed_ms );
-    if ( !res )
-    {
-      if ( w_exec )
         uoexec().revive();
-      return new BError( "pol.cfg has InhibitSaves=1" );
-    }
-    if ( *res )
-    {
-      if ( w_exec )
+        return new BError( "pol.cfg has InhibitSaves=1" );
+      }
+      if ( *res )
         return new BLong( 0 );
-      BStruct* ret = new BStruct();
-      ret->addMember( "DirtyObjects", new BLong( dirty ) );
-      ret->addMember( "CleanObjects", new BLong( clean ) );
-      ret->addMember( "ElapsedMilliseconds", new BLong( static_cast<int>( elapsed_ms ) ) );
-      return ret;
+      uoexec().revive();
+      return new BError( "Failed to save world" );
     }
-    if ( w_exec )
-      uoexec().revive();
-    return new BError( "Failed to save world" );
+    DEBUGLOGLN(
+        "Script Error in '{}' PC={}: \n"
+        "\tThe execution of this script can't be blocked!",
+        uoexec().scriptname(), uoexec().PC );
   }
-  catch ( std::exception& ex )
+
+  u32 dirty, clean;
+  s64 elapsed_ms;
+  auto res = write_data( {}, &dirty, &clean, &elapsed_ms );
+  if ( !res )
+    return new BError( "pol.cfg has InhibitSaves=1" );
+  if ( *res )
   {
-    POLLOGLN( "Exception during world save! ({})", ex.what() );
-    if ( w_exec )
-      uoexec().revive();
-    return new BError( "Exception during world save" );
+    BStruct* ret = new BStruct();
+    ret->addMember( "DirtyObjects", new BLong( dirty ) );
+    ret->addMember( "CleanObjects", new BLong( clean ) );
+    ret->addMember( "ElapsedMilliseconds", new BLong( Clib::clamp_convert<int>( elapsed_ms ) ) );
+    return ret;
   }
+  return new BError( "Failed to save world" );
 }
 
 
