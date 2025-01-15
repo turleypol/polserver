@@ -544,13 +544,12 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
               ret->addMember( "CleanObjects", new Bscript::BLong( UObject::clean_writes ) );
               ret->addMember( "ElapsedMilliseconds",
                               new Bscript::BLong( static_cast<int>( total_timer.ellapsed() ) ) );
-              uoexec.get_weakptr()->ValueStack.back().set(
-                  new Bscript::BObject( ret );
+              uoexec.get_weakptr()->ValueStack.back().set( new Bscript::BObject( ret ) );
             }
             else
             {
               uoexec.get_weakptr()->ValueStack.back().set(
-                  new Bscript::BObject( new Bscript::BError("failed to save world!" );
+                  new Bscript::BObject( new Bscript::BError( "failed to save world!" ) ) );
             }
             uoexec.get_weakptr()->revive();
           }
