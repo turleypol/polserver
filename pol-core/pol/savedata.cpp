@@ -542,7 +542,7 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
               uoexec.get_weakptr()->ValueStack.back().set(
                   new Bscript::BObject( new Bscript::BError( "failed to save world!" ) ) );
             }
-            INFO_PRINTLN( "RESULT {}", *result );
+            INFO_PRINTLN( "RESULT {}", result.load() );
             uoexec.get_weakptr()->revive();
             INFO_PRINTLN( "REVIVED" );
           }
