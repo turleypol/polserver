@@ -9,6 +9,7 @@
  */
 #pragma once
 
+#include <cstdint>
 #define __PACKED__
 
 /* The PACK_NEEDED define goes after "struct { }" definitions */
