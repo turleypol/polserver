@@ -34,6 +34,7 @@
 #include "multi/house.h"
 #include "multi/multi.h"
 #include "objecthash.h"
+#include "polsem.h"
 #include "realms/realm.h"
 #include "regions/resource.h"
 #include "storage.h"
