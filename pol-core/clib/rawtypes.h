@@ -7,10 +7,7 @@
  * This header is part of the PCH
  * Remove the include in all StdAfx.h files or live with the consequences :)
  */
-
-
-#ifndef __CLIB_RAWTYPES_H
-#define __CLIB_RAWTYPES_H
+#pragma once
 
 #define __PACKED__
 
@@ -30,16 +27,8 @@ typedef signed char s8;
 typedef signed short s16;
 typedef signed int s32;
 
-#ifdef _WIN32
-typedef unsigned __int64 u64;
-typedef signed __int64 s64;
-#define OUT64 "I64"
-#else
-typedef unsigned long long u64;
-typedef signed long long s64;
-#define OUT64 "ll"
-#endif
-
+typedef uint64_t u64;
+typedef int64_t s64;
 
 /* these fail to compile if lengths of U8, U16, or U32 are incorrect. */
 static_assert( sizeof( u8 ) == 1, "size missmatch" );
@@ -63,5 +52,3 @@ static_assert( sizeof( wchar_t ) == 4, "size missmatch" );
 #endif
 
 #endif
-
-#endif /* __STYPE_H */

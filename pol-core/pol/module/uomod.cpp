@@ -89,6 +89,7 @@
 #include "../../clib/passert.h"
 #include "../../clib/refptr.h"
 #include "../../clib/stlutil.h"
+#include "../../clib/timer.h"
 #include "../../plib/clidata.h"
 #include "../../plib/mapcell.h"
 #include "../../plib/mapshape.h"
