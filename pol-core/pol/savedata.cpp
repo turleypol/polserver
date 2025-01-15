@@ -40,7 +40,6 @@
 #include "storage.h"
 #include "ufunc.h"
 #include "uobject.h"
-#include "uoexec.h"
 #include "uworld.h"
 
 namespace fs = std::filesystem;

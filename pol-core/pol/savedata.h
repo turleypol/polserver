@@ -13,6 +13,7 @@
 
 #include "../clib/streamsaver.h"
 #include "gameclck.h"
+#include "uoexec.h"
 
 namespace Pol::Core
 {
