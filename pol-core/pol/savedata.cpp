@@ -405,6 +405,18 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
 
   Tools::Timer<> timer;
   Tools::Timer<> total_timer;
+  if ( exec )
+  {
+    auto uoexec = *exec;
+    if ( !uoexec->suspend() )
+    {
+      DEBUGLOGLN(
+          "Script Error in '{}' PC={}: \n"
+          "\tThe execution of this script can't be blocked!",
+          uoexec->scriptname(), uoexec->PC );
+      exec.reset();
+    }
+  }
   // launch complete save as seperate thread
   // but wait till the first critical part is finished
   // which means all objects got written into a format object
@@ -527,18 +539,18 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
             }
             if ( result )
             {
-              BStruct* ret = new BStruct();
-              ret->addMember( "DirtyObjects", new BLong( UObject::dirty_writes ) );
-              ret->addMember( "CleanObjects", new BLong( UObject::clean_writes ) );
+              auto* ret = new Bscript::BStruct();
+              ret->addMember( "DirtyObjects", new Bscript::BLong( UObject::dirty_writes ) );
+              ret->addMember( "CleanObjects", new Bscript::BLong( UObject::clean_writes ) );
               ret->addMember( "ElapsedMilliseconds",
-                              new BLong( static_cast<int>( total_timer.ellapsed() ) ) );
+                              new Bscript::BLong( static_cast<int>( total_timer.ellapsed() ) ) );
               uoexec.get_weakptr()->ValueStack.back().set(
-                  new BObject( ret );
+                  new Bscript::BObject( ret );
             }
             else
             {
               uoexec.get_weakptr()->ValueStack.back().set(
-                  new BObject( new BError("failed to save world!" );
+                  new Bscript::BObject( new Bscript::BError("failed to save world!" );
             }
             uoexec.get_weakptr()->revive();
           }
@@ -547,26 +559,11 @@ std::optional<bool> write_data( std::optional<weak_ptr<Core::UOExecutor>> exec,
   auto res = critical_future.get();  // wait for end of critical part
 
   objStorageManager.objecthash.ClearDeleted();
-  if ( exec )
-  {
-    auto uoexec = *exec;
-    if ( !uoexec->suspend() )
-    {
-      DEBUGLOGLN(
-          "Script Error in '{}' PC={}: \n"
-          "\tThe execution of this script can't be blocked!",
-          uoexec->scriptname(), uoexec->PC );
-      //  return new Bscript::BError( "Script can't be blocked" );
-    }
-  }
-  else
-  {
-    timer.stop();
+  timer.stop();
 
-    clean_writes = UObject::clean_writes;
-    dirty_writes = UObject::dirty_writes;
-    elapsed_ms = timer.ellapsed();
-  }
+  clean_writes = UObject::clean_writes;
+  dirty_writes = UObject::dirty_writes;
+  elapsed_ms = timer.ellapsed();
   return res;
 }
 
