@@ -3021,7 +3021,7 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
     PolClockPauser pauser;
 
     std::optional<weak_ptr<Core::UOExecutor>> w_exec;
-    if ( bool async; exec.hasParams( 1 ) && getParam( 0, &async ) && async )
+    if ( bool async; exec.hasParams( 1 ) && getParam( 0, async ) && async )
       w_exec = uoexec().weakptr;
     unsigned int dirty, clean;
     long long elapsed_ms;
