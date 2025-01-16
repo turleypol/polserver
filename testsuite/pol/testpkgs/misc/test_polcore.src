@@ -16,16 +16,12 @@ endfunction
 
 exported function polcore_save()
   var time := PolCore().worldsaved_at;
-  var res := SaveWorldState( 1 );
+  var res := SaveWorldState();
   if ( !res.?ElapsedMillisecondsTotal )
     return ret_error( $"non async save: {res}" );
   endif
   if ( PolCore().worldsaved_at == time )
     return ret_error( "last save time didnt change" );
-  endif
-  res := SaveWorldState();
-  if ( res.?ElapsedMillisecondsTotal )
-    return ret_error( $"got async save token: {res}" );
   endif
   return 1;
 endfunction

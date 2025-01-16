@@ -375,7 +375,7 @@ ReserveItem( item );
 RestartScript( npc_or_item );
 Resurrect( mobile, flags := 0 ); // flags: RESURRECT_*
 RevokePrivilege( character, privilege );
-SaveWorldState(async := 0 );
+SaveWorldState();
 SecureTradeWin( character, character2 );
 SelectColor( character, item );
 SelectMenuItem2( character, menuname );

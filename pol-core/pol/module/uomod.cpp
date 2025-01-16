@@ -3020,51 +3020,44 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
 
   PolClockPauser pauser;
 
-  if ( bool async; exec.hasParams( 1 ) && getParam( 0, async ) && async )
+  if ( uoexec().suspend() )
   {
-    if ( uoexec().suspend() )
-    {
-      Tools::Timer<> total_timer;
-      auto res = write_data(
-          [uoexec = uoexec().weakptr.non_owning(), total_timer = std::move( total_timer )](
-              bool result, u32 clean_writes, u32 dirty_writes, s64 ellapsed ) mutable
+    Tools::Timer<> total_timer;
+    auto res = write_data(
+        [uoexec = uoexec().weakptr.non_owning(), total_timer = std::move( total_timer )](
+            bool result, u32 clean_writes, u32 dirty_writes, s64 ellapsed ) mutable
+        {
+          Core::PolLock lck;
+          if ( !uoexec.exists() )
+            return;
+          if ( result )
           {
-            Core::PolLock lck;
-            if ( !uoexec.exists() )
-              return;
-            if ( result )
-            {
-              auto* ret = new Bscript::BStruct();
-              ret->addMember( "DirtyObjects", new Bscript::BLong( dirty_writes ) );
-              ret->addMember( "CleanObjects", new Bscript::BLong( clean_writes ) );
-              ret->addMember( "ElapsedMilliseconds",
-                              new Bscript::BLong( Clib::clamp_convert<int>( ellapsed ) ) );
-              ret->addMember(
-                  "ElapsedMillisecondsTotal",
-                  new Bscript::BLong( Clib::clamp_convert<int>( total_timer.ellapsed() ) ) );
-              uoexec.get_weakptr()->ValueStack.back().set( new Bscript::BObject( ret ) );
-            }
-            else
-            {
-              uoexec.get_weakptr()->ValueStack.back().set(
-                  new Bscript::BObject( new Bscript::BError( "failed to save world!" ) ) );
-            }
-            uoexec.get_weakptr()->revive();
-          } );
-      if ( !res )
-      {
-        uoexec().revive();
-        return new BError( "pol.cfg has InhibitSaves=1" );
-      }
-      if ( *res )
-        return new BLong( 0 );
+            auto* ret = new Bscript::BStruct();
+            ret->addMember( "DirtyObjects", new Bscript::BLong( dirty_writes ) );
+            ret->addMember( "CleanObjects", new Bscript::BLong( clean_writes ) );
+            ret->addMember( "ElapsedMilliseconds",
+                            new Bscript::BLong( Clib::clamp_convert<int>( ellapsed ) ) );
+            ret->addMember(
+                "ElapsedMillisecondsTotal",
+                new Bscript::BLong( Clib::clamp_convert<int>( total_timer.ellapsed() ) ) );
+            uoexec.get_weakptr()->ValueStack.back().set( new Bscript::BObject( ret ) );
+          }
+          else
+          {
+            uoexec.get_weakptr()->ValueStack.back().set(
+                new Bscript::BObject( new Bscript::BError( "failed to save world!" ) ) );
+          }
+          uoexec.get_weakptr()->revive();
+        } );
+    if ( !res )
+    {
       uoexec().revive();
-      return new BError( "Failed to save world" );
+      return new BError( "pol.cfg has InhibitSaves=1" );
     }
-    DEBUGLOGLN(
-        "Script Error in '{}' PC={}: \n"
-        "\tThe execution of this script can't be blocked!",
-        uoexec().scriptname(), uoexec().PC );
+    if ( *res )
+      return new BLong( 0 );
+    uoexec().revive();
+    return new BError( "Failed to save world" );
   }
 
   u32 dirty, clean;
