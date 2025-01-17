@@ -3020,8 +3020,10 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
 
   PolClockPauser pauser;
 
-  if ( uoexec().suspend() )
+  // do not suspend when critical, to keep defined state of a critical block
+  if ( !uoexec().critical() && uoexec().suspend() )
   {
+    INFO_PRINTLN( "Suspended" );
     Tools::Timer<> total_timer;
     auto res = write_data(
         [uoexec = uoexec().weakptr.non_owning(), total_timer = std::move( total_timer )](
@@ -3060,6 +3062,7 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
     return new BError( "Failed to save world" );
   }
 
+  INFO_PRINTLN( " not Suspended" );
   u32 dirty, clean;
   s64 elapsed_ms;
   auto res = write_data( {}, &dirty, &clean, &elapsed_ms );
