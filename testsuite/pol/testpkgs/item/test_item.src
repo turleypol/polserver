@@ -676,3 +676,10 @@ exported function test_held_weight_multi_dynamic()
 
   return ret;
 endfunction
+  
+exported function test_item_hp()
+  var item := CreateItemAtLocation( 0, 0, 0, 0xf3f );
+  print (item.hp);
+  --item.hp;
+  print(item.hp);
+endfunction
