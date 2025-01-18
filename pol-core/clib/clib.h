@@ -9,6 +9,7 @@
 #include "pol_global_config.h"
 #include <algorithm>
 #include <limits>
+#include <type_traits>
 
 #ifdef __GNUC__
 #include <strings.h>
@@ -110,9 +111,15 @@ inline std::tm localtime( const std::time_t& t )
 template <typename T, typename U>
 inline T clamp_convert( U v )
 {
-  static_assert( std::numeric_limits<T>::min() >= std::numeric_limits<U>::min() );
-  static_assert( std::numeric_limits<T>::max() <= std::numeric_limits<U>::max() );
-  return static_cast<T>( std::clamp( v, static_cast<U>( std::numeric_limits<T>::min() ),
-                                     static_cast<U>( std::numeric_limits<T>::max() ) ) );
+  // easy case T min max is contained in U eg from int to short
+  if constexpr ( std::numeric_limits<T>::min() >= std::numeric_limits<U>::min() &&
+                 std::numeric_limits<T>::max() <= std::numeric_limits<U>::max() )
+    return static_cast<T>( std::clamp( v, static_cast<U>( std::numeric_limits<T>::min() ),
+                                       static_cast<U>( std::numeric_limits<T>::max() ) ) );
+
+  typedef std::common_type_t<U, T> common;
+  return static_cast<T>( std::clamp( static_cast<common>( v ),
+                                     static_cast<common>( std::numeric_limits<T>::min() ),
+                                     static_cast<common>( std::numeric_limits<T>::max() ) ) );
 }
 }  // namespace Pol::Clib

@@ -372,5 +372,13 @@ void test_curlfeatures()
   else
     UnitTest::inc_successes();
 }
+
+void clamp_test()
+{
+  UnitTest(
+      return []() { Clib::clamp_convert<s16>( (u16)0xFFFF ); }, 0x3fff, "u16->s16" );
+  UnitTest(
+      return []() { Clib::clamp_convert<u16>( (s16)-1 ); }, 0, "s16->u16" );
+}
 }  // namespace Testing
 }  // namespace Pol
