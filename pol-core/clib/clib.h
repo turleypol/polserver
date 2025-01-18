@@ -117,9 +117,10 @@ inline T clamp_convert( U v )
     return static_cast<T>( std::clamp( v, static_cast<U>( std::numeric_limits<T>::min() ),
                                        static_cast<U>( std::numeric_limits<T>::max() ) ) );
 
-  typedef std::common_type_t<U, T> common;
-  static_assert( !( (std::is_same_v<U, u64> || std::is_same_v<U, s64>)&&(std::is_same_v<T, u64> ||
-                                                                         std::is_same_v<T, s64>)) );
+  typedef std::common_type_t<U, T> common;  // common is the next highest
+  static_assert( !( (std::is_same_v<U, u64> || std::is_same_v<U, s64>)&&(
+      std::is_same_v<T, u64> || std::is_same_v<T, s64>)) );  // for 64bit this would not work
+
   return static_cast<T>( std::clamp( static_cast<common>( v ),
                                      static_cast<common>( std::numeric_limits<T>::min() ),
                                      static_cast<common>( std::numeric_limits<T>::max() ) ) );

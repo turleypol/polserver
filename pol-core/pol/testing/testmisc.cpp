@@ -375,16 +375,13 @@ void test_curlfeatures()
 
 void clamp_test()
 {
+  UnitTest( []() { return Clib::clamp_convert<s32>( (u32)0xffffFFFF ); }, 0x7fffFFFF,
+            "u32 0xffffFFFF->s32" );
+  UnitTest( []() { return Clib::clamp_convert<u32>( (s32)-1 ); }, 0, "s32 -1->s32" );
   UnitTest( []() { return Clib::clamp_convert<s16>( (u16)0xffff ); }, 0x7fff, "u16 0xFFFF->s16" );
   UnitTest( []() { return Clib::clamp_convert<u16>( (s16)-1 ); }, 0, "s16 -1->u16" );
   UnitTest( []() { return Clib::clamp_convert<u8>( (u16)0xffff ); }, 0xff, "u16 0xffff->u8" );
-  UnitTest( []() { return Clib::clamp_convert<s64>( (u64)0xffff ); }, 0xffff, "u64 0xffff->s64" );
-  auto i = static_cast<std::common_type_t<u64, s64>>( 0 );
-  INFO_PRINTLN( "s16,u16 {}", typeid( i ).name() );
-  u64 u;
-  INFO_PRINTLN( "u16 {}", typeid( u ).name() );
-  s64 s;
-  INFO_PRINTLN( "s16 {}", typeid( s ).name() );
+  UnitTest( []() { return Clib::clamp_convert<s8>( (s16)-1000 ); }, -128, "s16 -1000->s8" );
 }
 }  // namespace Testing
 }  // namespace Pol
