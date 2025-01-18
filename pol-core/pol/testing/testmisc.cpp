@@ -377,20 +377,11 @@ void clamp_test()
 {
   UnitTest( []() { return Clib::clamp_convert<s32>( (u32)0xffffFFFF ); }, 0x7fffFFFF,
             "u32 0xffffFFFF->s32" );
-  UnitTest( []() { return Clib::clamp_convert<u32>( (s32)-1 ); }, 0, "s32 -1->s32" );
+  UnitTest( []() { return Clib::clamp_convert<u32>( (s32)-1 ); }, 0, "s32 -1->u32" );
   UnitTest( []() { return Clib::clamp_convert<s16>( (u16)0xffff ); }, 0x7fff, "u16 0xFFFF->s16" );
   UnitTest( []() { return Clib::clamp_convert<u16>( (s16)-1 ); }, 0, "s16 -1->u16" );
   UnitTest( []() { return Clib::clamp_convert<u8>( (u16)0xffff ); }, 0xff, "u16 0xffff->u8" );
   UnitTest( []() { return Clib::clamp_convert<s8>( (s16)-1000 ); }, -128, "s16 -1000->s8" );
-  auto c = static_cast<std::common_type_t<u32, s32>>( 0 );
-  u32 u;
-  s32 s;
-  INFO_PRINTLN( "u32 {} s32 {} = {}", typeid( u ).name(), typeid( s ).name(), typeid( c ).name() );
-  auto c_ = static_cast<std::common_type_t<u16, s16>>( 0 );
-  u16 u_;
-  s16 s_;
-  INFO_PRINTLN( "u16 {} s16 {} = {}", typeid( u_ ).name(), typeid( s_ ).name(),
-                typeid( c_ ).name() );
 }
 }  // namespace Testing
 }  // namespace Pol

@@ -111,18 +111,24 @@ inline std::tm localtime( const std::time_t& t )
 template <typename T, typename U>
 inline T clamp_convert( U v )
 {
+  constexpr auto t_min = std::numeric_limits<T>::min();
+  constexpr auto t_max = std::numeric_limits<T>::max();
   // easy case T min max is contained in U eg from int to short
-  if constexpr ( std::numeric_limits<T>::min() >= std::numeric_limits<U>::min() &&
-                 std::numeric_limits<T>::max() <= std::numeric_limits<U>::max() )
-    return static_cast<T>( std::clamp( v, static_cast<U>( std::numeric_limits<T>::min() ),
-                                       static_cast<U>( std::numeric_limits<T>::max() ) ) );
+  if constexpr ( t_min >= std::numeric_limits<U>::min() && t_max <= std::numeric_limits<U>::max() )
+    return static_cast<T>( std::clamp( v, static_cast<U>( t_min ), static_cast<U>( t_max ) ) );
 
-  typedef std::common_type_t<U, T> common;  // common is the next highest
   static_assert( !( (std::is_same_v<U, u64> || std::is_same_v<U, s64>)&&(
       std::is_same_v<T, u64> || std::is_same_v<T, s64>)) );  // for 64bit this would not work
 
-  return static_cast<T>( std::clamp( static_cast<common>( v ),
-                                     static_cast<common>( std::numeric_limits<T>::min() ),
-                                     static_cast<common>( std::numeric_limits<T>::max() ) ) );
+  // common_type will not use 64bit integer
+  if constexpr ( (std::is_same_v<U, u32> || std::is_same_V<T, u32>)&&(std::is_same_v<U, s32> ||
+                                                                      std::is_same_v<T, s32>))
+    return static_cast<T>(
+        std::clamp( static_cast<s64>( v ), static_cast<s64>( t_min ), static_cast<s64>( t_max ) ) );
+
+
+  typedef std::common_type_t<U, T> common;
+  return static_cast<T>( std::clamp( static_cast<common>( v ), static_cast<common>( t_min ),
+                                     static_cast<common>( t_max ) ) );
 }
 }  // namespace Pol::Clib
