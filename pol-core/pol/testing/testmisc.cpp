@@ -386,6 +386,11 @@ void clamp_test()
   u32 u;
   s32 s;
   INFO_PRINTLN( "u32 {} s32 {} = {}", typeid( u ).name(), typeid( s ).name(), typeid( c ).name() );
+  auto c_ = static_cast<std::common_type_t<u16, s16>>( 0 );
+  u16 u_;
+  s16 s_;
+  INFO_PRINTLN( "u16 {} s16 {} = {}", typeid( u_ ).name(), typeid( s_ ).name(),
+                typeid( c_ ).name() );
 }
 }  // namespace Testing
 }  // namespace Pol
