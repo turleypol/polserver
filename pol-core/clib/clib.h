@@ -4,8 +4,7 @@
  */
 
 
-#ifndef CLIB_CLIB_H
-#define CLIB_CLIB_H
+#pragma once
 
 #include "pol_global_config.h"
 #include <algorithm>
@@ -26,13 +25,11 @@
 #include <ctime>
 
 #define ms_to_clocks( ms ) ( ms * CLOCKS_PER_SEC / 1000 )
-namespace Pol
-{
 /**
  * CLib namespace is for functions that a general app may need,
  * not necessarily related to POL at all (string manipulation, for example)
  */
-namespace Clib
+namespace Pol::Clib
 {
 /** make an always null terminated string in maxlen characters */
 char* stracpy( char* dest, const char* src, size_t maxlen );
@@ -113,10 +110,9 @@ inline std::tm localtime( const std::time_t& t )
 template <typename T, typename U>
 inline T clamp_convert( U v )
 {
+  static_assert( std::numeric_limits<T>::min() >= std::numeric_limits<U>::min() );
+  static_assert( std::numeric_limits<T>::max() <= std::numeric_limits<U>::max() );
   return static_cast<T>( std::clamp( v, static_cast<U>( std::numeric_limits<T>::min() ),
                                      static_cast<U>( std::numeric_limits<T>::max() ) ) );
 }
-}  // namespace Clib
-}  // namespace Pol
-
-#endif  // CLIB_CLIB_H
+}  // namespace Pol::Clib
