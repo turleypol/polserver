@@ -379,6 +379,12 @@ void clamp_test()
   UnitTest( []() { return Clib::clamp_convert<u16>( (s16)-1 ); }, 0, "s16 -1->u16" );
   UnitTest( []() { return Clib::clamp_convert<u8>( (u16)0xffff ); }, 0xff, "u16 0xffff->u8" );
   UnitTest( []() { return Clib::clamp_convert<s64>( (u64)0xffff ); }, 0xffff, "u64 0xffff->s64" );
+  auto i = static_cast<std::common_type_t<u64, s64>>( 0 );
+  INFO_PRINTLN( "s16,u16 {}", typeid( i ).name() );
+  u64 u;
+  INFO_PRINTLN( "u16 {}", typeid( u ).name() );
+  s64 s;
+  INFO_PRINTLN( "s16 {}", typeid( s ).name() );
 }
 }  // namespace Testing
 }  // namespace Pol
