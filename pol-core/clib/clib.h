@@ -121,7 +121,7 @@ inline T clamp_convert( U v )
       std::is_same_v<T, u64> || std::is_same_v<T, s64>)) );  // for 64bit this would not work
 
   // common_type will not use 64bit integer
-  if constexpr ( (std::is_same_v<U, u32> || std::is_same_V<T, u32>)&&(std::is_same_v<U, s32> ||
+  if constexpr ( (std::is_same_v<U, u32> || std::is_same_v<T, u32>)&&(std::is_same_v<U, s32> ||
                                                                       std::is_same_v<T, s32>))
     return static_cast<T>(
         std::clamp( static_cast<s64>( v ), static_cast<s64>( t_min ), static_cast<s64>( t_max ) ) );
