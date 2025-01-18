@@ -375,12 +375,9 @@ void test_curlfeatures()
 
 void clamp_test()
 {
-  UnitTest(
-      return []() { Clib::clamp_convert<s16>( (u16)0xFFFF ); }, 0x3fff, "u16->s16" );
-  UnitTest(
-      return []() { Clib::clamp_convert<u16>( (s16)-1 ); }, 0, "s16->u16" );
-  UnitTest(
-      return []() { Clib::clamp_convert<u8>( (u16)0xffff ); }, 0xff, "u16->u8" );
+  UnitTest( []() { return Clib::clamp_convert<s16>( (u16)0xFFFF ); }, 0x3fff, "u16->s16" );
+  UnitTest( []() { return Clib::clamp_convert<u16>( (s16)-1 ); }, 0, "s16->u16" );
+  UnitTest( []() { return Clib::clamp_convert<u8>( (u16)0xffff ); }, 0xff, "u16->u8" );
 }
 }  // namespace Testing
 }  // namespace Pol
