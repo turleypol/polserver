@@ -117,12 +117,12 @@ inline T clamp_convert( U v )
   if constexpr ( t_min >= std::numeric_limits<U>::min() && t_max <= std::numeric_limits<U>::max() )
     return static_cast<T>( std::clamp( v, static_cast<U>( t_min ), static_cast<U>( t_max ) ) );
 
-  static_assert( !( (std::is_same_v<U, u64> || std::is_same_v<U, s64>)&&(
-      std::is_same_v<T, u64> || std::is_same_v<T, s64>)) );  // for 64bit this would not work
-
+  // for 64bit this would not work
+  static_assert( !( ( std::is_same<U, u64>::value || std::is_same<U, s64>::value ) &&
+                    ( std::is_same<T, u64>::value || std::is_same<T, s64>::value ) ) );
   // common_type will not use 64bit integer
-  if constexpr ( (std::is_same_v<U, u32> || std::is_same_v<T, u32>)&&(std::is_same_v<U, s32> ||
-                                                                      std::is_same_v<T, s32>))
+  if constexpr ( ( std::is_same<U, u32>::value || std::is_same<T, u32>::value ) &&
+                 ( std::is_same<U, s32>::value || std::is_same<T, s32>::value ) )
     return static_cast<T>(
         std::clamp( static_cast<s64>( v ), static_cast<s64>( t_min ), static_cast<s64>( t_max ) ) );
 

@@ -382,6 +382,8 @@ void clamp_test()
   UnitTest( []() { return Clib::clamp_convert<u16>( (s16)-1 ); }, 0, "s16 -1->u16" );
   UnitTest( []() { return Clib::clamp_convert<u8>( (u16)0xffff ); }, 0xff, "u16 0xffff->u8" );
   UnitTest( []() { return Clib::clamp_convert<s8>( (s16)-1000 ); }, -128, "s16 -1000->s8" );
+  UnitTest( []() { return Clib::clamp_convert<s16>( (s8)-100 ); }, -100, "s8 -100->s16" );
+  UnitTest( []() { return Clib::clamp_convert<u16>( (u8)100 ); }, 100, "u8 100->u16" );
 }
 }  // namespace Testing
 }  // namespace Pol
