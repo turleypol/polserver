@@ -45,7 +45,6 @@ print( abs( -1.5 ) == 1.5 );
 print( "log10" );
 print( log10( 10 ) == 1 );
 print( log10( 100 ) == 2 );
-
 print( "loge" );
 print( loge( pow( conste(), 2 ) ) == 2 );
 
@@ -53,3 +52,10 @@ print( "ceil" );
 print( ceil( 1.5 ) == 2 );
 print( "floor" );
 print( floor( 1.5 ) == 1 );
+
+print( "radtodeg" );
+print( radtodeg( 2 * constpi() ) == 360 );
+print( radtodeg( constpi() ) == 180 );
+print( "degtorad" );
+print( degtorad( 360 ) == 2 * constpi() );
+print( degtorad( 180 ) == constpi() );
