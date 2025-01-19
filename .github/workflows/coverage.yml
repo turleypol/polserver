@@ -128,6 +128,9 @@ jobs:
           fastcov -g gcov-${{ matrix.config.compiler-version }} -t PolCore --lcov -i pol-core -o pol-core.info
           genhtml --demangle-cpp pol-core.info -o coverage
           cmake -E tar c coverage.zip --format=zip coverage
+      - name: list
+        if: failure()
+        run: ls bin-build
       - name: Upload shard test log
         uses: actions/upload-artifact@v4
         with:
