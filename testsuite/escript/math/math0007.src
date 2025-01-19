@@ -1,0 +1,55 @@
+use math;
+
+print( "sin" );
+print( sin( 0 ) == 0 );
+print( sin( PI() / 2 ) == 1 );
+print( "cos" );
+print( cos( 0 ) == 1 );
+print( cos( constpi() / 2 ) == 0 );
+print( "tan" );
+print( tan( 0 ) == 0 );
+print( tan( constpi() / 4 ) == 1 );
+
+print( "asin" );
+print( asin( 0 ) == 0 );
+print( asin( 1 ) == constpi() / 2 );
+print( "acos" );
+print( acos( 0 ) == constpi() / 2 );
+print( acos( 1 ) == 0 );
+print( "atan" );
+print( atan( 0 ) == 1 );
+print( atan( constpi() / 4 ) == 0 );
+
+print( "pow" );
+print( pow( 3, 2 ) == 9 );
+print( pow( 5, 2 ) == 25 );
+print( "sqrt" );
+print( sqrt( 9 ) == 3 );
+print( sqrt( 25 ) == 5 );
+print( "root" );
+print( root( 27, 3 ) == 3 );
+
+print( "min" );
+print( min( 3, 1 ) == 1 );
+print( min( 2.0, 3 ) == 2.0 );
+print( min( { 5, 4, 1 } ) == 1 );
+print( "max" );
+print( max( 3, 1 ) == 3 );
+print( max( 2.0, 3 ) == 3 );
+print( max( { 5, 4, 1 } ) == 5 );
+
+print( "abs" );
+print( abs( -1 ) == 1 );
+print( abs( -1.5 ) == 1.5 );
+
+print( "log10" );
+print( log10( 10 ) == 1 );
+print( log10( 100 ) == 2 );
+
+print( "loge" );
+print( loge( pow( conste(), 2 ) ) == conste() );
+
+print( "ceil" );
+print( ceil( 1.5 ) == 2 );
+print( "floor" );
+print( floor( 1.5 ) == 1 );
