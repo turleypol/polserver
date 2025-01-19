@@ -17,8 +17,8 @@ print( "acos" );
 print( acos( 0 ) == constpi() / 2 );
 print( acos( 1 ) == 0 );
 print( "atan" );
-print( atan( 0 )  );
-print( atan( constpi() / 4 ) );
+print( atan( constpi()/2 )  );//0
+print( atan( constpi() / 4 ) );//1
 
 print( "pow" );
 print( pow( 3, 2 ) == 9 );
@@ -47,7 +47,7 @@ print( log10( 10 ) == 1 );
 print( log10( 100 ) == 2 );
 
 print( "loge" );
-print( loge( pow( conste(), 2 ) )  );
+print( loge( pow( conste(), 2 ) ) ==2 );
 
 print( "ceil" );
 print( ceil( 1.5 ) == 2 );
