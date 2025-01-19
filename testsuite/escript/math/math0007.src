@@ -2,7 +2,7 @@ use math;
 
 print( "sin" );
 print( sin( 0 ) == 0 );
-print( sin( PI() / 2 ) == 1 );
+print( sin( constpi() / 2 ) == 1 );
 print( "cos" );
 print( cos( 0 ) == 1 );
 print( cos( constpi() / 2 ) == 0 );
