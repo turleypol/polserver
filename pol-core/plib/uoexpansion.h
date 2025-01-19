@@ -37,6 +37,22 @@ enum class B9Feature : u32
   HSA = 0x20000,          // HSA features (7.0.9.0)
   GothicTiles = 0x40000,  // Gothic housing tiles (7.0.9.0)
   RusticTiles = 0x80000,  // Rustic housing tiles (7.0.9.0)
+  JungleTiles = 0x100000,
+  ShadowGuardTiles = 0x200000,
+  TOL = 0x400000,
+};
+
+enum class DefaultB9Feature : u32
+{
+  T2A = B9Feature::T2A,                                                          // 0x1
+  LBR = B9Feature::Renaissance,                                                  // 0x2
+  AOS = B9Feature::T2A | B9Feature::LBR | B9Feature::AOS | B9Feature::LiveAcct,  // 0x801B
+  SE = AOS | B9Feature::SE,                                                      // 0x805B
+  ML = SE | B9Feature::ML,                                                       // 0x80DB
+  KR = ML | B9Feature::CrystalShadowTiles | B9Feature::Splash10thAge,            // 0x86DB
+  SA = KR | B9Feature::ThirdDawn | B9Feature::Splash8thAge | B9Feature::SA,      // 0x187DF
+  HSA = SA | B9Feature::HSA,  // 0x387DF // TODO Gothic + Rustic?
+  TOL = HSA | B9Feature::JungleTiles | B9Feature::ShadowGuardTiles | B9Feature::TOL,  // 0x7387DF
 };
 
 enum class A9Feature : u32
@@ -77,8 +93,8 @@ enum class ExpansionVersion : u8
   KR,
   SA,
   HSA,
-
-  LastVersion = HSA
+  TOL,
+  LastVersion = TOL
 };
 const int numExpansions = static_cast<int>( ExpansionVersion::LastVersion ) + 1;
 const char* getExpansionName( ExpansionVersion x );

@@ -55,6 +55,7 @@
 #include "../plib/mapcell.h"
 #include "../plib/objtype.h"
 #include "../plib/systemstate.h"
+#include "../plib/uoexpansion.h"
 #include "accounts/account.h"
 #include "containr.h"
 #include "fnsearch.h"
@@ -1940,6 +1941,7 @@ void login_complete( Client* c )
 
 void send_feature_enable( Client* client )
 {
+  using namespace Plib;
   u32 clientflag = 0;
   switch ( client->acct->uo_expansion_flag() )
   {
@@ -1994,13 +1996,13 @@ void send_feature_enable( Client* client )
   {
     if ( Plib::systemstate.config.character_slots == 7 )
     {
-      clientflag |= 0x1000;   // 7th & 6th character flag (B9 Packet)
-      clientflag &= ~0x0004;  // Disable Third Dawn?
+      clientflag |= B9Feature::Has7thSlot;  // 7th & 6th character flag (B9 Packet)
+      clientflag &= ~B9Feature::ThirdDawn;  // Disable Third Dawn?
     }
     else if ( Plib::systemstate.config.character_slots == 6 )
     {
-      clientflag |= 0x0020;  // 6th character flag (B9 Packet)
-      clientflag &= ~0x0004;
+      clientflag |= B9Feature::Has6thSlot;  // 6th character flag (B9 Packet)
+      clientflag &= ~B9Feature::ThirdDawn;
     }
   }
 
@@ -2008,7 +2010,7 @@ void send_feature_enable( Client* client )
   if ( client->UOExpansionFlag & KR )
   {
     if ( settingsManager.ssopt.support_faces == 2 )
-      clientflag |= 0x2000;
+      clientflag |= B9Feature::KRFaces;
   }
 
   PktHelper::PacketOut<PktOut_B9> msg;
