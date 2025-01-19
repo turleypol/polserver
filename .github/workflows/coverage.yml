@@ -130,7 +130,9 @@ jobs:
           cmake -E tar c coverage.zip --format=zip coverage
       - name: list
         if: failure()
-        run: ls bin-build
+        run: |
+          ls bin-build
+          cat bin-build/pol-core.info
       - name: Upload shard test log
         uses: actions/upload-artifact@v4
         with:
