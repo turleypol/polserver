@@ -42,6 +42,10 @@ enum class B9Feature : u32
   TOL = 0x400000,
 };
 
+inline u32 operator|( B9Feature a, B9Feature b )
+{
+  return static_cast<u32>( a ) | static_cast<u32>( b );
+}
 enum class DefaultB9Feature : u32
 {
   T2A = B9Feature::T2A,                                                          // 0x1
