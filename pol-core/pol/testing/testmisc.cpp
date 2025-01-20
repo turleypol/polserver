@@ -18,6 +18,7 @@
 #include "testenv.h"
 
 #include <curl/curl.h>
+#include <type_traits>
 
 namespace Pol
 {
@@ -387,6 +388,18 @@ void clamp_test()
   UnitTest( []() { return Clib::clamp_convert<u64>( (u8)100 ); }, 100u, "u8 100->u64" );
   UnitTest( []() { return Clib::clamp_convert<s64>( (s8)-100 ); }, -100u, "s8 -100->s64" );
   UnitTest( []() { return Clib::clamp_convert<u64>( (s8)-100 ); }, 0u, "s8 -100->u64" );
+  {
+    auto c = static_cast<std::common_type_t<s64, s8>>( 0 );
+    s64 a;
+    s8 b;
+    INFO_PRINTLN( "{} of {},{}", typeid( c ).name(), typeid( a ).name(), typeid( b ).name() );
+  }
+  {
+    auto c = static_cast<std::common_type_t<u64, s8>>( 0 );
+    u64 a;
+    s8 b;
+    INFO_PRINTLN( "{} of {},{}", typeid( c ).name(), typeid( a ).name(), typeid( b ).name() );
+  }
 }
 }  // namespace Testing
 }  // namespace Pol
