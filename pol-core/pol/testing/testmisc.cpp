@@ -413,7 +413,28 @@ void clamp_test()
 #define T_MIN_MIN( to, from )                                                             \
   UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); }, \
             std::numeric_limits<to>::min(), #from " min->" #to )
+#define T_MAX_MAX( to, from )                                                             \
+  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::max() ); }, \
+            std::numeric_limits<to>::max(), #from " max->" #to )
+#define T_ZERO_MIN( to, from )                                                            \
+  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); }, \
+            static_cast<to>( 0 ), #from " min->" #to )
+  T_MIN_MIN( s8, s8 );
   T_MIN_MIN( s8, s16 );
+  T_MIN_MIN( s8, s32 );
+  T_MIN_MIN( s8, s64 );
+  T_MAX_MAX( s8, s8 );
+  T_MAX_MAX( s8, s16 );
+  T_MAX_MAX( s8, s32 );
+  T_MAX_MAX( s8, s64 );
+  T_ZERO_MIN( s8, u8 );
+  T_ZERO_MIN( s8, u16 );
+  T_ZERO_MIN( s8, u32 );
+  T_ZERO_MIN( s8, u64 );
+  T_MAX_MAX( s8, u8 );
+  T_MAX_MAX( s8, u16 );
+  T_MAX_MAX( s8, u32 );
+  T_MAX_MAX( s8, u64 );
 }
 }  // namespace Testing
 }  // namespace Pol
