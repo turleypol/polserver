@@ -377,7 +377,7 @@ void test_curlfeatures()
 
 void clamp_test()
 {
-  // "from" start == "to" res
+  // "from" start -> "to" res
 #define T_CLAMP( from, start, to, res )                             \
   UnitTest( []() { return Clib::clamp_convert<to>( start ); }, res, \
             fmt::format( " {:#x} " #from " -> {:#x} " #to, start, res ) )

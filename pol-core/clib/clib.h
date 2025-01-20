@@ -141,6 +141,7 @@ inline To clamp_convert( From v )
   if constexpr ( std::is_unsigned<common>::value && std::is_signed<To>::value )
     return static_cast<To>( std::clamp( static_cast<common>( v ), static_cast<common>( 0 ),
                                         static_cast<common>( t_max ) ) );
+  // eg s8 to u32 cap at zero
   if constexpr ( std::is_signed<From>::value && std::is_unsigned<To>::value )
     return v <= 0 ? 0u
                   : static_cast<To>( std::clamp( static_cast<common>( v ), static_cast<common>( 0 ),
