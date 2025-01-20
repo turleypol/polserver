@@ -386,8 +386,11 @@ void clamp_test()
   UnitTest( []() { return Clib::clamp_convert<s16>( (s8)-100 ); }, -100, "s8 -100->s16" );
   UnitTest( []() { return Clib::clamp_convert<u16>( (u8)100 ); }, 100u, "u8 100->u16" );
   UnitTest( []() { return Clib::clamp_convert<u64>( (u8)100 ); }, 100u, "u8 100->u64" );
-  UnitTest( []() { return Clib::clamp_convert<s64>( (s8)-100 ); }, -100u, "s8 -100->s64" );
+  UnitTest( []() { return Clib::clamp_convert<s64>( (s8)-100 ); }, -100, "s8 -100->s64" );
   UnitTest( []() { return Clib::clamp_convert<u64>( (s8)-100 ); }, 0u, "s8 -100->u64" );
+  UnitTest( []() { return Clib::clamp_convert<u64>( (s64)-100 ); }, 0u, "s64 -100->u64" );
+  UnitTest( []() { return Clib::clamp_convert<s64>( (u64)-1 ); }, std::numeric_limits<s64>::max(),
+            "u64 max->s64" );
   {
     auto c = static_cast<std::common_type_t<s64, s8>>( 0 );
     s64 a;

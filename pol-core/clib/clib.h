@@ -117,9 +117,11 @@ inline T clamp_convert( U v )
   if constexpr ( t_min >= std::numeric_limits<U>::min() && t_max <= std::numeric_limits<U>::max() )
     return static_cast<T>( std::clamp( v, static_cast<U>( t_min ), static_cast<U>( t_max ) ) );
 
-  // for 64bit this would not work
-  static_assert( !( ( std::is_same<U, u64>::value || std::is_same<U, s64>::value ) &&
-                    ( std::is_same<T, u64>::value || std::is_same<T, s64>::value ) ) );
+  if constexpr ( std::is_same<T, u64>::value )
+    return v < 0 ? 0u : static_cast<u64>( v );
+  if constexpr ( std::is_same<T, s64>::value && std::is_same<U, u64>::value )
+    return v > static_cast<u64>( t_max ) ? static_cast<u64>( t_max ) : static_cast<s64>( v );
+
   // common_type will not use 64bit integer
   if constexpr ( ( std::is_same<U, u32>::value || std::is_same<T, u32>::value ) &&
                  ( std::is_same<U, s32>::value || std::is_same<T, s32>::value ) )
