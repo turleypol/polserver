@@ -46,17 +46,23 @@ inline u32 operator|( B9Feature a, B9Feature b )
 {
   return static_cast<u32>( a ) | static_cast<u32>( b );
 }
+inline u32 operator|( u32 a, B9Feature b )
+{
+  return a | static_cast<u32>( b );
+}
 enum class DefaultB9Feature : u32
 {
-  T2A = B9Feature::T2A,                                                          // 0x1
-  LBR = B9Feature::Renaissance,                                                  // 0x2
-  AOS = B9Feature::T2A | B9Feature::LBR | B9Feature::AOS | B9Feature::LiveAcct,  // 0x801B
-  SE = AOS | B9Feature::SE,                                                      // 0x805B
-  ML = SE | B9Feature::ML,                                                       // 0x80DB
-  KR = ML | B9Feature::CrystalShadowTiles | B9Feature::Splash10thAge,            // 0x86DB
-  SA = KR | B9Feature::ThirdDawn | B9Feature::Splash8thAge | B9Feature::SA,      // 0x187DF
-  HSA = SA | B9Feature::HSA,  // 0x387DF // TODO Gothic + Rustic?
-  TOL = HSA | B9Feature::JungleTiles | B9Feature::ShadowGuardTiles | B9Feature::TOL,  // 0x7387DF
+  T2A = static_cast<u32>( B9Feature::T2A ),                                                // 0x1
+  LBR = static_cast<u32>( B9Feature::Renaissance ),                                        // 0x2
+  AOS = B9Feature::T2A | B9Feature::LBR | B9Feature::AOS | B9Feature::LiveAcct,            // 0x801B
+  SE = static_cast<u32>( AOS ) | B9Feature::SE,                                            // 0x805B
+  ML = static_cast<u32>( SE ) | B9Feature::ML,                                             // 0x80DB
+  KR = static_cast<u32>( ML ) | B9Feature::CrystalShadowTiles | B9Feature::Splash10thAge,  // 0x86DB
+  SA = static_cast<u32>( KR ) | B9Feature::ThirdDawn | B9Feature::Splash8thAge |
+       B9Feature::SA,                             // 0x187DF
+  HSA = static_cast<u32>( SA ) | B9Feature::HSA,  // 0x387DF // TODO Gothic + Rustic?
+  TOL = static_cast<u32>( HSA ) | B9Feature::JungleTiles | B9Feature::ShadowGuardTiles |
+        B9Feature::TOL,  // 0x7387DF
 };
 
 enum class A9Feature : u32
