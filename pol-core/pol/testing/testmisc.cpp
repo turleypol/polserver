@@ -411,10 +411,10 @@ void clamp_test()
             std::numeric_limits<s8>::min(), "s32 min->s8" );
   UnitTest( []() { return Clib::clamp_convert<s8>( std::numeric_limits<s64>::min() ); },
             std::numeric_limits<s8>::min(), "s64 min->s8" );
-#define T_MIN_MIN( to, from )                                                               \
-  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); },   \
-            std::numeric_limits<to>::min(),                                                 \
-            fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numeric_limit<from>::min(), \
+#define T_MIN_MIN( to, from )                                                                  \
+  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); },      \
+            std::numeric_limits<to>::min(),                                                    \
+            fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numerical_limits<from>::min(), \
                          std::numeric_limits<to> min() ) )
 #define T_MAX_MAX( to, from )                                                                  \
   UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::max() ); },      \
