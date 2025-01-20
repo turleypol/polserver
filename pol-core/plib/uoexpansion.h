@@ -42,11 +42,11 @@ enum class B9Feature : u32
   TOL = 0x400000,
 };
 
-inline u32 operator|( B9Feature a, B9Feature b )
+inline constexpr u32 operator|( B9Feature a, B9Feature b )
 {
   return static_cast<u32>( a ) | static_cast<u32>( b );
 }
-inline u32 operator|( u32 a, B9Feature b )
+inline constexpr u32 operator|( u32 a, B9Feature b )
 {
   return a | static_cast<u32>( b );
 }
