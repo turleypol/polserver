@@ -1996,13 +1996,14 @@ void send_feature_enable( Client* client )
   {
     if ( Plib::systemstate.config.character_slots == 7 )
     {
-      clientflag |= B9Feature::Has7thSlot;  // 7th & 6th character flag (B9 Packet)
-      clientflag &= ~B9Feature::ThirdDawn;  // Disable Third Dawn?
+      clientflag |=
+          static_cast<u32>( B9Feature::Has7thSlot );  // 7th & 6th character flag (B9 Packet)
+      clientflag &= ~static_cast<u32>( B9Feature::ThirdDawn );  // Disable Third Dawn?
     }
     else if ( Plib::systemstate.config.character_slots == 6 )
     {
-      clientflag |= B9Feature::Has6thSlot;  // 6th character flag (B9 Packet)
-      clientflag &= ~B9Feature::ThirdDawn;
+      clientflag |= static_cast<u32>( B9Feature::Has6thSlot );  // 6th character flag (B9 Packet)
+      clientflag &= ~static_cast<u32>( B9Feature::ThirdDawn );
     }
   }
 
@@ -2010,7 +2011,7 @@ void send_feature_enable( Client* client )
   if ( client->UOExpansionFlag & KR )
   {
     if ( settingsManager.ssopt.support_faces == 2 )
-      clientflag |= B9Feature::KRFaces;
+      clientflag |= static_cast<u32>( B9Feature::KRFaces );
   }
 
   PktHelper::PacketOut<PktOut_B9> msg;

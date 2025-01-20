@@ -162,7 +162,7 @@ size_t Account::estimatedSize() const
 
 Mobile::Character* Account::get_character( int index )
 {
-  if ( index < 0 || index > characters_.size() - 1 )
+  if ( index < 0 || static_cast<size_t>( index ) > characters_.size() - 1 )
     return nullptr;
   return characters_.at( index ).get();
 }
