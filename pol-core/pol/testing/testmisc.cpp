@@ -403,6 +403,17 @@ void clamp_test()
     s8 b;
     INFO_PRINTLN( "{} of {},{}", typeid( c ).name(), typeid( a ).name(), typeid( b ).name() );
   }
+
+  UnitTest( []() { return Clib::clamp_convert<s8>( std::numeric_limits<s16>::min() ); },
+            std::numeric_limits<s8>::min(), "s16 min->s8" );
+  UnitTest( []() { return Clib::clamp_convert<s8>( std::numeric_limits<s32>::min() ); },
+            std::numeric_limits<s8>::min(), "s32 min->s8" );
+  UnitTest( []() { return Clib::clamp_convert<s8>( std::numeric_limits<s64>::min() ); },
+            std::numeric_limits<s8>::min(), "s64 min->s8" );
+#define T_MIN_MIN( to, from )                                                             \
+  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); }, \
+            std::numeric_limits<to>::min(), from " min->" to )
+  T_MIN_MIN( s8, s16 );
 }
 }  // namespace Testing
 }  // namespace Pol
