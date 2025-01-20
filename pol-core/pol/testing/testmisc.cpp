@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <array>
 #include <cstring>
+#include <limits>
 #include <string>
 
 #include "../../clib/logfacility.h"
@@ -410,15 +411,21 @@ void clamp_test()
             std::numeric_limits<s8>::min(), "s32 min->s8" );
   UnitTest( []() { return Clib::clamp_convert<s8>( std::numeric_limits<s64>::min() ); },
             std::numeric_limits<s8>::min(), "s64 min->s8" );
-#define T_MIN_MIN( to, from )                                                             \
-  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); }, \
-            std::numeric_limits<to>::min(), #from " min->" #to )
-#define T_MAX_MAX( to, from )                                                             \
-  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::max() ); }, \
-            std::numeric_limits<to>::max(), #from " max->" #to )
-#define T_ZERO_MIN( to, from )                                                            \
-  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); }, \
-            static_cast<to>( 0 ), #from " min->" #to )
+#define T_MIN_MIN( to, from )                                                               \
+  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); },   \
+            std::numeric_limits<to>::min(),                                                 \
+            fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numeric_limit<from>::min(), \
+                         std::numeric_limits<to> min() ) )
+#define T_MAX_MAX( to, from )                                                                  \
+  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::max() ); },      \
+            std::numeric_limits<to>::max(),                                                    \
+            fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numerical_limits<from>::max(), \
+                         std::numeric_limits<to> max() ) )
+#define T_ZERO_MIN( to, from )                                                      \
+  UnitTest(                                                                         \
+      []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); }, \
+      static_cast<to>( 0 ),                                                         \
+      fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numerical_limits<from>::min(), 0 ) )
   T_MIN_MIN( s8, s8 );
   T_MIN_MIN( s8, s16 );
   T_MIN_MIN( s8, s32 );
@@ -435,6 +442,58 @@ void clamp_test()
   T_MAX_MAX( s8, u16 );
   T_MAX_MAX( s8, u32 );
   T_MAX_MAX( s8, u64 );
+
+
+  // T_MIN_MIN( s16, s8 );
+  T_MIN_MIN( s16, s16 );
+  T_MIN_MIN( s16, s32 );
+  T_MIN_MIN( s16, s64 );
+  //  T_MAX_MAX( s16, s8 );
+  T_MAX_MAX( s16, s16 );
+  T_MAX_MAX( s16, s32 );
+  T_MAX_MAX( s16, s64 );
+  //  T_ZERO_MIN( s16, u8 );
+  T_ZERO_MIN( s16, u16 );
+  T_ZERO_MIN( s16, u32 );
+  T_ZERO_MIN( s16, u64 );
+  //  T_MAX_MAX( s16, u8 );
+  T_MAX_MAX( s16, u16 );
+  T_MAX_MAX( s16, u32 );
+  T_MAX_MAX( s16, u64 );
+
+  // T_MIN_MIN( s32, s8 );
+  //  T_MIN_MIN( s32, s16 );
+  T_MIN_MIN( s32, s32 );
+  T_MIN_MIN( s32, s64 );
+  //  T_MAX_MAX( s32, s8 );
+  //  T_MAX_MAX( s32, s16 );
+  T_MAX_MAX( s32, s32 );
+  T_MAX_MAX( s32, s64 );
+  //  T_ZERO_MIN( s32, u8 );
+  // T_ZERO_MIN( s32, u16 );
+  T_ZERO_MIN( s32, u32 );
+  T_ZERO_MIN( s32, u64 );
+  //  T_MAX_MAX( s32, u8 );
+  //  T_MAX_MAX( s32, u16 );
+  T_MAX_MAX( s32, u32 );
+  T_MAX_MAX( s32, u64 );
+
+  // T_MIN_MIN( s64, s8 );
+  //  T_MIN_MIN( s64, s16 );
+  //  T_MIN_MIN( s64, s32 );
+  T_MIN_MIN( s64, s64 );
+  //  T_MAX_MAX( s64, s8 );
+  //  T_MAX_MAX( s64, s16 );
+  //  T_MAX_MAX( s64, s32 );
+  T_MAX_MAX( s64, s64 );
+  //  T_ZERO_MIN( s64, u8 );
+  // T_ZERO_MIN( s64, u16 );
+  //  T_ZERO_MIN( s64, u32 );
+  T_ZERO_MIN( s64, u64 );
+  //  T_MAX_MAX( s64, u8 );
+  //  T_MAX_MAX( s64, u16 );
+  //  T_MAX_MAX( s64, u32 );
+  T_MAX_MAX( s64, u64 );
 }
 }  // namespace Testing
 }  // namespace Pol
