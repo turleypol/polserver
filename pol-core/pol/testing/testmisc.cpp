@@ -457,76 +457,72 @@ void clamp_test()
   T_CLAMP( s16, LMAX( s16 ), s8, LMAX( s8 ) );
   T_CLAMP( s32, LMAX( s32 ), s8, LMAX( s8 ) );
   T_CLAMP( s64, LMAX( s64 ), s8, LMAX( s8 ) );
-  T_MIN_MIN( s8, s8 );
-  T_MIN_MIN( s8, s16 );
-  T_MIN_MIN( s8, s32 );
-  T_MIN_MIN( s8, s64 );
-  T_MAX_MAX( s8, s8 );
-  T_MAX_MAX( s8, s16 );
-  T_MAX_MAX( s8, s32 );
-  T_MAX_MAX( s8, s64 );
-  T_ZERO_MIN( s8, u8 );
-  T_ZERO_MIN( s8, u16 );
-  T_ZERO_MIN( s8, u32 );
-  T_ZERO_MIN( s8, u64 );
-  T_MAX_MAX( s8, u8 );
-  T_MAX_MAX( s8, u16 );
-  T_MAX_MAX( s8, u32 );
-  T_MAX_MAX( s8, u64 );
+
+  T_CLAMP( u8, LMIN( u8 ), s8, 0 );
+  T_CLAMP( u16, LMIN( u16 ), s8, 0 );
+  T_CLAMP( u32, LMIN( u32 ), s8, 0 );
+  T_CLAMP( u64, LMIN( u64 ), s8, 0 );
+  T_CLAMP( u8, LMAX( u8 ), s8, LMAX( s8 ) );
+  T_CLAMP( u16, LMAX( u16 ), s8, LMAX( s8 ) );
+  T_CLAMP( u32, LMAX( u32 ), s8, LMAX( s8 ) );
+  T_CLAMP( u64, LMAX( u64 ), s8, LMAX( s8 ) );
 
   // s16 combinations
-  T_RES_MIN( s16, s8, std::numeric_limits<s8>::min() );
-  T_MIN_MIN( s16, s16 );
-  T_MIN_MIN( s16, s32 );
-  T_MIN_MIN( s16, s64 );
-  T_RES_MAX( s16, s8, std::numeric_limits<s8>::max() );
-  T_MAX_MAX( s16, s16 );
-  T_MAX_MAX( s16, s32 );
-  T_MAX_MAX( s16, s64 );
-  T_ZERO_MIN( s16, u8 );
-  T_ZERO_MIN( s16, u16 );
-  T_ZERO_MIN( s16, u32 );
-  T_ZERO_MIN( s16, u64 );
-  T_RES_MAX( s16, u8, (s16)std::numeric_limits<u8>::max() );
-  T_MAX_MAX( s16, u16 );
-  T_MAX_MAX( s16, u32 );
-  T_MAX_MAX( s16, u64 );
+  T_CLAMP( s8, LMIN( s8 ), s16, LMIN( s8 ) );
+  T_CLAMP( s16, LMIN( s16 ), s16, LMIN( s16 ) );
+  T_CLAMP( s32, LMIN( s32 ), s16, LMIN( s16 ) );
+  T_CLAMP( s64, LMIN( s64 ), s16, LMIN( s16 ) );
+  T_CLAMP( s8, LMAX( s8 ), s16, LMAX( s8 ) );
+  T_CLAMP( s16, LMAX( s16 ), s16, LMAX( s16 ) );
+  T_CLAMP( s32, LMAX( s32 ), s16, LMAX( s16 ) );
+  T_CLAMP( s64, LMAX( s64 ), s16, LMAX( s16 ) );
+
+  T_CLAMP( u8, LMIN( u8 ), s16, 0 );
+  T_CLAMP( u16, LMIN( u16 ), s16, 0 );
+  T_CLAMP( u32, LMIN( u32 ), s16, 0 );
+  T_CLAMP( u64, LMIN( u64 ), s16, 0 );
+  T_CLAMP( u8, LMAX( u8 ), s16, (s16)LMAX( u8 ) );
+  T_CLAMP( u16, LMAX( u16 ), s16, LMAX( s16 ) );
+  T_CLAMP( u32, LMAX( u32 ), s16, LMAX( s16 ) );
+  T_CLAMP( u64, LMAX( u64 ), s16, LMAX( s16 ) );
 
   // s32 combinations
-  T_RES_MIN( s32, s8, std::numeric_limits<s8>::min() );
-  T_RES_MIN( s32, s16, std::numeric_limits<s16>::min() );
-  T_MIN_MIN( s32, s32 );
-  T_MIN_MIN( s32, s64 );
-  T_RES_MAX( s32, s8, std::numeric_limits<s8>::max() );
-  T_RES_MAX( s32, s16, std::numeric_limits<s16>::max() );
-  T_MAX_MAX( s32, s32 );
-  T_MAX_MAX( s32, s64 );
-  T_ZERO_MIN( s32, u8 );
-  T_ZERO_MIN( s32, u16 );
-  T_ZERO_MIN( s32, u32 );
-  T_ZERO_MIN( s32, u64 );
-  //  T_MAX_MAX( s32, u8 );
-  //  T_MAX_MAX( s32, u16 );
-  T_MAX_MAX( s32, u32 );
-  T_MAX_MAX( s32, u64 );
+  T_CLAMP( s8, LMIN( s8 ), s32, LMIN( s8 ) );
+  T_CLAMP( s16, LMIN( s16 ), s32, LMIN( s16 ) );
+  T_CLAMP( s32, LMIN( s32 ), s32, LMIN( s32 ) );
+  T_CLAMP( s64, LMIN( s64 ), s32, LMIN( s32 ) );
+  T_CLAMP( s8, LMAX( s8 ), s32, LMAX( s8 ) );
+  T_CLAMP( s16, LMAX( s16 ), s32, LMAX( s16 ) );
+  T_CLAMP( s32, LMAX( s32 ), s32, LMAX( s32 ) );
+  T_CLAMP( s64, LMAX( s64 ), s32, LMAX( s32 ) );
+
+  T_CLAMP( u8, LMIN( u8 ), s32, 0 );
+  T_CLAMP( u16, LMIN( u16 ), s32, 0 );
+  T_CLAMP( u32, LMIN( u32 ), s32, 0 );
+  T_CLAMP( u64, LMIN( u64 ), s32, 0 );
+  T_CLAMP( u8, LMAX( u8 ), s32, (s32)LMAX( u8 ) );
+  T_CLAMP( u16, LMAX( u16 ), s32, (s32)LMAX( u16 ) );
+  T_CLAMP( u32, LMAX( u32 ), s32, LMAX( s32 ) );
+  T_CLAMP( u64, LMAX( u64 ), s32, LMAX( s32 ) );
 
   // s64 combinations
-  T_RES_MIN( s64, s8, std::numeric_limits<s8>::min() );
-  //  T_MIN_MIN( s64, s16 );
-  //  T_MIN_MIN( s64, s32 );
-  T_MIN_MIN( s64, s64 );
-  T_RES_MAX( s64, s8, std::numeric_limits<s8>::max() );
-  //  T_MAX_MAX( s64, s16 );
-  //  T_MAX_MAX( s64, s32 );
-  T_MAX_MAX( s64, s64 );
-  T_ZERO_MIN( s64, u8 );
-  T_ZERO_MIN( s64, u16 );
-  T_ZERO_MIN( s64, u32 );
-  T_ZERO_MIN( s64, u64 );
-  //  T_MAX_MAX( s64, u8 );
-  //  T_MAX_MAX( s64, u16 );
-  //  T_MAX_MAX( s64, u32 );
-  T_MAX_MAX( s64, u64 );
+  T_CLAMP( s8, LMIN( s8 ), s64, LMIN( s8 ) );
+  T_CLAMP( s16, LMIN( s16 ), s64, LMIN( s16 ) );
+  T_CLAMP( s32, LMIN( s32 ), s64, LMIN( s32 ) );
+  T_CLAMP( s64, LMIN( s64 ), s64, LMIN( s64 ) );
+  T_CLAMP( s8, LMAX( s8 ), s64, LMAX( s8 ) );
+  T_CLAMP( s16, LMAX( s16 ), s64, LMAX( s16 ) );
+  T_CLAMP( s32, LMAX( s32 ), s64, LMAX( s32 ) );
+  T_CLAMP( s64, LMAX( s64 ), s64, LMAX( s64 ) );
+
+  T_CLAMP( u8, LMIN( u8 ), s64, 0 );
+  T_CLAMP( u16, LMIN( u16 ), s64, 0 );
+  T_CLAMP( u32, LMIN( u32 ), s64, 0 );
+  T_CLAMP( u64, LMIN( u64 ), s64, 0 );
+  T_CLAMP( u8, LMAX( u8 ), s64, (s64)LMAX( u8 ) );
+  T_CLAMP( u16, LMAX( u16 ), s64, (s64)LMAX( u16 ) );
+  T_CLAMP( u32, LMAX( u32 ), s64, (s64)LMAX( u32 ) );
+  T_CLAMP( u64, LMAX( u64 ), s64, LMAX( s64 ) );
 }
 }  // namespace Testing
 }  // namespace Pol
