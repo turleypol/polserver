@@ -130,6 +130,11 @@ inline T clamp_convert( U v )
 
 
   typedef std::common_type_t<U, T> common;
+  if constexpr ( std::is_unsigned<common>::value && std::is_signed<T>::value )
+    return static_cast<T>( std::clamp( static_cast<common>( v ), static_cast<common>( 0 ),
+                                       static_cast<common>( t_max ) ) );
+
+
   return static_cast<T>( std::clamp( static_cast<common>( v ), static_cast<common>( t_min ),
                                      static_cast<common>( t_max ) ) );
 }
