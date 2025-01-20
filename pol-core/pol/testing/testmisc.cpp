@@ -377,77 +377,14 @@ void test_curlfeatures()
 
 void clamp_test()
 {
-  UnitTest( []() { return Clib::clamp_convert<s32>( (u32)0xffffFFFF ); }, 0x7fffFFFF,
-            "u32 0xffffFFFF->s32" );
-  UnitTest( []() { return Clib::clamp_convert<u32>( (s32)-1 ); }, 0u, "s32 -1->u32" );
-  UnitTest( []() { return Clib::clamp_convert<s16>( (u16)0xffff ); }, 0x7fff, "u16 0xFFFF->s16" );
-  UnitTest( []() { return Clib::clamp_convert<u16>( (s16)-1 ); }, 0u, "s16 -1->u16" );
-  UnitTest( []() { return Clib::clamp_convert<u8>( (u16)0xffff ); }, 0xffu, "u16 0xffff->u8" );
-  UnitTest( []() { return Clib::clamp_convert<s8>( (s16)-1000 ); }, -128, "s16 -1000->s8" );
-  UnitTest( []() { return Clib::clamp_convert<s16>( (s8)-100 ); }, -100, "s8 -100->s16" );
-  UnitTest( []() { return Clib::clamp_convert<u16>( (u8)100 ); }, 100u, "u8 100->u16" );
-  UnitTest( []() { return Clib::clamp_convert<u64>( (u8)100 ); }, 100u, "u8 100->u64" );
-  UnitTest( []() { return Clib::clamp_convert<s64>( (s8)-100 ); }, -100, "s8 -100->s64" );
-  UnitTest( []() { return Clib::clamp_convert<u64>( (s8)-100 ); }, 0u, "s8 -100->u64" );
-  UnitTest( []() { return Clib::clamp_convert<u64>( (s64)-100 ); }, 0u, "s64 -100->u64" );
-  UnitTest( []() { return Clib::clamp_convert<s64>( (u64)-1 ); }, std::numeric_limits<s64>::max(),
-            "u64 max->s64" );
-  {
-    auto c = static_cast<std::common_type_t<u32, s8>>( 0 );
-    u32 a;
-    s8 b;
-    INFO_PRINTLN( "u32, s8 {} of {},{}", typeid( c ).name(), typeid( a ).name(),
-                  typeid( b ).name() );
-  }
-  {
-    auto c = static_cast<std::common_type_t<u64, s8>>( 0 );
-    u64 a;
-    s8 b;
-    INFO_PRINTLN( "{} of {},{}", typeid( c ).name(), typeid( a ).name(), typeid( b ).name() );
-  }
-
-  UnitTest( []() { return Clib::clamp_convert<s8>( std::numeric_limits<s16>::min() ); },
-            std::numeric_limits<s8>::min(), "s16 min->s8" );
-  UnitTest( []() { return Clib::clamp_convert<s8>( std::numeric_limits<s32>::min() ); },
-            std::numeric_limits<s8>::min(), "s32 min->s8" );
-  UnitTest( []() { return Clib::clamp_convert<s8>( std::numeric_limits<s64>::min() ); },
-            std::numeric_limits<s8>::min(), "s64 min->s8" );
-
-  // "from" minimal == "to" minimal
-#define T_MIN_MIN( to, from )                                                                \
-  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); },    \
-            std::numeric_limits<to>::min(),                                                  \
-            fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numeric_limits<from>::min(), \
-                         std::numeric_limits<to>::min() ) )
-  // "from" maximal == "to" maximal
-#define T_MAX_MAX( to, from )                                                                \
-  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::max() ); },    \
-            std::numeric_limits<to>::max(),                                                  \
-            fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numeric_limits<from>::max(), \
-                         std::numeric_limits<to>::max() ) )
-
-  // "from" minimal == "to" 0
-#define T_ZERO_MIN( to, from )                                                            \
-  UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); }, \
-            static_cast<to>( 0 ),                                                         \
-            fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numeric_limits<from>::min(), 0 ) )
-  // "from" minimal == "to" res
-#define T_RES_MIN( to, from, res )                                                       \
-  UnitTest(                                                                              \
-      []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); }, res, \
-      fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numeric_limits<from>::min(), res ) )
-  // "from" maximum == "to" res
-#define T_RES_MAX( to, from, res )                                                       \
-  UnitTest(                                                                              \
-      []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::max() ); }, res, \
-      fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numeric_limits<from>::min(), res ) )
-  // "from" maximum == "to" res
+  // "from" start == "to" res
 #define T_CLAMP( from, start, to, res )                             \
   UnitTest( []() { return Clib::clamp_convert<to>( start ); }, res, \
-            fmt::format( #from " {:#x} ->" #to " = {:#x}", start, res ) )
+            fmt::format( " {:#x}" #from " == {:#x}" #to, start, res ) )
 
 #define LMIN( T ) std::numeric_limits<T>::min()
 #define LMAX( T ) std::numeric_limits<T>::max()
+
   // s8 combinations
   T_CLAMP( s8, LMIN( s8 ), s8, LMIN( s8 ) );
   T_CLAMP( s16, LMIN( s16 ), s8, LMIN( s8 ) );
@@ -523,6 +460,10 @@ void clamp_test()
   T_CLAMP( u16, LMAX( u16 ), s64, (s64)LMAX( u16 ) );
   T_CLAMP( u32, LMAX( u32 ), s64, (s64)LMAX( u32 ) );
   T_CLAMP( u64, LMAX( u64 ), s64, LMAX( s64 ) );
+
+#undef T_CLAMP
+#undef LMAX
+#undef LMIN
 }
 }  // namespace Testing
 }  // namespace Pol
