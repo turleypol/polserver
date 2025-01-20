@@ -393,10 +393,11 @@ void clamp_test()
   UnitTest( []() { return Clib::clamp_convert<s64>( (u64)-1 ); }, std::numeric_limits<s64>::max(),
             "u64 max->s64" );
   {
-    auto c = static_cast<std::common_type_t<s64, s8>>( 0 );
-    s64 a;
+    auto c = static_cast<std::common_type_t<u32, s8>>( 0 );
+    u32 a;
     s8 b;
-    INFO_PRINTLN( "{} of {},{}", typeid( c ).name(), typeid( a ).name(), typeid( b ).name() );
+    INFO_PRINTLN( "u32, s8 {} of {},{}", typeid( c ).name(), typeid( a ).name(),
+                  typeid( b ).name() );
   }
   {
     auto c = static_cast<std::common_type_t<u64, s8>>( 0 );
