@@ -415,12 +415,12 @@ void clamp_test()
   UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); },    \
             std::numeric_limits<to>::min(),                                                  \
             fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numeric_limits<from>::min(), \
-                         std::numeric_limits<to> min() ) )
+                         std::numeric_limits<to>::min() ) )
 #define T_MAX_MAX( to, from )                                                                \
   UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::max() ); },    \
             std::numeric_limits<to>::max(),                                                  \
             fmt::format( #from " {:#x} ->" #to " = {:#x}", std::numeric_limits<from>::max(), \
-                         std::numeric_limits<to> max() ) )
+                         std::numeric_limits<to>::max() ) )
 #define T_ZERO_MIN( to, from )                                                      \
   UnitTest(                                                                         \
       []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); }, \
