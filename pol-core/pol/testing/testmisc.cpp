@@ -412,7 +412,7 @@ void clamp_test()
             std::numeric_limits<s8>::min(), "s64 min->s8" );
 #define T_MIN_MIN( to, from )                                                             \
   UnitTest( []() { return Clib::clamp_convert<to>( std::numeric_limits<from>::min() ); }, \
-            std::numeric_limits<to>::min(), from " min->" to )
+            std::numeric_limits<to>::min(), #from " min->" #to )
   T_MIN_MIN( s8, s16 );
 }
 }  // namespace Testing
