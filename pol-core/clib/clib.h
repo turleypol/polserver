@@ -130,11 +130,12 @@ inline To clamp_convert( From v )
 
   // common_type will not use 64bit integer
   // for 32bit always use s64
-  if constexpr ( ( std::is_same<From, u32>::value || std::is_same<To, u32>::value ) &&
-                 ( std::is_same<From, s32>::value || std::is_same<To, s32>::value ) )
-    return static_cast<To>(
-        std::clamp( static_cast<s64>( v ), static_cast<s64>( t_min ), static_cast<s64>( t_max ) ) );
-
+  /*  if constexpr ( ( std::is_same<From, u32>::value || std::is_same<To, u32>::value ) &&
+                   ( std::is_same<From, s32>::value || std::is_same<To, s32>::value ) )
+      return static_cast<To>(
+          std::clamp( static_cast<s64>( v ), static_cast<s64>( t_min ), static_cast<s64>( t_max ) )
+     );
+  */
   typedef std::common_type_t<From, To> common;
   // common can use the biggest unsigned eg if given a u32
   // use zero as minimum
