@@ -380,7 +380,7 @@ void clamp_test()
   // "from" start == "to" res
 #define T_CLAMP( from, start, to, res )                             \
   UnitTest( []() { return Clib::clamp_convert<to>( start ); }, res, \
-            fmt::format( " {:#x}" #from " == {:#x}" #to, start, res ) )
+            fmt::format( " {:#x} " #from " == {:#x} " #to, start, res ) )
 
 #define LMIN( T ) std::numeric_limits<T>::min()
 #define LMAX( T ) std::numeric_limits<T>::max()
