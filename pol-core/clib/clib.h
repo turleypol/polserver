@@ -114,7 +114,7 @@ inline T clamp_convert( U v )
   constexpr auto t_min = std::numeric_limits<T>::min();
   constexpr auto t_max = std::numeric_limits<T>::max();
   // easy case T min max is contained in U eg from int to short
-  if constexpr ( std::is_signed<T>::value && std::is_signed<U>::value &&
+  if constexpr ( std::is_signed<T>::value == std::is_signed<U>::value &&
                  t_min >= std::numeric_limits<U>::min() && t_max <= std::numeric_limits<U>::max() )
     return static_cast<T>( std::clamp( v, static_cast<U>( t_min ), static_cast<U>( t_max ) ) );
 
