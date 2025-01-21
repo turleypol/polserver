@@ -51,8 +51,8 @@ enum class B9Feature : u32
   DefaultSA = DefaultKR | ThirdDawn | Splash8thAge | SA,       // 0x187DF
   DefaultHSA = DefaultSA | HSA,                                // 0x387DF // TODO Gothic + Rustic?
   DefaultTOL = DefaultHSA | JungleTiles | ShadowGuardTiles | TOL,  // 0x7387DF
-
 };
+
 
 inline constexpr B9Feature operator|( B9Feature a, B9Feature b )
 {
