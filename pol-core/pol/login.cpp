@@ -337,11 +337,10 @@ void send_start( Network::Client* client )
       client );  // Shinigami: moved from start_client_char() to send before char selection
 
   unsigned i;
-  Plib::A9Feature clientflag;  // sets client flags
-  unsigned char char_slots;    // number of slots according to expansion, avoids crashing people
-  unsigned char char_count;    // number of chars to send: Max(char_slots, 5)
+  unsigned char char_slots;  // number of slots according to expansion, avoids crashing people
+  unsigned char char_count;  // number of chars to send: Max(char_slots, 5)
 
-  char_slots = static_cast<u8>(
+  char_slots = Clib::clamp_convert<u8>(
       Plib::systemstate.config
           .character_slots );  // sets it first to be the number defined in the config
   // TODO: Per account character slots? (With the actual character_slots defining maximum)
@@ -402,8 +401,8 @@ void send_start( Network::Client* client )
     }
   }
 
-  clientflag = settingsManager.ssopt.uo_feature_enable;  // 'default' flags. Maybe auto-enable them
-                                                         // according to the expansion?
+  auto clientflag = settingsManager.ssopt.uo_feature_enable;  // 'default' flags. Maybe auto-enable
+                                                              // them according to the expansion?
 
   clientflag |= Plib::A9Feature::UO3DClientType;  // Let UO3D (KR,SA) send 0xE1 packet
 
@@ -417,7 +416,7 @@ void send_start( Network::Client* client )
         Plib::A9Feature::SingleCharacter |
         Plib::A9Feature::LimitSlots;  // Only one character (SIEGE (0x04) + LIMIT_CHAR (0x10))
 
-  msg->WriteFlipped<u32>( clientflag );
+  msg->WriteFlipped<u32>( static_cast<u32>( clientflag ) );
   u16 len = msg->offset;
   msg->offset = 1;
   msg->WriteFlipped<u16>( len );
