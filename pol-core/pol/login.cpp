@@ -28,6 +28,7 @@
 #include "../clib/logfacility.h"
 #include "../clib/rawtypes.h"
 #include "../plib/systemstate.h"
+#include "../plib/uoexpansion.h"
 #include "accounts/account.h"
 #include "accounts/accounts.h"
 #include "core.h"
@@ -404,15 +405,17 @@ void send_start( Network::Client* client )
   clientflag = settingsManager.ssopt.uo_feature_enable;  // 'default' flags. Maybe auto-enable them
                                                          // according to the expansion?
 
-  clientflag |= PKTOUT_A9::FLAG_SEND_UO3D_TYPE;  // Let UO3D (KR,SA) send 0xE1 packet
+  clientflag |= Plib::A9Feature::UO3DClientType;  // Let UO3D (KR,SA) send 0xE1 packet
 
   // Change this to a function for clarity? -- Nando
   if ( char_slots == 7 )
-    clientflag |= PKTOUT_A9::FLAG_UPTO_SEVEN_CHARACTERS;  // 7th Character flag
+    clientflag |= Plib::A9Feature::Has7thSlot;  // 7th Character flag
   else if ( char_slots == 6 )
-    clientflag |= PKTOUT_A9::FLAG_UPTO_SIX_CHARACTERS;  // 6th Character Flag
+    clientflag |= Plib::A9Feature::Has6thSlot;  // 6th Character Flag
   else if ( char_slots == 1 )
-    clientflag |= 0x14;  // Only one character (SIEGE (0x04) + LIMIT_CHAR (0x10))
+    clientflag |=
+        Plib::A9Feature::SingleCharacter |
+        Plib::A9Feature::LimitSlots;  // Only one character (SIEGE (0x04) + LIMIT_CHAR (0x10))
 
   msg->WriteFlipped<u32>( clientflag );
   u16 len = msg->offset;

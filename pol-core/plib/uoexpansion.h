@@ -52,9 +52,9 @@ inline constexpr u32 operator|( u32 a, B9Feature b )
 }
 inline constexpr u32 operator~( B9Feature a )
 {
-  return ~static_cast<u32>( b );
+  return ~static_cast<u32>( a );
 }
-inline constexpr u32& operator|=( u32 a, B9Feature b )
+inline constexpr u32& operator|=( u32& a, B9Feature b )
 {
   a = a | b;
   return a;
@@ -101,6 +101,19 @@ enum class A9Feature : u32
   UnlockNewFeluccaAreas = 0x8000,  // Unlock new felucca areas (factions map0x.mul and such)
                                    // (7.0.0.0 - SA or HSA, not sure)
 };
+inline constexpr u32 operator&( u32 a, A9Feature b )
+{
+  return a & static_cast<u32>( b );
+}
+inline constexpr u32 operator|( A9Feature a, A9Feature b )
+{
+  return static_cast<u32>( a ) | static_cast<u32>( b );
+}
+inline constexpr u32& operator|=( u32& a, A9Feature b )
+{
+  a |= static_cast<u32>( b );
+  return a;
+}
 
 
 enum class ExpansionVersion : u8
