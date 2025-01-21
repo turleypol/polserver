@@ -50,6 +50,16 @@ inline constexpr u32 operator|( u32 a, B9Feature b )
 {
   return a | static_cast<u32>( b );
 }
+inline constexpr u32 operator~( B9Feature a )
+{
+  return ~static_cast<u32>( b );
+}
+inline constexpr u32& operator|=( u32 a, B9Feature b )
+{
+  a = a | b;
+  return a;
+}
+
 enum class DefaultB9Feature : u32
 {
   T2A = static_cast<u32>( B9Feature::T2A ),                                                // 0x1
