@@ -64,7 +64,7 @@ inline constexpr u32 operator~( B9Feature a )
 }
 inline constexpr u32& operator|=( u32& a, B9Feature b )
 {
-  a = a | b;
+  a = a | static_cast<u32>( b );
   return a;
 }
 
