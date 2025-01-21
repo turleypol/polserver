@@ -66,7 +66,7 @@ void handle_request_tooltip( Network::Client* client, PKTIN_B6* msgin )
 // 0xD6
 void send_object_cache( Network::Client* client, const UObject* obj )
 {
-  if ( ( settingsManager.ssopt.uo_feature_enable & Plib::A9Feature::AOS == ) Plib::A9Feature::AOS )
+  if ( ( settingsManager.ssopt.uo_feature_enable & Plib::A9Feature::AOS ) == Plib::A9Feature::AOS )
   {
     auto pkt_rev = Network::ObjRevisionPkt( obj->serial_ext, obj->rev() );
     pkt_rev.Send( client );

@@ -60,6 +60,10 @@ inline constexpr B9Feature operator|( B9Feature a, B9Feature b )
 {
   return static_cast<B9Feature>( static_cast<u32>( a ) | static_cast<u32>( b ) );
 }
+inline constexpr B9Feature operator&( B9Feature a, B9Feature b )
+{
+  return static_cast<B9Feature>( static_cast<u32>( a ) & static_cast<u32>( b ) );
+}
 inline constexpr B9Feature operator~( B9Feature a )
 {
   return static_cast<B9Feature>( ~static_cast<u32>( a ) );
@@ -67,6 +71,11 @@ inline constexpr B9Feature operator~( B9Feature a )
 inline constexpr B9Feature& operator|=( B9Feature& a, B9Feature b )
 {
   a = a | b;
+  return a;
+}
+inline constexpr B9Feature& operator&=( B9Feature& a, B9Feature b )
+{
+  a = a & b;
   return a;
 }
 
