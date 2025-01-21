@@ -337,9 +337,9 @@ void send_start( Network::Client* client )
       client );  // Shinigami: moved from start_client_char() to send before char selection
 
   unsigned i;
-  u32 clientflag;            // sets client flags
-  unsigned char char_slots;  // number of slots according to expansion, avoids crashing people
-  unsigned char char_count;  // number of chars to send: Max(char_slots, 5)
+  Plib::A9Feature clientflag;  // sets client flags
+  unsigned char char_slots;    // number of slots according to expansion, avoids crashing people
+  unsigned char char_count;    // number of chars to send: Max(char_slots, 5)
 
   char_slots = static_cast<u8>(
       Plib::systemstate.config

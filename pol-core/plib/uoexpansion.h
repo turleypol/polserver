@@ -9,6 +9,7 @@ namespace Plib
 {
 enum class B9Feature : u32
 {
+  None = 0x0,
   T2A = 0x01,          // Chats, regions (1.25.35)
   Renaissance = 0x02,  // Trammel/felucca (2.0.0)
   ThirdDawn = 0x04,    // Ilshenar, 3D client (3.0.0)
@@ -54,17 +55,18 @@ enum class B9Feature : u32
 };
 
 
+// minimal bitflag operators
 inline constexpr B9Feature operator|( B9Feature a, B9Feature b )
 {
   return static_cast<B9Feature>( static_cast<u32>( a ) | static_cast<u32>( b ) );
 }
-inline constexpr u32 operator~( B9Feature a )
+inline constexpr B9Feature operator~( B9Feature a )
 {
-  return ~static_cast<u32>( a );
+  return static_cast<B9Feature>( ~static_cast<u32>( a ) );
 }
-inline constexpr u32& operator|=( u32& a, B9Feature b )
+inline constexpr B9Feature& operator|=( B9Feature& a, B9Feature b )
 {
-  a = a | static_cast<u32>( b );
+  a = a | b;
   return a;
 }
 
@@ -94,20 +96,20 @@ enum class A9Feature : u32
   UnlockNewFeluccaAreas = 0x8000,  // Unlock new felucca areas (factions map0x.mul and such)
                                    // (7.0.0.0 - SA or HSA, not sure)
 };
-inline constexpr u32 operator&( u32 a, A9Feature b )
+// minimal bitflag operators
+inline constexpr A9Feature operator&( A9Feature a, A9Feature b )
 {
-  return a & static_cast<u32>( b );
+  return static_cast<A9Feature>( static_cast<u32>( a ) & static_cast<u32>( b ) );
 }
-inline constexpr u32 operator|( A9Feature a, A9Feature b )
+inline constexpr A9Feature operator|( A9Feature a, A9Feature b )
 {
-  return static_cast<u32>( a ) | static_cast<u32>( b );
+  return static_cast<A9Feature>( static_cast<u32>( a ) | static_cast<u32>( b ) );
 }
-inline constexpr u32& operator|=( u32& a, A9Feature b )
+inline constexpr A9Feature& operator|=( A9Feature& a, A9Feature b )
 {
-  a |= static_cast<u32>( b );
+  a = a | b;
   return a;
 }
-
 
 enum class ExpansionVersion : u8
 {
