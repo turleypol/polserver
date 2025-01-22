@@ -3019,11 +3019,9 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
   cancel_all_trades();
 
   PolClockPauser pauser;
-
   // do not suspend when critical, to keep defined state of a critical block
   if ( !uoexec().critical() && uoexec().suspend() )
   {
-    INFO_PRINTLN( "Suspended" );
     Tools::Timer<> total_timer;
     auto res = write_data(
         [uoexec = uoexec().weakptr.non_owning(), total_timer = std::move( total_timer )](
@@ -3047,7 +3045,7 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
           else
           {
             uoexec.get_weakptr()->ValueStack.back().set(
-                new Bscript::BObject( new Bscript::BError( "failed to save world!" ) ) );
+                new Bscript::BObject( new Bscript::BError( "Failed to save world" ) ) );
           }
           uoexec.get_weakptr()->revive();
         } );
@@ -3057,12 +3055,12 @@ BObjectImp* UOExecutorModule::mf_SaveWorldState()
       return new BError( "pol.cfg has InhibitSaves=1" );
     }
     if ( *res )
-      return new BLong( 0 );
+      return new BLong( 0 );  // callback will be called
     uoexec().revive();
     return new BError( "Failed to save world" );
   }
 
-  INFO_PRINTLN( " not Suspended" );
+  // non waiting version
   u32 dirty, clean;
   s64 elapsed_ms;
   auto res = write_data( {}, &dirty, &clean, &elapsed_ms );

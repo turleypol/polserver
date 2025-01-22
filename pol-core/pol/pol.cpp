@@ -1202,9 +1202,9 @@ int xmain_inner( bool testing )
     Core::PolLock lck;
     s64 elapsed_ms;
     Tools::Timer<> timer;
-    auto res = Core::write_data( {}, nullptr, nullptr, &elapsed_ms );
+    auto res_save = Core::write_data( {}, nullptr, nullptr, &elapsed_ms );
     Core::SaveContext::ready();
-    if ( !res || !( *res ) )
+    if ( !res_save || !( *res_save ) )
       POLLOG_INFOLN( "Data save failed!" );
     else
       POLLOG_INFOLN( "Data save completed in {} ms. {} total.", elapsed_ms, timer.ellapsed() );

@@ -500,7 +500,6 @@ std::optional<bool> write_data( std::function<void( bool, u32, u32, s64 )> callb
           result = false;
           set_promise( critical_promise, result );
         }
-        blocking_timer.stop();
         if ( result )
         {
           auto files = { "pol",      "objects",   "pcs",    "pcequip", "npcs",
@@ -518,7 +517,6 @@ std::optional<bool> write_data( std::function<void( bool, u32, u32, s64 )> callb
   auto res = critical_future.get();  // wait for end of critical part
 
   objStorageManager.objecthash.ClearDeleted();
-  timer.stop();
 
   if ( clean_writes )
     *clean_writes = UObject::clean_writes;
