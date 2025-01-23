@@ -224,7 +224,7 @@ bool format_file( const std::string& path )
 
   if ( ext.compare( ".src" ) != 0 && ext.compare( ".inc" ) != 0 && ext.compare( ".em" ) != 0 )
   {
-    compiler_error(
+    ERROR_PRINTLN(
         "Didn't find '.src', '.inc', or '.em' extension on source filename '{}'! ..Ignoring",
         path );
     return true;
@@ -354,8 +354,8 @@ bool compile_file( const std::string& path )
 
   if ( ext.compare( ".src" ) != 0 && ext.compare( ".hsr" ) != 0 && ext.compare( ".asp" ) != 0 )
   {
-    compiler_error( "Didn't find '.src', '.hsr', or '.asp' extension on source filename '{}'!",
-                    path );
+    ERROR_PRINTLN( "Didn't find '.src', '.hsr', or '.asp' extension on source filename '{}'!",
+                   path );
     throw std::runtime_error( "Error in source filename" );
   }
   std::string fname = path;
@@ -817,7 +817,7 @@ void process_dirs( const std::vector<fs::path>& dirs, bool compile_inc )
             {
               ++compiled_scripts;
               ++error_scripts;
-              compiler_error( "failed to compile {}: {}", file, e.what() );
+              ERROR_PRINTLN( "failed to compile {}: {}", file, e.what() );
               if ( !keep_building )
                 par_keep_building = false;
             }
