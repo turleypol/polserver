@@ -28,9 +28,6 @@ public:
   unsigned nargs;
   int funcidx;  // according to the executor, what's its function index
 
-  // compiler only:
-  bool used;  // compiler only
-
   ModuleFunction( const char* fname, int nargs );
   ~ModuleFunction() = default;
 };
@@ -45,12 +42,10 @@ public:
   boost_utils::function_name_flystring modulename;
 
   explicit FunctionalityModule( const char* modname );
+  FunctionalityModule( const FunctionalityModule& ) = delete;
   ~FunctionalityModule();
 
   void addFunction( const char* funcname, int nparams );
-
-private:
-  FunctionalityModule( const FunctionalityModule& );
 };
 }  // namespace Bscript
 }  // namespace Pol

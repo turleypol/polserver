@@ -171,13 +171,6 @@ public:
 
   int write_dbg( const char* fname, bool gen_txt );
 
-  // compiler only:
-  unsigned program_PC;
-  std::string program_decl;
-  std::vector<std::string> sourcelines;
-  std::vector<std::string> fileline;
-  std::vector<std::string> function_decls;
-
   std::vector<EPExportedFunction> exported_functions;
   std::vector<EPFunctionReference> function_references;
   std::vector<EPClassDescriptor> class_descriptors;
@@ -226,24 +219,10 @@ public:
   size_t sizeEstimate() const;
 
 private:
-  friend class EScriptProgramCheckpoint;
   ~EScriptProgram();
   friend class ref_ptr<EScriptProgram>;
 };
 
-class EScriptProgramCheckpoint
-{
-public:
-  explicit EScriptProgramCheckpoint( const EScriptProgram& );
-  void commit( const EScriptProgram& prog );
-  void rollback( EScriptProgram& prog ) const;
-
-  unsigned module_count;
-  unsigned tokens_count;
-  unsigned symbols_length;
-  unsigned sourcelines_count;
-  unsigned fileline_count;
-};
 }  // namespace Bscript
 }  // namespace Pol
 #endif

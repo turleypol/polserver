@@ -14,7 +14,7 @@ namespace Pol
 namespace Bscript
 {
 ModuleFunction::ModuleFunction( const char* fname, int i_nargs )
-    : name( fname ), nargs( i_nargs ), funcidx( -1 ), used( false )
+    : name( fname ), nargs( i_nargs ), funcidx( -1 )
 {
 }
 

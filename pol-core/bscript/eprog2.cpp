@@ -254,21 +254,6 @@ void EScriptProgram::addToken( const Token& token )
   add_ins_dbg_info();
 }
 
-
-EScriptProgramCheckpoint::EScriptProgramCheckpoint( const EScriptProgram& prog )
-{
-  commit( prog );
-}
-
-void EScriptProgramCheckpoint::commit( const EScriptProgram& prog )
-{
-  module_count = static_cast<unsigned int>( prog.modules.size() );
-  tokens_count = prog.tokens.count();
-  symbols_length = prog.symbols.length();
-  sourcelines_count = static_cast<unsigned int>( prog.sourcelines.size() );
-  fileline_count = static_cast<unsigned int>( prog.fileline.size() );
-}
-
 unsigned EScriptProgram::varcount( unsigned block )
 {
   unsigned cnt = static_cast<unsigned int>( blocks[block].localvarnames.size() );
@@ -491,16 +476,7 @@ void EScriptProgram::addfunction( std::string funcname, unsigned firstPC, unsign
 size_t EScriptProgram::sizeEstimate() const
 {
   using namespace Clib;
-  size_t size = sizeof( EScriptProgram ) + program_decl.capacity();
-  size += memsize( sourcelines );
-  for ( const auto& l : sourcelines )
-    size += l.capacity();
-  size += memsize( fileline );
-  for ( const auto& l : fileline )
-    size += l.capacity();
-  size += memsize( function_decls );
-  for ( const auto& l : function_decls )
-    size += l.capacity();
+  size_t size = sizeof( EScriptProgram );
   size += memsize( globalvarnames );
   for ( const auto& l : globalvarnames )
     size += l.capacity();
