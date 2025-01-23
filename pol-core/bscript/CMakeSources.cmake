@@ -372,7 +372,6 @@ set (bscript_sources    # sorted !
   objmembers.h
   objmethods.h
   objstrm.cpp
-  options.h
   str.cpp
   str.h
   symcont.cpp

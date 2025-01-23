@@ -17,7 +17,6 @@
 #include <iosfwd>
 #include <set>
 
-#include "options.h"
 #include <fmt/ostream.h>
 
 namespace Pol
@@ -30,8 +29,6 @@ typedef struct
   unsigned offset;
   unsigned strOffset;
 } DebugToken;
-
-class UserFunction;
 
 class Token
 {
