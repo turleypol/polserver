@@ -147,7 +147,6 @@ public:
   void append( const StoredToken& stoken, const CompilerContext& ctx );
   void append( const StoredToken& stoken, const CompilerContext& ctx, unsigned* posn );
   void erase();
-  void clear_modules();
   unsigned nglobals;
   unsigned expectedArgs;
   bool haveProgram;
