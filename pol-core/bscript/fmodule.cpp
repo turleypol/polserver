@@ -38,13 +38,5 @@ void FunctionalityModule::addFunction( const char* funcname, int nparams )
   mf->funcidx = static_cast<unsigned int>( functions.size() );
   functions.push_back( mf );
 }
-
-void FunctionalityModule::fillFunctionsByName()
-{
-  for ( auto& mf : functions )
-  {
-    functionsByName[mf->name] = mf;
-  }
-}
 }  // namespace Bscript
 }  // namespace Pol

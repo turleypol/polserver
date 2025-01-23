@@ -41,10 +41,6 @@ public:
   bool have_indexes;
   std::vector<ModuleFunction*> functions;
 
-  // compiler only:
-  typedef std::map<std::string, ModuleFunction*, Clib::ci_cmp_pred> FunctionsByName;
-  FunctionsByName functionsByName;
-  std::vector<ModuleFunction*> used_functions;
 
   boost_utils::function_name_flystring modulename;
 
@@ -52,7 +48,6 @@ public:
   ~FunctionalityModule();
 
   void addFunction( const char* funcname, int nparams );
-  void fillFunctionsByName();
 
 private:
   FunctionalityModule( const FunctionalityModule& );
