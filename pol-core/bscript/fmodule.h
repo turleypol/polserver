@@ -29,10 +29,9 @@ public:
   int funcidx;  // according to the executor, what's its function index
 
   // compiler only:
-  UserFunction* uf;  // compiler only
-  bool used;         // compiler only
+  bool used;  // compiler only
 
-  ModuleFunction( const char* fname, int nargs, UserFunction* uf );
+  ModuleFunction( const char* fname, int nargs );
   ~ModuleFunction() = default;
 };
 
@@ -46,7 +45,6 @@ public:
   typedef std::map<std::string, ModuleFunction*, Clib::ci_cmp_pred> FunctionsByName;
   FunctionsByName functionsByName;
   std::vector<ModuleFunction*> used_functions;
-  std::vector<UserFunction*> owned_userfuncs;
 
   boost_utils::function_name_flystring modulename;
 
@@ -54,12 +52,12 @@ public:
   explicit FunctionalityModule( const char* modname );
   ~FunctionalityModule();
 
-  void addFunction( const char* funcname, int nparams, UserFunction* uf = nullptr );
+  void addFunction( const char* funcname, int nparams );
   void fillFunctionsByName();
 
 private:
   FunctionalityModule( const FunctionalityModule& );
 };
-}
-}
+}  // namespace Bscript
+}  // namespace Pol
 #endif

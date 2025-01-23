@@ -13,8 +13,8 @@ namespace Pol
 {
 namespace Bscript
 {
-ModuleFunction::ModuleFunction( const char* fname, int i_nargs, UserFunction* i_uf )
-    : name( fname ), nargs( i_nargs ), funcidx( -1 ), uf( i_uf ), used( false )
+ModuleFunction::ModuleFunction( const char* fname, int i_nargs )
+    : name( fname ), nargs( i_nargs ), funcidx( -1 ), used( false )
 {
 }
 
@@ -30,23 +30,13 @@ FunctionalityModule::~FunctionalityModule()
     delete functions.back();
     functions.pop_back();
   }
-  // compiler only:
-  while ( !owned_userfuncs.empty() )
-  {
-    delete owned_userfuncs.back();
-    owned_userfuncs.pop_back();
-  }
 }
 
-void FunctionalityModule::addFunction( const char* funcname, int nparams, UserFunction* uf )
+void FunctionalityModule::addFunction( const char* funcname, int nparams )
 {
   auto mf = new ModuleFunction( funcname, nparams, uf );
   mf->funcidx = static_cast<unsigned int>( functions.size() );
   functions.push_back( mf );
-
-  // compiler only:
-  if ( uf != nullptr )
-    owned_userfuncs.push_back( uf );
 }
 
 // compiler only:
@@ -83,5 +73,5 @@ void FunctionalityModule::fillFunctionsByName()
     functionsByName[mf->name] = mf;
   }
 }
-}
-}
+}  // namespace Bscript
+}  // namespace Pol
