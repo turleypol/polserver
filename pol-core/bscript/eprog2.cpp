@@ -19,7 +19,6 @@
 #include "symcont.h"
 #include "token.h"
 #include "tokens.h"
-#include "userfunc.h"
 */
 namespace Pol
 {

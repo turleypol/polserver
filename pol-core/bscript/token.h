@@ -51,7 +51,6 @@ public:
     int lval;
     const unsigned char* dataptr;
   };
-  UserFunction* userfunc;
   bool deprecated;
   bool ownsStr;
   unsigned char module;
@@ -70,7 +69,6 @@ public:
 
   Token( ModuleID module, BTokenId id, BTokenType type );
   Token( BTokenId id, BTokenType type );
-  Token( ModuleID module, BTokenId id, BTokenType type, UserFunction* userfunc );
   void nulStr();
   void setStr( const char* s );
   void copyStr( const char* s );

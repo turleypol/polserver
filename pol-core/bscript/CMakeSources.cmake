@@ -363,8 +363,6 @@ set (bscript_sources    # sorted !
   executor.h
   executor.inl.h
   executortype.h
-  expression.cpp
-  expression.h
   filefmt.h
   fmodule.cpp
   fmodule.h
@@ -387,8 +385,6 @@ set (bscript_sources    # sorted !
   token.h
   tokens.cpp
   tokens.h
-  userfunc.cpp
-  userfunc.h
   verbtbl.h
 )
 

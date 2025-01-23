@@ -24,13 +24,11 @@ Token::Token()
       dbg_filenum( 0 ),
       dbg_linenum( 0 ),
       lval( 0 ),
-      userfunc( nullptr ),
       deprecated( false ),
       ownsStr( false ),
       module( Mod_Basic ),
       token( nullptr )
 {
-  register_instance();
 }
 
 /**
@@ -44,13 +42,11 @@ Token::Token( const Token& tok )
       dbg_filenum( tok.dbg_filenum ),
       dbg_linenum( tok.dbg_linenum ),
       lval( tok.lval ),
-      userfunc( tok.userfunc ),
       deprecated( tok.deprecated ),
       ownsStr( false ),
       module( tok.module ),
       token( nullptr )
 {
-  register_instance();
   if ( tok.token )
   {
     if ( !tok.ownsStr )
@@ -86,8 +82,6 @@ Token& Token::operator=( const Token& tok )
   dbg_filenum = tok.dbg_filenum;
   dbg_linenum = tok.dbg_linenum;
 
-  userfunc = tok.userfunc;
-
   return *this;
 }
 
@@ -99,13 +93,11 @@ Token::Token( ModuleID i_module, BTokenId i_id, BTokenType i_type )
       dbg_filenum( 0 ),
       dbg_linenum( 0 ),
       lval( 0 ),
-      userfunc( nullptr ),
       deprecated( false ),
       ownsStr( false ),
       module( static_cast<unsigned char>( i_module ) ),
       token( nullptr )
 {
-  register_instance();
 }
 
 Token::Token( BTokenId i_id, BTokenType i_type )
@@ -116,30 +108,11 @@ Token::Token( BTokenId i_id, BTokenType i_type )
       dbg_filenum( 0 ),
       dbg_linenum( 0 ),
       lval( 0 ),
-      userfunc( nullptr ),
       deprecated( false ),
       ownsStr( false ),
       module( Mod_Basic ),
       token( nullptr )
 {
-  register_instance();
-}
-
-Token::Token( ModuleID i_module, BTokenId i_id, BTokenType i_type, UserFunction* i_userfunc )
-    : id( i_id ),
-      type( i_type ),
-      dval( 0.0 ),
-      precedence( -1 ),
-      dbg_filenum( 0 ),
-      dbg_linenum( 0 ),
-      lval( 0 ),
-      userfunc( i_userfunc ),
-      deprecated( false ),
-      ownsStr( false ),
-      module( static_cast<unsigned char>( i_module ) ),
-      token( nullptr )
-{
-  register_instance();
 }
 
 /**
@@ -202,7 +175,6 @@ void Token::copyStr( const char* s, int len )
 Token::~Token()
 {
   nulStr();
-  unregister_instance();
 }
 }  // namespace Bscript
 }  // namespace Pol
