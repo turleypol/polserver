@@ -43,7 +43,6 @@ public:
   typedef std::vector<unsigned> Addresses;
   Addresses forward_callers;
 
-  CompilerContext ctx;
   char* function_body;  // FIXME: this is leaked
   bool exported;
   bool emitted;
@@ -59,6 +58,6 @@ protected:
   void register_instance();
   void unregister_instance();
 };
-}
-}
+}  // namespace Bscript
+}  // namespace Pol
 #endif

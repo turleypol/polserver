@@ -45,7 +45,6 @@ UserFunction::UserFunction()
       parameters(),
       position( 0 ),
       forward_callers(),
-      ctx(),
       function_body( nullptr ),
       exported( false ),
       emitted( false )
