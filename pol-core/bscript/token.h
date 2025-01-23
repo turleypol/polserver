@@ -61,13 +61,6 @@ public:
 
 protected:
   const char* token;
-#if STORE_INSTANCELIST
-  typedef set<Token*> Instances;
-  static Instances _instancelist;
-#endif
-  static unsigned int _instances;
-  void register_instance();
-  void unregister_instance();
 
 public:
   const char* tokval() const { return token; }

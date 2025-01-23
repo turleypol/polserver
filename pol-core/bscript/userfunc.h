@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "compctx.h"
 #include "token.h"
 
 namespace Pol
@@ -36,27 +35,12 @@ public:
   UserFunction();
   ~UserFunction() = default;
 
-  std::string name;
+  //  std::string name;
   typedef std::vector<UserParam> Parameters;
   Parameters parameters;
-  unsigned position;
-  typedef std::vector<unsigned> Addresses;
-  Addresses forward_callers;
+  // unsigned position;
 
-  char* function_body;  // FIXME: this is leaked
-  bool exported;
-  bool emitted;
-  std::string declaration;
-
-public:
-  static unsigned int instances();
-  static void show_instances();
-
-protected:
-  static unsigned int _instances;
-  static std::set<UserFunction*> _instancelist;
-  void register_instance();
-  void unregister_instance();
+  //  bool exported;
 };
 }  // namespace Bscript
 }  // namespace Pol

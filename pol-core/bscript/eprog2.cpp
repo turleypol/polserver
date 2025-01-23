@@ -13,7 +13,6 @@
 #include "../clib/passert.h"
 #include "../clib/rawtypes.h"
 #include "../clib/stlutil.h"
-#include "compctx.h"
 #include "eprog.h"
 /*#include "filefmt.h"
 #include "fmodule.h"

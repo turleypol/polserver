@@ -13,44 +13,6 @@ namespace Pol
 {
 namespace Bscript
 {
-unsigned int Token::_instances = 0;
-
-#if STORE_INSTANCELIST
-set<Token*> Token::_instancelist;
-#endif
-
-unsigned int Token::instances()
-{
-  return _instances;
-}
-void Token::show_instances()
-{
-#if STORE_INSTANCELIST
-  for ( Instances::iterator itr = _instancelist.begin(), end = _instancelist.end(); itr != end;
-        ++itr )
-  {
-    Token* tkn = ( *itr );
-    cout << tkn << ": " << ( *tkn ) << endl;
-  }
-#endif
-}
-
-void Token::register_instance()
-{
-  ++_instances;
-#if STORE_INSTANCELIST
-  _instancelist.insert( this );
-#endif
-}
-
-void Token::unregister_instance()
-{
-  --_instances;
-#if STORE_INSTANCELIST
-  _instancelist.erase( this );
-#endif
-}
-
 /**
  * Initializes an empty token
  */

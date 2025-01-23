@@ -30,7 +30,6 @@ class Package;
 }
 namespace Bscript
 {
-class CompilerContext;
 class FunctionalityModule;
 
 class Instruction
