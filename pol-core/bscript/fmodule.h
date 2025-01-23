@@ -48,7 +48,6 @@ public:
 
   boost_utils::function_name_flystring modulename;
 
-  bool isFunc( const char* funcName, ModuleFunction** pmf, int* funcidx );
   explicit FunctionalityModule( const char* modname );
   ~FunctionalityModule();
 

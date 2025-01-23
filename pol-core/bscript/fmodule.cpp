@@ -39,33 +39,6 @@ void FunctionalityModule::addFunction( const char* funcname, int nparams )
   functions.push_back( mf );
 }
 
-// compiler only:
-bool FunctionalityModule::isFunc( const char* funcName, ModuleFunction** pmf, int* funcidx )
-{
-  auto itr = functionsByName.find( funcName );
-  if ( itr != functionsByName.end() )
-  {
-    ModuleFunction* mf = ( *itr ).second;
-
-    if ( !mf->used )
-    {
-      mf->used = true;
-      int old_funcidx = mf->funcidx;
-      mf->funcidx = static_cast<unsigned int>( used_functions.size() );
-      used_functions.push_back( mf );
-      if ( old_funcidx != mf->funcidx )
-      {
-        std::swap( functions[old_funcidx], functions[mf->funcidx] );
-        functions[old_funcidx]->funcidx = old_funcidx;
-      }
-    }
-    *pmf = mf;
-    *funcidx = mf->funcidx;
-    return true;
-  }
-  return false;
-}
-
 void FunctionalityModule::fillFunctionsByName()
 {
   for ( auto& mf : functions )

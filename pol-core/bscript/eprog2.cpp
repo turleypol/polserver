@@ -254,7 +254,7 @@ void EScriptProgram::addToken( const Token& token )
   add_ins_dbg_info();
 }
 
-int EScriptProgram::write( const char* fname )
+/*int EScriptProgram::write( const char* fname )
 {
   EScriptProgram& program = *this;
   FILE* fp = fopen( fname, "wb" );
@@ -333,7 +333,7 @@ int EScriptProgram::write( const char* fname )
   fclose( fp );
   return 0;
 }
-
+*/
 
 EScriptProgramCheckpoint::EScriptProgramCheckpoint( const EScriptProgram& prog )
 {
