@@ -34,7 +34,7 @@ FunctionalityModule::~FunctionalityModule()
 
 void FunctionalityModule::addFunction( const char* funcname, int nparams )
 {
-  auto mf = new ModuleFunction( funcname, nparams, uf );
+  auto mf = new ModuleFunction( funcname, nparams );
   mf->funcidx = static_cast<unsigned int>( functions.size() );
   functions.push_back( mf );
 }
