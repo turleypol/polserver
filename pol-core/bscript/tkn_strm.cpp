@@ -46,7 +46,7 @@ void Token::printOn( std::ostream& os ) const
     break;
   case TOK_GLOBALVAR:
     os << "global #" << lval;
-    if ( token != nullptr )
+    if ( !token.empty() )
       os << " (" << token << ")";
     break;
 
