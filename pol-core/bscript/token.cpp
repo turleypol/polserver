@@ -25,9 +25,8 @@ Token::Token()
       dbg_linenum( 0 ),
       lval( 0 ),
       deprecated( false ),
-      ownsStr( false ),
       module( Mod_Basic ),
-      token( nullptr )
+      token()
 {
 }
 
@@ -43,17 +42,9 @@ Token::Token( const Token& tok )
       dbg_linenum( tok.dbg_linenum ),
       lval( tok.lval ),
       deprecated( tok.deprecated ),
-      ownsStr( false ),
       module( tok.module ),
-      token( nullptr )
+      token( tok.token )
 {
-  if ( tok.token )
-  {
-    if ( !tok.ownsStr )
-      setStr( tok.token );
-    else
-      copyStr( tok.token );
-  }
 }
 
 /**
@@ -66,16 +57,7 @@ Token& Token::operator=( const Token& tok )
   type = tok.type;
   precedence = tok.precedence;
   deprecated = tok.deprecated;
-
-  nulStr();
-  ownsStr = false;
-  if ( tok.token )
-  {
-    if ( !tok.ownsStr )
-      setStr( tok.token );
-    else
-      copyStr( tok.token );
-  }
+  token = tok.token;
   dval = tok.dval;
   lval = tok.lval;
 
@@ -94,9 +76,8 @@ Token::Token( ModuleID i_module, BTokenId i_id, BTokenType i_type )
       dbg_linenum( 0 ),
       lval( 0 ),
       deprecated( false ),
-      ownsStr( false ),
       module( static_cast<unsigned char>( i_module ) ),
-      token( nullptr )
+      token()
 {
 }
 
@@ -109,9 +90,8 @@ Token::Token( BTokenId i_id, BTokenType i_type )
       dbg_linenum( 0 ),
       lval( 0 ),
       deprecated( false ),
-      ownsStr( false ),
       module( Mod_Basic ),
-      token( nullptr )
+      token()
 {
 }
 
@@ -120,61 +100,13 @@ Token::Token( BTokenId i_id, BTokenType i_type )
  */
 void Token::nulStr()
 {
-  if ( token && ownsStr )
-  {
-    char* tmp = (char*)token;
-    delete[] tmp;
-  }
-  token = nullptr;
+  token.clear();
 }
 
-void Token::setStr( const char* s )
+void Token::setStr( std::string str )
 {
-  nulStr();
-  ownsStr = false;
-  token = s;
+  token = std::move( str );
 }
 
-/**
- * Copies value form the given null terminated char array into the String (s)
- */
-void Token::copyStr( const char* s )
-{
-  nulStr();
-  ownsStr = true;
-  size_t len = strlen( s );
-  auto tmp = new char[len + 1];
-  if ( tmp )
-  {
-    memcpy( tmp, s, len + 1 );
-    token = tmp;
-  }
-  else
-  {
-    token = nullptr;
-  }
-}
-
-void Token::copyStr( const char* s, int len )
-{
-  nulStr();
-  ownsStr = true;
-  auto tmp = new char[static_cast<size_t>( len + 1 )];
-  if ( tmp )
-  {
-    memcpy( tmp, s, len );
-    tmp[len] = '\0';
-    token = tmp;
-  }
-  else
-  {
-    token = nullptr;
-  }
-}
-
-Token::~Token()
-{
-  nulStr();
-}
 }  // namespace Bscript
 }  // namespace Pol

@@ -49,17 +49,16 @@ public:
     const unsigned char* dataptr;
   };
   bool deprecated;
-  bool ownsStr;
   unsigned char module;
 
   static unsigned int instances();
   static void show_instances();
 
 protected:
-  const char* token;
+  std::string token;
 
 public:
-  const char* tokval() const { return token; }
+  const char* tokval() const { return token.c_str(); }
   Token();
   Token( const Token& tok );
   Token& operator=( const Token& tok );
@@ -67,11 +66,9 @@ public:
   Token( ModuleID module, BTokenId id, BTokenType type );
   Token( BTokenId id, BTokenType type );
   void nulStr();
-  void setStr( const char* s );
-  void copyStr( const char* s );
-  void copyStr( const char* s, int len );
+  void setStr( std::string str );
 
-  ~Token();
+  ~Token() = default;
 
   void printOn( std::ostream& outputStream ) const;
 };
