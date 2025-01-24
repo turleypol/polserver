@@ -60,11 +60,7 @@ protected:
 public:
   const char* tokval() const { return token.c_str(); }
   Token();
-  Token( const Token& tok );
-  Token& operator=( const Token& tok );
 
-  Token( ModuleID module, BTokenId id, BTokenType type );
-  Token( BTokenId id, BTokenType type );
   void nulStr();
   void setStr( std::string str );
 
