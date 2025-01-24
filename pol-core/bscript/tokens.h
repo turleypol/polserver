@@ -314,12 +314,12 @@ inline auto format_as( BTokenId t )
 }
 }  // namespace Bscript
 
-namespace Clib
+/*namespace Clib
 {
 template <>
 std::string tostring<Bscript::BTokenType>( const Bscript::BTokenType& v );
 template <>
 std::string tostring<Bscript::BTokenId>( const Bscript::BTokenId& v );
-}  // namespace Clib
+}*/  // namespace Clib
 }  // namespace Pol
 #endif

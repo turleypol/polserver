@@ -15,19 +15,19 @@ namespace Clib
 /**
  * Template specialization for outputting the token type
  */
-template <>
+/*template <>
 std::string tostring( const Bscript::BTokenType& v )
 {
   return tostring( static_cast<int>( v ) );
 }
-
+*/
 /**
  * Template specialization for outputting the token ID
  */
-template <>
+/*template <>
 std::string tostring( const Bscript::BTokenId& v )
 {
   return tostring( static_cast<int>( v ) );
-}
-}
-}
+}*/
+}  // namespace Clib
+}  // namespace Pol
