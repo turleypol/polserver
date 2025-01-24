@@ -64,8 +64,6 @@ public:
   void nulStr();
   void setStr( std::string str );
 
-  ~Token() = default;
-
   void printOn( std::ostream& outputStream ) const;
 };
 
