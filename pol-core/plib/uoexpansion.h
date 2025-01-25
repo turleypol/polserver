@@ -167,7 +167,7 @@ public:
   ServerExpansion( A9Feature feature, const std::string& version /*, u8 slots */ )
       : expansion( getExpansionVersion( version ) ),
         ext_flags( getDefaultExpansionFlag( expansion ) ),
-        feature_flags( feature ),
+        feature_flags( feature )
         //      char_slots( slots )
         {};
 
