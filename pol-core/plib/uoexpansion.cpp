@@ -1,13 +1,12 @@
 #include "uoexpansion.h"
+#include <string_view>
 
 namespace Pol
 {
 namespace Plib
 {
-char* ExpansionNames[numExpansions] = { "T2A", "LBR", "AOS", "SE", "ML", "KR", "SA", "HSA" };
-B9Feature ExpansionFlags[numExpansions] = { B9Feature::T2A, B9Feature::LBR, B9Feature::AOS,
-                                            B9Feature::SE,  B9Feature::ML,  B9Feature::KRFaces,
-                                            B9Feature::SA,  B9Feature::HSA };
+constexpr std::array<std::string_view, numExpansions> ExpansionNames = {
+    "T2A", "LBR", "AOS", "SE", "ML", "KR", "SA", "HSA" };
 
 static_assert( B9Feature::DefaultT2A == 0x1 );
 static_assert( B9Feature::DefaultLBR == 0x2 );

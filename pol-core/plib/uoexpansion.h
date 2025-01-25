@@ -134,7 +134,7 @@ enum class ExpansionVersion : u8
   TOL,
   LastVersion = TOL
 };
-const int numExpansions = static_cast<int>( ExpansionVersion::LastVersion ) + 1;
+constexpr u8 numExpansions = static_cast<u8>( ExpansionVersion::LastVersion ) + 1;
 std::string getExpansionName( ExpansionVersion x );
 ExpansionVersion getExpansionVersion( const std::string& str );
 B9Feature getDefaultExpansionFlag( ExpansionVersion x );
