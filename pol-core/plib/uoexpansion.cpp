@@ -17,13 +17,10 @@ static_assert( B9Feature::DefaultSA == (B9Feature)0x187DF );
 static_assert( B9Feature::DefaultHSA == (B9Feature)0x387DF );
 static_assert( B9Feature::DefaultTOL == (B9Feature)0x7387DF );
 
-const std::string_view& getExpansionName( ExpansionVersion x )
+std::string getExpansionName( ExpansionVersion x )
 {
   if ( x > ExpansionVersion::LastVersion )
-  {
-    static std::string ext{};
-    return ext;
-  }
+    return "";
   return ExpansionNames[static_cast<u8>( x )];
 }
 
