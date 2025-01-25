@@ -1,5 +1,5 @@
 #include "uoexpansion.h"
-
+#include <array>
 namespace Pol::Plib
 {
 constexpr u8 numExpansions = static_cast<u8>( ExpansionVersion::LastVersion ) + 1;
