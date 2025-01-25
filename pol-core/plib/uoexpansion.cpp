@@ -27,7 +27,7 @@ const std::string_view& getExpansionName( ExpansionVersion x )
 
 ExpansionVersion getExpansionVersion( const std::string& str )
 {
-  for ( auto e = ExpansionVersion::T2A; e <= ExpansionVersion::LastVersion; ++e )
+  for ( auto e = (u8)ExpansionVersion::T2A; e <= (u8)ExpansionVersion::LastVersion; ++e )
   {
     if ( str.find( ExpansionNames[e] ) != std::string::npos )
       return e;
