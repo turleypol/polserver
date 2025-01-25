@@ -143,6 +143,7 @@ B9Feature getDefaultExpansionFlag( ExpansionVersion x );
 class AccountExpansion
 {
 public:
+  AccountExpansion() = default;
   AccountExpansion( const std::string& exp, B9Feature flag )
       : expansion( getExpansionVersion( exp ) ), ext_flags( flag ){};
   ExpansionVersion Expansion() const { return expansion; };
