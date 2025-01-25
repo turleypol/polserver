@@ -6,6 +6,8 @@ constexpr u8 numExpansions = static_cast<u8>( ExpansionVersion::LastVersion ) + 
 const std::array<std::string, numExpansions> ExpansionNames = { "T2A", "LBR", "AOS", "SE",
                                                                 "ML",  "KR",  "SA",  "HSA" };
 
+// make sure the flags have a defined value
+// to prevent accidential changes
 static_assert( B9Feature::DefaultT2A == (B9Feature)0x1 );
 static_assert( B9Feature::DefaultLBR == (B9Feature)0x2 );
 static_assert( B9Feature::DefaultAOS == (B9Feature)0x801B );
