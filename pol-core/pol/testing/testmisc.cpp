@@ -12,6 +12,7 @@
 #include "../../clib/logfacility.h"
 #include "../../clib/rawtypes.h"
 #include "../../plib/maptile.h"
+#include "../../plib/uoexpansion.h"
 #include "../dynproperties.h"
 #include "../globals/uvars.h"
 #include "../network/packethelper.h"
@@ -540,5 +541,13 @@ void clamp_test()
 #undef LMAX
 #undef LMIN
 }
+
+void uoextension_test()
+{
+  using namespace Plib;
+  UnitTest( []() { return AccoutExpansion( "AOS", B9Feature::AOS ).Expansion(); },
+            ExpansionVersion::AOS, "aos expansion" );
+}
+
 }  // namespace Testing
 }  // namespace Pol
