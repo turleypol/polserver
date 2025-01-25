@@ -165,6 +165,7 @@ public:
   A9Feature featureFlags() const { return feature_flags; };
   //  u8 maxCharacterSlots() const { return char_slots; };
 
+  ServerExpansion() = default;
   ServerExpansion( A9Feature feature, const std::string& version /*, u8 slots */ )
       : expansion( getExpansionVersion( version ) ),
         ext_flags( getDefaultExpansionFlag( expansion ) ),
