@@ -2,6 +2,7 @@
 #define PLIB_UOEXPANSION_H
 
 #include "../clib/rawtypes.h"
+#include <string_view>
 
 namespace Pol
 {
@@ -135,7 +136,7 @@ enum class ExpansionVersion : u8
   LastVersion = TOL
 };
 constexpr u8 numExpansions = static_cast<u8>( ExpansionVersion::LastVersion ) + 1;
-std::string getExpansionName( ExpansionVersion x );
+const std::string_view& getExpansionName( ExpansionVersion x );
 ExpansionVersion getExpansionVersion( const std::string& str );
 B9Feature getDefaultExpansionFlag( ExpansionVersion x );
 
