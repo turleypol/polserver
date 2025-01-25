@@ -36,28 +36,28 @@ ExpansionVersion getExpansionVersion( const std::string& str )
   }
   return ExpansionVersion::T2A;
 }
-B9Flags getDefaultExpansionFlag( ExpansionVersion x )
+B9Feature getDefaultExpansionFlag( ExpansionVersion x )
 {
   switch ( x )
   {
   case ExpansionVersion::T2A:
-    return B9Flags::DefaultT2A;
+    return B9Feature::DefaultT2A;
   case ExpansionVersion::LBR:
-    return B9Flags::DefaultLBR;
+    return B9Feature::DefaultLBR;
   case ExpansionVersion::AOS:
-    return B9Flags::DefaultAOS;
+    return B9Feature::DefaultAOS;
   case ExpansionVersion::SE:
-    return B9Flags::DefaultSE;
+    return B9Feature::DefaultSE;
   case ExpansionVersion::ML:
-    return B9Flags::DefaultML;
+    return B9Feature::DefaultML;
   case ExpansionVersion::KR:
-    return B9Flags::DefaultKR;
+    return B9Feature::DefaultKR;
   case ExpansionVersion::SA:
-    return B9Flags::DefaultSA;
+    return B9Feature::DefaultSA;
   case ExpansionVersion::HSA:
-    return B9Flags::DefaultHSA;
+    return B9Feature::DefaultHSA;
   case ExpansionVersion::TOL:
-    return B9Flags::DefaultTOL;
+    return B9Feature::DefaultTOL;
   }
   return B9Flags::DefaultT2A;
 }

@@ -137,21 +137,22 @@ enum class ExpansionVersion : u8
 const int numExpansions = static_cast<int>( ExpansionVersion::LastVersion ) + 1;
 std::string getExpansionName( ExpansionVersion x );
 ExpansionVersion getExpansionVersion( const std::string& str );
-B9Flags getDefaultExpansionFlag( ExpansionVersion x );
+B9Feature getDefaultExpansionFlag( ExpansionVersion x );
 
 // hold per account
 class AccountExpansion
 {
 public:
-  AccountExpansion( const std::string& exp, B9Flag flag ) : expansion( exp ), ext_flags( flag ){};
+  AccountExpansion( const std::string& exp, B9Feature flag )
+      : expansion( exp ), ext_flags( flag ){};
   ExpansionVersion Expansion() const { return expansion; };
-  B9Flags extensionFlags() const { return ext_flags; };
+  B9Feature extensionFlags() const { return ext_flags; };
 
 private:
   ExpansionVersion expansion =
       ExpansionVersion::T2A;  // TODO needed? could save the flags or string depending if its
                               // default or not if flags can be changed
-  B9Flags ext_flags = B9Flags::DefaultT2A;
+  B9Feature ext_flags = B9Feature::DefaultT2A;
 };
 
 // hold in server
@@ -159,11 +160,11 @@ class ServerExpansion
 {
 public:
   ExpansionVersion Expansion() const { return expansion; };
-  B9Flags extensionFlags() const { return ext_flags; };
-  A9Flags featureFlags() const { return feature_flags; };
+  B9Feature extensionFlags() const { return ext_flags; };
+  A9Feature featureFlags() const { return feature_flags; };
   //  u8 maxCharacterSlots() const { return char_slots; };
 
-  ServerExpansion( A9Flags feature, const std::string& version /*, u8 slots */ )
+  ServerExpansion( A9Feature feature, const std::string& version /*, u8 slots */ )
       : expansion( getExpansionVersion( version ) ),
         ext_flags( getDefaultExpansionFlag( expansion ) ),
         feature_flags( feature ),
@@ -172,8 +173,8 @@ public:
 
 private:
   ExpansionVersion expansion = ExpansionVersion::T2A;
-  B9Flags ext_flags = B9Flags::DefaultT2A;
-  A9Flags feature_flags = A9Flags::None;
+  B9Feature ext_flags = B9Feature::DefaultT2A;
+  A9Feature feature_flags = A9Feature::None;
   //  u8 char_slots = 5;
 };
 
