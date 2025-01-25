@@ -81,6 +81,7 @@ inline constexpr B9Feature& operator&=( B9Feature& a, B9Feature b )
 
 enum class A9Feature : u32
 {
+  None = 0x0,
   Unk1 = 0x01,             // Unknown, never sent by OSI
   ConfigReqLogout = 0x02,  // Send config/req logout (IGR? overwrite configuration button?)
   SingleCharacter = 0x04,  // Siege style 1 char/acct
@@ -134,8 +135,47 @@ enum class ExpansionVersion : u8
   LastVersion = TOL
 };
 const int numExpansions = static_cast<int>( ExpansionVersion::LastVersion ) + 1;
-const char* getExpansionName( ExpansionVersion x );
+std::string getExpansionName( ExpansionVersion x );
 ExpansionVersion getExpansionVersion( const std::string& str );
+B9Flags getDefaultExpansionFlag( ExpansionVersion x );
+
+// hold per account
+class AccountExpansion
+{
+public:
+  AccountExpansion( const std::string& exp, B9Flag flag ) : expansion( exp ), ext_flags( flag ){};
+  ExpansionVersion Expansion() const { return expansion; };
+  B9Flags extensionFlags() const { return ext_flags; };
+
+private:
+  ExpansionVersion expansion =
+      ExpansionVersion::T2A;  // TODO needed? could save the flags or string depending if its
+                              // default or not if flags can be changed
+  B9Flags ext_flags = B9Flags::DefaultT2A;
+};
+
+// hold in server
+class ServerExpansion
+{
+public:
+  ExpansionVersion Expansion() const { return expansion; };
+  B9Flags extensionFlags() const { return ext_flags; };
+  A9Flags featureFlags() const { return feature_flags; };
+  //  u8 maxCharacterSlots() const { return char_slots; };
+
+  ServerExpansion( A9Flags feature, const std::string& version /*, u8 slots */ )
+      : expansion( getExpansionVersion( version ) ),
+        ext_flags( getDefaultExpansionFlag( expansion ) ),
+        feature_flags( feature ),
+        //      char_slots( slots )
+        {};
+
+private:
+  ExpansionVersion expansion = ExpansionVersion::T2A;
+  B9Flags ext_flags = B9Flags::DefaultT2A;
+  A9Flags feature_flags = A9Flags::None;
+  //  u8 char_slots = 5;
+};
 
 class UOExpansion
 {
@@ -149,7 +189,6 @@ public:
   virtual ExpansionVersion version() const { return ExpansionVersion::T2A; }
   virtual int characterSlots() const { return 5; }
 };
-
 class ClientFeatures
 {
   const UOExpansion& m_expansion;

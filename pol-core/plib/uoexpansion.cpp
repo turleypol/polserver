@@ -19,7 +19,7 @@ static_assert( B9Feature::DefaultSA == 0x187DF );
 static_assert( B9Feature::DefaultHSA == 0x387DF );
 static_assert( B9Feature::DefaultTOL == 0x7387DF );
 
-const char* getExpansionName( ExpansionVersion x )
+std::string getExpansionName( ExpansionVersion x )
 {
   if ( x > ExpansionVersion::LastVersion )
     return "";
@@ -35,6 +35,31 @@ ExpansionVersion getExpansionVersion( const std::string& str )
       return e;
   }
   return ExpansionVersion::T2A;
+}
+B9Flags getDefaultExpansionFlag( ExpansionVersion x )
+{
+  switch ( x )
+  {
+  case ExpansionVersion::T2A:
+    return B9Flags::DefaultT2A;
+  case ExpansionVersion::LBR:
+    return B9Flags::DefaultLBR;
+  case ExpansionVersion::AOS:
+    return B9Flags::DefaultAOS;
+  case ExpansionVersion::SE:
+    return B9Flags::DefaultSE;
+  case ExpansionVersion::ML:
+    return B9Flags::DefaultML;
+  case ExpansionVersion::KR:
+    return B9Flags::DefaultKR;
+  case ExpansionVersion::SA:
+    return B9Flags::DefaultSA;
+  case ExpansionVersion::HSA:
+    return B9Flags::DefaultHSA;
+  case ExpansionVersion::TOL:
+    return B9Flags::DefaultTOL;
+  }
+  return B9Flags::DefaultT2A;
 }
 }  // namespace Plib
 }  // namespace Pol
