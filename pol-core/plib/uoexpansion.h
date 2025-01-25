@@ -135,7 +135,7 @@ enum class ExpansionVersion : u8
 };
 const int numExpansions = static_cast<int>( ExpansionVersion::LastVersion ) + 1;
 const char* getExpansionName( ExpansionVersion x );
-
+ExpansionVersion getExpansionVersion( const std::string& str );
 
 class UOExpansion
 {

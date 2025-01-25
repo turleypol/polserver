@@ -26,5 +26,15 @@ const char* getExpansionName( ExpansionVersion x )
 
   return ExpansionNames[static_cast<u8>( x )];
 }
+
+ExpansionVersion getExpansionVersion( const std::string& str )
+{
+  for ( auto e = ExpansionVersion::T2A; e <= ExpansionVersion::LastVersion; ++e )
+  {
+    if ( str.find( ExpansionNames[e] ) != std::string::npos )
+      return e;
+  }
+  return ExpansionVersion::T2A;
+}
 }  // namespace Plib
 }  // namespace Pol
