@@ -144,7 +144,7 @@ class AccountExpansion
 {
 public:
   AccountExpansion( const std::string& exp, B9Feature flag )
-      : expansion( exp ), ext_flags( flag ){};
+      : expansion( getExpansionVersion( exp ) ), ext_flags( flag ){};
   ExpansionVersion Expansion() const { return expansion; };
   B9Feature extensionFlags() const { return ext_flags; };
 
