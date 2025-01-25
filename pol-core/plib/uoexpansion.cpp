@@ -4,8 +4,8 @@ namespace Pol
 {
 namespace Plib
 {
-constexpr std::array<std::string_view, numExpansions> ExpansionNames = {
-    "T2A", "LBR", "AOS", "SE", "ML", "KR", "SA", "HSA" };
+constexpr std::array<std::string, numExpansions> ExpansionNames = { "T2A", "LBR", "AOS", "SE",
+                                                                    "ML",  "KR",  "SA",  "HSA" };
 
 static_assert( B9Feature::DefaultT2A == (B9Feature)0x1 );
 static_assert( B9Feature::DefaultLBR == (B9Feature)0x2 );
