@@ -1,12 +1,9 @@
-#ifndef PLIB_UOEXPANSION_H
-#define PLIB_UOEXPANSION_H
+#pragma once
 
 #include "../clib/rawtypes.h"
-#include <string_view>
+#include <string>
 
-namespace Pol
-{
-namespace Plib
+namespace Pol::Plib
 {
 enum class B9Feature : u32
 {
@@ -135,7 +132,6 @@ enum class ExpansionVersion : u8
   TOL,
   LastVersion = TOL
 };
-constexpr u8 numExpansions = static_cast<u8>( ExpansionVersion::LastVersion ) + 1;
 std::string getExpansionName( ExpansionVersion x );
 ExpansionVersion getExpansionVersion( const std::string& str );
 B9Feature getDefaultExpansionFlag( ExpansionVersion x );
@@ -180,7 +176,7 @@ private:
   A9Feature feature_flags = A9Feature::None;
   //  u8 char_slots = 5;
 };
-
+/*
 class UOExpansion
 {
 public:
@@ -244,6 +240,6 @@ public:
   virtual ExpansionVersion version() const override { return m_version; }
   virtual int characterSlots() const override { return m_slots; }
 };
-}  // namespace Plib
-}  // namespace Pol
+*/
+}  // namespace Pol::Plib
 #endif

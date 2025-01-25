@@ -1,9 +1,8 @@
 #include "uoexpansion.h"
 
-namespace Pol
+namespace Pol::Plib
 {
-namespace Plib
-{
+constexpr u8 numExpansions = static_cast<u8>( ExpansionVersion::LastVersion ) + 1;
 const std::array<std::string, numExpansions> ExpansionNames = { "T2A", "LBR", "AOS", "SE",
                                                                 "ML",  "KR",  "SA",  "HSA" };
 
@@ -33,6 +32,7 @@ ExpansionVersion getExpansionVersion( const std::string& str )
   }
   return ExpansionVersion::T2A;
 }
+
 B9Feature getDefaultExpansionFlag( ExpansionVersion x )
 {
   switch ( x )
@@ -58,5 +58,4 @@ B9Feature getDefaultExpansionFlag( ExpansionVersion x )
   }
   return B9Feature::DefaultT2A;
 }
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib
