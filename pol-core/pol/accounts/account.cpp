@@ -65,7 +65,7 @@ void Account::readfrom( Clib::ConfigElem& elem )
   banned_ = elem.remove_bool( "BANNED", false );
   auto exp = elem.remove_string(
       "UOExpansion",
-      Plib::getExpansionName( Core::settingsManager.ssopt.expansion.Expansion().c_str() ) );
+      Plib::getExpansionName( Core::settingsManager.ssopt.expansion.Expansion() ).c_str() );
   uo_expansion_ = convert_uo_expansion( exp );
   expansion_ = Plib::AccountExpansion(
       exp, Core::settingsManager.ssopt.expansion.extensionFlags() );  // store flags?
