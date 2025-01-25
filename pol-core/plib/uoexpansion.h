@@ -242,4 +242,3 @@ public:
 };
 */
 }  // namespace Pol::Plib
-#endif
