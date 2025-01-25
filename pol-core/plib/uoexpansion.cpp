@@ -20,8 +20,10 @@ static_assert( B9Feature::DefaultTOL == (B9Feature)0x7387DF );
 const std::string_view& getExpansionName( ExpansionVersion x )
 {
   if ( x > ExpansionVersion::LastVersion )
-    return "";
-
+  {
+    static std::string ext{};
+    return ext;
+  }
   return ExpansionNames[static_cast<u8>( x )];
 }
 
@@ -30,7 +32,7 @@ ExpansionVersion getExpansionVersion( const std::string& str )
   for ( auto e = (u8)ExpansionVersion::T2A; e <= (u8)ExpansionVersion::LastVersion; ++e )
   {
     if ( str.find( ExpansionNames[e] ) != std::string::npos )
-      return e;
+      return static_cast<ExpansionVersion>( e );
   }
   return ExpansionVersion::T2A;
 }
@@ -57,7 +59,7 @@ B9Feature getDefaultExpansionFlag( ExpansionVersion x )
   case ExpansionVersion::TOL:
     return B9Feature::DefaultTOL;
   }
-  return B9Flags::DefaultT2A;
+  return B9Feature::DefaultT2A;
 }
 }  // namespace Plib
 }  // namespace Pol
