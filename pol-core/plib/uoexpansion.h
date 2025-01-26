@@ -204,6 +204,5 @@ inline auto format_as( A9Feature t )
 inline auto format_as( ExpansionVersion t )
 {
   return getExpansionName( t );
-  ;
 }
 }  // namespace Pol::Plib

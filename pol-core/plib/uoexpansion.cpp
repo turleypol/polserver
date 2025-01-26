@@ -91,7 +91,7 @@ A9Feature AccountExpansion::featureFlags( const ServerExpansion& server ) const
   return clientflag;
 }
 
-u8 AccountExpansion::getCharSlots( const ServerExpansion& serverr ) const
+u8 AccountExpansion::getCharSlots( const ServerExpansion& server ) const
 {
   u8 char_slots = server.maxCharacterSlots();
   // If more than 6 chars and no AOS, only send 5. Client is so boring sometimes...
