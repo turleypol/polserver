@@ -61,7 +61,7 @@ B9Feature getDefaultExpansionFlag( ExpansionVersion x )
   return B9Feature::DefaultT2A;
 }
 
-A9Feature AccountExpansion::featureFlags( const ServerExpansion& server, u8 max_slots ) const;
+A9Feature AccountExpansion::featureFlags( const ServerExpansion& server, u8 max_slots ) const
 {
   auto clientflag = server.featureFlags();
   clientflag |= A9Feature::UO3DClientType;  // Let UO3D (KR,SA) send 0xE1 packet
