@@ -161,7 +161,7 @@ public:
 
 
   ServerExpansion() = default;
-  ServerExpansion( A9Feature feature, const std::string& version FaceSupport face /*, u8 slots */ )
+  ServerExpansion( A9Feature feature, const std::string& version, FaceSupport face /*, u8 slots */ )
       : expansion( getExpansionVersion( version ) ),
         ext_flags( getDefaultExpansionFlag( expansion ) ),
         feature_flags( feature ),
