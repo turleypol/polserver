@@ -60,4 +60,30 @@ B9Feature getDefaultExpansionFlag( ExpansionVersion x )
   }
   return B9Feature::DefaultT2A;
 }
+
+A9Feature AccountExpansion::featureFlags( const ServerExpansion& server, u8 max_slots ) const;
+{
+  auto clientflag = server.featureFlags();
+  clientflag |= A9Feature::UO3DClientType;  // Let UO3D (KR,SA) send 0xE1 packet
+
+  auto char_slots = getCharSlots( max_slots );
+
+  if ( char_slots == 7 )
+    clientflag |= A9Feature::Has7thSlot;  // 7th Character flag
+  else if ( char_slots == 6 )
+    clientflag |= A9Feature::Has6thSlot;  // 6th Character Flag
+  else if ( char_slots == 1 )
+    clientflag |= A9Feature::SingleCharacter |
+                  A9Feature::LimitSlots;  // Only one character (SIEGE (0x04) + LIMIT_CHAR (0x10))
+  return clientflag;
+}
+
+u8 AccountExpansion::getCharSlots( u8 max_allowed ) const
+{
+  u8 char_slots = max_allowed;
+  // If more than 6 chars and no AOS, only send 5. Client is so boring sometimes...
+  if ( char_slots >= 6 && ( Expansion() < ExpansionVersion::AOS ) )
+    char_slots = 5;
+  return char_slots;
+}
 }  // namespace Pol::Plib

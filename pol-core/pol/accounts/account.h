@@ -41,6 +41,7 @@ public:
   const std::string uo_expansion() const;
   unsigned short uo_expansion_flag() const;
   static unsigned short convert_uo_expansion( const std::string& expansion );
+  const Plib::AccountExpansion& expansion() { return expansion_; };
   bool enabled() const;
   bool banned() const;
 

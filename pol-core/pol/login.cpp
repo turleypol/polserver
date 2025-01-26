@@ -337,21 +337,11 @@ void send_start( Network::Client* client )
       client );  // Shinigami: moved from start_client_char() to send before char selection
 
   unsigned i;
-  unsigned char char_slots;  // number of slots according to expansion, avoids crashing people
-  unsigned char char_count;  // number of chars to send: Max(char_slots, 5)
 
-  char_slots = Clib::clamp_convert<u8>(
-      Plib::systemstate.config
-          .character_slots );  // sets it first to be the number defined in the config
-  // TODO: Per account character slots? (With the actual character_slots defining maximum)
-
-  // If more than 6 chars and no AOS, only send 5. Client is so boring sometimes...
-  if ( char_slots >= 6 && !( client->UOExpansionFlag & Network::AOS ) )
-    char_slots = 5;
-
-  char_count = 5;                 // UO always expects a minimum of 5? What a kludge...
-  if ( char_slots > char_count )  // Max(char_slots, 5)
-    char_count = char_slots;
+  u8 char_slots =
+      client->acct->expansion().getCharSlots( Plib::systemstate.config.character_slots );
+  // client always expects at least 5 chars
+  u8 char_count = std::max( char_slots, 5 );
 
   Network::PktHelper::PacketOut<Network::PktOut_A9> msg;
   msg->offset += 2;
