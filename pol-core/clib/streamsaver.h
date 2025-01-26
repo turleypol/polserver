@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iosfwd>
 #include <iterator>
+#include <memory>
 #include <string>
 #include <type_traits>
 
@@ -52,7 +53,7 @@ public:
 
 protected:
   std::ostream& _stream;
-  std::vector<char> _buf;
+  std::unique_ptr<char[]> _buf;
 };
 
 }  // namespace Pol::Clib
