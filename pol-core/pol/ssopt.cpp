@@ -88,7 +88,7 @@ void ServSpecOpt::read_servspecopt()
   settingsManager.ssopt.support_faces =
       static_cast<unsigned char>( elem.remove_ushort( "SupportFaces", 0 ) );
   settingsManager.ssopt.uo_feature_enable = a9flag;
-  settingsManager.ssopt.expansion = Plib::ServerExpansion(
+  settingsManager.ssopt.expansion.updateFromSSOpt(
       a9flag, default_expansion, (Plib::FaceSupport)settingsManager.ssopt.support_faces );
   settingsManager.ssopt.starting_gold = elem.remove_ushort( "StartingGold", 100 );
   settingsManager.ssopt.item_color_mask = elem.remove_ushort( "ItemColorMask", 0xFFF );

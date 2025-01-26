@@ -61,12 +61,25 @@ B9Feature getDefaultExpansionFlag( ExpansionVersion x )
   return B9Feature::DefaultT2A;
 }
 
-A9Feature AccountExpansion::featureFlags( const ServerExpansion& server, u8 max_slots ) const
+void ServerExpansion::updateFromSSOpt( A9Feature feature, const std::string& version,
+                                       FaceSupport face )
+{
+  expansion = getExpansionVersion( version );
+  ext_flags = getDefaultExpansionFlag( expansion );
+  feature_flags = feature;
+  face_support = face;
+}
+void ServerExpansion::updateFromPolCfg( u8 max_char_slots )
+{
+  char_slots = max_char_slots;
+}
+
+A9Feature AccountExpansion::featureFlags( const ServerExpansion& server ) const
 {
   auto clientflag = server.featureFlags();
   clientflag |= A9Feature::UO3DClientType;  // Let UO3D (KR,SA) send 0xE1 packet
 
-  auto char_slots = getCharSlots( max_slots );
+  auto char_slots = getCharSlots( server );
 
   if ( char_slots == 7 )
     clientflag |= A9Feature::Has7thSlot;  // 7th Character flag
@@ -78,12 +91,39 @@ A9Feature AccountExpansion::featureFlags( const ServerExpansion& server, u8 max_
   return clientflag;
 }
 
-u8 AccountExpansion::getCharSlots( u8 max_allowed ) const
+u8 AccountExpansion::getCharSlots( const ServerExpansion& serverr ) const
 {
-  u8 char_slots = max_allowed;
+  u8 char_slots = server.maxCharacterSlots();
   // If more than 6 chars and no AOS, only send 5. Client is so boring sometimes...
   if ( char_slots >= 6 && ( Expansion() < ExpansionVersion::AOS ) )
     char_slots = 5;
   return char_slots;
+}
+
+B9Feature AccountExpansion::calculatedExtensionFlags( const ServerExpansion& server ) const
+{
+  auto clientflag = extensionFlags();
+  // Change flag according to the number of CharacterSlots
+  if ( Expansion() >= ExpansionVersion::AOS )
+  {
+    if ( server.maxCharacterSlots() == 7 )
+    {
+      clientflag |= B9Feature::Has7thSlot;  // 7th & 6th character flag (B9 Packet)
+      clientflag &= ~B9Feature::ThirdDawn;  // Disable Third Dawn? TODO sounds wrong
+    }
+    else if ( server.maxCharacterSlots() == 6 )
+    {
+      clientflag |= B9Feature::Has6thSlot;  // 6th character flag (B9 Packet)
+      clientflag &= ~B9Feature::ThirdDawn;  // TODO sounds wrong
+    }
+  }
+
+  // Roleplay faces?
+  if ( Expansion() >= ExpansionVersion::KR )
+  {
+    if ( server.faceSupport() == Plib::FaceSupport::RolePlay )
+      clientflag |= B9Feature::KRFaces;
+  }
+  return clientflag;
 }
 }  // namespace Pol::Plib

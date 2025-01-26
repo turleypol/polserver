@@ -150,7 +150,7 @@ public:
   ExpansionVersion Expansion() const { return expansion; };
   B9Feature extensionFlags() const { return ext_flags; };
   A9Feature featureFlags() const { return feature_flags; };
-  //  u8 maxCharacterSlots() const { return char_slots; };
+  u8 maxCharacterSlots() const { return char_slots; };
 
   bool supportsAOS() const { return supportsFeature( A9Feature::AOS ); };
   bool supportsFeature( A9Feature flag ) const
@@ -161,19 +161,14 @@ public:
 
 
   ServerExpansion() = default;
-  ServerExpansion( A9Feature feature, const std::string& version, FaceSupport face /*, u8 slots */ )
-      : expansion( getExpansionVersion( version ) ),
-        ext_flags( getDefaultExpansionFlag( expansion ) ),
-        feature_flags( feature ),
-        face_support( face )
-        //      char_slots( slots )
-        {};
+  void updateFromPolCfg( u8 max_char_slots );
+  void updateFromSSOpt( A9Feature feature, const std::string& version, FaceSupport face );
 
 private:
   ExpansionVersion expansion = ExpansionVersion::T2A;
   B9Feature ext_flags = B9Feature::DefaultT2A;  // needed?
   A9Feature feature_flags = A9Feature::None;
-  //  u8 char_slots = 5; // mmmh its a pol.cfg setting...
+  u8 char_slots = 5;  // pol.cfg setting...
   FaceSupport face_support = FaceSupport::None;
 };
 
@@ -186,8 +181,9 @@ public:
       : expansion( getExpansionVersion( exp ) ), ext_flags( flag ){};
   ExpansionVersion Expansion() const { return expansion; };
   B9Feature extensionFlags() const { return ext_flags; };
-  A9Feature featureFlags( const ServerExpansion& server, u8 max_slots ) const;
-  u8 getCharSlots( u8 max_allowed ) const;
+  A9Feature featureFlags( const ServerExpansion& server ) const;
+  B9Feature calculatedExtensionFlags( const ServerExpansion& server ) const;
+  u8 getCharSlots( const ServerExpansion& server ) const;
 
 private:
   ExpansionVersion expansion =

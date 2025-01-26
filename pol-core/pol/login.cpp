@@ -336,10 +336,7 @@ void send_start( Network::Client* client )
   send_feature_enable(
       client );  // Shinigami: moved from start_client_char() to send before char selection
 
-  unsigned i;
-
-  u8 char_slots =
-      client->acct->expansion().getCharSlots( Plib::systemstate.config.character_slots );
+  u8 char_slots = client->acct->expansion().getCharSlots( Plib::systemstate.config );
   // client always expects at least 5 chars
   u8 char_count = std::max( char_slots, (u8)5u );
 
@@ -347,7 +344,7 @@ void send_start( Network::Client* client )
   msg->offset += 2;
   msg->Write<u8>( char_count );
 
-  for ( i = 0; i < char_count; i++ )
+  for ( u8 i = 0; i < char_count; i++ )
   {
     if ( i < char_slots )  // Small kludge to have a minimum of 5 chars in the packet
     {
@@ -367,7 +364,7 @@ void send_start( Network::Client* client )
 
   msg->Write<u8>( gamestate.startlocations.size() );
 
-  for ( i = 0; i < gamestate.startlocations.size(); i++ )
+  for ( size_t i = 0; i < gamestate.startlocations.size(); i++ )
   {
     msg->Write<u8>( i );
     if ( client->ClientType & Network::CLIENTTYPE_70130 )
@@ -391,20 +388,7 @@ void send_start( Network::Client* client )
     }
   }
 
-  auto clientflag = settingsManager.ssopt.uo_feature_enable;  // 'default' flags. Maybe auto-enable
-                                                              // them according to the expansion?
-
-  clientflag |= Plib::A9Feature::UO3DClientType;  // Let UO3D (KR,SA) send 0xE1 packet
-
-  // Change this to a function for clarity? -- Nando
-  if ( char_slots == 7 )
-    clientflag |= Plib::A9Feature::Has7thSlot;  // 7th Character flag
-  else if ( char_slots == 6 )
-    clientflag |= Plib::A9Feature::Has6thSlot;  // 6th Character Flag
-  else if ( char_slots == 1 )
-    clientflag |=
-        Plib::A9Feature::SingleCharacter |
-        Plib::A9Feature::LimitSlots;  // Only one character (SIEGE (0x04) + LIMIT_CHAR (0x10))
+  auto clientflag = client->acct->expansion().featureFlags( settingsManager.ssopt.expansion );
 
   msg->WriteFlipped<u32>( static_cast<u32>( clientflag ) );
   u16 len = msg->offset;
