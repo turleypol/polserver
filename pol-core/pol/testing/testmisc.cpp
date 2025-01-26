@@ -545,7 +545,7 @@ void clamp_test()
 void uoextension_test()
 {
   using namespace Plib;
-  UnitTest( []() { return AccoutExpansion( "AOS", B9Feature::AOS ).Expansion(); },
+  UnitTest( []() { return AccountExpansion( "AOS", B9Feature::AOS ).Expansion(); },
             ExpansionVersion::AOS, "aos expansion" );
 }
 
