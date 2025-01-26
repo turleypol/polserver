@@ -52,6 +52,7 @@ public:
 
 protected:
   std::ostream& _stream;
+  std::vector<char> _buf;
 };
 
 }  // namespace Pol::Clib

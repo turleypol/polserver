@@ -2,6 +2,7 @@
 #include <fstream>
 #include <ios>
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "streamsaver.h"
@@ -12,8 +13,10 @@ StreamWriter::StreamWriter( std::ostream& stream ) : _stream( stream ) {}
 
 void StreamWriter::open_fstream( const std::string& filepath, std::ofstream& s )
 {
+  _buf.reserve( 1024 * 1024 );
   s.exceptions( std::ios_base::failbit | std::ios_base::badbit );
   s.open( filepath, std::ios::out | std::ios::trunc );
+  s.rdbuf()->pubsetbuf( _buf.data(), _buf.capacity() );
 }
 
 void StreamWriter::flush_file()
