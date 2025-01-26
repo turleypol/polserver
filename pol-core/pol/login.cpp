@@ -336,7 +336,7 @@ void send_start( Network::Client* client )
   send_feature_enable(
       client );  // Shinigami: moved from start_client_char() to send before char selection
 
-  u8 char_slots = client->acct->expansion().getCharSlots( Plib::systemstate.config );
+  u8 char_slots = client->acct->expansion().getCharSlots( settingsManager.ssopt.expansion );
   // client always expects at least 5 chars
   u8 char_count = std::max( char_slots, (u8)5u );
 
