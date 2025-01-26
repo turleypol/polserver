@@ -162,8 +162,11 @@ public:
   A9Feature featureFlags() const { return feature_flags; };
   //  u8 maxCharacterSlots() const { return char_slots; };
 
-  bool supportsAOS() const { return feature_flags & A9Feature::AOS == A9Feature::AOS; };
-
+  bool supportsAOS() const { return supportsFeature( A9Feature::AOS ); };
+  bool supportsFeature( A9Feature flag ) const
+  {
+    return ( feature_flags & flag ) != A9Feature::None;
+  };
   ServerExpansion() = default;
   ServerExpansion( A9Feature feature, const std::string& version /*, u8 slots */ )
       : expansion( getExpansionVersion( version ) ),
