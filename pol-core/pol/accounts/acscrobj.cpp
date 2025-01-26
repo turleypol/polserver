@@ -381,7 +381,7 @@ Bscript::BObjectImp* AccountObjImp::call_polmethod_id( const int id, Core::UOExe
       {
         obj_->uo_expansion_ = obj_->convert_uo_expansion( expansion_str->value() );
         obj_->expansion_ = Plib::AccountExpansion(
-            Plib::getExpansionVersion( expansion_str->value() ),
+            expansion_str->value(),
             Core::settingsManager.ssopt.expansion.extensionFlags() );  // store flags?
         for ( unsigned short i = 0; i < Plib::systemstate.config.character_slots; i++ )
         {
