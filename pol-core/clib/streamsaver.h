@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <fstream>
 #include <iosfwd>
 #include <iterator>
@@ -12,7 +13,7 @@ namespace Pol::Clib
 class StreamWriter
 {
 public:
-  StreamWriter( std::ofstream stream );
+  StreamWriter( std::ostream& stream );
   ~StreamWriter() = default;
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;
@@ -50,7 +51,7 @@ public:
   void flush_file();
 
 protected:
-  std::ofstream& _stream;
+  std::ostream& _stream;
 };
 
 }  // namespace Pol::Clib
