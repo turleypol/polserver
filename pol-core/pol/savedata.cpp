@@ -89,7 +89,7 @@ SaveContext::SaveContext()
 {
   pol.open_fstream( Plib::systemstate.config.world_data_path + "pol.ndt", _pol );
   objects.open_fstream( Plib::systemstate.config.world_data_path + "objects.ndt", _objects );
-  pcs.open_fstream( Plib::systemstate.config.world_data_path + "pcs.ndt" );
+  pcs.open_fstream( Plib::systemstate.config.world_data_path + "pcs.ndt", _pcs );
   pcequip.open_fstream( Plib::systemstate.config.world_data_path + "pcequip.ndt", _pcequip );
   npcs.open_fstream( Plib::systemstate.config.world_data_path + "npcs.ndt", _npcs );
   npcequip.open_fstream( Plib::systemstate.config.world_data_path + "npcequip.ndt", _npcequip );
