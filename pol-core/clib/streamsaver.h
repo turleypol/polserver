@@ -20,7 +20,7 @@ class StreamWriter
 {
 public:
   StreamWriter( std::ofstream* stream );
-  ~StreamWriter() noexcept( false );
+  ~StreamWriter() = default;
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;
 
@@ -52,24 +52,15 @@ public:
   {
     fmt::print( *_stream, "{} {}\n{{\n", key, value );
   }
-  void end()
-  {
-    *_stream << "}\n\n";
-    flush_test();
-  }
+  void end() { *_stream << "}\n\n"; }
   void init( const std::string& filepath );
-  void flush();
   void flush_file();
-  const std::string& buffer() const { return _buf; };
 
 protected:
-  void flush_test();
-  std::string _buf = {};
   std::ofstream* _stream;
 #if 0
       Tools::HighPerfTimer::time_mu _fs_time;
 #endif
-  std::string _stream_name;
 };
 
 }  // namespace Clib
