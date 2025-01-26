@@ -27,33 +27,33 @@ public:
   void add( Str&& key, T&& value )
   {
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )  // force bool to write as 0/1
-      fmt::format_to( std::back_inserter( _buf ), "\t{}\t{}\n", key, value );
+      fmt::print( *_stream, "\t{}\t{}\n", key, value );
     else
-      fmt::format_to( std::back_inserter( _buf ), "\t{}\t{:d}\n", key, value );
+      fmt::print( *_stream, "\t{}\t{:d}\n", key, value );
   }
   template <typename Str, typename... Args>
   void comment( Str&& format, Args&&... args )
   {
-    _buf += "# ";
+    *_stream << "# ";
     if constexpr ( sizeof...( args ) == 0 )
-      _buf += format;
+      *_stream << format;
     else
-      fmt::format_to( std::back_inserter( _buf ), format, args... );
-    _buf += '\n';
+      fmt::print( *_stream, format, args... );
+    *_stream << '\n';
   }
   template <typename Str>
   void begin( Str&& key )
   {
-    fmt::format_to( std::back_inserter( _buf ), "{}\n{{\n", key );
+    fmt::print( *_stream, "{}\n{{\n", key );
   }
   template <typename Str, typename StrValue>
   void begin( Str&& key, StrValue&& value )
   {
-    fmt::format_to( std::back_inserter( _buf ), "{} {}\n{{\n", key, value );
+    fmt::print( *_stream, "{} {}\n{{\n", key, value );
   }
   void end()
   {
-    _buf += "}\n\n";
+    *_stream << "}\n\n";
     flush_test();
   }
   void init( const std::string& filepath );

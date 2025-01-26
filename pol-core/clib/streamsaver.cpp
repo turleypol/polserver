@@ -13,8 +13,8 @@ const std::size_t flush_limit = 10000;  // 500;
 
 void StreamWriter::flush_test()
 {
-  if ( _buf.size() >= flush_limit )  // guard against to big objects
-    flush();
+  //  if ( _buf.size() >= flush_limit )  // guard against to big objects
+  //    flush();
 }
 
 StreamWriter::StreamWriter( std::ofstream* stream )
@@ -37,8 +37,8 @@ StreamWriter::~StreamWriter() noexcept( false )
   }
   ERROR_PRINTLN( "streamwriter {} io time {}", _stream_name, _fs_time.count() );
 #else
-  auto stack_unwinding = std::uncaught_exceptions();
-  try
+  //  auto stack_unwinding = std::uncaught_exceptions();
+  /*try
   {
     if ( !_buf.empty() && _stream )
       *_stream << _buf;
@@ -48,7 +48,7 @@ StreamWriter::~StreamWriter() noexcept( false )
     // during stack unwinding an exception would terminate
     if ( !stack_unwinding )
       throw;
-  }
+  }*/
 #endif
 }
 
