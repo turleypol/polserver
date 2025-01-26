@@ -10,7 +10,7 @@ namespace Pol
 namespace Clib
 {
 
-StreamWriter::StreamWriter( std::ofstream* stream ) : _stream( stream ),
+StreamWriter::StreamWriter( std::ofstream* stream ) : _stream( stream )
 #if 0
       _fs_time( 0 ),
 #endif
