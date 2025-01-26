@@ -226,8 +226,9 @@ void send_owncreate( Client* client, const Character* chr )
       continue;
 
     // Dont send faces if older client or ssopt
-    if ( ( layer == LAYER_FACE ) && ( ( settingsManager.ssopt.support_faces == 0 ) ||
-                                      ( ~client->ClientType & CLIENTTYPE_UOKR ) ) )
+    if ( ( layer == LAYER_FACE ) &&
+         ( ( settingsManager.ssopt.expansion.faceSupport() == Plib::FaceSupport::None ) ||
+           ( ~client->ClientType & CLIENTTYPE_UOKR ) ) )
       continue;
 
     if ( client->ClientType & CLIENTTYPE_70331 )
@@ -305,8 +306,9 @@ void send_owncreate( Client* client, const Character* chr, PktOut_78* owncreate 
       continue;
 
     // Dont send faces if older client or ssopt
-    if ( ( layer == LAYER_FACE ) && ( ( settingsManager.ssopt.support_faces == 0 ) ||
-                                      ( ~client->ClientType & CLIENTTYPE_UOKR ) ) )
+    if ( ( layer == LAYER_FACE ) &&
+         ( ( settingsManager.ssopt.expansion.faceSupport() == Plib::FaceSupport::None ) ||
+           ( ~client->ClientType & CLIENTTYPE_UOKR ) ) )
       continue;
 
     if ( client->ClientType & CLIENTTYPE_70331 )
@@ -2009,7 +2011,7 @@ void send_feature_enable( Client* client )
   // Roleplay faces?
   if ( client->UOExpansionFlag & KR )
   {
-    if ( settingsManager.ssopt.support_faces == 2 )
+    if ( settingsManager.ssopt.expansion.faceSupport() == Plib::FaceSupport::RolePlay )
       clientflag |= B9Feature::KRFaces;
   }
 

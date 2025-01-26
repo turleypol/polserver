@@ -137,6 +137,12 @@ std::string getExpansionName( ExpansionVersion x );
 ExpansionVersion getExpansionVersion( const std::string& str );
 B9Feature getDefaultExpansionFlag( ExpansionVersion x );
 
+enum class FaceSupport : u8
+{
+  None,
+  Basic,
+  RolePlay
+};
 // hold in server
 class ServerExpansion
 {
@@ -151,11 +157,15 @@ public:
   {
     return ( feature_flags & flag ) != A9Feature::None;
   };
+  FaceSupport faceSupport() const { return face_support; };
+
+
   ServerExpansion() = default;
-  ServerExpansion( A9Feature feature, const std::string& version /*, u8 slots */ )
+  ServerExpansion( A9Feature feature, const std::string& version FaceSupport face /*, u8 slots */ )
       : expansion( getExpansionVersion( version ) ),
         ext_flags( getDefaultExpansionFlag( expansion ) ),
-        feature_flags( feature )
+        feature_flags( feature ),
+        face_support( face )
         //      char_slots( slots )
         {};
 
@@ -164,6 +174,7 @@ private:
   B9Feature ext_flags = B9Feature::DefaultT2A;  // needed?
   A9Feature feature_flags = A9Feature::None;
   //  u8 char_slots = 5; // mmmh its a pol.cfg setting...
+  FaceSupport face_support = FaceSupport::None;
 };
 
 // hold per account
