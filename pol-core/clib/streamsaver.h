@@ -15,7 +15,7 @@ class StreamWriter
 {
 public:
   StreamWriter( std::ostream& stream );
-  ~StreamWriter() = default;
+  ~StreamWriter() noexcept( false );
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;
 

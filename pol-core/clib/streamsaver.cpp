@@ -10,6 +10,11 @@ namespace Pol::Clib
 {
 StreamWriter::StreamWriter( std::ostream& stream ) : _stream( stream ) {}
 
+StreamWriter::~StreamWriter() noexcept( false )
+{
+  _stream.flush();
+}
+
 void StreamWriter::open_fstream( const std::string& filepath, std::ofstream& s )
 {
   _buf.reset( new char[1024 * 1024] );
