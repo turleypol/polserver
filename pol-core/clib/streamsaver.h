@@ -33,12 +33,12 @@ public:
   void comment( Str&& format, Args&&... args )
   {
     static const std::string_view s{ "# " };
-    _mbuff.append( s.begin(), s.end() );
+    _mbuff.append( s.data(), s.data() + s.size() );
     //    _stream << "# ";
     if constexpr ( sizeof...( args ) == 0 )
     {
       const std::string_view s1{ format };
-      _mbuff.append( s1.begin(), s1.end() );
+      _mbuff.append( s1.data(), s1.data() + s1.size() );
     }
     else
       fmt::format_to( std::back_inserter( _mbuff ), format, args... );
