@@ -432,6 +432,7 @@ std::optional<bool> write_data( std::function<void( bool, u32, u32, s64 )> callb
                 [&, name, func = std::move( func )]() mutable
                 {
                   Tools::Timer<> swtimer;
+                  INFO_PRINTLN( "STARTING {}", std::this_thread::get_id() );
                   try
                   {
                     func();
@@ -484,11 +485,11 @@ std::optional<bool> write_data( std::function<void( bool, u32, u32, s64 )> callb
                   Accounts::write_account_data();
               },
               "accounts" );
-
           for ( auto& task : critical_parts )
             task.wait();
 
           set_promise( critical_promise, result );  // critical part end
+          blocking_timer.stop();
         }  // deconstructor of the SaveContext flushes and joins the queues
         catch ( std::ios_base::failure& e )
         {
