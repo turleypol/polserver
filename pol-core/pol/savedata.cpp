@@ -11,6 +11,7 @@
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include <thread>
 
 #include "../clib/Debugging/ExceptionParser.h"
 #include "../clib/Program/ProgramConfig.h"
@@ -430,6 +431,7 @@ std::optional<bool> write_data( std::function<void( bool, u32, u32, s64 )> callb
             critical_parts.push_back( gamestate.task_thread_pool.checked_push(
                 [&, name, func = std::move( func )]() mutable
                 {
+                  Tools::Timer<> swtimer;
                   try
                   {
                     func();
@@ -440,6 +442,8 @@ std::optional<bool> write_data( std::function<void( bool, u32, u32, s64 )> callb
                                     Clib::ExceptionParser::getTrace() );
                     result = false;
                   }
+                  INFO_PRINTLN( "{} -> {}ms thread_id{}", name, swtimer.ellapsed(),
+                                std::this_thread::get_id() );
                 } ) );
           };
 
