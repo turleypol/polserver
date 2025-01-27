@@ -32,13 +32,12 @@ public:
   template <typename Str, typename... Args>
   void comment( Str&& format, Args&&... args )
   {
-    static const std::string_view s{ "# " };
-    _mbuff.append( s.data(), s.data() + s.size() );
-    //    _stream << "# ";
+    static const std::string_view prefix{ "# " };
+    _mbuff.append( prefix.data(), prefix.data() + prefix.size() );
     if constexpr ( sizeof...( args ) == 0 )
     {
-      const std::string_view s1{ format };
-      _mbuff.append( s1.data(), s1.data() + s1.size() );
+      const std::string_view strv{ format };
+      _mbuff.append( strv.data(), strv.data() + strv.size() );
     }
     else
       fmt::format_to( std::back_inserter( _mbuff ), format, args... );
@@ -56,10 +55,11 @@ public:
   }
   void end()
   {
-    fmt::format_to( std::back_inserter( _mbuff ), "{}", "}\n\n" );
+    static const std::string_view endv{ "}\n\n" };
+    _mbuff.append( endv.data(), endv.data() + endv.size() );
     if ( _mbuff.size() > 5000 )
     {
-      _stream << fmt::to_string( _mbuff );
+      _stream << std::string_view{ _muff.begin(), _mbuff.end() };
       _mbuff.clear();
     }
   }
