@@ -289,6 +289,10 @@ exported function load_save_item_descriptor()
       return ret_error( $"failed to create item {item}" );
     endif
     SetGlobalProperty( "test_item_storage_item_descriptor", item.serial );
+var i;
+    for i:=0 to 100000
+      CreateItemAtLocation( 10, 11, -5, desc, 1, "britannia2" );
+    endfor
   else
 
     var serial := GetGlobalProperty( "test_item_storage_item_descriptor" );
