@@ -59,7 +59,7 @@ public:
     _mbuff.append( endv.data(), endv.data() + endv.size() );
     if ( _mbuff.size() > 5000 )
     {
-      _stream << std::string_view{ _mbuff.data(), _mbuff.data() + _mbuff.size() };
+      _stream << std::string_view{ _mbuff.data(), _mbuff.size() };
       _mbuff.clear();
     }
   }
