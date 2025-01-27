@@ -72,8 +72,9 @@ protected:
   // to prevent this format into this buffer and when full write to disk, clear of the buffer keeps
   // the capacity
   fmt::basic_memory_buffer<char, 5000> _mbuff;
-  // extra buffer for ofstream to be not bound to io speed during write
-  std::unique_ptr<char[]> _buf;
+  // extra buffer for ofstream to be not bound to io speed during write, I think not feasible since
+  // buffer has to be quite huge to gain performance
+  //  std::unique_ptr<char[]> _buf;
 };
 
 }  // namespace Pol::Clib
