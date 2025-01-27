@@ -23,36 +23,52 @@ public:
   void add( Str&& key, T&& value )
   {
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )  // force bool to write as 0/1
-      fmt::print( _stream, "\t{}\t{}\n", key, value );
+    {
+      fmt::format_to( std::back_inserter( _mbuff ), "\t{}\t{}\n", key, value );
+    }
     else
-      fmt::print( _stream, "\t{}\t{:d}\n", key, value );
+      fmt::format_to( std::back_inserter( _mbuff ), "\t{}\t{:d}\n", key, value );
   }
   template <typename Str, typename... Args>
   void comment( Str&& format, Args&&... args )
   {
-    _stream << "# ";
+    static const std::string_view s{ "# " };
+    _mbuff.append( s.begin(), s.end() );
+    //    _stream << "# ";
     if constexpr ( sizeof...( args ) == 0 )
-      _stream << format;
+    {
+      const std::string_view s1{ format };
+      _mbuff.append( s1.begin(), s1.end() );
+    }
     else
-      fmt::print( _stream, format, args... );
-    _stream << '\n';
+      fmt::format_to( std::back_inserter( _mbuff ), format, args... );
+    _mbuff.push_back( '\n' );
   }
   template <typename Str>
   void begin( Str&& key )
   {
-    fmt::print( _stream, "{}\n{{\n", key );
+    fmt::format_to( std::back_inserter( _mbuff ), "{}\n{{\n", key );
   }
   template <typename Str, typename StrValue>
   void begin( Str&& key, StrValue&& value )
   {
-    fmt::print( _stream, "{} {}\n{{\n", key, value );
+    fmt::format_to( std::back_inserter( _mbuff ), "{} {}\n{{\n", key, value );
   }
-  void end() { _stream << "}\n\n"; }
+  void end()
+  {
+    fmt::format_to( std::back_inserter( _mbuff ), "{}", "}\n\n" );
+    if ( _mbuff.size() > 5000 )
+    {
+      _stream << fmt::to_string( _mbuff );
+      _mbuff.clear();
+    }
+  }
   void open_fstream( const std::string& filepath, std::ofstream& s );
   void flush_file();
 
 protected:
   std::ostream& _stream;
+  fmt::basic_memory_buffer<char, 5000> _mbuff;
   std::unique_ptr<char[]> _buf;
 };
 
