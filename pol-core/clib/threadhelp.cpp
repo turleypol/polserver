@@ -371,6 +371,7 @@ void TaskThreadPool::init( unsigned int max_count, const std::string& name )
             Clib::force_backtrace( true );
             return;
           }
+          ERROR_PRINTLN( "PURGE THREAD" );
           // purge the queue empty
           std::list<msg> remaining;
           _msg_queue.pop_remaining( &remaining );
@@ -391,6 +392,7 @@ void TaskThreadPool::deinit_pool()
 {
   if ( _threads.empty() )
     return;
+  ERROR_PRINTLN( "DEINIT POOL" );
   // send both done and cancel to wake up all workers
   _msg_queue.push(
       [&]()
