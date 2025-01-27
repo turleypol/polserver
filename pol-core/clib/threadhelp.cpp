@@ -17,10 +17,10 @@
 #include <exception>
 #include <thread>
 
+#include "Debugging/ExceptionParser.h"
 #include "esignal.h"
 #include "logfacility.h"
 #include "passert.h"
-
 #ifndef _WIN32
 #include <errno.h>
 #include <pthread.h>
@@ -392,7 +392,8 @@ void TaskThreadPool::deinit_pool()
 {
   if ( _threads.empty() )
     return;
-  ERROR_PRINTLN( "DEINIT POOL" );
+  ERROR_PRINTLN( "DEINIT POOL\n{}", Clib::ExceptionParser::getTrace() );
+
   // send both done and cancel to wake up all workers
   _msg_queue.push(
       [&]()
