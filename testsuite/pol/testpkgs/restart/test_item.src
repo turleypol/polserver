@@ -279,6 +279,10 @@ exported function load_save_item_descriptor()
                    { "luck", desc.Luck }
                  },
                  {
+                   "NameSuffix",
+                   { "name_suffix", "my_suffix" }
+                 },
+                 {
                    "SwingSpeedIncrease",
                    { "swing_speed_increase", desc.SwingSpeedIncrease }
                  } };
@@ -289,7 +293,7 @@ exported function load_save_item_descriptor()
       return ret_error( $"failed to create item {item}" );
     endif
     SetGlobalProperty( "test_item_storage_item_descriptor", item.serial );
-    for i:=0 to 100000
+    for i:=0 to 1000000
       CreateItemAtLocation( 10, 11, -5, desc, 1, "britannia2" );
     endfor
   else
