@@ -187,6 +187,7 @@ exported function load_save_item_descriptor()
   desc.PoisonResistCap := 22;
   desc.Luck := 23;
   desc.SwingSpeedIncrease := 24;
+  desc.NameSuffix := "my_suffix";
   var props := { { "FireResist",
                    { "resist_fire", desc.FireResist }
                  },
