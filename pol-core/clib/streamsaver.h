@@ -22,12 +22,20 @@ public:
   template <typename Str, typename T>
   void add( Str&& key, T&& value )
   {
+    _mbuff.push_back( '\t' );
+    const std::string_view keyv{ key };
+    _mbuff.append( keyv );
+    _mbuff.push_back( '\t' );
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )  // force bool to write as 0/1
     {
-      fmt::format_to( std::back_inserter( _mbuff ), "\t{}\t{}\n", key, value );
+      if constexpr ( std::is_same<std::decay_t<T>, std::string>::value )
+        _mbuff.append( value );
+      else
+        fmt::format_to( std::back_inserter( _mbuff ), "{}", value );
     }
     else
-      fmt::format_to( std::back_inserter( _mbuff ), "\t{}\t{:d}\n", key, value );
+      fmt::format_to( std::back_inserter( _mbuff ), "{:d}", value );
+    _mbuff.push_back( '\n' );
   }
   template <typename Str, typename... Args>
   void comment( Str&& format, Args&&... args )
