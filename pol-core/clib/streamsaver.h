@@ -23,28 +23,30 @@ public:
   template <typename Str, typename T>
   void add( Str&& key, T&& value )
   {
-    _mbuff.push_back( '\t' );
-    _mbuff.append( std::string_view{ key } );
-    _mbuff.push_back( '\t' );
+    fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "\t{}\t" ), key );
+    //    _mbuff.push_back( '\t' );
+    //    _mbuff.append( std::string_view{ key } );
+    //    _mbuff.push_back( '\t' );
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )  // force bool to write as 0/1
     {
       //      if constexpr ( std::is_same<std::decay_t<T>, std::string>::value )
       //        _mbuff.append( value );
       //      else
-      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{}" ), value );
+      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{}\n" ), value );
     }
     else
-      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{:d}" ), value );
-    _mbuff.push_back( '\n' );
+      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{:d}\n" ), value );
+    //    _mbuff.push_back( '\n' );
   }
   template <typename Str, typename... Args>
   void comment( Str&& formatstr, Args&&... args )
   {
-    static const std::string_view prefix{ "# " };
+    constexpr std::string_view prefix{ "# " };
     _mbuff.append( prefix );
     if constexpr ( sizeof...( args ) == 0 )
     {
-      _mbuff.append( std::string_view{ formatstr } );
+      constexpr std::string_view formatstrv{ formatstr };
+      _mbuff.append( formatstrv );
     }
     else
       fmt::format_to( std::back_inserter( _mbuff ), formatstr, args... );
@@ -62,7 +64,7 @@ public:
   }
   void end()
   {
-    static const std::string_view endv{ "}\n\n" };
+    constexpr std::string_view endv{ "}\n\n" };
     _mbuff.append( endv );
     if ( _mbuff.size() > 10'000 )
     {
