@@ -26,7 +26,9 @@ public:
     fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "\t{}\t" ), key );
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )  // force bool to write as 0/1
     {
-      if constexpr ( std::is_same<std::decay_t<T>, std::string>::value )  // shortcut for strings
+      if constexpr ( std::is_same<std::decay_t<T>, std::string>::value ||
+                     std::is_same<std::decay_t<T>,
+                                  std::string_view>::value )  // shortcut for strings
         _mbuff.append( value );
       else
         fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{}" ), value );
