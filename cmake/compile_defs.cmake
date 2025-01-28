@@ -81,6 +81,7 @@ function(set_compile_flags target is_executable)
       /W4
       /w45038
     >
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:MSVC>>:/utf-8>
     $<$<AND:$<BOOL:${GCOV}>,${linux}>:
       -g
       -O0
