@@ -38,15 +38,14 @@ public:
       fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{:d}\n" ), value );
     //    _mbuff.push_back( '\n' );
   }
-  template <typename Str, typename... Args>
-  constexpr void comment( Str&& formatstr, Args&&... args )
+  template <typename... Args>
+  void comment( const std::string_view formatstr, Args&&... args )
   {
-    constexpr std::string_view prefix{ "# " };
-    _mbuff.append( prefix );
+    using namespace std::literals;
+    _mbuff.append( "# "sv );
     if constexpr ( sizeof...( args ) == 0 )
     {
-      constexpr std::string_view formatstrv{ formatstr };
-      _mbuff.append( formatstrv );
+      _mbuff.append( formatstr );
     }
     else
       fmt::format_to( std::back_inserter( _mbuff ), formatstr, args... );
@@ -64,8 +63,8 @@ public:
   }
   void end()
   {
-    constexpr std::string_view endv{ "}\n\n" };
-    _mbuff.append( endv );
+    using namespace std::literals;
+    _mbuff.append( "}\n\n"sv );
     if ( _mbuff.size() > 10'000 )
     {
       _stream << std::string_view{ _mbuff.data(), _mbuff.size() };
