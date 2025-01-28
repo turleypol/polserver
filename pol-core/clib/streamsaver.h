@@ -47,7 +47,7 @@ public:
       _mbuff.append( std::string_view{ formatstr } );
     }
     else
-      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( formatstr ), args... );
+      fmt::format_to( std::back_inserter( _mbuff ), formatstr, args... );
     _mbuff.push_back( '\n' );
   }
   template <typename Str>
