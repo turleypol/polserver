@@ -23,29 +23,27 @@ public:
   void add( Str&& key, T&& value )
   {
     _mbuff.push_back( '\t' );
-    const std::string_view keyv{ key };
-    _mbuff.append( keyv );
+    _mbuff.append( std::string_view{ keyv } );
     _mbuff.push_back( '\t' );
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )  // force bool to write as 0/1
     {
       if constexpr ( std::is_same<std::decay_t<T>, std::string>::value )
         _mbuff.append( value );
       else
-        fmt::format_to( std::back_inserter( _mbuff ), "{}", value );
+        fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{}" ), value );
     }
     else
-      fmt::format_to( std::back_inserter( _mbuff ), "{:d}", value );
+      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{:d}" ), value );
     _mbuff.push_back( '\n' );
   }
   template <typename Str, typename... Args>
   void comment( Str&& format, Args&&... args )
   {
     static const std::string_view prefix{ "# " };
-    _mbuff.append( prefix.data(), prefix.data() + prefix.size() );
+    _mbuff.append( prefix );
     if constexpr ( sizeof...( args ) == 0 )
     {
-      const std::string_view strv{ format };
-      _mbuff.append( strv.data(), strv.data() + strv.size() );
+      _mbuff.append( std::string_view{ format } );
     }
     else
       fmt::format_to( std::back_inserter( _mbuff ), format, args... );
@@ -54,12 +52,12 @@ public:
   template <typename Str>
   void begin( Str&& key )
   {
-    fmt::format_to( std::back_inserter( _mbuff ), "{}\n{{\n", key );
+    fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{}\n{{\n" ), key );
   }
   template <typename Str, typename StrValue>
   void begin( Str&& key, StrValue&& value )
   {
-    fmt::format_to( std::back_inserter( _mbuff ), "{} {}\n{{\n", key, value );
+    fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{} {}\n{{\n" ), key, value );
   }
   void end()
   {
