@@ -39,7 +39,7 @@ public:
     //    _mbuff.push_back( '\n' );
   }
   template <typename Str, typename... Args>
-  void comment( Str&& formatstr, Args&&... args )
+  constexpr void comment( Str&& formatstr, Args&&... args )
   {
     constexpr std::string_view prefix{ "# " };
     _mbuff.append( prefix );
