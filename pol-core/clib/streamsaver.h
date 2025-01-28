@@ -20,8 +20,8 @@ public:
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;
 
-  template <typename Str, typename T>
-  void add( Str&& key, T&& value )
+  template <typename T>
+  void add( const std::string_view& key, T&& value )
   {
     fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "\t{}\t" ), key );
     //    _mbuff.push_back( '\t' );
@@ -29,17 +29,17 @@ public:
     //    _mbuff.push_back( '\t' );
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )  // force bool to write as 0/1
     {
-      //      if constexpr ( std::is_same<std::decay_t<T>, std::string>::value )
-      //        _mbuff.append( value );
-      //      else
-      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{}\n" ), value );
+      if constexpr ( std::is_same<std::decay_t<T>, std::string>::value )
+        _mbuff.append( value );
+      else
+        fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{}" ), value );
     }
     else
-      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{:d}\n" ), value );
-    //    _mbuff.push_back( '\n' );
+      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{:d}" ), value );
+    _mbuff.push_back( '\n' );
   }
   template <typename... Args>
-  void comment( const std::string_view formatstr, Args&&... args )
+  void comment( const std::string_view& formatstr, Args&&... args )
   {
     using namespace std::literals;
     _mbuff.append( "# "sv );
