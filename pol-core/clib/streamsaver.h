@@ -38,16 +38,16 @@ public:
     _mbuff.push_back( '\n' );
   }
   template <typename Str, typename... Args>
-  void comment( Str&& format, Args&&... args )
+  void comment( Str&& formatstr, Args&&... args )
   {
     static const std::string_view prefix{ "# " };
     _mbuff.append( prefix );
     if constexpr ( sizeof...( args ) == 0 )
     {
-      _mbuff.append( std::string_view{ format } );
+      _mbuff.append( std::string_view{ formatstr } );
     }
     else
-      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( format ), args... );
+      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( formatstr ), args... );
     _mbuff.push_back( '\n' );
   }
   template <typename Str>
