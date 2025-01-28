@@ -23,7 +23,7 @@ public:
   void add( Str&& key, T&& value )
   {
     _mbuff.push_back( '\t' );
-    _mbuff.append( std::string_view{ keyv } );
+    _mbuff.append( std::string_view{ key } );
     _mbuff.push_back( '\t' );
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )  // force bool to write as 0/1
     {
