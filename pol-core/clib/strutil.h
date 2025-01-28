@@ -12,6 +12,7 @@
 #define CLIB_STRUTIL_H
 
 #include "rawtypes.h"
+#include <fmt/compile.h>
 #include <fmt/format.h>
 #include <fmt/std.h>
 #include <iterator>
@@ -37,7 +38,7 @@ typename std::enable_if<std::is_enum<T>::value, std::string_view>::type hexint( 
   static thread_local fmt::memory_buffer buffer;
   buffer.clear();
   fmt::format_to( std::back_inserter( buffer ), FMT_COMPILE( "{:#x}" ),
-                  ifmt::underlying( integer ) );
+                  fmt::underlying( integer ) );
   return std::string_view{ buffer.data(), buffer.size() };
   //  return fmt::format( "{:#x}", fmt::underlying( integer ) );
 }
