@@ -24,23 +24,31 @@ namespace Pol
 namespace Clib
 {
 template <typename T>
-typename std::enable_if<std::is_integral<T>::value, std::string_view>::type hexint( T integer )
+typename std::enable_if<std::is_integral<T>::value, std::string>::type hexint( T integer )
+{
+  return fmt::format( FMT_COMPILE( "{:#x}" ), integer );
+}
+template <typename T>
+typename std::enable_if<std::is_enum<T>::value, std::string>::type hexint( T integer )
+{
+  return fmt::format( FMT_COMPILE( "{:#x}" ), fmt::underlying( integer ) );
+}
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value, std::string_view>::type hexintv( T integer )
 {
   static thread_local fmt::memory_buffer buffer;
   buffer.clear();
   fmt::format_to( std::back_inserter( buffer ), FMT_COMPILE( "{:#x}" ), integer );
   return std::string_view{ buffer.data(), buffer.size() };
-  //  return fmt::format( "{:#x}", integer );
 }
 template <typename T>
-typename std::enable_if<std::is_enum<T>::value, std::string_view>::type hexint( T integer )
+typename std::enable_if<std::is_enum<T>::value, std::string_view>::type hexintv( T integer )
 {
   static thread_local fmt::memory_buffer buffer;
   buffer.clear();
   fmt::format_to( std::back_inserter( buffer ), FMT_COMPILE( "{:#x}" ),
                   fmt::underlying( integer ) );
   return std::string_view{ buffer.data(), buffer.size() };
-  //  return fmt::format( "{:#x}", fmt::underlying( integer ) );
 }
 
 template <typename T>
