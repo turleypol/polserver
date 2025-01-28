@@ -14,8 +14,6 @@ namespace Pol::Clib
 {
 class StreamWriter
 {
-  using namespace std::literals;
-
 public:
   StreamWriter( std::ostream& stream );
   ~StreamWriter() noexcept( false );
@@ -40,6 +38,7 @@ public:
   template <typename... Args>
   void comment( const std::string_view& formatstr, Args&&... args )
   {
+    using namespace std::literals;
     _mbuff.append( "# "sv );
     if constexpr ( sizeof...( args ) == 0 )
     {
@@ -61,6 +60,7 @@ public:
   }
   void end()
   {
+    using namespace std::literals;
     _mbuff.append( "}\n\n"sv );
     if ( _mbuff.size() > 10'000 )
     {
