@@ -10,6 +10,7 @@
 #include <string>
 #include <type_traits>
 
+#include "logfacility.h"
 namespace Pol::Clib
 {
 class StreamWriter
@@ -24,13 +25,13 @@ public:
   void add( const std::string_view& key, T&& value )
   {
     fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "\t{}\t" ), key );
-    //    _mbuff.push_back( '\t' );
-    //    _mbuff.append( std::string_view{ key } );
-    //    _mbuff.push_back( '\t' );
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )  // force bool to write as 0/1
     {
-      if constexpr ( std::is_same<std::decay_t<T>, std::string>::value )
+      if constexpr ( std::is_same<std::decay_t<T>, std::string>::value )  // shortcut for strings
+      {
+        INFO_PRINTLN( "add string {}", value );
         _mbuff.append( value );
+      }
       else
         fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{}" ), value );
     }
