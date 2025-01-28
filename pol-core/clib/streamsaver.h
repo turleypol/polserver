@@ -28,10 +28,10 @@ public:
     _mbuff.push_back( '\t' );
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )  // force bool to write as 0/1
     {
-      if constexpr ( std::is_same<std::decay_t<T>, std::string>::value )
-        _mbuff.append( value );
-      else
-        fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{}" ), value );
+      //      if constexpr ( std::is_same<std::decay_t<T>, std::string>::value )
+      //        _mbuff.append( value );
+      //      else
+      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{}" ), value );
     }
     else
       fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{:d}" ), value );
@@ -47,7 +47,7 @@ public:
       _mbuff.append( std::string_view{ format } );
     }
     else
-      fmt::format_to( std::back_inserter( _mbuff ), format, args... );
+      fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( format ), args... );
     _mbuff.push_back( '\n' );
   }
   template <typename Str>
@@ -63,7 +63,7 @@ public:
   void end()
   {
     static const std::string_view endv{ "}\n\n" };
-    _mbuff.append( endv.data(), endv.data() + endv.size() );
+    _mbuff.append( endv );
     if ( _mbuff.size() > 10'000 )
     {
       _stream << std::string_view{ _mbuff.data(), _mbuff.size() };
