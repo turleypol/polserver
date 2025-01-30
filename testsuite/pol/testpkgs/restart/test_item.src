@@ -354,33 +354,23 @@ endfunction
 
 exported function load_save_item_undefined()
   if ( testrun == 1 )
-    var cnt := CreateItemAtLocation( 10, 11, -5, 0x200008, 1, "britannia2" );
+  print(GetItemDescriptor(0x200008));
+    var cnt := CreateItemAtLocation( 10, 11, -5, 0x1, 1, "britannia2" ); // no itemdesc.cfg entry
     if ( !cnt )
       return ret_error( $"failed to create item {cnt}" );
     endif
-    cnt.name := "load_save_cnt_for_item";
+    cnt.name := "load_save_item_undefined";
     SetGlobalProperty( "test_item_undefined", cnt.serial );
   else
 
-    var serial := GetGlobalProperty( "test_item_storage_item_in_cnt" );
-    var serialcnt := GetGlobalProperty( "test_item_storage_cnt_item_in_cnt" );
-    if ( !serial || !serialcnt )
+    var serial := GetGlobalProperty( "test_item_undefined" );
+    if ( !serial )
       return ret_error( "Global property not found" );
     endif
 
     var item := SystemFindObjectBySerial( serial );
     if ( !item )
       return ret_error( $"Item with serial {serial:#x} does not exists: {item})" );
-    endif
-    var cnt := SystemFindObjectBySerial( serialcnt );
-    if ( !cnt )
-      return ret_error( $"Cnt with serial {serialcnt:#x} does not exists: {cnt})" );
-    endif
-    if ( item.container != cnt )
-      return ret_error( $"Item not in container: {item.container} != {cnt.serial}" );
-    endif
-    if ( item.x != 2 || item.y != 3 )
-      return ret_error( $"wrong coordinates ({item.x},{item.y}) != (2,3)" );
     endif
   endif
   return 1;
