@@ -354,8 +354,8 @@ endfunction
 
 exported function load_save_item_undefined()
   if ( testrun == 1 )
-  print(GetItemDescriptor(0x1));
-    var cnt := CreateItemAtLocation( 10, 11, -5, 0x1, "britannia2" ); // no itemdesc.cfg entry
+  print(GetItemDescriptor(0x3e5c));
+    var cnt := CreateItemAtLocation( 10, 11, -5, 0x3e5c, 1, "britannia2" ); // no itemdesc.cfg entry
     if ( !cnt )
       return ret_error( $"failed to create item {cnt}" );
     endif
