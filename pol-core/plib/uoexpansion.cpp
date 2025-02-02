@@ -5,8 +5,8 @@
 namespace Pol::Plib
 {
 constexpr u8 numExpansions = static_cast<u8>( ExpansionVersion::LastVersion ) + 1;
-const std::array<std::string, numExpansions> ExpansionNames = { "T2A", "LBR", "AOS", "SE",
-                                                                "ML",  "KR",  "SA",  "HSA" };
+const std::array<std::string, numExpansions> ExpansionNames = { "T2A", "LBR", "AOS", "SE", "ML",
+                                                                "KR",  "SA",  "HSA", "TOL" };
 
 // make sure the flags have a defined value
 // to prevent accidential changes

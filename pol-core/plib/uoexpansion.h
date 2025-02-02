@@ -205,4 +205,8 @@ inline auto format_as( ExpansionVersion t )
 {
   return getExpansionName( t );
 }
+inline auto format_as( FaceSupport t )
+{
+  return fmt::underlying( t );
+}
 }  // namespace Pol::Plib
