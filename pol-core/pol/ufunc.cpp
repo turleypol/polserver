@@ -259,7 +259,7 @@ void send_owncreate( Client* client, const Character* chr )
 
   owncreate.Send( client, len );
 
-  if ( client->acct->expansion().hasExpansion( Plib::ExpansionVersion::AOS ) )
+  if ( client->supports( Plib::ExpansionVersion::AOS ) )
   {
     send_object_cache( client, chr );
     // 07/11/09 Turley: moved to bottom first the client needs to know the item then we can send
@@ -339,7 +339,7 @@ void send_owncreate( Client* client, const Character* chr, PktOut_78* owncreate 
 
   Core::networkManager.clientTransmit->AddToQueue( client, &owncreate->buffer, len );
 
-  if ( client->acct->expansion().hasExpansion( Plib::ExpansionVersion::AOS ) )
+  if ( client->supports( Plib::ExpansionVersion::AOS ) )
   {
     send_object_cache( client, chr );
     // 07/11/09 Turley: moved to bottom first the client needs to know the item then we can send
@@ -468,7 +468,7 @@ void send_put_in_container( Client* client, const Item* item )
       item->slot_index(), item->container->serial_ext, item->color );
   msg.Send( client );
 
-  if ( client->acct->expansion().hasExpansion( Plib::ExpansionVersion::AOS ) )
+  if ( client->supports( Plib::ExpansionVersion::AOS ) )
     send_object_cache( client, item );
 }
 
@@ -635,7 +635,7 @@ void send_item( Client* client, const Item* item )
     send_corpse( client, item );
   }
 
-  if ( client->acct->expansion().hasExpansion( Plib::ExpansionVersion::AOS ) )
+  if ( client->supports( Plib::ExpansionVersion::AOS ) )
   {
     send_object_cache( client, item );
     return;
@@ -773,7 +773,7 @@ void send_wornitem( Client* client, const Character* chr, const Item* item )
   msg->WriteFlipped<u16>( item->color );
   msg.Send( client );
 
-  if ( client->acct->expansion().hasExpansion( Plib::ExpansionVersion::AOS ) )
+  if ( client->supports( Plib::ExpansionVersion::AOS ) )
   {
     send_object_cache( client, item );
   }

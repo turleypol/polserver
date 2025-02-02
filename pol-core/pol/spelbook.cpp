@@ -87,30 +87,28 @@ void Spellbook::double_click( Network::Client* client )
   if ( bitwise_contents[0] == 0 )  // assume never been clicked using the new bitwise spell scheme
     calc_current_bitwise_contents();
 
-  if ( !client->acct->expansion().hasExpansion( Plib::ExpansionVersion::AOS ) &&
-       ( spell_school == 0 ) )
+  if ( !client->supports( Plib::ExpansionVersion::AOS ) && ( spell_school == 0 ) )
   {
     send_book_old( client );
   }
-  else if ( !client->acct->expansion().hasExpansion( Plib::ExpansionVersion::AOS ) &&
+  else if ( !client->supports( Plib::ExpansionVersion::AOS ) &&
             ( spell_school == 1 || spell_school == 2 ) )
   {
     send_sysmessage( client, "This item requires at least the Age of Shadows Expansion." );
     return;
   }
-  else if ( !client->acct->expansion().hasExpansion( Plib::ExpansionVersion::SE ) &&
+  else if ( !client->supports( Plib::ExpansionVersion::SE ) &&
             ( spell_school == 4 || spell_school == 5 ) )
   {
     send_sysmessage( client, "This item requires at least the Samurai Empire Expansion." );
     return;
   }
-  else if ( !client->acct->expansion().hasExpansion( Plib::ExpansionVersion::ML ) &&
-            spell_school == 6 )
+  else if ( !client->supports( Plib::ExpansionVersion::ML ) && spell_school == 6 )
   {
     send_sysmessage( client, "This item requires at least the Mondain's Legacy Expansion." );
     return;
   }
-  else if ( !client->acct->expansion().hasExpansion( Plib::ExpansionVersion::SA ) &&
+  else if ( !client->supports( Plib::ExpansionVersion::SA ) &&
             ( spell_school == 3 || spell_school == 7 ) )
   {
     send_sysmessage( client, "This item requires at least the Stygian Abyss Expansion." );
@@ -121,8 +119,8 @@ void Spellbook::double_click( Network::Client* client )
     // Ok, now we do a strange check. This is for those people who have no idea that you
     // must have AOS Features Enabled on an acct with AOS Expansion to view Magery book.
     // All newer spellbooks will bug out if you use this method though.
-    if ( client->acct->expansion().hasExpansion( Plib::ExpansionVersion::AOS ) &&
-         ( spell_school == 0 ) && !settingsManager.ssopt.features.supportsAOS() )
+    if ( client->supports( Plib::ExpansionVersion::AOS ) && ( spell_school == 0 ) &&
+         !settingsManager.ssopt.features.supportsAOS() )
     {
       if ( Plib::systemstate.config.loglevel > 1 )
         INFO_PRINTLN(

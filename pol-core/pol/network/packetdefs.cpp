@@ -430,7 +430,7 @@ ObjRevisionPkt::ObjRevisionPkt( u32 serial_ext, u32 rev )
 
 void ObjRevisionPkt::Send( Client* client )
 {
-  if ( !client->acct->expansion().hasExpansion( Plib::ExpansionVersion::AOS ) )
+  if ( !client->supports( Plib::ExpansionVersion::AOS ) )
     return;
   if ( !Core::settingsManager.ssopt.features.supportsAOS() )
     return;

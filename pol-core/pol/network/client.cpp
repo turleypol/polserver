@@ -772,6 +772,11 @@ u8 Client::update_range() const
   return gd->update_range;
 }
 
+bool Client::supports( Plib::ExpansionVersion v ) const
+{
+  return acct->expansion().hasExpansion( v );
+}
+
 size_t Client::estimatedSize() const
 {
   Clib::SpinLockGuard guard( _fpLog_lock );

@@ -111,7 +111,7 @@ void send_container_contents( Client* client, const UContainer& cont )
   msg->WriteFlipped<u16>( count );
   msg.Send( client, len );
 
-  if ( client->acct->expansion().hasExpansion( Plib::ExpansionVersion::AOS ) )
+  if ( client->supports( Plib::ExpansionVersion::AOS ) )
   {
     // 07/11/09 Turley: moved to bottom first the client needs to know the item then we can send
     // revision
