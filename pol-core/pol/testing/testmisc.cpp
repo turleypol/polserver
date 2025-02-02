@@ -545,8 +545,73 @@ void clamp_test()
 void uoextension_test()
 {
   using namespace Plib;
-  UnitTest( []() { return AccountExpansion( "AOS", B9Feature::AOS ).Expansion(); },
-            ExpansionVersion::AOS, "aos expansion" );
+  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "T2A" ) ); }, "T2A",
+            "t2a expansion" );
+  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "LBR" ) ); }, "LBR",
+            "lbr expansion" );
+  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "AOS" ) ); }, "AOS",
+            "aos expansion" );
+  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "SE" ) ); }, "SE",
+            "se expansion" );
+  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "ML" ) ); }, "ML",
+            "ml expansion" );
+  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "KR" ) ); }, "KR",
+            "kr expansion" );
+  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "SA" ) ); }, "SA",
+            "sa expansion" );
+  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "HSA" ) ); }, "HSA",
+            "hsa expansion" );
+  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "TOL" ) ); }, "TOL",
+            "tol expansion" );
+  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "unknown" ) ); }, "T2A",
+            "unknown expansion" );
+  {
+    ServerExpansion server;
+    server.updateFromPolCfg( 7 );
+    server.updateFromSSOpt( A9Feature::AOS, "AOS", 0 );
+    UnitTest(
+        [&]()
+        {
+          server.updateFromSSOpt( A9Feature::AOS, "AOS", 0 );
+          return server.supportsAOS();
+        },
+        true, "server: aos support true" );
+    UnitTest(
+        [&]()
+        {
+          server.updateFromSSOpt( A9Feature::T2A, "T2A", 0 );
+          return server.supportsAOS();
+        },
+        false, "server: aos support false" );
+    UnitTest(
+        [&]()
+        {
+          server.updateFromSSOpt( A9Feature::T2A, "T2A", 0 );
+          return server.faceSupport();
+        },
+        FaceSupport::None, "server: face support none" );
+    UnitTest(
+        [&]()
+        {
+          server.updateFromSSOpt( A9Feature::T2A, "T2A", 1 );
+          return server.faceSupport();
+        },
+        FaceSupport::Basic, "server: face support basic" );
+    UnitTest(
+        [&]()
+        {
+          server.updateFromSSOpt( A9Feature::T2A, "T2A", 2 );
+          return server.faceSupport();
+        },
+        FaceSupport::RolePlay, "server: face support roleplay" );
+    UnitTest(
+        [&]()
+        {
+          server.updateFromSSOpt( A9Feature::T2A, "T2A", 10 );
+          return server.faceSupport();
+        },
+        FaceSupport::RolePlay, "server: face support roleplay clamp" );
+  }
 }
 
 }  // namespace Testing
