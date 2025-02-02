@@ -172,19 +172,19 @@ SaveContext::~SaveContext() noexcept( false )
   auto stack_unwinding = std::uncaught_exceptions();
   try
   {
-    pol.flush_file();
-    objects.flush_file();
-    pcs.flush_file();
-    pcequip.flush_file();
-    npcs.flush_file();
-    npcequip.flush_file();
-    items.flush_file();
-    multis.flush_file();
-    storage.flush_file();
-    resource.flush_file();
-    guilds.flush_file();
-    datastore.flush_file();
-    party.flush_file();
+    pol.flush();
+    objects.flush();
+    pcs.flush();
+    pcequip.flush();
+    npcs.flush();
+    npcequip.flush();
+    items.flush();
+    multis.flush();
+    storage.flush();
+    resource.flush();
+    guilds.flush();
+    datastore.flush();
+    party.flush();
   }
   catch ( ... )
   {
@@ -199,7 +199,6 @@ void SaveContext::ready()
 {
   if ( SaveContext::finished.valid() )
   {
-    // Tools::Timer<Tools::DebugT> t("future");
     SaveContext::finished.wait();
   }
 }
@@ -431,8 +430,6 @@ std::optional<bool> write_data( std::function<void( bool, u32, u32, s64 )> callb
             critical_parts.push_back( gamestate.task_thread_pool.checked_push(
                 [&, name, func = std::move( func )]() mutable
                 {
-                  Tools::Timer<> swtimer;
-                  INFO_PRINTLN( "STARTING {}", std::this_thread::get_id() );
                   try
                   {
                     func();
@@ -443,12 +440,21 @@ std::optional<bool> write_data( std::function<void( bool, u32, u32, s64 )> callb
                                     Clib::ExceptionParser::getTrace() );
                     result = false;
                   }
-                  INFO_PRINTLN( "{} -> {}ms thread_id{}", name, swtimer.ellapsed(),
-                                std::this_thread::get_id() );
                 } ) );
-            INFO_PRINTLN( "PUSHED {}", name );
           };
 
+          // ordered roughly by "usual" size, so that the biggest files will be written first
+          save( [&]() { write_items( sc.items ); }, "items" );
+          save( [&]() { gamestate.storage.print( sc.storage ); }, "storage" );
+          save( [&]() { write_characters( sc ); }, "character" );
+          save( [&]() { write_npcs( sc ); }, "npcs" );
+          save(
+              [&]()
+              {
+                if ( Plib::systemstate.accounts_txt_dirty )
+                  Accounts::write_account_data();
+              },
+              "accounts" );
           save(
               [&]()
               {
@@ -463,11 +469,7 @@ std::optional<bool> write_data( std::function<void( bool, u32, u32, s64 )> callb
                 write_realms( sc.pol );
               },
               "pol" );
-          save( [&]() { write_items( sc.items ); }, "items" );
-          save( [&]() { write_characters( sc ); }, "character" );
-          save( [&]() { write_npcs( sc ); }, "npcs" );
           save( [&]() { write_multis( sc.multis ); }, "multis" );
-          save( [&]() { gamestate.storage.print( sc.storage ); }, "storage" );
           save( [&]() { write_resources_dat( sc.resource ); }, "resource" );
           save( [&]() { write_guilds( sc.guilds ); }, "guilds" );
           save(
@@ -479,13 +481,7 @@ std::optional<bool> write_data( std::function<void( bool, u32, u32, s64 )> callb
               },
               "datastore" );
           save( [&]() { write_party( sc.party ); }, "party" );
-          save(
-              [&]()
-              {
-                if ( Plib::systemstate.accounts_txt_dirty )
-                  Accounts::write_account_data();
-              },
-              "accounts" );
+
           for ( auto& task : critical_parts )
             task.wait();
 

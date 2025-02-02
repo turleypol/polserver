@@ -751,7 +751,6 @@ bool UOExecutor::getObjtypeParam( unsigned param, const Items::ItemDesc*& itemde
     itemdesc_out = &Items::find_itemdesc( objtype );
     if ( itemdesc_out == Core::gamestate.empty_itemdesc.get() )
     {
-      INFO_PRINTLN( "create with temp {:#x}", objtype );
       // return a temporary item descriptor initialized with the objtype and graphic.
       itemdesc_out = Core::gamestate.temp_itemdesc.get();
       Core::gamestate.temp_itemdesc->objtype = objtype;
