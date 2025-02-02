@@ -31,7 +31,7 @@ ExpansionVersion getExpansionVersion( const std::string& str )
 {
   for ( auto e = (u8)ExpansionVersion::T2A; e <= (u8)ExpansionVersion::LastVersion; ++e )
   {
-    if ( str.find( ExpansionNames[e] ) != std::string::npos )
+    if ( str == ExpansionNames[e] )
       return static_cast<ExpansionVersion>( e );
   }
   return ExpansionVersion::T2A;
