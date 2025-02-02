@@ -162,7 +162,7 @@ public:
 
   ServerExpansion() = default;
   void updateFromPolCfg( u8 max_char_slots );
-  void updateFromSSOpt( A9Feature feature, const std::string& version, FaceSupport face );
+  void updateFromSSOpt( A9Feature feature, const std::string& version, u16 face_support );
 
 private:
   ExpansionVersion expansion = ExpansionVersion::T2A;
