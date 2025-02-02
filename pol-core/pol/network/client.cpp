@@ -142,7 +142,6 @@ Client::Client( ClientInterface& aInterface, Crypt::TCryptInfo& encryption, sock
       pause_count( 0 ),
       gd( new ClientGameData ),
       instance_( ++instance_counter_ ),
-      UOExpansionFlag( 0 ),
       UOExpansionFlagClient( 0 ),
       ClientType( 0 ),
       next_movement( 0 ),
@@ -784,7 +783,6 @@ size_t Client::estimatedSize() const
           + sizeof( std::atomic<int> )                     /* pause_count */
           + sizeof( void* )                                /* gd */
           + sizeof( unsigned int )                         /* instance_ */
-          + sizeof( u16 )                                  /* UOExpansionFlag */
           + sizeof( u32 )                                  /* UOExpansionFlagClient */
           + sizeof( u16 )                                  /* ClientType */
           + sizeof( Clib::wallclock_t )                    /* next_movement */

@@ -363,7 +363,6 @@ public:
   unsigned int instance_;
   static unsigned int instance_counter_;
 
-  u16 UOExpansionFlag;
   u32 UOExpansionFlagClient;
   u16 ClientType;
   std::queue<PacketThrottler> movementqueue;
