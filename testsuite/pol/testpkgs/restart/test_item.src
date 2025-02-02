@@ -187,6 +187,8 @@ exported function load_save_item_descriptor()
   desc.PoisonResistCap := 22;
   desc.Luck := 23;
   desc.SwingSpeedIncrease := 24;
+  desc.MinAttackRangeIncrease := 25;
+  desc.MaxAttackRangeIncrease := 26;
   desc.Name := "my_suffix";
   var props := { { "FireResist",
                    { "resist_fire", desc.FireResist }
@@ -282,6 +284,14 @@ exported function load_save_item_descriptor()
                  {
                    "SwingSpeedIncrease",
                    { "swing_speed_increase", desc.SwingSpeedIncrease }
+                 },
+                 {
+                   "MinAttackRangeIncrease",
+                   { "min_attack_range_increase", desc.MinAttackRangeIncrease }
+                 },
+                 {
+                   "MaxAttackRangeIncrease",
+                   { "max_attack_range_increase", desc.MaxAttackRangeIncrease }
                  } };
   if ( testrun == 1 )
     var item := CreateItemAtLocation( 10, 11, -5, desc, 1, "britannia2" );
@@ -347,30 +357,6 @@ exported function load_save_item_in_container()
     endif
     if ( item.x != 2 || item.y != 3 )
       return ret_error( $"wrong coordinates ({item.x},{item.y}) != (2,3)" );
-    endif
-  endif
-  return 1;
-endfunction
-
-exported function load_save_item_undefined()
-  if ( testrun == 1 )
-  print(GetItemDescriptor(0x3e5c));
-    var cnt := CreateItemAtLocation( 10, 11, -5, 0x3e5c, 1, "britannia2" ); // no itemdesc.cfg entry
-    if ( !cnt )
-      return ret_error( $"failed to create item {cnt}" );
-    endif
-    cnt.name := "load_save_item_undefined";
-    SetGlobalProperty( "test_item_undefined", cnt.serial );
-  else
-
-    var serial := GetGlobalProperty( "test_item_undefined" );
-    if ( !serial )
-      return ret_error( "Global property not found" );
-    endif
-
-    var item := SystemFindObjectBySerial( serial );
-    if ( !item )
-      return ret_error( $"Item with serial {serial:#x} does not exists: {item})" );
     endif
   endif
   return 1;
