@@ -579,35 +579,35 @@ void uoextension_test()
     UnitTest(
         [&]()
         {
-          server.updateFromSSOpt( A9Feature::T2A, "T2A", 0 );
+          server.updateFromSSOpt( A9Feature::None, "T2A", 0 );
           return server.supportsAOS();
         },
         false, "server: aos support false" );
     UnitTest(
         [&]()
         {
-          server.updateFromSSOpt( A9Feature::T2A, "T2A", 0 );
+          server.updateFromSSOpt( A9Feature::None, "T2A", 0 );
           return server.faceSupport();
         },
         FaceSupport::None, "server: face support none" );
     UnitTest(
         [&]()
         {
-          server.updateFromSSOpt( A9Feature::T2A, "T2A", 1 );
+          server.updateFromSSOpt( A9Feature::None, "T2A", 1 );
           return server.faceSupport();
         },
         FaceSupport::Basic, "server: face support basic" );
     UnitTest(
         [&]()
         {
-          server.updateFromSSOpt( A9Feature::T2A, "T2A", 2 );
+          server.updateFromSSOpt( A9Feature::None, "T2A", 2 );
           return server.faceSupport();
         },
         FaceSupport::RolePlay, "server: face support roleplay" );
     UnitTest(
         [&]()
         {
-          server.updateFromSSOpt( A9Feature::T2A, "T2A", 10 );
+          server.updateFromSSOpt( A9Feature::None, "T2A", 10 );
           return server.faceSupport();
         },
         FaceSupport::RolePlay, "server: face support roleplay clamp" );
@@ -689,5 +689,6 @@ void uoextension_test()
             A9Feature::LimitSlots,
         "account A9Feature 1 chars" );
   }
+}
 }  // namespace Testing
 }  // namespace Pol
