@@ -545,25 +545,25 @@ void clamp_test()
 void uoextension_test()
 {
   using namespace Plib;
-  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "T2A" ) ); }, "T2A",
+  UnitTest( []() { return getExpansionName( getExpansionVersion( "T2A" ) ); }, "T2A",
             "t2a expansion" );
-  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "LBR" ) ); }, "LBR",
+  UnitTest( []() { return getExpansionName( getExpansionVersion( "LBR" ) ); }, "LBR",
             "lbr expansion" );
-  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "AOS" ) ); }, "AOS",
+  UnitTest( []() { return getExpansionName( getExpansionVersion( "AOS" ) ); }, "AOS",
             "aos expansion" );
-  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "SE" ) ); }, "SE",
+  UnitTest( []() { return getExpansionName( getExpansionVersion( "SE" ) ); }, "SE",
             "se expansion" );
-  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "ML" ) ); }, "ML",
+  UnitTest( []() { return getExpansionName( getExpansionVersion( "ML" ) ); }, "ML",
             "ml expansion" );
-  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "KR" ) ); }, "KR",
+  UnitTest( []() { return getExpansionName( getExpansionVersion( "KR" ) ); }, "KR",
             "kr expansion" );
-  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "SA" ) ); }, "SA",
+  UnitTest( []() { return getExpansionName( getExpansionVersion( "SA" ) ); }, "SA",
             "sa expansion" );
-  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "HSA" ) ); }, "HSA",
+  UnitTest( []() { return getExpansionName( getExpansionVersion( "HSA" ) ); }, "HSA",
             "hsa expansion" );
-  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "TOL" ) ); }, "TOL",
+  UnitTest( []() { return getExpansionName( getExpansionVersion( "TOL" ) ); }, "TOL",
             "tol expansion" );
-  UnitTest( []() { return getExpansionVersionName( getExpansionVersion( "unknown" ) ); }, "T2A",
+  UnitTest( []() { return getExpansionName( getExpansionVersion( "unknown" ) ); }, "T2A",
             "unknown expansion" );
   {
     ServerExpansion server;
