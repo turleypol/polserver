@@ -143,6 +143,7 @@ enum class FaceSupport : u8
   Basic,
   RolePlay
 };
+
 // hold in server
 class ServerExpansion
 {
@@ -166,9 +167,9 @@ public:
 
 private:
   ExpansionVersion expansion = ExpansionVersion::T2A;
-  B9Feature ext_flags = B9Feature::DefaultT2A;  // needed?
+  B9Feature ext_flags = B9Feature::DefaultT2A;
   A9Feature feature_flags = A9Feature::None;
-  u8 char_slots = 5;  // pol.cfg setting...
+  u8 char_slots = 5;
   FaceSupport face_support = FaceSupport::None;
 };
 
@@ -181,7 +182,7 @@ public:
       : expansion( getExpansionVersion( exp ) ), ext_flags( flag ){};
   ExpansionVersion Expansion() const { return expansion; };
   B9Feature extensionFlags() const { return ext_flags; };
-  A9Feature featureFlags( const ServerExpansion& server ) const;
+  A9Feature calculateFeatureFlags( const ServerExpansion& server ) const;
   B9Feature calculatedExtensionFlags( const ServerExpansion& server ) const;
   u8 getCharSlots( const ServerExpansion& server ) const;
 

@@ -180,3 +180,19 @@ exported function apply_aos_misc_mod()
   endif
   return 1;
 endfunction
+
+exported function test_account_expansion()
+  var a := FindAccount( "test" );
+  if ( typeOfInt( a.Set_UO_Expansion( "unknown" ) ) != OT_ERROR )
+    return ret_error( $"success while setting unknown expansion {a.uo_expansion}" );
+  endif
+  a.Set_UO_Expansion( "TOL" );
+  if ( a.uo_expansion != "TOL" )
+    return ret_error( $"failed to set TOL expansion {a.uo_expansion}" );
+  endif
+  a.Set_UO_Expansion( "AOS" );
+  if ( a.uo_expansion != "AOS" )
+    return ret_error( $"failed to set AOS expansion {a.uo_expansion}" );
+  endif
+  return 1;
+endfunction

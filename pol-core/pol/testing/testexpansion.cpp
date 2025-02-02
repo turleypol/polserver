@@ -138,13 +138,14 @@ void uoextension_test()
   {
     ServerExpansion server;
     server.updateFromSSOpt( A9Feature::AOS, "AOS", 0 );
-    UnitTest( [&]() { return AccountExpansion( "AOS", B9Feature::T2A ).featureFlags( server ); },
+    UnitTest( [&]()
+              { return AccountExpansion( "AOS", B9Feature::T2A ).calculateFeatureFlags( server ); },
               A9Feature::AOS | A9Feature::UO3DClientType, "account A9Feature 5 chars" );
     UnitTest(
         [&]()
         {
           server.updateFromPolCfg( 7 );
-          return AccountExpansion( "AOS", B9Feature::T2A ).featureFlags( server );
+          return AccountExpansion( "AOS", B9Feature::T2A ).calculateFeatureFlags( server );
         },
         A9Feature::AOS | A9Feature::UO3DClientType | A9Feature::Has7thSlot,
         "account A9Feature 7 chars" );
@@ -152,7 +153,7 @@ void uoextension_test()
         [&]()
         {
           server.updateFromPolCfg( 6 );
-          return AccountExpansion( "AOS", B9Feature::T2A ).featureFlags( server );
+          return AccountExpansion( "AOS", B9Feature::T2A ).calculateFeatureFlags( server );
         },
         A9Feature::AOS | A9Feature::UO3DClientType | A9Feature::Has6thSlot,
         "account A9Feature 6 chars" );
@@ -160,7 +161,7 @@ void uoextension_test()
         [&]()
         {
           server.updateFromPolCfg( 1 );
-          return AccountExpansion( "AOS", B9Feature::T2A ).featureFlags( server );
+          return AccountExpansion( "AOS", B9Feature::T2A ).calculateFeatureFlags( server );
         },
         A9Feature::AOS | A9Feature::UO3DClientType | A9Feature::SingleCharacter |
             A9Feature::LimitSlots,

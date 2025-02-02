@@ -77,7 +77,7 @@ void ServerExpansion::updateFromPolCfg( u8 max_char_slots )
   char_slots = max_char_slots;
 }
 
-A9Feature AccountExpansion::featureFlags( const ServerExpansion& server ) const
+A9Feature AccountExpansion::calculateFeatureFlags( const ServerExpansion& server ) const
 {
   auto clientflag = server.featureFlags();
   clientflag |= A9Feature::UO3DClientType;  // Let UO3D (KR,SA) send 0xE1 packet

@@ -388,7 +388,8 @@ void send_start( Network::Client* client )
     }
   }
 
-  auto clientflag = client->acct->expansion().featureFlags( settingsManager.ssopt.expansion );
+  auto clientflag =
+      client->acct->expansion().calculateFeatureFlags( settingsManager.ssopt.expansion );
 
   msg->WriteFlipped<u32>( static_cast<u32>( clientflag ) );
   u16 len = msg->offset;
