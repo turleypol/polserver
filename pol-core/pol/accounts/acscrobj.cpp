@@ -585,7 +585,7 @@ Bscript::BObjectRef AccountObjImp::get_member_id( const int id )  // id test
     return BObjectRef( new String( obj_->passwordhash() ) );
     break;
   case MBR_UO_EXPANSION:
-    return BObjectRef( new String( Plib::getExpansionVersionName(obj_->expansion().Expansion() ) );
+    return BObjectRef( new String( Plib::getExpansionName(obj_->expansion().Expansion() ) );
     break;
   case MBR_DEFAULTCMDLEVEL:
     return BObjectRef( new BLong( obj_->default_cmdlevel_ ) );

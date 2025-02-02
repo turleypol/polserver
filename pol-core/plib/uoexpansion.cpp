@@ -1,5 +1,7 @@
 #include "uoexpansion.h"
+#include "../clib/clib.h"
 #include <array>
+
 namespace Pol::Plib
 {
 constexpr u8 numExpansions = static_cast<u8>( ExpansionVersion::LastVersion ) + 1;
@@ -67,7 +69,8 @@ void ServerExpansion::updateFromSSOpt( A9Feature feature, const std::string& ver
   expansion = getExpansionVersion( version );
   ext_flags = getDefaultExpansionFlag( expansion );
   feature_flags = feature;
-  face_support = (FaceSupport)Clib::sanitize_upperlimit<u16>( face, (u16)FaceSupport::RolePlay );
+  face_support =
+      (FaceSupport)Clib::sanitize_upperlimit<u16>( facesupport, (u16)FaceSupport::RolePlay );
 }
 void ServerExpansion::updateFromPolCfg( u8 max_char_slots )
 {

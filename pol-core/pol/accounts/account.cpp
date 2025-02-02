@@ -105,7 +105,7 @@ void Account::writeto( Clib::StreamWriter& sw ) const
   }
   if ( expansion_.Expansion() != Core::settingsManager.ssopt.expansion.Expansion() )
   {
-    sw.add( "UOExpansion", Plib::getExpansionName(expansion_.Expansion() );
+    sw.add( "UOExpansion", Plib::getExpansionName( expansion_.Expansion() ) );
   }
   props_.printProperties( sw );
 
@@ -135,7 +135,7 @@ void Account::writeto( Clib::ConfigElem& elem ) const
   }
   if ( expansion_.Expansion() != Core::settingsManager.ssopt.expansion.Expansion() )
   {
-    elem.add_prop( "UOExpansion", Plib::getExpansionName(expansion_.Expansion() );
+    elem.add_prop( "UOExpansion", Plib::getExpansionName( expansion_.Expansion() ) );
   }
   props_.printProperties( elem );
 }
