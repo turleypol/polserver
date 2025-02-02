@@ -69,8 +69,8 @@ void ServerExpansion::updateFromSSOpt( A9Feature feature, const std::string& ver
   expansion = getExpansionVersion( version );
   ext_flags = getDefaultExpansionFlag( expansion );
   feature_flags = feature;
-  face_support =
-      (FaceSupport)Clib::sanitize_upperlimit<u16>( facesupport, (u16)FaceSupport::RolePlay );
+  Clib::sanitize_upperlimit<u16>( &facesupport, (u16)FaceSupport::RolePlay );
+  face_support = (FaceSupport)facesupport;
 }
 void ServerExpansion::updateFromPolCfg( u8 max_char_slots )
 {

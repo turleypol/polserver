@@ -612,7 +612,82 @@ void uoextension_test()
         },
         FaceSupport::RolePlay, "server: face support roleplay clamp" );
   }
-}
-
+  {
+    ServerExpansion server;
+    server.updateFromPolCfg( 7 );
+    UnitTest( [&]() { return AccountExpansion( "AOS", B9Feature::AOS ).getCharSlots( server ); }, 7,
+              "account AOS chr slots 7" );
+    UnitTest( [&]() { return AccountExpansion( "T2A", B9Feature::AOS ).getCharSlots( server ); }, 5,
+              "account T2A chr slots 5" );
+  }
+  {
+    ServerExpansion server;
+    server.updateFromPolCfg( 7 );
+    UnitTest(
+        [&]()
+        { return AccountExpansion( "AOS", B9Feature::T2A ).calculatedExtensionFlags( server ); },
+        B9Feature::T2A | B9Feature::Has7thSlot, "account AOS chr slots 7 feature" );
+    UnitTest(
+        [&]()
+        { return AccountExpansion( "T2A", B9Feature::T2A ).calculatedExtensionFlags( server ); },
+        B9Feature::T2A, "account T2A chr slots 7 feature" );
+    server.updateFromPolCfg( 6 );
+    UnitTest(
+        [&]()
+        { return AccountExpansion( "AOS", B9Feature::T2A ).calculatedExtensionFlags( server ); },
+        B9Feature::T2A | B9Feature::Has6thSlot, "account AOS chr slots 6 feature" );
+    UnitTest(
+        [&]()
+        { return AccountExpansion( "T2A", B9Feature::T2A ).calculatedExtensionFlags( server ); },
+        B9Feature::T2A, "account T2A chr slots 6 feature" );
+    server.updateFromPolCfg( 5 );
+    UnitTest(
+        [&]()
+        { return AccountExpansion( "AOS", B9Feature::T2A ).calculatedExtensionFlags( server ); },
+        B9Feature::T2A, "account AOS chr slots 5 feature" );
+    UnitTest(
+        [&]()
+        { return AccountExpansion( "T2A", B9Feature::T2A ).calculatedExtensionFlags( server ); },
+        B9Feature::T2A, "account T2A chr slots 5 feature" );
+  }
+  {
+    ServerExpansion server;
+    server.updateFromSSOpt( A9Feature::AOS, "KR", 2 );
+    UnitTest(
+        [&]()
+        { return AccountExpansion( "KR", B9Feature::T2A ).calculatedExtensionFlags( server ); },
+        B9Feature::T2A | B9Feature::KRFaces, "account KR faces feature" );
+  }
+  {
+    ServerExpansion server;
+    server.updateFromSSOpt( A9Feature::AOS, "AOS", 0 );
+    UnitTest( [&]() { return AccountExpansion( "AOS", B9Feature::T2A ).featureFlags( server ); },
+              A9Feature::AOS | A9Feature::UO3DClientType, "account A9Feature 5 chars" );
+    UnitTest(
+        [&]()
+        {
+          server.updateFromPolCfg( 7 );
+          return AccountExpansion( "AOS", B9Feature::T2A ).featureFlags( server );
+        },
+        A9Feature::AOS | A9Feature::UO3DClientType | A9Feature::Has7thSlot,
+        "account A9Feature 7 chars" );
+    UnitTest(
+        [&]()
+        {
+          server.updateFromPolCfg( 6 );
+          return AccountExpansion( "AOS", B9Feature::T2A ).featureFlags( server );
+        },
+        A9Feature::AOS | A9Feature::UO3DClientType | A9Feature::Has6thSlot,
+        "account A9Feature 6 chars" );
+    UnitTest(
+        [&]()
+        {
+          server.updateFromPolCfg( 1 );
+          return AccountExpansion( "AOS", B9Feature::T2A ).featureFlags( server );
+        },
+        A9Feature::AOS | A9Feature::UO3DClientType | A9Feature::SingleCharacter |
+            A9Feature::LimitSlots,
+        "account A9Feature 1 chars" );
+  }
 }  // namespace Testing
 }  // namespace Pol
