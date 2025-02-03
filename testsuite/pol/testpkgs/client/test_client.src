@@ -230,3 +230,18 @@ exported function client_warmodeinhibitsregen()
   char.setwarmode( 0 );
   return ret_error( $"PC health did not change between sleeping: {damaged_health} -> {waited_health}" );
 endfunction
+
+exported function aos_tooltip()
+  Clear_Event_Queue();
+  clientcon.sendevent( struct{ todo := EVT_AOS_TOOLTIP, arg := char.serial, id := 0 } );
+  while ( 1 )
+    var ev := waitForClient( 0, { EVT_SPEECH } );
+    if ( !ev )
+      return ev;
+    endif
+    if ( ev.msg == "Hello Test" )
+      break;
+    endif
+  endwhile
+  return 1;
+endfunction

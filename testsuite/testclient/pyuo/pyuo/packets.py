@@ -1453,6 +1453,10 @@ class GeneralInfoPacket(Packet):
       self.direction = args[1]
       self.speed = args[2]
       self.length = 12
+    elif self.sub == self.SUB_MEGACLILOC:
+      checkArgLen(2)
+      self.serial = args[0]
+      self.listid = args[1]
 
     else:
       raise NotImplementedError('Subcommand {:02x} not implemented to send'.format(self.sub))
@@ -1473,6 +1477,9 @@ class GeneralInfoPacket(Packet):
       self.euchar(self.direction)
       self.euchar(self.direction)
       self.euchar(self.speed)
+    elif self.sub == self.SUB_MEGACLILOC:
+      self.euint(self.serial)
+      self.euint(self.listid)
 
     else:
       raise NotImplementedError('Subcommand {:02x} not implemented yet'.format(self.sub))

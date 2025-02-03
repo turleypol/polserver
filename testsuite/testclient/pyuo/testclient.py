@@ -135,6 +135,9 @@ class TestBrain(brain.Brain):
             res = res is not None))
       elif todo=="disable_item_logging":
         self.client.addTodo(brain.Event(brain.Event.EVT_DISABLE_ITEM_LOGGING, value = arg))
+      elif todo=="aos_tooltip":
+        self.client.getAOSTooltip(arg))
+        #self.client.addTodo(brain.Event(brain.Event.EVT_GET_AOS_TOOLTIP, serial = arg['serial']))
 
     return True
 

@@ -1288,6 +1288,13 @@ class Client(threading.Thread):
     self.waitFor(lambda: self.target is not None, timeout)
     return self.target
 
+  @logincomplete
+  def getAOSTooltip(self, serial):
+    ''' Sends a tooltip request packet to server'''
+    po = packets.GeneralInfoPacket()
+    po.fill(po.SUB_MEGACLILOC, serial, 1)
+    self.queue(po)
+
   def waitFor(self, cond, timeout=None):
     '''! Utility function, waits until a condition is satisfied or until timeout expires
     @return True when consition succeeds, False on timeout
