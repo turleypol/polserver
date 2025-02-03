@@ -1457,6 +1457,7 @@ class GeneralInfoPacket(Packet):
       checkArgLen(2)
       self.serial = args[0]
       self.listid = args[1]
+      self.length = 5 + 8
 
     else:
       raise NotImplementedError('Subcommand {:02x} not implemented to send'.format(self.sub))
@@ -1532,10 +1533,6 @@ class GeneralInfoPacket(Packet):
           'mpatches': self.duint(),
           'spatches': self.duint(),
         })
-
-    elif self.sub == self.SUB_MEGACLILOC:
-      self.serial = self.duint()
-      self.revision = self.duint()
 
     elif self.sub == self.SUB_HOUSE_REV:
       self.serial = self.duint()
