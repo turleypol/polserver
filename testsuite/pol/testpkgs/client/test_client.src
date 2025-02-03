@@ -235,10 +235,12 @@ exported function aos_tooltip()
   Clear_Event_Queue();
   clientcon.sendevent( struct{ todo := EVT_AOS_TOOLTIP, arg := char.serial, id := 0 } );
   while ( 1 )
-    var ev := waitForClient( 0, { EVT_SPEECH } );
+    var ev := waitForClient( 0, { EVT_AOS_TOOLTIP } );
     if ( !ev )
       return ev;
     endif
+    print(ev);
+    break;
     if ( ev.msg == "Hello Test" )
       break;
     endif

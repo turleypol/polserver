@@ -1644,6 +1644,22 @@ class CloseGumpResponsePacket(Packet):
     self.euint(0) #string count
 
 
+class AOSTooltipPacket(Packet):
+  ''' tooltip after sending 0xbf 0x10 '''
+
+  cmd = 0xd6
+
+  def decodeChild(self):
+    self.length = self.dushort()
+    self.unk1 = self.dushort()
+    self.serial = self.duint()
+    self.unk2 = self.dushort()
+    self.revision = self.duint()
+    self.cliloc = self.duint()
+    self.txtlen = self.dushort()
+    self.text = self.ducstring(self.txtlen)
+
+
 class NewObjectInfoPacket(Packet):
   ''' Draws an item '''
 
