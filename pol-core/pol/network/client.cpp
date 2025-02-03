@@ -772,7 +772,7 @@ u8 Client::update_range() const
   return gd->update_range;
 }
 
-bool Client::supports( Plib::ExpansionVersion v ) const
+bool Client::acctSupports( Plib::ExpansionVersion v ) const
 {
   return acct->expansion().hasExpansion( v );
 }

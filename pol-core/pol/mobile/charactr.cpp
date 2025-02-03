@@ -1694,7 +1694,7 @@ void Character::on_aos_ext_stat_changed()
 {
   if ( client )
   {
-    if ( client->supports( Plib::ExpansionVersion::AOS ) && has_active_client() )
+    if ( client->acctSupports( Plib::ExpansionVersion::AOS ) && has_active_client() )
     {
       send_full_statmsg( client, client->chr );
     }
@@ -4440,7 +4440,7 @@ void Character::update_objects_on_range_change( u8 newrange )
         {
           Core::send_multi( client, zonemulti );
           Multi::UHouse* house = zonemulti->as_house();
-          if ( client->supports( Plib::ExpansionVersion::AOS ) && house != nullptr &&
+          if ( client->acctSupports( Plib::ExpansionVersion::AOS ) && house != nullptr &&
                house->IsCustom() )
             Multi::CustomHousesSendShort( house, client );
         }

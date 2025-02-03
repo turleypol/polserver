@@ -307,7 +307,7 @@ public:
   bool compareVersion( const VersionDetailStruct& ver2 );
   void setClientType( ClientTypeFlag type );
   bool IsUOKRClient();
-  bool supports( Plib::ExpansionVersion v ) const;
+  bool acctSupports( Plib::ExpansionVersion v ) const;
 
   // Tells whether we should use a different packet handler for this client version
   bool might_use_v2_handler() const;
