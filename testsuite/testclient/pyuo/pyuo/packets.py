@@ -1655,6 +1655,7 @@ class AOSTooltipPacket(Packet):
     self.cliloc = self.duint()
     self.txtlen = self.dushort()
     self.text = self.ducstring(self.txtlen)
+    self.zeros = self.duint()
 
 
 class NewObjectInfoPacket(Packet):
