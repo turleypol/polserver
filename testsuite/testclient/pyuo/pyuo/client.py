@@ -1291,9 +1291,9 @@ class Client(threading.Thread):
     return self.target
 
   @logincomplete
-  def getAOSTooltip(self, serial):
+  def getAOSTooltip(self, serial, newpkt):
     ''' Sends a tooltip request packet to server'''
-    if False:
+    if not newpkt:
       po = packets.GeneralInfoPacket()
       po.fill(po.SUB_MEGACLILOC, serial, 1)
     else:
