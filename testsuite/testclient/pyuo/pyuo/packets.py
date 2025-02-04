@@ -1658,7 +1658,7 @@ class AOSTooltipPacket(Packet):
   
   def fill(self,serials):
     self.serials = serials
-    self.length = 4 + 4*len(self.serials)
+    self.length = 3 + 4*len(self.serials)
 
   def decodeChild(self):
     self.length = self.dushort()
