@@ -942,7 +942,7 @@ class Client(threading.Thread):
     elif isinstance(pkt, packets.VisualRangePacket):
       pass
     elif isinstance(pkt, packets.AOSTooltipPacket):
-      self.brain.event(brain.Event(brain.Event.EVT_AOS_TOOLTIP, serial = pkt.serial, cliloc=pkt.cliloc, text=pkt.text))
+      self.brain.event(brain.Event(brain.Event.EVT_AOS_TOOLTIP, serial = pkt.serial, text=pkt.text))
     else:
       self.log.warn("Unhandled packet {}".format(pkt.__class__))
 
@@ -1293,8 +1293,12 @@ class Client(threading.Thread):
   @logincomplete
   def getAOSTooltip(self, serial):
     ''' Sends a tooltip request packet to server'''
-    po = packets.GeneralInfoPacket()
-    po.fill(po.SUB_MEGACLILOC, serial, 1)
+    if False:
+      po = packets.GeneralInfoPacket()
+      po.fill(po.SUB_MEGACLILOC, serial, 1)
+    else:
+        po = packets.AOSTooltipPacket()
+        po.fill([serial])
     self.queue(po)
 
   def waitFor(self, cond, timeout=None):

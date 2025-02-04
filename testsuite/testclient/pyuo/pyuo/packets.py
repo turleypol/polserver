@@ -1655,6 +1655,10 @@ class AOSTooltipPacket(Packet):
   ''' tooltip after sending 0xbf 0x10 '''
 
   cmd = 0xd6
+  
+  def fill(self,serials):
+    self.serials = serials
+    self.length = 4 + 4*len(self.serials)
 
   def decodeChild(self):
     self.length = self.dushort()
@@ -1662,11 +1666,20 @@ class AOSTooltipPacket(Packet):
     self.serial = self.duint()
     self.unk2 = self.dushort()
     self.revision = self.duint()
-    self.cliloc = self.duint()
-    self.txtlen = self.dushort()
-    self.text = self.ducstringflipped(self.txtlen)
-    self.zeros = self.duint()
+    self.text=[]
+    while True:
+      cliloc = self.duint()
+      if cliloc == 0:
+          break
+      txtlen = self.dushort()
+      text = self.ducstringflipped(txtlen)
+      self.text.append((cliloc,text))
 
+  def encodeChild(self):
+    self.eulen()
+    for serial in self.serials:
+      self.euint(serial)
+    
 
 class NewObjectInfoPacket(Packet):
   ''' Draws an item '''
