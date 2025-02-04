@@ -138,6 +138,11 @@ class Packet():
     if length % 2:
       raise ValueError('Length must be a multiple of 2')
     return self.varUStr(self.rpb(length))
+  def ducstringflipped(self, length):
+    ''' Returns next unicode string of the given length from the receive buffer '''
+    if length % 2:
+      raise ValueError('Length must be a multiple of 2')
+    return self.varUStrFlipped(self.rpb(length))
 
   def dip(self):
     ''' Returns next string ip address from the receive buffer '''
@@ -226,6 +231,11 @@ class Packet():
   def varUStr(byt):
     ''' Convert unicode bytes into a variable-length string '''
     dec = byt.decode('utf_16_be')
+    return Packet.nullTrunc(dec)
+  @staticmethod
+  def varUStrFlipped(byt):
+    ''' Convert unicode bytes into a variable-length string '''
+    dec = byt.decode('utf_16_le')
     return Packet.nullTrunc(dec)
 
   @staticmethod
@@ -1654,7 +1664,7 @@ class AOSTooltipPacket(Packet):
     self.revision = self.duint()
     self.cliloc = self.duint()
     self.txtlen = self.dushort()
-    self.text = self.ducstring(self.txtlen)
+    self.text = self.ducstringflipped(self.txtlen)
     self.zeros = self.duint()
 
 
