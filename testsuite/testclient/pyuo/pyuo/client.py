@@ -945,6 +945,8 @@ class Client(threading.Thread):
       pass
     elif isinstance(pkt, packets.AOSTooltipPacket):
       self.brain.event(brain.Event(brain.Event.EVT_AOS_TOOLTIP, serial = pkt.serial, text=pkt.text))
+    elif isinstance(pkt, packets.EnableFeaturesPacket):
+      self.features = pkt.features
     else:
       self.log.warn("Unhandled packet {}".format(pkt.__class__))
 
