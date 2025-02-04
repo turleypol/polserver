@@ -941,6 +941,8 @@ class Client(threading.Thread):
         self.handleObjectInfoPacket(obj)
     elif isinstance(pkt, packets.VisualRangePacket):
       pass
+    elif isinstance(pkt, packets.MegaClilocRevPacket):
+      pass
     elif isinstance(pkt, packets.AOSTooltipPacket):
       self.brain.event(brain.Event(brain.Event.EVT_AOS_TOOLTIP, serial = pkt.serial, text=pkt.text))
     else:

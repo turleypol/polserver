@@ -233,23 +233,22 @@ endfunction
 
 exported function aos_tooltip()
   Clear_Event_Queue();
+  // get tooltip via 0xd6
   clientcon.sendevent( struct{ todo := EVT_AOS_TOOLTIP, arg := { char.serial, True }, id := 0 } );
   while ( 1 )
     var ev := waitForClient( 0, { EVT_AOS_TOOLTIP } );
     if ( !ev )
       return ev;
     endif
-    print( ev );
     if ( len( ev.text ) != 1 )
       return ret_error( $"wrong char tooltip len {ev.text}" );
     endif
     if ( ev.text[1][1] != 1050045 || ev.text[1][2] != " \tClient0\t " )
-      print(" \tClient0\t ");
-      print(ev.text[1][2]);
       return ret_error( $"wrong char tooltip {ev.text}" );
     endif
     break;
   endwhile
+  // get tooltip via 0xbf 0x10
   clientcon.sendevent( struct{ todo := EVT_AOS_TOOLTIP,
                                arg := { char.backpack.serial, False },
                                id := 0 } );
@@ -258,11 +257,10 @@ exported function aos_tooltip()
     if ( !ev )
       return ev;
     endif
-    print( ev );
     if ( len( ev.text ) != 1 )
       return ret_error( $"wrong backpack tooltip len {ev.text}" );
     endif
-    if ( ev.text[1][1] != 1042971 || ev.text[1][2] != " \tClient0\t " )
+    if ( ev.text[1][1] != 1042971 || ev.text[1][2] != "back pack" )
       return ret_error( $"wrong backpack tooltip {ev.text}" );
     endif
     break;
