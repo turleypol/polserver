@@ -190,9 +190,7 @@ public:
   u8 getCharSlots( const ServerFeatures& server ) const;
 
 private:
-  ExpansionVersion expansion =
-      ExpansionVersion::T2A;  // TODO needed? could save the flags or string depending if its
-                              // default or not if flags can be changed
+  ExpansionVersion expansion = ExpansionVersion::T2A;
   B9Feature ext_flags = B9Feature::DefaultT2A;
 };
 

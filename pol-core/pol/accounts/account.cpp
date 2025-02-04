@@ -65,9 +65,8 @@ void Account::readfrom( Clib::ConfigElem& elem )
   banned_ = elem.remove_bool( "BANNED", false );
   auto exp = elem.remove_string( "UOExpansion",
                                  Core::settingsManager.ssopt.features.expansionName().c_str() );
-  expansion_ = Plib::AccountExpansion(
-      exp, Core::settingsManager.ssopt.features.extensionFlags() );  // store flags?
-
+  // currently its not possible to define B9 flags by script
+  expansion_ = Plib::AccountExpansion( exp, Core::settingsManager.ssopt.features.extensionFlags() );
   default_privs_.readfrom( elem.remove_string( "DefaultPrivs", "" ) );
 
   std::string cmdaccstr = elem.remove_string( "DefaultCmdLevel", "player" );
