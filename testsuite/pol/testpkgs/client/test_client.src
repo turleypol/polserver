@@ -262,21 +262,21 @@ exported function aos_tooltip()
   clientcon.sendevent( struct{ todo := EVT_AOS_TOOLTIP,
                                arg := { char.backpack.serial, False },
                                id := 0 } );
-  var res:=waitAndTest("backpack",1042971,"back pack");
+  res:=waitAndTest("backpack",1042971,"back pack");
   if (!res)
     return res;
   endif
   char.title_prefix := "title_prefix";
   char.title_suffix := "title_suffix";
   clientcon.sendevent( struct{ todo := EVT_AOS_TOOLTIP, arg := { char.serial, True }, id := 0 } );
-  var res:=waitAndTest("char prefix,suffix",1050045,"title_prefix \tClient0\t title_suffix");
+  res:=waitAndTest("char prefix,suffix",1050045,"title_prefix \tClient0\t title_suffix");
   if (!res)
     return res;
   endif
   char.title_race := "title_race";
   char.title_guild := "title_guild";
   clientcon.sendevent( struct{ todo := EVT_AOS_TOOLTIP, arg := { char.serial, True }, id := 0 } );
-  var res:=waitAndTest("char prefix,suffix,race,guild",1050045,"title_prefix \tClient0\t title_suffix (title_race) [title_guild]");
+  res:=waitAndTest("char prefix,suffix,race,guild",1050045,"title_prefix \tClient0\t title_suffix (title_race) [title_guild]");
   if (!res)
     return res;
   endif
@@ -285,7 +285,7 @@ exported function aos_tooltip()
   char.title_race := "";
   char.title_guild := "title_guild";
   clientcon.sendevent( struct{ todo := EVT_AOS_TOOLTIP, arg := { char.serial, True }, id := 0 } );
-  var res:=waitAndTest("char guild",1050045," \tClient0\t [title_guild]");
+  res:=waitAndTest("char guild",1050045," \tClient0\t [title_guild]");
   if (!res)
     return res;
   endif
