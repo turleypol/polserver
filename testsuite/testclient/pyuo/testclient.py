@@ -335,7 +335,6 @@ class PolServer:
       res['commands']=ev.commands
       res['texts']=ev.texts
     elif ev.type==Event.EVT_AOS_TOOLTIP:
-      res['cliloc']=ev.cliloc
       res['text']=ev.text
     else:
       raise NotImplementedError("Unknown event {}",format(ev.type))
