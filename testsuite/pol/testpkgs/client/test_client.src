@@ -233,7 +233,7 @@ endfunction
 
 exported function aos_tooltip()
   Clear_Event_Queue();
-  var waitAndTest = @(test, id, text) {
+  var waitAndTest := @(test, id, text) {
   while ( 1 )
     var ev := waitForClient( 0, { EVT_AOS_TOOLTIP } );
     if ( !ev )
