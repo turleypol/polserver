@@ -102,7 +102,7 @@ void Account::writeto( Clib::StreamWriter& sw ) const
   {
     sw.add( "DefaultCmdLevel", Core::gamestate.cmdlevels[default_cmdlevel_].name.c_str() );
   }
-  if ( expansion_.Expansion() != Core::settingsManager.ssopt.features.Expansion() )
+  if ( expansion_.expansionVersion() != Core::settingsManager.ssopt.features.expansionVersion() )
   {
     sw.add( "UOExpansion", expansion_.expansionName() );
   }
@@ -132,7 +132,7 @@ void Account::writeto( Clib::ConfigElem& elem ) const
   {
     elem.add_prop( "DefaultCmdLevel", Core::gamestate.cmdlevels[default_cmdlevel_].name );
   }
-  if ( expansion_.Expansion() != Core::settingsManager.ssopt.features.Expansion() )
+  if ( expansion_.expansionVersion() != Core::settingsManager.ssopt.features.expansionVersion() )
   {
     elem.add_prop( "UOExpansion", expansion_.expansionName() );
   }
