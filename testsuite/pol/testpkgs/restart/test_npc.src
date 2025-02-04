@@ -41,6 +41,8 @@ exported function load_save_npc()
                           PoisonResistCap := 22,
                           Luck := 23,
                           SwingSpeedIncrease := 24,
+                          MinAttackRangeIncrease := 25,
+                          MaxAttackRangeIncrease := 25,
                           NoDropException := 1 };
   var props := {    //       {"RegisteredHouse", {"",1}},
                  { "AR",
@@ -161,6 +163,14 @@ exported function load_save_npc()
                  {
                    "SwingSpeedIncrease",
                    { "swing_speed_increase", override.SwingSpeedIncrease }
+                 },
+                 {
+                   "MinAttackRangeIncrease",
+                   { "min_attack_range_increase", override.MinAttackRangeIncrease }
+                 },
+                 {
+                   "MaxAttackRangeIncrease",
+                   { "max_attack_range_increase", override.MaxAttackRangeIncrease }
                  },
                  {
                    "NoDropException",
