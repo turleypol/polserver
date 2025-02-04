@@ -95,12 +95,13 @@ void SendAOSTooltip( Network::Client* client, UObject* obj, bool vendor_content 
   if ( obj->isa( UOBJ_CLASS::CLASS_CHARACTER ) )
   {
     Mobile::Character* chr = (Mobile::Character*)obj;
-    desc = ( !chr->has_title_prefix() ? " \t" : chr->title_prefix() + " \t" ) + chr->name() +
-           ( !chr->has_title_suffix() ? "\t " : "\t " + chr->title_suffix() );
+
+    desc = fmt::format( "{} \t{}\t {}", chr->title_prefix(), chr->name(), chr->title_suffix() );
     if ( chr->has_title_race() )
-      desc += " (" + chr->title_race() + ")";
+      desc += fmt::format( "{}({})", chr->has_title_suffix() ? ' ' :'', chr->title_race() );
     if ( chr->has_title_guild() )
-      desc += " [" + chr->title_guild() + "]";
+      desc += fmt::format( "{}[{}]", ( chr->has_title_suffix() || chr->has_title_race() ) ? ' ' :'',
+                           chr->title_guild() );
   }
   else if ( vendor_content )
   {
