@@ -244,6 +244,8 @@ exported function aos_tooltip()
       return ret_error( $"wrong char tooltip len {ev.text}" );
     endif
     if ( ev.text[1] != 1050045 || ev.text[2] != " \tClient0\t " )
+      print(" \tClient0\t ");
+      print(ev.text[2]);
       return ret_error( $"wrong char tooltip {ev.text}" );
     endif
     break;
@@ -260,7 +262,7 @@ exported function aos_tooltip()
     if ( len( ev.text ) != 1 )
       return ret_error( $"wrong backpack tooltip len {ev.text}" );
     endif
-    if ( ev.text[1] != 1050045 || ev.text[2] != " \tClient0\t " )
+    if ( ev.text[1] != 1042971 || ev.text[2] != " \tClient0\t " )
       return ret_error( $"wrong backpack tooltip {ev.text}" );
     endif
     break;
