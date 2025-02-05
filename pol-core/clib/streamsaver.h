@@ -86,7 +86,7 @@ protected:
 class StreamWriter
 {
 public:
-  StreamWriter() : _stream(){};
+  StreamWriter( std::string_view s ) : _stream( s ){};
   ~StreamWriter() noexcept( false ) = default;
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;

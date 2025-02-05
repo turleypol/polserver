@@ -88,6 +88,20 @@ SaveContext::SaveContext()
       guilds( _guilds ),
       datastore( _datastore ),
       party( _party )
+#else
+    : pol( Plib::systemstate.config.world_data_path + "pol.ndt" ),
+      objects( Plib::systemstate.config.world_data_path + "objects.ndt" ),
+      pcs( Plib::systemstate.config.world_data_path + "pcs.ndt" ),
+      pcequip( Plib::systemstate.config.world_data_path + "pcequip.ndt" ),
+      npcs( Plib::systemstate.config.world_data_path + "npcs.ndt" ),
+      npcequip( Plib::systemstate.config.world_data_path + "npcequip.ndt" ),
+      items( Plib::systemstate.config.world_data_path + "items.ndt" ),
+      multis( Plib::systemstate.config.world_data_path + "multis.ndt" ),
+      storage( Plib::systemstate.config.world_data_path + "storage.ndt" ),
+      resource( Plib::systemstate.config.world_data_path + "resource.ndt" ),
+      guilds( Plib::systemstate.config.world_data_path + "guilds.ndt" ),
+      datastore( Plib::systemstate.config.world_data_path + "datastore.ndt" ),
+      party( Plib::systemstate.config.world_data_path + "parties.ndt" );
 #endif
 {
 #ifndef SAVEVARIANT
@@ -104,21 +118,6 @@ SaveContext::SaveContext()
   guilds.open_fstream( Plib::systemstate.config.world_data_path + "guilds.ndt", _guilds );
   datastore.open_fstream( Plib::systemstate.config.world_data_path + "datastore.ndt", _datastore );
   party.open_fstream( Plib::systemstate.config.world_data_path + "parties.ndt", _party );
-#else
-
-  pol.open_fstream( Plib::systemstate.config.world_data_path + "pol.ndt" );
-  objects.open_fstream( Plib::systemstate.config.world_data_path + "objects.ndt" );
-  pcs.open_fstream( Plib::systemstate.config.world_data_path + "pcs.ndt" );
-  pcequip.open_fstream( Plib::systemstate.config.world_data_path + "pcequip.ndt" );
-  npcs.open_fstream( Plib::systemstate.config.world_data_path + "npcs.ndt" );
-  npcequip.open_fstream( Plib::systemstate.config.world_data_path + "npcequip.ndt" );
-  items.open_fstream( Plib::systemstate.config.world_data_path + "items.ndt" );
-  multis.open_fstream( Plib::systemstate.config.world_data_path + "multis.ndt" );
-  storage.open_fstream( Plib::systemstate.config.world_data_path + "storage.ndt" );
-  resource.open_fstream( Plib::systemstate.config.world_data_path + "resource.ndt" );
-  guilds.open_fstream( Plib::systemstate.config.world_data_path + "guilds.ndt" );
-  datastore.open_fstream( Plib::systemstate.config.world_data_path + "datastore.ndt" );
-  party.open_fstream( Plib::systemstate.config.world_data_path + "parties.ndt" );
 #endif
   pcs.comment( "" );
   pcs.comment( " PCS.TXT: Player-Character Data" );
