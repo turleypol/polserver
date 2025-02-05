@@ -95,31 +95,31 @@ public:
   void add( const std::string_view& key, T&& value )
   {
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )
-      _stream.print( FMT_COMPILE( "\t{}\t{}\n" ), key, value );
+      _stream.print( "\t{}\t{}\n", key, value );
     else  // force bool to write as 0/1
-      _stream.print( FMT_COMPILE( "\t{}\t{:d}\n" ), key, value );
+      _stream.print( "\t{}\t{:d}\n", key, value );
   }
   template <typename... Args>
   void comment( const std::string_view& formatstr, Args&&... args )
   {
     if constexpr ( sizeof...( args ) == 0 )
     {
-      _stream.print( FMT_COMPILE( "# {}\n" ), formatstr );
+      _stream.print( "# {}\n", formatstr );
       return;
     }
-    _stream.print( FMT_COMPILE( "{}" ), "# " );
+    _stream.print( "{}", "# " );
     _stream.print( formatstr, args... );
-    _stream.print( FMT_COMPILE( "{}" ), "\n" );
+    _stream.print( "{}", "\n" );
   }
   template <typename Str>
   void begin( Str&& key )
   {
-    _stream.print( FMT_COMPILE( "{}\n{{\n" ), key );
+    _stream.print( "{}\n{{\n", key );
   }
   template <typename Str, typename StrValue>
   void begin( Str&& key, StrValue&& value )
   {
-    _stream.print( FMT_COMPILE( "{} {}\n{{\n" ), key, value );
+    _stream.print( "{} {}\n{{\n", key, value );
   }
   void end() { _stream.print( "{}", "}\n\n" ); }
   void flush()
