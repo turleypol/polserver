@@ -11,10 +11,10 @@
 #include <type_traits>
 
 #define SAVEVARIANT
-#ifndef SAVEVARIANT
 
 namespace Pol::Clib
 {
+#ifndef SAVEVARIANT
 class StreamWriter
 {
 public:
@@ -94,17 +94,16 @@ public:
   template <typename T>
   void add( const std::string_view& key, T&& value )
   {
-    _stream.print( FMT_COMPILE( "\t{}\t" ), key );
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )
-      _stream.print( FMT_COMPILE( "{}\n" ), value );
+      _stream.print( FMT_COMPILE( "\t{}\t{}\n" ), key, value );
     else  // force bool to write as 0/1
-      _stream.print( FMT_COMPILE( "{:d}\n" ), value );
+      _stream.print( FMT_COMPILE( "\t{}\t{:d}\n" ), key, value );
   }
   template <typename... Args>
   void comment( const std::string_view& formatstr, Args&&... args )
   {
     using namespace std::literals;
-    _stream.print( "# "sv );
+    _stream.print( FMT_COMPILE( "# " ) );
     if constexpr ( sizeof...( args ) == 0 )
       _stream.print( formatstr );
     else
@@ -124,7 +123,7 @@ public:
   void end()
   {
     using namespace std::literals;
-    _stream.print( "}}\n\n"sv );
+    _stream.print( FMT_COMPILE( "}}\n\n" ) );
   }
   //  void open_fstream( const std::string& filepath ) { _stream = fmt::output_file( filepath ); };
   void flush()
@@ -136,6 +135,5 @@ public:
 protected:
   fmt::ostream _stream;
 };
-
 #endif
 }  // namespace Pol::Clib
