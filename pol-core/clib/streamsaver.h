@@ -102,13 +102,14 @@ public:
   template <typename... Args>
   void comment( const std::string_view& formatstr, Args&&... args )
   {
-    using namespace std::literals;
-    _stream.print( FMT_COMPILE( "# " ) );
     if constexpr ( sizeof...( args ) == 0 )
-      _stream.print( formatstr );
-    else
-      _stream.print( formatstr, args... );
-    _stream.print( FMT_COMPILE( "\n" ) );
+    {
+      _stream.print( FMT_COMPILE( "# {}\n" ), formatstr );
+      return;
+    }
+    _stream.print( FMT_COMPILE( "{}" ), "# " );
+    _stream.print( formatstr, args... );
+    _stream.print( FMT_COMPILE( "{}" ), "\n" );
   }
   template <typename Str>
   void begin( Str&& key )
@@ -120,7 +121,7 @@ public:
   {
     _stream.print( FMT_COMPILE( "{} {}\n{{\n" ), key, value );
   }
-  void end() { _stream.print( "}}\n\n" ); }
+  void end() { _stream.print( FMT_COMPILE( "{}" ), "}\n\n" ); }
   //  void open_fstream( const std::string& filepath ) { _stream = fmt::output_file( filepath ); };
   void flush()
   {
