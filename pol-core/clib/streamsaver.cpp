@@ -8,7 +8,7 @@
 
 namespace Pol::Clib
 {
-StreamWriter::StreamWriter( std::ostream& stream ) : _stream( stream ) {}
+/*StreamWriter::StreamWriter( std::ostream& stream ) : _stream( stream ) {}
 
 StreamWriter::~StreamWriter() noexcept( false )
 {
@@ -38,5 +38,5 @@ void StreamWriter::flush()
   _mbuff.clear();
   _stream.flush();
 }
-
+*/
 }  // namespace Pol::Clib
