@@ -651,8 +651,8 @@ std::string DataStoreFile::filename() const
 void DataStoreFile::save() const
 {
   std::string fname = filename();
-  std::ofstream ofs( fname.c_str(), std::ios::out );
-  Clib::StreamWriter sw( ofs );
+  //  std::ofstream ofs( fname.c_str(), std::ios::out );
+  Clib::StreamWriter sw( fname );
   dfcontents->save( sw );
 }
 
