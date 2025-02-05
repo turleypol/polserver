@@ -86,7 +86,7 @@ protected:
 class StreamWriter
 {
 public:
-  StreamWriter( std::string_view s ) : _stream( s ){};
+  StreamWriter( std::string_view s ) : _stream( fmt::output_file( s ) ){};
   ~StreamWriter() noexcept( false ) = default;
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;
@@ -128,7 +128,7 @@ public:
     using namespace std::literals;
     _stream.print( "}}\n\n"sv );
   }
-  void open_fstream( const std::string& filepath ) { _stream = fmt::output_file( filepath ); };
+  //  void open_fstream( const std::string& filepath ) { _stream = fmt::output_file( filepath ); };
   void flush()
   {
     _stream.flush();
