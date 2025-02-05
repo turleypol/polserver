@@ -120,11 +120,7 @@ public:
   {
     _stream.print( FMT_COMPILE( "{} {}\n{{\n" ), key, value );
   }
-  void end()
-  {
-    using namespace std::literals;
-    _stream.print( FMT_COMPILE( "}}\n\n" ) );
-  }
+  void end() { _stream.print( "}}\n\n" ); }
   //  void open_fstream( const std::string& filepath ) { _stream = fmt::output_file( filepath ); };
   void flush()
   {
