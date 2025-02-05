@@ -121,8 +121,7 @@ public:
   {
     _stream.print( FMT_COMPILE( "{} {}\n{{\n" ), key, value );
   }
-  void end() { _stream.print( FMT_COMPILE( "{}" ), "}\n\n" ); }
-  //  void open_fstream( const std::string& filepath ) { _stream = fmt::output_file( filepath ); };
+  void end() { _stream.print( "{}", "}\n\n" ); }
   void flush()
   {
     _stream.flush();
