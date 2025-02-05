@@ -86,7 +86,7 @@ protected:
 class StreamWriter
 {
 public:
-  StreamWriter( std::string s ) : _stream( fmt::output_file( s ) ){};
+  StreamWriter( std::string s );
   ~StreamWriter() noexcept( false ) = default;
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;
@@ -96,9 +96,7 @@ public:
   {
     _stream.print( FMT_COMPILE( "\t{}\t" ), key );
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )
-    {
       _stream.print( FMT_COMPILE( "{}\n" ), value );
-    }
     else  // force bool to write as 0/1
       _stream.print( FMT_COMPILE( "{:d}\n" ), value );
   }

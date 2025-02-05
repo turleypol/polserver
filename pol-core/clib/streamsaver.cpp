@@ -39,4 +39,5 @@ void StreamWriter::flush()
   _stream.flush();
 }
 */
+StreamWriter::StreamWriter( std::string s ) : _stream( fmt::output_file( s ) ) {}
 }  // namespace Pol::Clib
