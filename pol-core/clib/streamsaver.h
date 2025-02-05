@@ -133,7 +133,7 @@ public:
   {
     _stream.flush();
     _stream.close();
-  };
+  }
 
 protected:
   fmt::ostream _stream;
