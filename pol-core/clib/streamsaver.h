@@ -17,7 +17,7 @@ namespace Pol::Clib
 class StreamWriter
 {
 public:
-  StreamWriter( std::string_view path );
+  StreamWriter( std::string path );
   ~StreamWriter() noexcept( false );
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;

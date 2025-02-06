@@ -8,8 +8,8 @@
 
 namespace Pol::Clib
 {
-StreamWriter::StreamWriter( std::string_view path )
-    : _file( _fopen( path.c_str(), _O_WRONLY | _O_CREAT | _O_TRUNC ) )
+StreamWriter::StreamWriter( std::string path )
+    : _file( _fopen( path.c_str(), O_WRONLY | O_CREAT | O_TRUNC ) )
 {
 }
 
