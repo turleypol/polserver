@@ -21,7 +21,7 @@ StreamWriter::~StreamWriter() noexcept( false )
   auto stack_unwinding = std::uncaught_exceptions();
   try
   {
-    flush();
+    flush_close();
   }
   catch ( ... )
   {
