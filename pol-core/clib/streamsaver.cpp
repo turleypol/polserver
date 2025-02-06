@@ -9,7 +9,7 @@
 namespace Pol::Clib
 {
 StreamWriter::StreamWriter( std::string path )
-    : _file( _fopen( path.c_str(), O_WRONLY | O_CREAT | O_TRUNC ) )
+    : _file( fopen( path.c_str(), O_WRONLY | O_CREAT | O_TRUNC ) )
 {
 }
 
