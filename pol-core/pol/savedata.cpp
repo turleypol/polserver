@@ -145,19 +145,19 @@ SaveContext::~SaveContext() noexcept( false )
   auto stack_unwinding = std::uncaught_exceptions();
   try
   {
-    pol.flush();
-    objects.flush();
-    pcs.flush();
-    pcequip.flush();
-    npcs.flush();
-    npcequip.flush();
-    items.flush();
-    multis.flush();
-    storage.flush();
-    resource.flush();
-    guilds.flush();
-    datastore.flush();
-    party.flush();
+    pol.flush_close();
+    objects.flush_close();
+    pcs.flush_close();
+    pcequip.flush_close();
+    npcs.flush_close();
+    npcequip.flush_close();
+    items.flush_close();
+    multis.flush_close();
+    storage.flush_close();
+    resource.flush_close();
+    guilds.flush_close();
+    datastore.flush_close();
+    party.flush_close();
   }
   catch ( ... )
   {

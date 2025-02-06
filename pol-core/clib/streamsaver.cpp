@@ -2,13 +2,19 @@
 #include <fstream>
 #include <ios>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 
 #include "streamsaver.h"
 
 namespace Pol::Clib
 {
-StreamWriter::StreamWriter( std::string path ) : _file( fopen( path.c_str(), "wb+" ) ) {}
+StreamWriter::StreamWriter( const std::string& path ) : _file( fopen( path.c_str(), "wb+" ) )
+{
+  if ( !_file )
+    throw std::runtime_error{ fmt::format( "failed to open {}", path ) };
+  setbuf( _file, nullptr );  // disable buffer
+}
 
 StreamWriter::~StreamWriter() noexcept( false )
 {
@@ -25,18 +31,16 @@ StreamWriter::~StreamWriter() noexcept( false )
   }
 }
 
-/*void StreamWriter::open_fstream( const std::string& filepath, std::ofstream& s )
-{
-  s.exceptions( std::ios_base::failbit | std::ios_base::badbit );
-  s.open( filepath, std::ios::out | std::ios::trunc );
-}*/
-
-void StreamWriter::flush()
+void StreamWriter::flush_close()
 {
   if ( !_file )
     return;
   if ( _mbuff.size() )
-    fwrite( _mbuff.data(), sizeof( char ), _mbuff.size(), _file );
+  {
+    auto size = fwrite( _mbuff.data(), sizeof( char ), _mbuff.size(), _file );
+    if ( size < _mbuff.size() )
+      throw std::runtime_error{ "failed to write" };
+  }
   _mbuff.clear();
   fclose( _file );
   _file = nullptr;
