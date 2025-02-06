@@ -8,7 +8,10 @@
 
 namespace Pol::Clib
 {
-/*StreamWriter::StreamWriter( std::ostream& stream ) : _stream( stream ) {}
+StreamWriter::StreamWriter( std::string_view path )
+    : _file( _fopen( path.c_str(), _O_WRONLY | _O_CREAT | _O_TRUNC ) )
+{
+}
 
 StreamWriter::~StreamWriter() noexcept( false )
 {
@@ -25,19 +28,18 @@ StreamWriter::~StreamWriter() noexcept( false )
   }
 }
 
-void StreamWriter::open_fstream( const std::string& filepath, std::ofstream& s )
+/*void StreamWriter::open_fstream( const std::string& filepath, std::ofstream& s )
 {
   s.exceptions( std::ios_base::failbit | std::ios_base::badbit );
   s.open( filepath, std::ios::out | std::ios::trunc );
-}
+}*/
 
 void StreamWriter::flush()
 {
   if ( _mbuff.size() )
-    _stream << std::string_view{ _mbuff.data(), _mbuff.size() };
+    fwrite( _mbuff.data(), sizeof( char ), _mbuff.size(), _file );
   _mbuff.clear();
-  _stream.flush();
+  fclose( _file );
 }
-*/
-StreamWriter::StreamWriter( std::string s ) : _stream( fmt::output_file( s ) ) {}
+
 }  // namespace Pol::Clib

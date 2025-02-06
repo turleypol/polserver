@@ -7,18 +7,17 @@
 #include <fstream>
 #include <iosfwd>
 #include <iterator>
+#include <stdio.h>
 #include <string>
 #include <type_traits>
-
 #define SAVEVARIANT
 
 namespace Pol::Clib
 {
-#ifndef SAVEVARIANT
 class StreamWriter
 {
 public:
-  StreamWriter( std::ostream& stream );
+  StreamWriter( std::string_view path );
   ~StreamWriter() noexcept( false );
   StreamWriter( const StreamWriter& ) = delete;
   StreamWriter& operator=( const StreamWriter& ) = delete;
@@ -67,69 +66,20 @@ public:
     _mbuff.append( "}\n\n"sv );
     if ( _mbuff.size() > 10'000 )
     {
-      _stream << std::string_view{ _mbuff.data(), _mbuff.size() };
+      fwrite( _mbuff.data(), sizeof( char ), _mbuff.size(), _file );
+      //      _stream << std::string_view{ _mbuff.data(), _mbuff.size() };
       _mbuff.clear();
     }
   }
-  void open_fstream( const std::string& filepath, std::ofstream& s );
+  // void open_fstream( const std::string& filepath, std::ofstream& s );
   void flush();
 
 protected:
-  std::ostream& _stream;
+  FILE* _file;
+  //  std::ostream& _stream;
   // formatting creates a temp buffer
   // to prevent this format into this buffer and when full write to disk, clear of the buffer keeps
   // the capacity
   fmt::basic_memory_buffer<char, 10'000> _mbuff;
 };
-#else
-
-class StreamWriter
-{
-public:
-  StreamWriter( std::string s );
-  ~StreamWriter() noexcept( false ) = default;
-  StreamWriter( const StreamWriter& ) = delete;
-  StreamWriter& operator=( const StreamWriter& ) = delete;
-
-  template <typename T>
-  void add( const std::string_view& key, T&& value )
-  {
-    if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )
-      _stream.print( "\t{}\t{}\n", key, value );
-    else  // force bool to write as 0/1
-      _stream.print( "\t{}\t{:d}\n", key, value );
-  }
-  template <typename... Args>
-  void comment( const std::string_view& formatstr, Args&&... args )
-  {
-    if constexpr ( sizeof...( args ) == 0 )
-    {
-      _stream.print( "# {}\n", formatstr );
-      return;
-    }
-    _stream.print( "{}", "# " );
-    _stream.print( formatstr, args... );
-    _stream.print( "{}", "\n" );
-  }
-  template <typename Str>
-  void begin( Str&& key )
-  {
-    _stream.print( "{}\n{{\n", key );
-  }
-  template <typename Str, typename StrValue>
-  void begin( Str&& key, StrValue&& value )
-  {
-    _stream.print( "{} {}\n{{\n", key, value );
-  }
-  void end() { _stream.print( "{}", "}\n\n" ); }
-  void flush()
-  {
-    _stream.flush();
-    _stream.close();
-  }
-
-protected:
-  fmt::ostream _stream;
-};
-#endif
 }  // namespace Pol::Clib
