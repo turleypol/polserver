@@ -33,10 +33,13 @@ StreamWriter::~StreamWriter() noexcept( false )
 
 void StreamWriter::flush()
 {
+  if ( !_file )
+    return;
   if ( _mbuff.size() )
     fwrite( _mbuff.data(), sizeof( char ), _mbuff.size(), _file );
   _mbuff.clear();
   fclose( _file );
+  _file = nullptr;
 }
 
 }  // namespace Pol::Clib
