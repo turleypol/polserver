@@ -85,6 +85,11 @@ std::string ServerFeatures::expansionName() const
   return getExpansionName( expansionVersion() );
 }
 
+AccountExpansion::AccountExpansion( const std::string& exp )
+    : expansion( getExpansionVersion( exp ) ), ext_flags( getDefaultExpansionFlag( expansion ) )
+{
+}
+
 A9Feature AccountExpansion::calculateFeatureFlags( const ServerFeatures& server ) const
 {
   auto clientflag = server.featureFlags();

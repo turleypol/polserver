@@ -179,8 +179,7 @@ class AccountExpansion
 {
 public:
   AccountExpansion() = default;
-  AccountExpansion( const std::string& exp, B9Feature flag )
-      : expansion( getExpansionVersion( exp ) ), ext_flags( flag ){};
+  AccountExpansion( const std::string& exp );
   ExpansionVersion expansionVersion() const { return expansion; };
   std::string expansionName() const;
   bool hasExpansion( ExpansionVersion v ) const { return expansion >= v; };
