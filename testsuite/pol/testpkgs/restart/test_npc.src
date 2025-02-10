@@ -11,8 +11,8 @@ endprogram
 
 // save/load test for things in NPC class
 exported function load_save_npc()
-  var override := struct{ MoveMode := "A",
-     AR := 101,
+  var override := struct{ MoveMode := "A", // from character
+                          AR := 101,
                           script := "restartnpcscript",
                           SpeechColor := 102,
                           SpeechFont := 103,
@@ -50,7 +50,8 @@ exported function load_save_npc()
                  { "MoveMode",
                    { "movemode", override.MoveMode }
                  },
-                 { "AR",
+                 {
+                   "AR",
                    { "ar", override.AR }
                  },
                  {

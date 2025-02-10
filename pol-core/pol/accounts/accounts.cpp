@@ -84,7 +84,6 @@ void write_account_data()
   bool result( true );
   try
   {
-    //    std::ofstream ofs( accountsndtfile_c, std::ios::trunc | std::ios::out );
     Clib::StreamWriter sw( accountsndtfile_c );
     for ( const auto& account : Core::gamestate.accounts )
     {

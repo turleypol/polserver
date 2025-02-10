@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <array>
 #include <cstring>
-#include <filesystem>
 #include <limits>
 #include <string>
 
@@ -374,13 +373,6 @@ void test_curlfeatures()
   }
   else
     UnitTest::inc_successes();
-
-  auto p1 = std::filesystem::path( "c:\\test\\blubb" ) / "dings";
-  auto p2 = std::filesystem::path( "c:/test/blubb" ) / "dings";
-  INFO_PRINTLN( "{} : {} : {}", p1.u8string(), p1.generic_u8string(),
-                p1.make_preferred().u8string() );
-  INFO_PRINTLN( "{} : {} : {}", p2.u8string(), p2.generic_u8string(),
-                p2.make_preferred().u8string() );
 }
 }  // namespace Testing
 }  // namespace Pol

@@ -21,22 +21,6 @@ class SaveContext
 {
   typedef Clib::StreamWriter SaveStrategy;
 
-private:
-#ifndef SAVEVARIANT
-  std::ofstream _pol;
-  std::ofstream _objects;
-  std::ofstream _pcs;
-  std::ofstream _pcequip;
-  std::ofstream _npcs;
-  std::ofstream _npcequip;
-  std::ofstream _items;
-  std::ofstream _multis;
-  std::ofstream _storage;
-  std::ofstream _resource;
-  std::ofstream _guilds;
-  std::ofstream _datastore;
-  std::ofstream _party;
-#endif
 public:
   SaveContext();
   // allow exception without direct terminate, performs fileoperations which can fail eg diskfull
