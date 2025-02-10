@@ -1544,6 +1544,10 @@ class GeneralInfoPacket(Packet):
           'spatches': self.duint(),
         })
 
+    elif self.sub == self.SUB_MEGACLILOC:
+      self.serial = self.duint()
+      self.revision = self.duint()
+
     elif self.sub == self.SUB_HOUSE_REV:
       self.serial = self.duint()
       self.rev = self.duint()
@@ -1655,7 +1659,7 @@ class AOSTooltipPacket(Packet):
   ''' tooltip after sending 0xbf 0x10 '''
 
   cmd = 0xd6
-  
+
   def fill(self,serials):
     self.serials = serials
     self.length = 3 + 4*len(self.serials)
@@ -1679,7 +1683,7 @@ class AOSTooltipPacket(Packet):
     self.eulen()
     for serial in self.serials:
       self.euint(serial)
-    
+
 
 class NewObjectInfoPacket(Packet):
   ''' Draws an item '''
