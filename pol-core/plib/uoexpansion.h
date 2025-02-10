@@ -150,6 +150,7 @@ class ServerFeatures
 public:
   ExpansionVersion expansionVersion() const { return expansion; };
   std::string expansionName() const;
+  B9Feature extensionFlags() const { return ext_flags; };
   A9Feature featureFlags() const { return feature_flags; };
   u8 maxCharacterSlots() const { return char_slots; };
 
@@ -167,6 +168,7 @@ public:
 
 private:
   ExpansionVersion expansion = ExpansionVersion::T2A;
+  B9Feature ext_flags = B9Feature::DefaultT2A;
   A9Feature feature_flags = A9Feature::None;
   u8 char_slots = 5;
   FaceSupport face_support = FaceSupport::None;
@@ -177,7 +179,8 @@ class AccountExpansion
 {
 public:
   AccountExpansion() = default;
-  AccountExpansion( const std::string& exp );
+  AccountExpansion( const std::string& exp, B9Feature flag )
+      : expansion( getExpansionVersion( exp ) ), ext_flags( flag ){};
   ExpansionVersion expansionVersion() const { return expansion; };
   std::string expansionName() const;
   bool hasExpansion( ExpansionVersion v ) const { return expansion >= v; };
