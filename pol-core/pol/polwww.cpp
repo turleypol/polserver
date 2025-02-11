@@ -742,7 +742,7 @@ void send_binary( Clib::Socket& sck, const std::string& page, const std::string&
   }
 }
 
-void http_func( Clib::Socket client_socket )
+void http_func( Clib::Socket sck )
 {
   INFO_PRINTLN( "HTTP thread started" );
   Clib::SocketLineReader lineReader( sck, 5, 3000,
@@ -1038,7 +1038,7 @@ void http_thread( void )
       Clib::Socket sck( client_socket );
       worker_threads.push(
           [sck = std::move( sck )]()
-          { http_func( std::move(  sck  ) ); } );  // copy socket into queue to keep it valid
+          { http_func( std::move( sck ) ); } );  // copy socket into queue to keep it valid
     }
   }
 
