@@ -742,7 +742,7 @@ void send_binary( Clib::Socket& sck, const std::string& page, const std::string&
   }
 }
 
-void http_func( Clib::Socket sck )
+void http_func( Clib::Socket&& sck )
 {
   INFO_PRINTLN( "HTTP thread started" );
   Clib::SocketLineReader lineReader( sck, 5, 3000,
@@ -1024,7 +1024,7 @@ void http_thread( void )
       if ( Plib::systemstate.config.web_server_debug )
         INFO_PRINTLN( "Accepting connection.." );
 
-      struct sockaddr client_addr;  // inet_addr
+      struct sockaddr_storage client_addr;  // inet_addr
       socklen_t addrlen = sizeof client_addr;
       SOCKET client_socket = accept( http_socket, &client_addr, &addrlen );
       if ( client_socket == INVALID_SOCKET )
@@ -1032,13 +1032,11 @@ void http_thread( void )
 
       Network::apply_socket_options( client_socket );
 
-      std::string addrstr = Network::AddressToString( &client_addr );
+      std::string addrstr = Network::AddressToString( (sockaddr*)&client_addr );
       INFO_PRINTLN( "HTTP client connected from {}", addrstr );
 
       Clib::Socket sck( client_socket );
-      worker_threads.push(
-          [sck = std::move( sck )]()
-          { http_func( std::move( sck ) ); } );  // copy socket into queue to keep it valid
+      worker_threads.push( [sck = std::move( sck )]() { http_func( std::move( sck ) ); } );
     }
   }
 
