@@ -742,10 +742,9 @@ void send_binary( Clib::Socket& sck, const std::string& page, const std::string&
   }
 }
 
-void http_func( SOCKET client_socket )
+void http_func( Clib::Socket client_socket )
 {
   INFO_PRINTLN( "HTTP thread started" );
-  Clib::Socket sck( client_socket );
   Clib::SocketLineReader lineReader( sck, 5, 3000,
                                      false );  // we take care of disconnecting at timeout
 
@@ -1036,8 +1035,10 @@ void http_thread( void )
       std::string addrstr = Network::AddressToString( &client_addr );
       INFO_PRINTLN( "HTTP client connected from {}", addrstr );
 
+      Clib::Socket sck( client_socket );
       worker_threads.push(
-          [=]() { http_func( client_socket ); } );  // copy socket into queue to keep it valid
+          [sck = std::move( sck )]()
+          { http_func( std::move(  sck  ) ); } );  // copy socket into queue to keep it valid
     }
   }
 
