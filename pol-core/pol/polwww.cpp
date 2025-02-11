@@ -1026,7 +1026,7 @@ void http_thread( void )
 
       struct sockaddr_storage client_addr;  // inet_addr
       socklen_t addrlen = sizeof client_addr;
-      SOCKET client_socket = accept( http_socket, &client_addr, &addrlen );
+      SOCKET client_socket = accept( http_socket, (sockaddr*)&client_addr, &addrlen );
       if ( client_socket == INVALID_SOCKET )
         return;
 
@@ -1036,7 +1036,7 @@ void http_thread( void )
       INFO_PRINTLN( "HTTP client connected from {}", addrstr );
 
       Clib::Socket sck( client_socket );
-      worker_threads.push( [sck = std::move( sck )]() { http_func( std::move( sck ) ); } );
+      worker_threads.push( [sck = std::move( sck )]() mutable { http_func( std::move( sck ) ); } );
     }
   }
 
