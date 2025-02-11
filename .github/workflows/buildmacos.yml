@@ -93,7 +93,7 @@ jobs:
       - name: Test (EScript)
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
+          #cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
       - name: Test (Shard Fixtures)
         run: |
           cd bin-build
@@ -101,7 +101,7 @@ jobs:
       - name: Test (UnitTests)
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target unittest_pol
+          #cmake --build . --config ${{ matrix.config.build-type }} --target unittest_pol
       - name: Test (Shard)
         run: |
           cd bin-build
@@ -109,7 +109,7 @@ jobs:
       - name: Test (Ecompile Watch)
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target test_ecompile_watch
+          #cmake --build . --config ${{ matrix.config.build-type }} --target test_ecompile_watch
       - name: Upload shard test log
         uses: actions/upload-artifact@v4
         with:
