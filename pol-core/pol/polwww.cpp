@@ -1036,7 +1036,7 @@ void http_thread( void )
       std::string addrstr = Network::AddressToString( (sockaddr*)&client_addr );
       INFO_PRINTLN( "HTTP client connected from {}", addrstr );
 
-      worker_threads.push( [sck = std::move( client_socket )]() mutable { http_func( sck ) ); } );
+      worker_threads.push( [sck = std::move( client_socket )]() mutable { http_func( sck ); } );
     }
   }
 
