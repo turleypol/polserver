@@ -650,7 +650,7 @@ std::string DataStoreFile::filename() const
 
 void DataStoreFile::save() const
 {
-  Clib::StreamWriter sw( filename() );
+  Clib::StreamWriter sw( filename(), true );
   dfcontents->save( sw );
 }
 
