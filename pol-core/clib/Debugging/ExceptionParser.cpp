@@ -540,11 +540,19 @@ void ExceptionParser::initGlobalExceptionCatching()
     std::exit( 1 );
   }
 }
-#else   // _WIN32 || Apple
+#else  // _WIN32 || Apple
 
 void ExceptionParser::logAllStackTraces() {}
 
-void ExceptionParser::initGlobalExceptionCatching() {}
+void ExceptionParser::initGlobalExceptionCatching()
+{
+#if defined( _WIN32 )
+  wchar_t path[MAX_PATH];
+  GetModuleFileNameW( nullptr, path, MAX_PATH );
+  PathRemoveFileSpecW( path );
+  SetEnvironmentVariableW( L"_NT_ALT_SYMBOL_PATH", path );
+#endif
+}
 #endif  // _WIN32 || Apple
 
 string ExceptionParser::getTrace()
