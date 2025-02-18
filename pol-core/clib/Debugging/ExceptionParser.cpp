@@ -25,6 +25,7 @@
 #define SOCKET int
 #else
 #include "../Header_Windows.h"
+#include "shlwapi.h"
 #endif
 
 #include <boost/stacktrace.hpp>
