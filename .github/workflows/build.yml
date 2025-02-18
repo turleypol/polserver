@@ -158,7 +158,7 @@ jobs:
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          #cp ../bin/*.pdb coretest/
+          mv ../bin/*.pdb coretest/
           cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
           #env:
           #POLCORE_TEST_FILTER: testitems
