@@ -143,9 +143,9 @@ function(set_compile_flags target is_executable)
         -OPT:REF # remove unused blocks
       )
     endif()
-    #    if (${is_executable})
-    #  set_target_properties(${target} PROPERTIES LINK_FLAGS "/PDBALTPATH:${target}.pdb")
-    #endif()
+    if (${is_executable})
+      set_target_properties(${target} PROPERTIES LINK_FLAGS "/PDBALTPATH:${target}.pdb")
+    endif()
   endif()
 
   if(${linux})
