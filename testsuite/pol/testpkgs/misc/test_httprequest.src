@@ -66,13 +66,13 @@ exported function test_httprequest_ext_headers()
   actual := res.headers.test1;
   expected := "value1";
   if ( actual != expected )
-    return ret_error( $"HTTPRequest returned headers.test1 '{actual}', expecting '{expected}'" );
+    return ret_error( $"HTTPRequest returned headers.test1 '{res}', expecting '{expected}'" );
   endif
 
   actual := res.headers.test2;
   expected := "value2a, value2b";
   if ( actual != expected )
-    return ret_error( $"HTTPRequest returned headers.test2 '{actual}', expecting '{expected}'" );
+    return ret_error( $"HTTPRequest returned headers.test2 '{res}', expecting '{expected}'" );
   endif
 
   return 1;
