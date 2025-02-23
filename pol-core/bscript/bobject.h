@@ -845,6 +845,7 @@ public:  // Class Machinery
   virtual void selfDividedByObj( Double& objimp, BObject& obj ) override;
   virtual void selfPlusPlus() override { ++dval_; }
   virtual void selfMinusMinus() override { --dval_; }
+  virtual BObjectImp* selfModulusObjImp( const BObjectImp& objimp ) const override;
 
   virtual BObjectImp* inverse() const override { return new Double( -dval_ ); }
   virtual std::string getStringRep() const override;
