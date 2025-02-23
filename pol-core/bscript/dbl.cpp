@@ -289,5 +289,9 @@ BObjectImp* Double::selfModulusObjImp( const BObjectImp& objimp ) const
 {
   return objimp.selfModulusObj( *this );
 }
+void Double::selfModulusObjImp( BObjectImp& objimp, BObject& obj )
+{
+  objimp.selfModulusObj( *this, obj );
+}
 }  // namespace Bscript
 }  // namespace Pol
