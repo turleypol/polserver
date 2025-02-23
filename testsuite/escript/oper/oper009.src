@@ -1,0 +1,6 @@
+var l:=4;
+var d:=3.0;
+print(l % d);
+var r:=l;
+r%=d;
+print(r);
