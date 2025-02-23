@@ -285,7 +285,7 @@ void Double::selfDividedByObj( Double& objimp, BObject& obj )
   else
     dval_ /= objimp.value();
 }
-BObjectImp* BLong::selfModulusObjImp( const BObjectImp& objimp ) const
+BObjectImp* Double::selfModulusObjImp( const BObjectImp& objimp ) const
 {
   return objimp.selfModulusObj( *this );
 }
