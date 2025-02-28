@@ -380,7 +380,7 @@ void UObject::printProperties( Clib::StreamWriter& sw ) const
     if ( s16 value = physical_resist_cap().mod; value )
       sw.add( "PhysicalResistCapMod", value );
   }
-  if ( has_poison_damag_cap() )
+  if ( has_poison_resist_cap() )
   {
     if ( s16 value = poison_resist_cap().mod; value )
       sw.add( "PoisonResistCapMod", value );
