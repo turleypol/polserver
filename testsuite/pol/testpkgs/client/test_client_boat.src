@@ -565,3 +565,72 @@ exported function boat_alternate_multiid_itemdesc()
 
   return 1;
 endfunction
+
+exported function move_boatxy()
+  MoveBoatXY( boat, 10, 50 );
+  var h := getstandingheight( 11, 50, boat.z, boat.realm );
+  MoveObjectToLocation( char, 11, 50, h.z );
+  while ( !waitForClient( 0, { EVT_OWNCREATE } ) )
+  endwhile
+  var res := boat.mobiles.size() == 1;
+  Clear_Event_Queue();
+  var item := CreateItemAtLocation( 11, 50, h.z, 0x3e3f, 1, boat.realm );
+  var moveres:=MoveBoatXY( boat, 10, 49 );
+  var clientmoveres := ret_error( "no boat pos" );
+/*  while ( 1 )
+    var ev := waitForClient( 0, { EVT_BOAT_MOVED } );
+    if ( !ev )
+      continue;
+    endif
+    if ( ev.pos[1] != 10 || ev.pos[2] != 49 || ev.pos[3] != -4 )
+      clientmoveres := ret_error( "wrong boat pos {} != {},{},{}".format( ev.pos, 10, 49, -4 ) );
+    else
+      clientmoveres := 1;
+    endif
+    break;
+  endwhile*/
+  clientcon.sendevent( struct{ todo := "list_objects", id := 0 } );
+  var itemres := ret_error( "item not found {}".format( item.serial ) );
+  print(boat.serial);
+  print(boat.x);
+  print(boat.y);
+  while ( 1 )
+    var ev := waitForClient( 0, { EVT_LIST_OBJS } );
+    if ( !ev )
+      return ev;
+    endif
+    foreach it in ( ev["objs"] )
+      print(it);
+      if ( it["serial"] == item.serial )
+        var p := it["pos"];
+        if ( p[1] != 11 || p[2] != 49 || p[3] != -1 )
+          itemres := ret_error( "wrong item pos {} != {},{},{}".format( p, 11, 49, -1 ) );
+        else
+          itemres := 1;
+        endif
+      endif
+    endforeach
+    break;
+  endwhile
+
+  foreach item in ( boat.items )
+    DestroyItem( item );
+  endforeach
+  MoveObjectToLocation( char, 1, 1, 1, flags := MOVEOBJECT_FORCELOCATION );
+  while ( !waitForClient( 0, { EVT_OWNCREATE } ) )
+  endwhile
+  Clear_Event_Queue();
+  if ( !res )
+    return ret_error( "Char not on ship" );
+  endif
+  if ( !moveres )
+    return ret_error( "Failed to move ship {}".format( moveres ) );
+  endif
+  if ( clientmoveres != 1 )
+    return clientmoveres;
+  endif
+  if ( itemres != 1 )
+    return itemres;
+  endif
+  return 1;
+endfunction
