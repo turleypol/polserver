@@ -282,9 +282,12 @@ void UObject::printProperties( Clib::StreamWriter& sw ) const
   else
     sw.add( "Realm", realm()->name() );
 
-  s16 value = fire_resist().mod;
-  if ( value != 0 )
-    sw.add( "FireResistMod", value );
+  if ( has_fire_resist() )
+  {
+    s16 value = fire_resist().mod;
+    if ( value != 0 )
+      sw.add( "FireResistMod", value );
+  }
   value = cold_resist().mod;
   if ( value != 0 )
     sw.add( "ColdResistMod", value );
