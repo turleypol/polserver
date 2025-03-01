@@ -1294,9 +1294,9 @@ int PrettifyLineBuilder::openingParenthesisStyle() const
          ( compilercfg.FormatterParenthesisSpacing ? FmtToken::SPACE : FmtToken::NONE );
 }
 
-int PrettifyLineBuilder::openingBracketStyle( bool typeinit ) const
+int PrettifyLineBuilder::openingBracketStyle( bool typeinit, bool force_unattached )
 {
-  if ( typeinit && !compilercfg.FormatterBracketAttachToType )
+  if ( ( typeinit && !compilercfg.FormatterBracketAttachToType ) || force_unattached )
     return FmtToken::BREAKPOINT |
            ( compilercfg.FormatterBracketSpacing ? FmtToken::SPACE : FmtToken::NONE );
   return FmtToken::ATTACHED | FmtToken::BREAKPOINT |
@@ -1325,6 +1325,13 @@ int PrettifyLineBuilder::comparisonStyle() const
 {
   if ( !compilercfg.FormatterComparisonSpacing )
     return FmtToken::ATTACHED;
+  return FmtToken::SPACE;
+}
+
+int PrettifyLineBuilder::ellipsisStyle() const
+{
+  if ( !compilercfg.FormatterEllipsisSpacing )
+    return FmtToken::ATTACHED | FmtToken::SPACE;
   return FmtToken::SPACE;
 }
 

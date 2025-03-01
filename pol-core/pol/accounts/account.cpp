@@ -66,7 +66,7 @@ void Account::readfrom( Clib::ConfigElem& elem )
   auto exp = elem.remove_string( "UOExpansion",
                                  Core::settingsManager.ssopt.features.expansionName().c_str() );
   // currently its not possible to define B9 flags by script
-  expansion_ = Plib::AccountExpansion( exp, Core::settingsManager.ssopt.features.extensionFlags() );
+  expansion_ = Plib::AccountExpansion( exp );
   default_privs_.readfrom( elem.remove_string( "DefaultPrivs", "" ) );
 
   std::string cmdaccstr = elem.remove_string( "DefaultCmdLevel", "player" );
@@ -92,6 +92,8 @@ void Account::writeto( Clib::StreamWriter& sw ) const
   sw.add( "PasswordHash", passwordhash_ );  // MD5
 
   sw.add( "Enabled", enabled_ );
+
+  sw.add( "Banned", banned_ );
 
   if ( !default_privs_.empty() )
   {

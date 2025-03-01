@@ -745,7 +745,6 @@ void send_binary( Clib::Socket& sck, const std::string& page, const std::string&
 void http_func( SOCKET client_socket )
 {
   Clib::Socket sck( client_socket );
-  INFO_PRINTLN( "HTTP thread started" );
   Clib::SocketLineReader lineReader( sck, 5, 3000,
                                      false );  // we take care of disconnecting at timeout
 
@@ -783,10 +782,7 @@ void http_func( SOCKET client_socket )
   }
 
   if ( !sck.connected() )
-  {
-    INFO_PRINTLN( "http not connected" );
     return;
-  }
 
   if ( Plib::systemstate.config.web_server_debug )
   {
@@ -1025,18 +1021,19 @@ void http_thread( void )
       if ( Plib::systemstate.config.web_server_debug )
         INFO_PRINTLN( "Accepting connection.." );
 
-      struct sockaddr_storage client_addr;  // inet_addr
+      struct sockaddr client_addr;  // inet_addr
       socklen_t addrlen = sizeof client_addr;
-      SOCKET client_socket = accept( http_socket, (sockaddr*)&client_addr, &addrlen );
+      SOCKET client_socket = accept( http_socket, &client_addr, &addrlen );
       if ( client_socket == INVALID_SOCKET )
         return;
 
       Network::apply_socket_options( client_socket );
 
-      std::string addrstr = Network::AddressToString( (sockaddr*)&client_addr );
+      std::string addrstr = Network::AddressToString( &client_addr );
       INFO_PRINTLN( "HTTP client connected from {}", addrstr );
 
-      worker_threads.push( [sck = std::move( client_socket )]() mutable { http_func( sck ); } );
+      worker_threads.push(
+          [=]() { http_func( client_socket ); } );  // copy socket into queue to keep it valid
     }
   }
 

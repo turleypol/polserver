@@ -9,10 +9,9 @@
 
 namespace Pol::Clib
 {
-StreamWriter::StreamWriter( const std::string& path, bool crash )
-    : _file( fopen( path.c_str(), "wb+" ) )
+StreamWriter::StreamWriter( const std::string& path ) : _file( fopen( path.c_str(), "wb+" ) )
 {
-  if ( !_file || crash )
+  if ( !_file )
     throw std::runtime_error{ fmt::format( "failed to open {}", path ) };
   setbuf( _file, nullptr );  // disable buffer
 }

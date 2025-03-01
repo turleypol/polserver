@@ -10,7 +10,6 @@
 #include <array>
 #include <cstdio>
 #include <cstring>
-#include <string_view>
 
 #include "esignal.h"
 #include "logfacility.h"
@@ -463,7 +462,7 @@ bool Socket::recvdata_nowait( char* pdest, unsigned len, int* bytes_read )
     close();
     return false;
   }
-  INFO_PRINTLN( "::recvdata_nowait raw{} '{}'", res, std::string_view{ pdest, (size_t)res } );
+
   return true;
 }
 
@@ -507,7 +506,6 @@ bool Socket::recvdata( void* vdest, unsigned len, unsigned int waitms )
 #endif
       len -= res;
       pdest += res;
-      INFO_PRINTLN( "::recvdata raw{} '{}'", res, std::string_view{ pdest, (size_t)res } );
 
 #if SCK_WATCH
       while ( res-- )
@@ -695,19 +693,12 @@ bool SocketLineReader::try_read( std::string& out, bool* timed_out )
     {
       if ( timed_out )
         *timed_out = true;
-      INFO_PRINTLN( "::try_read no data" );
       return false;
     }
     int bytes_read = -1;
     if ( !_socket.recvdata_nowait( buffer.data(), static_cast<unsigned>( buffer.size() ),
                                    &bytes_read ) )
-    {
-      INFO_PRINTLN( "::try_read recv failed" );
       return false;
-    }
-
-    INFO_PRINTLN( "::try_read raw{} '{}'", bytes_read,
-                  std::string_view{ buffer.data(), (size_t)bytes_read } );
 
     // store current line size so we don't need to search from the beginning again
     size_t oldSize = _currentLine.size();
@@ -720,10 +711,7 @@ bool SocketLineReader::try_read( std::string& out, bool* timed_out )
 
     // nothing gained from these bytes
     if ( !valid_char_count )
-    {
-      INFO_PRINTLN( "::try_read no valid" );
       return false;
-    }
 
     // append only the valid characters to the buffer
     _currentLine.append( buffer.data(), valid_char_count );
@@ -737,7 +725,6 @@ bool SocketLineReader::try_read( std::string& out, bool* timed_out )
   // small.
   if ( _maxLinelength > 0 && pos_newline > _maxLinelength && _currentLine.size() > _maxLinelength )
   {
-    INFO_PRINTLN( "::try_read MAXLEN ({}) '{}'", pos_newline, _currentLine );
     out = _currentLine;
     _currentLine.clear();
     return false;
@@ -745,12 +732,10 @@ bool SocketLineReader::try_read( std::string& out, bool* timed_out )
 
   // Haven't found it yet
   if ( pos_newline == std::string::npos )
-  {
-    INFO_PRINTLN( "::try_read no newline" );
     return false;
-  }
+
   auto end_newline = pos_newline + 1;
-  INFO_PRINTLN( "::try_read socket '{}'", _currentLine );
+
   out = _currentLine.substr( 0, pos_newline );
   _currentLine.erase( 0, end_newline );
 
@@ -796,14 +781,12 @@ bool SocketReader::read( std::string& out, bool* timed_out )
   {
     if ( try_read( out, &single_timed_out ) )
     {
-      INFO_PRINTLN( "::read '{}'", out );
       return true;
     }
 
     // if try_read() is false, string "out" should be empty unless the maxlen was reached.
     if ( !out.empty() )
     {
-      INFO_PRINTLN( "::read failed non-empty '{}'", out );
       _socket.close();
       return false;
     }
@@ -819,7 +802,6 @@ bool SocketReader::read( std::string& out, bool* timed_out )
         if ( timed_out )
           *timed_out = true;
 
-        INFO_PRINTLN( "::read timeout" );
         return false;
       }
     }
@@ -829,7 +811,6 @@ bool SocketReader::read( std::string& out, bool* timed_out )
       timeout_left = max_timeouts;
     }
   }
-  INFO_PRINTLN( "::read disconnect '{}'", out );
   return false;
 }
 

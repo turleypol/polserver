@@ -5,7 +5,7 @@ use polsys;
 include "testutil";
 
 program testcmds()
-  return IGNORE_TEST;
+  return 1;
 endprogram
 
 exported function find_cmds()

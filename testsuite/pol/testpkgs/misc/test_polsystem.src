@@ -5,7 +5,7 @@ use polsys;
 include "testutil";
 
 program testpolsystem()
-  return IGNORE_TEST;
+  return 1;
 endprogram
 
 exported function test_md5()

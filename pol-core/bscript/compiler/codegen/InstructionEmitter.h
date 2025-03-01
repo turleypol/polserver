@@ -85,7 +85,9 @@ public:
   void consume();
   void ctrl_statementbegin( unsigned file_index, unsigned file_offset,
                             const std::string& source_text );
-  void declare_variable( const Variable&, VariableIndex function_capture_count );
+
+  // If `take`, the variable's value will be taken/moved from the top of ValueStack
+  void declare_variable( const Variable&, VariableIndex function_capture_count, bool take );
   void dictionary_create();
   void dictionary_add_member();
   void error_create();
@@ -115,7 +117,7 @@ public:
   void set_member_id_consume( MemberID member_id );
   void set_member_consume( const std::string& name );
   void set_member_by_operator( BTokenId, MemberID );
-  void spread();
+  void spread( bool spread_into );
   void struct_create();
   void struct_add_uninit_member( const std::string& name );
   void struct_add_member( const std::string& name );
@@ -123,6 +125,8 @@ public:
   void subscript_multiple( unsigned indexes );
   void unary_operator( BTokenId );
   void uninit();
+  void unpack_sequence( unsigned count, unsigned rest_at );
+  void unpack_indices( unsigned count, unsigned rest_at );
   void value( double );
   void value( int );
   void value( bool );

@@ -4,7 +4,7 @@ use os;
 include "testutil";
 
 program testpolcore()
-  return IGNORE_TEST;
+  return 1;
 endprogram
 
 exported function polcore_memory()

@@ -576,25 +576,13 @@ exported function move_boatxy()
   Clear_Event_Queue();
   var item := CreateItemAtLocation( 11, 50, h.z, 0x3e3f, 1, boat.realm );
   var moveres:=MoveBoatXY( boat, 10, 49 );
-  var clientmoveres := ret_error( "no boat pos" );
-/*  while ( 1 )
-    var ev := waitForClient( 0, { EVT_BOAT_MOVED } );
-    if ( !ev )
-      continue;
-    endif
-    if ( ev.pos[1] != 10 || ev.pos[2] != 49 || ev.pos[3] != -4 )
-      clientmoveres := ret_error( "wrong boat pos {} != {},{},{}".format( ev.pos, 10, 49, -4 ) );
-    else
-      clientmoveres := 1;
-    endif
-    break;
-  endwhile*/
   clientcon.sendevent( struct{ todo := "list_objects", id := 0 } );
   var itemres := ret_error( "item not found {}".format( item.serial ) );
+  var boatres := ret_error( "boat not found {}".format( item.serial ) );
   print(boat.serial);
   print(boat.x);
   print(boat.y);
-  while ( 1 )
+  while ( true )
     var ev := waitForClient( 0, { EVT_LIST_OBJS } );
     if ( !ev )
       return ev;
@@ -606,7 +594,15 @@ exported function move_boatxy()
         if ( p[1] != 11 || p[2] != 49 || p[3] != -1 )
           itemres := ret_error( "wrong item pos {} != {},{},{}".format( p, 11, 49, -1 ) );
         else
-          itemres := 1;
+          itemres := true;
+        endif
+      endif
+      if ( it["serial"] == boat.serial )
+        var p := it["pos"];
+        if ( p[1] != 10 || p[2] != 49 )
+          boatres := ret_error( "wrong boat pos {} != {},{}".format( p, 11, 49 ) );
+        else
+          boatres := true;
         endif
       endif
     endforeach
@@ -626,11 +622,11 @@ exported function move_boatxy()
   if ( !moveres )
     return ret_error( "Failed to move ship {}".format( moveres ) );
   endif
-  if ( clientmoveres != 1 )
-    return clientmoveres;
-  endif
-  if ( itemres != 1 )
+  if ( !itemres )
     return itemres;
   endif
-  return 1;
+  if ( !boatres )
+    return boatres;
+  endif
+  return true;
 endfunction

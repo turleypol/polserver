@@ -548,6 +548,8 @@ void ExceptionParser::logAllStackTraces() {}
 void ExceptionParser::initGlobalExceptionCatching()
 {
 #if defined( _WIN32 )
+  // see compile_defs.cmake
+  // in addition add the executable path as searchpath
   wchar_t path[MAX_PATH];
   GetModuleFileNameW( nullptr, path, MAX_PATH );
   PathRemoveFileSpecW( path );

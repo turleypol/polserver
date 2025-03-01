@@ -241,6 +241,41 @@ constantDeclaration
 
 variableDeclaration
     : IDENTIFIER variableDeclarationInitializer?
+    | bindingDeclaration bindingDeclarationInitializer
+    ;
+
+bindingDeclaration
+    :  LBRACK sequenceBindingList RBRACK
+    |  LBRACE indexBindingList RBRACE
+    ;
+
+indexBindingList
+    : indexBinding (',' indexBinding)*
+    ;
+
+sequenceBindingList
+    : sequenceBinding (',' sequenceBinding)*
+    ;
+
+sequenceBinding
+    : IDENTIFIER ELLIPSIS?
+    | bindingDeclaration
+    ;
+
+indexBinding
+    : IDENTIFIER ELLIPSIS?
+    | IDENTIFIER binding?
+    | LBRACK expression RBRACK binding
+    ;
+
+binding
+    : ':' IDENTIFIER
+    | ':' bindingDeclaration
+    ;
+
+bindingDeclarationInitializer
+    : ':=' expression
+    | '=' expression { notifyErrorListeners("Unexpected token: '='. Did you mean := for assign?\n"); }
     ;
 
 // PARAMETERS
@@ -395,6 +430,7 @@ functionCall
 structInitializerExpression
     : IDENTIFIER (':=' expression)?
     | STRING_LITERAL (':=' expression)?
+    | expression ELLIPSIS
     ;
 
 structInitializerExpressionList
@@ -408,6 +444,7 @@ structInitializer
 
 dictInitializerExpression
     : expression ('->' expression)?
+    | expression ELLIPSIS
     ;
 
 dictInitializerExpressionList
