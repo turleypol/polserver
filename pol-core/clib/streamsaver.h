@@ -1,6 +1,12 @@
 #pragma once
-
+#ifdef _MSC_VER
+#pragma warning( push )
+#pragma warning( disable : 4702 )
+#endif
 #include <fmt/compile.h>
+#ifdef _MSC_VER
+#pragma warning( pop )
+#endif
 #include <fmt/format.h>
 #include <fmt/os.h>
 #include <fmt/ostream.h>
@@ -67,8 +73,8 @@ public:
 protected:
   FILE* _file;
   // formatting creates a temp buffer
-  // to prevent this format into this buffer and when full write to disk, clear of the buffer keeps
-  // the capacity
+  // to prevent this format into this buffer and when full write to disk, clear of the buffer
+  // keeps the capacity
   fmt::basic_memory_buffer<char, 0x8000> _mbuff;
 };
 }  // namespace Pol::Clib
