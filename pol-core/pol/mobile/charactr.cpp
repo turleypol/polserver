@@ -397,9 +397,9 @@ void Character::removal_cleanup()
      but that was sending disengage events, which were
      trying to resurrect this object. (C++)
      */
-  if ( opponent_ != nullptr )
+  if ( opponent_ )
   {
-    opponent_->opponent_of.erase( this );
+    opponent->remove_opponent( this );
     //    This is cleanup, wtf we doing trying to send highlights?!
     //    opponent_->send_highlight();
     //    opponent_->schedule_attack();
@@ -2074,7 +2074,10 @@ void Character::on_death( Items::Item* corpse )
   if ( client != nullptr )
   {
     if ( opponent_ )
-      opponent_->inform_disengaged( this );
+    {
+      if ( auto* op = opponent_->attackable_mobile() )
+        op->inform_disengaged( this );
+    }
 
     client->pause();
     send_warmode();
@@ -2109,11 +2112,11 @@ void Character::clear_opponent_of()
 {
   while ( !opponent_of.empty() )
   {
-    Character* chr = *opponent_of.begin();
+    auto* att = *opponent_of.begin();
     // note that chr->set_opponent is going to remove
     // its entry from our opponent_of collection,
     // so eventually this loop will exit.
-    chr->set_opponent( nullptr, false );
+    att->set_opponent( nullptr, false );
   }
 }
 
@@ -2926,14 +2929,13 @@ bool Character::manual_set_swing_timer( Core::polclock_t clocks )
      If not, then the first char that has you as their opponent.
      Or, noone.
      */
-Character* Character::get_opponent() const
+Attackable* Character::get_opponent() const
 {
   if ( opponent_ != nullptr )
     return opponent_;
   else if ( !opponent_of.empty() )
     return *opponent_of.begin();
-  else
-    return nullptr;
+  return nullptr;
 }
 
 bool Character::is_attackable( Character* who ) const
@@ -2973,7 +2975,7 @@ bool Character::is_attackable( Character* who ) const
   }
 }
 
-Character* Character::get_attackable_opponent() const
+Attackable* Character::get_attackable_opponent() const
 {
   if ( opponent_ != nullptr )
   {
@@ -3001,11 +3003,16 @@ void Character::send_highlight() const
 {
   if ( client != nullptr && has_active_client() )
   {
-    Character* opponent = get_opponent();
+    Attackable* opponent = get_opponent();
 
     Network::PktHelper::PacketOut<Network::PktOut_AA> msg;
     if ( opponent != nullptr )
-      msg->Write<u32>( opponent->serial_ext );
+    {
+      if ( auto* mob = opponent_->attackable_mobile() )
+        msg->Write<u32>( mob->serial_ext );
+      else if ( auto* item = opponent_->attackable_item() )
+        msg->Write<u32>( item->serial_ext );  // does this work?
+    }
     else
       msg->offset += 4;
     msg.Send( client );
@@ -3054,13 +3061,20 @@ void Character::inform_moved( Character* /*moved*/ )
 }
 void Character::inform_imoved( Character* /*chr*/ ) {}
 
-void Character::set_opponent( Character* new_opponent, bool inform_old_opponent )
+void Character::remove_opponent( Attackable* opp )
 {
+  opponent_of.erase( opp );
+}
+
+void Character::set_opponent( Attackable* new_opponent, bool inform_old_opponent )
+{
+  auto* new_opp = new_opponent->attackable_obj();
   INFO_PRINTLN_TRACE( 12 )
-  ( "set_opponent({:#x},{:#x})", this->serial, new_opponent != nullptr ? new_opponent->serial : 0 );
-  if ( new_opponent != nullptr )
+
+  ( "set_opponent({:#x},{:#x})", this->serial, new_opp != nullptr ? new_opp->serial : 0 );
+  if ( new_opp != nullptr )
   {
-    if ( new_opponent->dead() )
+    if ( auto* opp = new_opponent->attackable_mobile(); opp && opp->dead() )
       return;
 
     if ( !warmode() && ( script_isa( Core::POLCLASS_NPC ) || has_active_client() ) )
@@ -3069,12 +3083,13 @@ void Character::set_opponent( Character* new_opponent, bool inform_old_opponent 
 
   if ( opponent_ != nullptr )
   {
-    opponent_->opponent_of.erase( this );
+    opponent_->remove_opponent( this );
     // Turley 05/26/09 no need to send disengaged event on shutdown
     if ( !Clib::exit_signalled )
     {
       if ( inform_old_opponent && opponent_ != nullptr )
-        opponent_->inform_disengaged( this );
+        if ( auto* opp = new_opponent->attackable_mobile() )
+          opp->inform_disengaged( this );
     }
   }
 
@@ -3089,13 +3104,18 @@ void Character::set_opponent( Character* new_opponent, bool inform_old_opponent 
 
     if ( opponent_ != nullptr )
     {
-      repsys_on_attack( opponent_ );
-      if ( opponent_->get_opponent() == nullptr )
-        opponent_->reset_swing_timer();
+      if ( auto* opp = new_opponent->attackable_mobile() )
+      {
+        repsys_on_attack( opp );
+        if ( opp->get_opponent() == nullptr )
+          opp->reset_swing_timer();
+      }
 
-      opponent_->opponent_of.insert( this );
+      if ( auto* opp = new_opponent->attackable_mobile() )
+        opponent_->opponent_of.insert( this );
 
-      opponent_->inform_engaged( this );
+      if ( auto* opp = new_opponent->attackable_mobile() )
+        opponent_->inform_engaged( this );
 
       opponent_->schedule_attack();
     }
@@ -3108,10 +3128,19 @@ void Character::select_opponent( u32 opp_serial )
 {
   // test for setting to same so swing timer doesn't reset
   // if you double-click the same guy over and over
-  if ( opponent_ == nullptr || opponent_->serial != opp_serial )
+  auto old_serial = opponent_ == nullptr ? 0u : opponent_->attackable_obj()->serial;
+  if ( opponent_ == nullptr || old_serial != opp_serial )
   {
-    Character* new_opponent = Core::find_character( opp_serial );
-    if ( new_opponent != nullptr )
+    Attackable* new_opp = nullptr;
+    if ( isCharacter( opp_serial ) )
+      new_opp = find_character( opp_serial );
+    else if ( IsItem( opp_serial ) )
+    {
+      if ( auto* item = find_toplevel_item( opp_serial ); item && item->is_attackable() )
+        new_opp = item;
+    }
+
+    if ( new_opp != nullptr )
     {
       if ( realm() != new_opponent->realm() )
         return;

@@ -55,6 +55,7 @@
 #include "../skillid.h"
 #include "../uobject.h"
 #include "../utype.h"
+#include "attackable.h"
 #include "attribute.h"
 
 namespace Pol
@@ -270,11 +271,11 @@ enum class MOB_FLAGS : u16
 // Consider: make a class, UCreature, derived from UObject.  Character would derive from
 //  this, as might NPC.
 
-class Character : public Core::UObject
+class Character : public Core::UObject, Attackable
 {
   // types:
   typedef UObject base;
-  typedef std::set<Character*> CharacterSet;
+  typedef std::set<Attackable*> OpponentSet;
 
 public:
   explicit Character( u32 objtype,
@@ -421,7 +422,10 @@ public:
   // COMBAT
 public:
   void select_opponent( u32 opp_serial );
-  void set_opponent( Character* opponent, bool inform_old_opponent = true );
+  // AttackableInterface
+  override Character* attackable_mobile() { return this; }
+  override void set_opponent( Attackable* opponent, bool inform_old_opponent = true );
+  override void remove_opponent( Attackable* opp );
 
   void clear_opponent_of();
 
@@ -441,8 +445,8 @@ public:
   void do_hit_failure_effects();
 
   bool is_attackable( Character* who ) const;
-  Character* get_opponent() const;
-  Character* get_attackable_opponent() const;
+  Attackable* get_opponent() const;
+  Attackable* get_attackable_opponent() const;
 
   Items::UArmor* choose_armor() const;
 
@@ -450,11 +454,11 @@ public:
 
   void reset_swing_timer();
   void check_attack_after_move( bool check_opponents_after_check );
-  void attack( Character* opponent );
+  void attack( Attackable* opponent );
   void send_highlight() const;
   bool manual_set_swing_timer( Core::polclock_t time );
 
-  const CharacterSet& hostiles() const;
+  const AttackableSet& hostiles() const;
   void run_hit_script( Character* defender, double damage );
 
 private:
@@ -776,8 +780,8 @@ protected:
   DYN_PROPERTY( evasionchance_mod, s16, Core::PROP_EVASIONCHANCE_MOD, 0 );
   DYN_PROPERTY( parrychance_mod, s16, Core::PROP_PARRYCHANCE_MOD, 0 );
 
-  Character* opponent_;
-  CharacterSet opponent_of;
+  Attackable* opponent_;
+  AttackableSet opponent_of;
   Core::polclock_t swing_timer_start_clock_;
   Core::OneShotTask* swing_task;
   // ATTRIBUTES / VITALS
@@ -971,7 +975,7 @@ inline bool Character::casting_spell() const
   return ( spell_task != nullptr );
 }
 
-inline const Character::CharacterSet& Character::hostiles() const
+inline const Character::AttackableSet& Character::hostiles() const
 {
   return opponent_of;
 }
