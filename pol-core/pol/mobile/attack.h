@@ -17,12 +17,12 @@ class Attackable
 public:
   Attackable() = default;
   Attackable( Character* chr ) : _opp( chr ){};
-  Attackable( Item* item ) : _opp( item )
+  Attackable( Items::Item* item ) : _opp( item )
   {
     if ( !item->is_attackable() )
       _opp = nullptr;
   };
-  explicit bool operator bool() const { return _opp != nullptr; };
+  explicit operator bool() const { return _opp != nullptr; };
   void clear() { _opp = nullptr; };
   UObject* object() { return _opp; };
   Character* mobile()
