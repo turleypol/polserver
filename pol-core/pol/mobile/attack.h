@@ -14,38 +14,31 @@ class Character;
 
 class Attackable
 {
-  virtual Character* attackable_mobile() { return nullptr; }
-  virtual Item* attackable_item() { return nullptr; }
-  virtual void set_opponent( Attackable* new_opponent, bool inform_old_opponent ) = 0;
-  virtual void remove_opponent( Attackable* opp ) = 0;
-};
-class Opponent
-{
 public:
-  Opponent() : _opp( nullptr ){};
-  Opponent( Character* chr ) : _opp( chr ){};
-  Opponent( Item* item ) : _opp( item )
+  Attackable() = default;
+  Attackable( Character* chr ) : _opp( chr ){};
+  Attackable( Item* item ) : _opp( item )
   {
     if ( !item->is_attackable() )
       _opp = nullptr;
   };
-
-  bool valid() const { return _opp != nullptr; };
-  bool clear() { _opp = nullptr; };
+  explicit bool operator bool() const { return _opp != nullptr; };
+  void clear() { _opp = nullptr; };
+  UObject* object() { return _opp; };
   Character* mobile()
   {
-    if ( valid() && !isItem( _opp->serial ) )
+    if ( valid() && _opp->ismobile() )
       return static_cast<Character*>( _opp );
     return nullptr;
   };
   Items::Item* item()
   {
-    if ( valid() && isItem( _opp->serial ) )
+    if ( valid() && _opp->isitem() )
       return static_cast<Items::Item*>( _opp );
     return nullptr;
   };
 
 private:
-  UObject* _opp;
+  UObject* _opp = nullptr;
 }
 }  // namespace Pol::Mobile
