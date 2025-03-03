@@ -55,7 +55,7 @@
 #include "../skillid.h"
 #include "../uobject.h"
 #include "../utype.h"
-#include "attackable.h"
+#include "attack.h"
 #include "attribute.h"
 
 namespace Pol
