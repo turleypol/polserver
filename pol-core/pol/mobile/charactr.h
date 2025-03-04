@@ -451,7 +451,7 @@ public:
 
   void reset_swing_timer();
   void check_attack_after_move( bool check_opponents_after_check );
-  void attack( Character* opponent );
+  void attack( const Attackable& opponent );
   void send_highlight() const;
   bool manual_set_swing_timer( Core::polclock_t time );
 

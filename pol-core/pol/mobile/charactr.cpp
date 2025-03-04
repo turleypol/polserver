@@ -2998,7 +2998,7 @@ Attackable Character::get_attackable_opponent() const
     }
   }
 
-  return nullptr;
+  return {};
 }
 
 void Character::send_highlight() const
@@ -3311,7 +3311,8 @@ void Character::attack( const Attackable& opponent )
   {
     if ( Core::gamestate.system_hooks.attack_hook->call(
              new Module::ECharacterRefObjImp( this ),
-             opponent.mobile()?new Module::ECharacterRefObjImp( opponent.mobile() ): new Module::EItemRefObjImp(opponent.item() ) )
+             opponent.mobile() ? new Module::ECharacterRefObjImp( opponent.mobile() )
+                               : new Module::EItemRefObjImp( opponent.item() ) ) )
       return;
   }
 
