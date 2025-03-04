@@ -455,7 +455,7 @@ public:
   void send_highlight() const;
   bool manual_set_swing_timer( Core::polclock_t time );
 
-  const CharacterSet& hostiles() const;
+  const AttackableSet& hostiles() const;
   void run_hit_script( Character* defender, double damage );
 
 private:
@@ -972,7 +972,7 @@ inline bool Character::casting_spell() const
   return ( spell_task != nullptr );
 }
 
-inline const Character::CharacterSet& Character::hostiles() const
+inline const Character::AttackableSet& Character::hostiles() const
 {
   return opponent_of;
 }
