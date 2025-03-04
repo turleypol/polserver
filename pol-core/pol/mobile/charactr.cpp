@@ -400,7 +400,7 @@ void Character::removal_cleanup()
   if ( opponent_ )
   {
     if ( auto* mob = opponent_.mobile() )  // TODO Attackable both
-      mob->opponent_of.erase( this );
+      mob->opponent_of.erase( Attackable{ this } );
     //    This is cleanup, wtf we doing trying to send highlights?!
     //    opponent_->send_highlight();
     //    opponent_->schedule_attack();
