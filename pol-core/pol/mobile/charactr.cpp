@@ -2988,21 +2988,20 @@ Attackable Character::get_attackable_opponent() const
     if ( is_attackable( opponent_ ) )
       return opponent_;
   }
-}
 
-if ( !opponent_of.empty() )
-{
-  for ( auto& who : opponent_of )
+  if ( !opponent_of.empty() )
   {
-    INFO_PRINTLN_TRACE( 20 )
-    ( "get_attackable_opponent({:#x}): checking opponent_of {:#x}", this->serial,
-      who.object()->serial );
-    if ( is_attackable( who ) )
-      return who;
+    for ( auto& who : opponent_of )
+    {
+      INFO_PRINTLN_TRACE( 20 )
+      ( "get_attackable_opponent({:#x}): checking opponent_of {:#x}", this->serial,
+        who.object()->serial );
+      if ( is_attackable( who ) )
+        return who;
+    }
   }
-}
 
-return {};
+  return {};
 }
 
 void Character::send_highlight() const
