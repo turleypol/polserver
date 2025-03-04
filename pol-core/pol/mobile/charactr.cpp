@@ -3067,7 +3067,7 @@ void Character::set_opponent( Attackable new_opponent, bool inform_old_opponent 
   ( "set_opponent({:#x},{:#x})", this->serial, new_opponent ? new_opponent.object()->serial : 0 );
   if ( new_opponent )
   {
-    if ( auto* mob = new_opponent.mobile(); new_opponent && new_opponent->dead() )
+    if ( auto* mob = new_opponent.mobile(); mob && mob->dead() )
       return;
 
     if ( !warmode() && ( script_isa( Core::POLCLASS_NPC ) || has_active_client() ) )
@@ -3087,12 +3087,12 @@ void Character::set_opponent( Attackable new_opponent, bool inform_old_opponent 
     }
   }
 
-  opponent_ = std::move( new_opponent )
+  opponent_ = std::move( new_opponent );
 
 
-      // Turley 05/26/09 possible shutdown crashfix during cleanup
-      // (inside schedule_attack() the rest is also senseless on shutdowncleanup)
-      if ( !Clib::exit_signalled )
+  // Turley 05/26/09 possible shutdown crashfix during cleanup
+  // (inside schedule_attack() the rest is also senseless on shutdowncleanup)
+  if ( !Clib::exit_signalled )
   {
     reset_swing_timer();
 
