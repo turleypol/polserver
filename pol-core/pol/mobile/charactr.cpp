@@ -3128,12 +3128,12 @@ void Character::select_opponent( u32 opp_serial )
   if ( !opponent_ || opponent_.object()->serial != opp_serial )
   {
     // TODO Attackable
-    Character* new_opponent = Core::find_character( opp_serial );
-    if ( new_opponent != nullptr )
+    auto opp = Attackable{ find_toplevel_object( opp_serial ) };
+    if ( opp )
     {
-      if ( realm() != new_opponent->realm() )
+      if ( realm() != opp.object()->realm() )
         return;
-      set_opponent( new_opponent );
+      set_opponent( opp );
     }
   }
 }
