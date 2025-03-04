@@ -3128,7 +3128,7 @@ void Character::select_opponent( u32 opp_serial )
   if ( !opponent_ || opponent_.object()->serial != opp_serial )
   {
     // TODO Attackable
-    auto opp = Attackable{ find_toplevel_object( opp_serial ) };
+    auto opp = Attackable{ Core::find_toplevel_object( opp_serial ) };
     if ( opp )
     {
       if ( realm() != opp.object()->realm() )
