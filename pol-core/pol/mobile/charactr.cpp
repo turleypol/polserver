@@ -2111,11 +2111,12 @@ void Character::clear_opponent_of()
 {
   while ( !opponent_of.empty() )
   {
-    Character* chr = *opponent_of.begin();
+    auto att = *opponent_of.begin();
     // note that chr->set_opponent is going to remove
     // its entry from our opponent_of collection,
     // so eventually this loop will exit.
-    chr->set_opponent( nullptr, false );
+    if ( auto* mob = att.mobile() )  // TODO Attackable
+      mob->set_opponent( nullptr, false );
   }
 }
 
@@ -2937,9 +2938,12 @@ Attackable Character::get_opponent() const
   return {};
 }
 
-bool Character::is_attackable( Character* who ) const
+bool Character::is_attackable( const Attackable& attackable ) const
 {
-  passert( who != nullptr );
+  passert( attackable.object() != nullptr );
+  if ( attackable.item() )  // TODO Attackable
+    return true;
+  auto* who = attackable.mobile();
   if ( Core::settingsManager.combat_config.scripted_attack_checks )
   {
     INFO_PRINTLN_TRACE( 21 )
@@ -2976,29 +2980,29 @@ bool Character::is_attackable( Character* who ) const
 
 Attackable Character::get_attackable_opponent() const
 {
-  if ( opponent_ )  // TODO Attackable
+  if ( opponent_ )
   {
-    if ( auto* mob = opponent_.mobile() )
-    {
-      INFO_PRINTLN_TRACE( 20 )
-      ( "get_attackable_opponent({:#x}): checking opponent {:#x}", this->serial, mob->serial );
-      if ( is_attackable( mob ) )
-        return opponent_;
-    }
+    INFO_PRINTLN_TRACE( 20 )
+    ( "get_attackable_opponent({:#x}): checking opponent {:#x}", this->serial,
+      opponent_.object()->serial );
+    if ( is_attackable( opponent_ ) )
+      return opponent_;
   }
+}
 
-  if ( !opponent_of.empty() )
+if ( !opponent_of.empty() )
+{
+  for ( auto& who : opponent_of )
   {
-    for ( auto& who : opponent_of )
-    {
-      INFO_PRINTLN_TRACE( 20 )
-      ( "get_attackable_opponent({:#x}): checking opponent_of {:#x}", this->serial, who->serial );
-      if ( is_attackable( who ) )
-        return who;
-    }
+    INFO_PRINTLN_TRACE( 20 )
+    ( "get_attackable_opponent({:#x}): checking opponent_of {:#x}", this->serial,
+      who.object()->serial );
+    if ( is_attackable( who ) )
+      return who;
   }
+}
 
-  return {};
+return {};
 }
 
 void Character::send_highlight() const
@@ -3074,7 +3078,7 @@ void Character::set_opponent( Character* new_opponent, bool inform_old_opponent 
   if ( opponent_ )  // TODO Attackable
   {
     if ( auto* mob = opponent_.mobile() )
-      mob->opponent_of.erase( this );
+      mob->opponent_of.erase( Attackable{ this } );
     // Turley 05/26/09 no need to send disengaged event on shutdown
     if ( !Clib::exit_signalled )
     {
@@ -3106,7 +3110,7 @@ void Character::set_opponent( Character* new_opponent, bool inform_old_opponent 
       if ( mob )
       {
         // TODO Attackable for both
-        mob->opponent_of.insert( this );
+        mob->opponent_of.insert( Attackable{ this } );
 
         mob->inform_engaged( this );
       }
@@ -3511,10 +3515,11 @@ void Character::check_attack_after_move( bool check_opponents_after_check )
       mob->check_attack_after_move( false );
 
     // attacking can change the opponent_of array drastically.
-    std::set<Character*> tmp( opponent_of );
-    for ( auto& chr : tmp )
+    AttackableSet tmp( opponent_of );
+    for ( auto& att : tmp )
     {
-      chr->check_attack_after_move( false );
+      if ( auto* mob = att.mobile() )
+        mob->check_attack_after_move( false );
     }
   }
 }
@@ -3592,7 +3597,7 @@ void Character::check_justice_region_change()
     {
       if ( auto* opp2 = get_opponent().mobile(); opp2 && opp2->client )
       {
-        opp2->opponent_of.erase( client->chr );
+        opp2->opponent_of.erase( Attackable{ client->chr } );
         opp2->set_opponent( nullptr, true );
         opp2->schedule_attack();
         opp2->opponent_.clear();

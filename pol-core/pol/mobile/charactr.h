@@ -441,7 +441,7 @@ public:
   void do_hit_success_effects();
   void do_hit_failure_effects();
 
-  bool is_attackable( Character* who ) const;
+  bool is_attackable( const Attackable& att ) const;
   Attackable get_opponent() const;
   Attackable get_attackable_opponent() const;
 
