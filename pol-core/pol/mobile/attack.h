@@ -19,6 +19,7 @@ public:
   Attackable( Character* chr );
   Attackable( Items::Item* item );
   explicit operator bool() const { return _opp != nullptr; };
+  bool operator<( const Attackable& o ) const { return _opp < o._opp; };
   void clear() { _opp = nullptr; };
   Core::UObject* object() const { return _opp; };
   Character* mobile() const;
