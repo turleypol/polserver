@@ -422,7 +422,7 @@ public:
   // COMBAT
 public:
   void select_opponent( u32 opp_serial );
-  void set_opponent( Character* opponent, bool inform_old_opponent = true );
+  void set_opponent( Attackable opponent, bool inform_old_opponent = true );
 
   void clear_opponent_of();
 

@@ -2116,7 +2116,7 @@ void Character::clear_opponent_of()
     // its entry from our opponent_of collection,
     // so eventually this loop will exit.
     if ( auto* mob = att.mobile() )  // TODO Attackable
-      mob->set_opponent( nullptr, false );
+      mob->set_opponent( {}, false );
   }
 }
 
@@ -2433,7 +2433,7 @@ void Character::die()
 
   clear_opponent_of();
 
-  set_opponent( nullptr );
+  set_opponent( {} );
 
   UPDATE_CHECKPOINT();
 
@@ -3061,13 +3061,13 @@ void Character::inform_moved( Character* /*moved*/ )
 }
 void Character::inform_imoved( Character* /*chr*/ ) {}
 
-void Character::set_opponent( Character* new_opponent, bool inform_old_opponent )
+void Character::set_opponent( Attackable new_opponent, bool inform_old_opponent )
 {
   INFO_PRINTLN_TRACE( 12 )
-  ( "set_opponent({:#x},{:#x})", this->serial, new_opponent != nullptr ? new_opponent->serial : 0 );
-  if ( new_opponent != nullptr )
+  ( "set_opponent({:#x},{:#x})", this->serial, new_opponent ? new_opponent.object()->serial : 0 );
+  if ( new_opponent )
   {
-    if ( new_opponent->dead() )
+    if ( auto* mob = new_opponent.mobile(); new_opponent && new_opponent->dead() )
       return;
 
     if ( !warmode() && ( script_isa( Core::POLCLASS_NPC ) || has_active_client() ) )
@@ -3087,12 +3087,12 @@ void Character::set_opponent( Character* new_opponent, bool inform_old_opponent 
     }
   }
 
-  opponent_ = Attackable{ new_opponent };
+  opponent_ = std::move( new_opponent )
 
 
-  // Turley 05/26/09 possible shutdown crashfix during cleanup
-  // (inside schedule_attack() the rest is also senseless on shutdowncleanup)
-  if ( !Clib::exit_signalled )
+      // Turley 05/26/09 possible shutdown crashfix during cleanup
+      // (inside schedule_attack() the rest is also senseless on shutdowncleanup)
+      if ( !Clib::exit_signalled )
   {
     reset_swing_timer();
 
@@ -3164,7 +3164,7 @@ void Character::set_warmode( bool i_warmode )
   mob_flags_.change( MOB_FLAGS::WARMODE, i_warmode );
   if ( i_warmode == false )
   {
-    set_opponent( nullptr );
+    set_opponent( {} );
   }
   reset_swing_timer();
 
@@ -3597,11 +3597,11 @@ void Character::check_justice_region_change()
       if ( auto* opp2 = get_opponent().mobile(); opp2 && opp2->client )
       {
         opp2->opponent_of.erase( Attackable{ client->chr } );
-        opp2->set_opponent( nullptr, true );
+        opp2->set_opponent( {}, true );
         opp2->schedule_attack();
         opp2->opponent_.clear();
         opp2->clear_opponent_of();
-        set_opponent( nullptr, true );
+        set_opponent( {}, true );
         if ( swing_task != nullptr )
           swing_task->cancel();
       }
