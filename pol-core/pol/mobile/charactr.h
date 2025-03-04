@@ -275,7 +275,7 @@ class Character : public Core::UObject
 {
   // types:
   typedef UObject base;
-  typedef std::set<Character*> CharacterSet;
+  typedef std::set<Attackable> AttackableSet;
 
 public:
   explicit Character( u32 objtype,
@@ -778,7 +778,7 @@ protected:
   DYN_PROPERTY( parrychance_mod, s16, Core::PROP_PARRYCHANCE_MOD, 0 );
 
   Attackable opponent_;
-  CharacterSet opponent_of;
+  AttackableSet opponent_of;
   Core::polclock_t swing_timer_start_clock_;
   Core::OneShotTask* swing_task;
   // ATTRIBUTES / VITALS
