@@ -3309,11 +3309,8 @@ void Character::attack( const Attackable& opponent )
 
   if ( Core::gamestate.system_hooks.attack_hook )
   {
-    if ( Core::gamestate.system_hooks.attack_hook->call(
-             new Module::ECharacterRefObjImp( this ),
-             opponent.mobile()
-                 ? (Bscript::BObjectImp*)new Module::ECharacterRefObjImp( opponent.mobile() )
-                 : (Bscript::BObjectImp*)new Module::EItemRefObjImp( opponent.item() ) ) )
+    if ( Core::gamestate.system_hooks.attack_hook->call( new Module::ECharacterRefObjImp( this ),
+                                                         opponent.object()->make_ref() ) )
       return;
   }
 

@@ -2169,8 +2169,8 @@ BObjectImp* Character::get_script_member_id( const int id ) const
     break;
 
   case MBR_OPPONENT:
-    if ( opponent_ != nullptr )
-      return opponent_->make_ref();
+    if ( opponent_ )
+      return opponent_.object()->make_ref();
     return new BError( "Mobile does not have any opponent selected." );
     break;
   case MBR_CONNECTED:
