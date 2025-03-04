@@ -3311,8 +3311,9 @@ void Character::attack( const Attackable& opponent )
   {
     if ( Core::gamestate.system_hooks.attack_hook->call(
              new Module::ECharacterRefObjImp( this ),
-             opponent.mobile() ? new Module::ECharacterRefObjImp( opponent.mobile() )
-                               : new Module::EItemRefObjImp( opponent.item() ) ) )
+             opponent.mobile()
+                 ? (Bscript::BObjectImp*)new Module::ECharacterRefObjImp( opponent.mobile() )
+                 : (Bscript::BObjectImp*)new Module::EItemRefObjImp( opponent.item() ) ) )
       return;
   }
 
@@ -3387,7 +3388,7 @@ void Character::attack( const Attackable& opponent )
   double hit_chance = ( weapon_attribute().effective() + 50.0 ) /
                       ( 2.0 * ( opponent_mobile->weapon_attribute().effective() + 50.0 ) );
   hit_chance += hitchance_mod() * 0.001f;
-  hit_chance -= opponent->evasionchance_mod() * 0.001f;
+  hit_chance -= opponent_mobile->evasionchance_mod() * 0.001f;
   if ( Core::settingsManager.watch.combat )
     INFO_PRINT( "Chance to hit: {}: ", hit_chance );
   if ( Clib::random_double( 1.0 ) < hit_chance )
@@ -3597,7 +3598,7 @@ void Character::check_justice_region_change()
         opp2->opponent_of.erase( client->chr );
         opp2->set_opponent( nullptr, true );
         opp2->schedule_attack();
-        opp2->opponent_ = nullptr;
+        opp2->opponent_.clear();
         opp2->clear_opponent_of();
         set_opponent( nullptr, true );
         if ( swing_task != nullptr )
