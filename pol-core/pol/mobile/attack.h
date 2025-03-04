@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Pol
+namespace Pol::Core
 {
 class UObject;
 }
@@ -20,11 +20,11 @@ public:
   Attackable( Items::Item* item );
   explicit operator bool() const { return _opp != nullptr; };
   void clear() { _opp = nullptr; };
-  UObject* object() { return _opp; };
+  Core::UObject* object() { return _opp; };
   Character* mobile();
   Items::Item* item();
 
 private:
-  UObject* _opp = nullptr;
+  Core::UObject* _opp = nullptr;
 };
 }  // namespace Pol::Mobile

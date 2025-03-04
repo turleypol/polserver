@@ -1420,7 +1420,7 @@ bool Item::get_method_hook( const char* methodname, Bscript::Executor* ex,
 
 bool Item::is_attackable() const
 {
-  return flags_.get( OBJ_FLAGS::ATTACKABLE );
+  return flags_.get( Core::OBJ_FLAGS::ATTACKABLE );
 }
 // Event notifications
 
