@@ -193,7 +193,7 @@ void RepSystem::repsys_task( Mobile::Character* amy )
   // the 'defensive hostiles' are those that are attacking Amy while she's not innocent.
   // If she's innocent at the end of this, they will break off the attack.
   THREAD_CHECKPOINT( tasks, 1001 );
-  std::setMobile::Character* > defensive_hostiles;
+  std::set<Mobile::Character*> defensive_hostiles;
   for ( const auto& opp : amy->opponent_of )
   {
     if ( auto* bob = opp.mobile() )
