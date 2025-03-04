@@ -32,13 +32,13 @@ Attackable::Attackable( Items::Item* item ) : _opp( item )
   if ( !item->is_attackable() )
     _opp = nullptr;
 }
-Character* Attackable::mobile()
+Character* Attackable::mobile() const
 {
   if ( _opp && _opp->ismobile() )
     return static_cast<Character*>( _opp );
   return nullptr;
 }
-Items::Item* Attackable::item()
+Items::Item* Attackable::item() const
 {
   if ( _opp && _opp->isitem() )
     return static_cast<Items::Item*>( _opp );

@@ -399,7 +399,7 @@ void Character::removal_cleanup()
      */
   if ( opponent_ )
   {
-    if ( auto* mob = opponent.mobile() )  // TODO Attackable both
+    if ( auto* mob = opponent_.mobile() )  // TODO Attackable both
       mob->opponent_of.erase( this );
     //    This is cleanup, wtf we doing trying to send highlights?!
     //    opponent_->send_highlight();
@@ -3116,7 +3116,6 @@ void Character::set_opponent( Character* new_opponent, bool inform_old_opponent 
   }
 
   send_highlight();
-}
 }
 
 void Character::select_opponent( u32 opp_serial )
