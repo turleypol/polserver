@@ -94,6 +94,19 @@ namespace Core
   {                                            \
     return hasmember( id );                    \
   }
+// define to generate methods for get/set/has/clear
+#define DYN_PROPERTY_REF( name, type, id, defaultvalue ) \
+  type* name() const                                     \
+  {                                                      \
+    if ( !hasmember( id ) )                              \
+      setmember( id, defaultvalue );                     \
+    auto* val = getmember<type>( id );                   \
+    return val;                                          \
+  };                                                     \
+  bool has_##name() const                                \
+  {                                                      \
+    return hasmember( id );                              \
+  }
 // enum for the propertys
 enum DynPropTypes : u8
 {
@@ -309,6 +322,8 @@ public:
   template <typename V>
   bool getValue( DynPropTypes type, V* value ) const;
   template <typename V>
+  V* getValueRef( DynPropTypes type ) const;
+  template <typename V>
   bool updateValue( DynPropTypes type, const V& value );
   template <typename V>
   bool updateValuePointer( DynPropTypes type, V value );
@@ -336,6 +351,8 @@ public:
   // get property returns false if non existent (checks via hasProperty before)
   template <typename V>
   bool getProperty( DynPropTypes type, V* value ) const;
+  template <typename V>
+  V* getProperty( DynPropTypes type ) const;
   // set property (sets also the flag)
   template <typename V>
   void setProperty( DynPropTypes type, const V& value );
@@ -364,7 +381,11 @@ public:
   template <typename V>
   bool getmember( DynPropTypes member, V* value ) const;
   template <typename V>
+  V* getmemberRef( DynPropTypes member ) const;
+  template <typename V>
   void setmember( DynPropTypes member, const V& value, const V& defaultvalue );
+  template <typename V>
+  void setmember( DynPropTypes member, const V& value );
   template <typename V>
   void setmemberPointer( DynPropTypes member, V value );
   size_t estimateSizeDynProps() const;
@@ -505,6 +526,18 @@ inline V PropHolder<variant_storage>::getValue() const
 {
   return std::get<V>( _value );
 }
+template <>
+template <typename V>
+inline V* PropHolder<std::any>::getValueRef() const
+{
+  return std::any_cast<V>( &_value );
+}
+template <>
+template <typename V>
+inline V* PropHolder<variant_storage>::getValueRef() const
+{
+  return std::get<V>( &_value );
+}
 
 ////////////////
 // PropHolderContainer
@@ -526,6 +559,19 @@ inline bool PropHolderContainer<Storage>::getValue( DynPropTypes type, V* value 
     }
   }
   return false;
+}
+template <class Storage>
+template <typename V>
+inline V* PropHolderContainer<Storage>::getValue( DynPropTypes type ) const
+{
+  for ( const PropHolder<Storage>& prop : _props )
+  {
+    if ( prop._type == type )
+    {
+      return prop.template getValueRef<V>();
+    }
+  }
+  return nullptr;
 }
 
 template <class Storage>
@@ -611,6 +657,24 @@ static typename std::enable_if<!can_be_used_in_variant<V>::value, bool>::type ge
 }
 
 template <typename V>
+static typename std::enable_if<can_be_used_in_variant<V>::value, V*>::type getPropertyHelper(
+    const PropHolderContainer<variant_storage>& variant_props,
+    const std::unique_ptr<PropHolderContainer<std::any>>& any_props, DynPropTypes type )
+{
+  (void)any_props;
+  return variant_props.getValue( type );
+}
+template <typename V>
+static typename std::enable_if<!can_be_used_in_variant<V>::value, V*>::type getPropertyHelper(
+    const PropHolderContainer<variant_storage>& variant_props,
+    const std::unique_ptr<PropHolderContainer<std::any>>& any_props, DynPropTypes type )
+{
+  (void)variant_props;
+  passert_always( any_props.get() );
+  return any_props->getValue( type );
+}
+
+template <typename V>
 static typename std::enable_if<can_be_used_in_variant<V>::value, bool>::type updatePropertyHelper(
     PropHolderContainer<variant_storage>& variant_props,
     std::unique_ptr<PropHolderContainer<std::any>>& any_props, DynPropTypes type, const V& value )
@@ -680,6 +744,13 @@ inline bool DynProps::getProperty( DynPropTypes type, V* value ) const
     return false;
   return getPropertyHelper<V>( _props, _any_props, type, value );
 }
+template <typename V>
+inline V* DynProps::getPropertyRef( DynPropTypes type ) const
+{
+  if ( !hasProperty( type ) )
+    return nullptr;
+  return getPropertyHelper<V>( _props, _any_props, type );
+}
 
 template <typename V>
 inline void DynProps::setProperty( DynPropTypes type, const V& value )
@@ -748,6 +819,14 @@ inline bool DynamicPropsHolder::getmember( DynPropTypes member, V* value ) const
   return _dynprops->getProperty( member, value );
 }
 
+template <typename V>
+inline V* DynamicPropsHolder::getmemberRef( DynPropTypes member ) const
+{
+  if ( !_dynprops )
+    return nullptr;
+  return _dynprops->getPropertyRef( member );
+}
+
 inline bool DynamicPropsHolder::hasmember( DynPropTypes member ) const
 {
   if ( !_dynprops || !_dynprops->hasProperty( member ) )
@@ -765,6 +844,13 @@ inline void DynamicPropsHolder::setmember( DynPropTypes member, const V& value,
       _dynprops->removeProperty<V>( member );
     return;
   }
+  initProps();
+  _dynprops->setProperty( member, value );
+}
+
+template <typename V>
+inline void DynamicPropsHolder::setmember( DynPropTypes member, const V& value )
+{
   initProps();
   _dynprops->setProperty( member, value );
 }

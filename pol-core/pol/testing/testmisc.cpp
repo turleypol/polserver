@@ -35,12 +35,17 @@ void map_test()
 
 void dynprops_test()
 {
+  struct VecTest
+  {
+    bool test = false;
+  };
   class Test : public Core::DynamicPropsHolder
   {
   public:
     DYN_PROPERTY( armod, s16, Core::PROP_AR_MOD, 0 );
     DYN_PROPERTY( max_items, u32, Core::PROP_MAX_ITEMS_MOD, 0 );
     DYN_PROPERTY( itemname, std::string, Core::PROP_NAME_SUFFIX, "" );
+    DYN_PROPERTY_REF( vec, std::vector<VecTest>, Core::PROP_PROCESS );
   };
   Test h;
   if ( h.armod() || h.has_armod() )
@@ -90,6 +95,22 @@ void dynprops_test()
   }
   else
     UnitTest::inc_successes();
+  if ( h.has_vec() )
+  {
+    INFO_PRINTLN( "testvec set" );
+    UnitTest::inc_failures();
+  }
+  if ( !h.vec()->empty() )
+  {
+    INFO_PRINTLN( "testvec not empty" );
+    UnitTest::inc_failures();
+  }
+  h.vec()->push_back( VecTest{ true } );
+  if ( h.vec()->empty() )
+  {
+    INFO_PRINTLN( "testvec empty" );
+    UnitTest::inc_failures();
+  }
 }
 
 void packet_test()
