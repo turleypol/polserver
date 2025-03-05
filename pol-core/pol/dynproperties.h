@@ -324,7 +324,7 @@ public:
   template <typename V>
   bool getValue( DynPropTypes type, V* value ) const;
   template <typename V>
-  V* getValueRef( DynPropTypes type ) const;
+  V* getValue( DynPropTypes type ) const;
   template <typename V>
   bool updateValue( DynPropTypes type, const V& value );
   template <typename V>
@@ -826,7 +826,7 @@ inline V* DynamicPropsHolder::getmemberRef( DynPropTypes member ) const
 {
   if ( !_dynprops )
     return nullptr;
-  return _dynprops->getProperty( member );
+  return _dynprops->getProperty<V>( member );
 }
 
 inline bool DynamicPropsHolder::hasmember( DynPropTypes member ) const
