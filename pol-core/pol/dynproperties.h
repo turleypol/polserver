@@ -306,6 +306,8 @@ public:
   PropHolder( DynPropTypes type, const Storage& value );
   template <typename V>
   V getValue() const;
+  template <typename V>
+  V* getValueRef() const;
 
 protected:
   DynPropTypes _type;
@@ -745,7 +747,7 @@ inline bool DynProps::getProperty( DynPropTypes type, V* value ) const
   return getPropertyHelper<V>( _props, _any_props, type, value );
 }
 template <typename V>
-inline V* DynProps::getPropertyRef( DynPropTypes type ) const
+inline V* DynProps::getProperty( DynPropTypes type ) const
 {
   if ( !hasProperty( type ) )
     return nullptr;
@@ -824,7 +826,7 @@ inline V* DynamicPropsHolder::getmemberRef( DynPropTypes member ) const
 {
   if ( !_dynprops )
     return nullptr;
-  return _dynprops->getPropertyRef( member );
+  return _dynprops->getProperty( member );
 }
 
 inline bool DynamicPropsHolder::hasmember( DynPropTypes member ) const
