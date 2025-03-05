@@ -2120,6 +2120,10 @@ void Character::remove_opponent_of( const Attackable& other )
 {
   opponent_of.erase( other );
 }
+void Character::add_opponent_of( Attackable other )
+{
+  opponent_of.insert( std::move( other ) );
+}
 
 void Character::die()
 {
@@ -3106,10 +3110,10 @@ void Character::set_opponent( Attackable new_opponent, bool inform_old_opponent 
           mob->reset_swing_timer();
       }
 
+      opponent_.add_opponent_of( Attackable{ this } );
       if ( mob )
       {
         // TODO Attackable for both
-        mob->opponent_of.insert( Attackable{ this } );
 
         mob->inform_engaged( this );
       }

@@ -29,6 +29,7 @@ public:
   Items::Item* item() const;
 
   void remove_opponent_of( const Attackable& other );
+  void add_opponent_of( Attackable other );
 
   // std::less support for std::set
   bool operator<( const Attackable& o ) const { return _opp < o._opp; };

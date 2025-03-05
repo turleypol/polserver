@@ -52,6 +52,14 @@ void Attackable::remove_opponent_of( const Attackable& other )
     return;
   mob->remove_opponent_of( other );
 }
+void Attackable::add_opponent_of( Attackable other )
+{
+  // Items have no need to store multiple opponents
+  auto* mob = mobile();
+  if ( !mob )
+    return;
+  mob->add_opponent_of( std::move( other ) );
+}
 
 void handle_attack( Network::Client* client, Core::PKTIN_05* msg )
 {
