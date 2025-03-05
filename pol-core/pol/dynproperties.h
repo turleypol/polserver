@@ -664,7 +664,7 @@ static typename std::enable_if<can_be_used_in_variant<V>::value, V*>::type getPr
     const std::unique_ptr<PropHolderContainer<std::any>>& any_props, DynPropTypes type )
 {
   (void)any_props;
-  return variant_props.getValue( type );
+  return variant_props.getValue<V>( type );
 }
 template <typename V>
 static typename std::enable_if<!can_be_used_in_variant<V>::value, V*>::type getPropertyHelper(
@@ -673,7 +673,7 @@ static typename std::enable_if<!can_be_used_in_variant<V>::value, V*>::type getP
 {
   (void)variant_props;
   passert_always( any_props.get() );
-  return any_props->getValue( type );
+  return any_props->getValue<V>( type );
 }
 
 template <typename V>

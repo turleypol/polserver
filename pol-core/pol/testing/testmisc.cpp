@@ -45,7 +45,7 @@ void dynprops_test()
     DYN_PROPERTY( armod, s16, Core::PROP_AR_MOD, 0 );
     DYN_PROPERTY( max_items, u32, Core::PROP_MAX_ITEMS_MOD, 0 );
     DYN_PROPERTY( itemname, std::string, Core::PROP_NAME_SUFFIX, "" );
-    DYN_PROPERTY_REF( vec, std::vector<VecTest>, Core::PROP_PROCESS );
+    DYN_PROPERTY_REF( vec, std::vector<VecTest>, Core::PROP_PROCESS, {} );
   };
   Test h;
   if ( h.armod() || h.has_armod() )
