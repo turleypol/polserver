@@ -60,6 +60,20 @@ void Attackable::add_opponent_of( Attackable other )
     return;
   mob->add_opponent_of( std::move( other ) );
 }
+void Attackable::inform_disengaged( const Attackable& disengaged )
+{
+  if ( auto* mob = mobile() )
+    mob->inform_disengaged( disengaged );
+  else if ( auto* item = item() )
+    ;  // TODO send event
+}
+void Attackable::inform_engaged( const Attackable& engaged )
+{
+  if ( auto* mob = mobile() )
+    mob->inform_engaged( engaged );
+  else if ( auto* item = item() )
+    ;  // TODO send event
+}
 
 void handle_attack( Network::Client* client, Core::PKTIN_05* msg )
 {

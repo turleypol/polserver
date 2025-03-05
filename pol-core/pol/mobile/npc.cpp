@@ -761,7 +761,7 @@ void NPC::on_ghost_pc_spoke( Character* src_chr, const std::string& speech, u8 t
   }
 }
 
-void NPC::inform_engaged( Character* engaged )
+void NPC::inform_engaged( const Attackable& engaged )
 {
   // someone has targetted us. Create an event if appropriate.
   if ( ex != nullptr )
@@ -774,7 +774,7 @@ void NPC::inform_engaged( Character* engaged )
   // Note, we don't do the base class thing, 'cause we have no client.
 }
 
-void NPC::inform_disengaged( Character* disengaged )
+void NPC::inform_disengaged( const Attackable& disengaged )
 {
   // someone has targetted us. Create an event if appropriate.
   if ( ex != nullptr )

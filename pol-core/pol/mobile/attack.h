@@ -30,6 +30,8 @@ public:
 
   void remove_opponent_of( const Attackable& other );
   void add_opponent_of( Attackable other );
+  void inform_disengaged( const Attackable& disengaged );
+  void inform_engaged( const Attackable& engaged );
 
   // std::less support for std::set
   bool operator<( const Attackable& o ) const { return _opp < o._opp; };

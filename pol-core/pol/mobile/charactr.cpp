@@ -2071,8 +2071,7 @@ void Character::on_death( Items::Item* corpse )
   if ( client != nullptr )
   {
     if ( opponent_ )
-      if ( auto* mob = opponent_.mobile() )  // TODO Attackable
-        mob->inform_disengaged( this );
+      opponent_.inform_disengaged( Attackable{ this } );
 
     client->pause();
     send_warmode();
@@ -3029,7 +3028,7 @@ void Character::on_swing_failure( Character* /*attacker*/ )
   // do nothing
 }
 
-void Character::inform_disengaged( Character* /*disengaged*/ )
+void Character::inform_disengaged( const Attackable& /*disengaged*/ )
 {
   // someone has just disengaged. If we don't have an explicit opponent,
   // pick one of those that has us targetted as the highlight character.
@@ -3037,7 +3036,7 @@ void Character::inform_disengaged( Character* /*disengaged*/ )
     send_highlight();
 }
 
-void Character::inform_engaged( Character* /*engaged*/ )
+void Character::inform_engaged( const Attackable& /*engaged*/ )
 {
   // someone has targetted us.  If we don't have an explicit opponent,
   // pick one of those that has us targetted as the highlight character.
@@ -3086,8 +3085,7 @@ void Character::set_opponent( Attackable new_opponent, bool inform_old_opponent 
     if ( !Clib::exit_signalled )
     {
       if ( inform_old_opponent )
-        if ( auto* mob = opponent_.mobile() )
-          mob->inform_disengaged( this );
+        opponent_.inform_disengaged( Attackable{ this } );
     }
   }
 
@@ -3111,12 +3109,7 @@ void Character::set_opponent( Attackable new_opponent, bool inform_old_opponent 
       }
 
       opponent_.add_opponent_of( Attackable{ this } );
-      if ( mob )
-      {
-        // TODO Attackable for both
-
-        mob->inform_engaged( this );
-      }
+      opponent_.inform_engaged( Attackable{ this } );
       if ( mob )
         mob->schedule_attack();
     }
