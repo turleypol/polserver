@@ -399,11 +399,7 @@ void Character::removal_cleanup()
      */
   if ( opponent_ )
   {
-    if ( auto* mob = opponent_.mobile() )  // TODO Attackable both
-      mob->opponent_of.erase( Attackable{ this } );
-    //    This is cleanup, wtf we doing trying to send highlights?!
-    //    opponent_->send_highlight();
-    //    opponent_->schedule_attack();
+    opponent_.remove_opponent_of( Attackable{ this } );
     opponent_.clear();
   }
 
@@ -2120,6 +2116,11 @@ void Character::clear_opponent_of()
   }
 }
 
+void Character::remove_opponent_of( const Attackable& other )
+{
+  opponent_of.erase( other );
+}
+
 void Character::die()
 {
   if ( Core::gamestate.system_hooks.can_die )
@@ -3076,8 +3077,7 @@ void Character::set_opponent( Attackable new_opponent, bool inform_old_opponent 
 
   if ( opponent_ )  // TODO Attackable
   {
-    if ( auto* mob = opponent_.mobile() )
-      mob->opponent_of.erase( Attackable{ this } );
+    opponent_.remove_opponent_of( Attackable{ this } );
     // Turley 05/26/09 no need to send disengaged event on shutdown
     if ( !Clib::exit_signalled )
     {
@@ -3595,9 +3595,10 @@ void Character::check_justice_region_change()
 
     if ( new_justice_region && new_justice_region->RunNoCombatCheck( client ) == true )
     {
+      get_opponent().remove_opponent_of( Attackable{ client->chr } );
       if ( auto* opp2 = get_opponent().mobile(); opp2 && opp2->client )
       {
-        opp2->opponent_of.erase( Attackable{ client->chr } );
+        // TODO Attackable
         opp2->set_opponent( {}, true );
         opp2->schedule_attack();
         opp2->opponent_.clear();

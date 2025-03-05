@@ -421,6 +421,9 @@ public:
 
   // COMBAT
 public:
+  // Attackable api
+  void remove_opponent_of( const Attackable& other );
+
   void select_opponent( u32 opp_serial );
   void set_opponent( Attackable opponent, bool inform_old_opponent = true );
 

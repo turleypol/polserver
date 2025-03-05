@@ -44,6 +44,14 @@ Items::Item* Attackable::item() const
     return static_cast<Items::Item*>( _opp );
   return nullptr;
 }
+void Attackable::remove_opponent_of( const Attackable& other )
+{
+  // Items have no need to store multiple opponents
+  auto* mob = mobile();
+  if ( !mob )
+    return;
+  mob->remove_opponent_of( other );
+}
 
 void handle_attack( Network::Client* client, Core::PKTIN_05* msg )
 {

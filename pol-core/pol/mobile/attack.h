@@ -28,6 +28,8 @@ public:
   Character* mobile() const;
   Items::Item* item() const;
 
+  void remove_opponent_of( const Attackable& other );
+
   // std::less support for std::set
   bool operator<( const Attackable& o ) const { return _opp < o._opp; };
 
