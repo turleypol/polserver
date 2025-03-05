@@ -768,7 +768,7 @@ void NPC::inform_engaged( const Attackable& engaged )
   {
     if ( ex->eventmask & Core::EVID_ENGAGED )
     {
-      ex->signal_event( new Module::EngageEvent( engaged ) );
+      ex->signal_event( new Module::EngageEvent( engaged.object() ) );
     }
   }
   // Note, we don't do the base class thing, 'cause we have no client.
@@ -781,7 +781,7 @@ void NPC::inform_disengaged( const Attackable& disengaged )
   {
     if ( ex->eventmask & Core::EVID_DISENGAGED )
     {
-      ex->signal_event( new Module::DisengageEvent( disengaged ) );
+      ex->signal_event( new Module::DisengageEvent( disengaged.object() ) );
     }
   }
   // Note, we don't do the base class thing, 'cause we have no client.
