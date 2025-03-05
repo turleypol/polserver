@@ -3127,14 +3127,15 @@ void Character::select_opponent( u32 opp_serial )
   // if you double-click the same guy over and over
   if ( !opponent_ || opponent_.object()->serial != opp_serial )
   {
-    // TODO Attackable
-    auto opp = Attackable{ Core::find_toplevel_object( opp_serial ) };
-    if ( opp )
-    {
-      if ( realm() != opp.object()->realm() )
-        return;
-      set_opponent( opp );
-    }
+    auto* obj = Core::find_toplevel_object( opp_serial );
+    if ( !obj )
+      return;
+    if ( realm() != obj->realm() )
+      return;
+    if ( obj->ismobile() )
+      set_opponent( { static_cast<Character*>( obj ) } );
+    else if ( auto att = Attackable{ static_cast<Items::Item*>( obj ) } )
+      set_opponent( att );
   }
 }
 
@@ -3648,9 +3649,8 @@ void Character::check_weather_region_change( bool force )  // dave changed 5/26/
   Core::WeatherRegion* cur_weather_region = client->gd->weather_region;
   Core::WeatherRegion* new_weather_region = Core::gamestate.weatherdef->getregion( pos() );
 
-  // eric 5/31/03: I don't think this is right.  it's possible to go from somewhere that has no
-  // weather region,
-  // and to walk to somewhere that doesn't have a weather region.
+  // eric 5/31/03: I don't think this is right.  it's possible to go from somewhere that has
+  // no weather region, and to walk to somewhere that doesn't have a weather region.
   //
   if ( force || ( cur_weather_region != new_weather_region ) )
   {
@@ -3662,9 +3662,8 @@ void Character::check_weather_region_change( bool force )  // dave changed 5/26/
     }
 
     // eric removed this 5/31/03, it's calling itself recursively:
-    // move_character_to -> tellmove -> check_region_changes -> check_weather_region_change (here,
-    // doh)
-    // if you need to send the client something special, just do it.
+    // move_character_to -> tellmove -> check_region_changes -> check_weather_region_change
+    // (here, doh) if you need to send the client something special, just do it.
     // move_character_to(this,x,y,z,0); //dave added 5/26/03: client doesn't refresh properly
     // without a teleport :| and send_goxyz causes weather effects to stop if character is
     // walking/running too
