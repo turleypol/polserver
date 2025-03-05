@@ -806,7 +806,7 @@ void handle_script_cursor( Character* chr, UObject* obj )
         if ( attackable )
         {
           attackable.inform_engaged( Attackable{ chr } );
-          if ( auto mob *= attackable.mobile() )
+          if ( auto* mob = attackable.mobile() )
             chr->repsys_on_attack( mob );
         }
       }
