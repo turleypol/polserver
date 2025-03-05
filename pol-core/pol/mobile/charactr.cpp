@@ -3129,10 +3129,7 @@ void Character::select_opponent( u32 opp_serial )
       return;
     if ( realm() != obj->realm() )
       return;
-    if ( obj->ismobile() )
-      set_opponent( { static_cast<Character*>( obj ) } );
-    else if ( auto att = Attackable{ static_cast<Items::Item*>( obj ) } )
-      set_opponent( att );
+    set_opponent( Attackable{ obj } );
   }
 }
 
