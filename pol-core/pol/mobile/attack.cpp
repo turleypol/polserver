@@ -32,6 +32,14 @@ Attackable::Attackable( Items::Item* item ) : _opp( item )
   if ( !item->is_attackable() )
     _opp = nullptr;
 }
+Attackable::Attackable( Core::UObject* obj ) : _opp( obj )
+{
+  if ( obj->ismobile() )
+    return;
+  if ( auto* item_ = item(); item_ && !item->is_attackable() )
+    _opp = nullptr;
+}
+
 Character* Attackable::mobile() const
 {
   if ( _opp && _opp->ismobile() )
