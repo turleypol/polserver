@@ -64,14 +64,14 @@ void Attackable::inform_disengaged( const Attackable& disengaged )
 {
   if ( auto* mob = mobile() )
     mob->inform_disengaged( disengaged );
-  else if ( auto* item = item() )
+  else if ( auto* item_ = item() )
     ;  // TODO send event
 }
 void Attackable::inform_engaged( const Attackable& engaged )
 {
   if ( auto* mob = mobile() )
     mob->inform_engaged( engaged );
-  else if ( auto* item = item() )
+  else if ( auto* item_ = item() )
     ;  // TODO send event
 }
 
