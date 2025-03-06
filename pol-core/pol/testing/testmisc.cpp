@@ -95,34 +95,52 @@ void dynprops_test()
   }
   else
     UnitTest::inc_successes();
+
   if ( h.has_vec() )
   {
     INFO_PRINTLN( "testvec set" );
     UnitTest::inc_failures();
   }
+  else
+    UnitTest::inc_successes();
   if ( !h.vec()->empty() )
   {
     INFO_PRINTLN( "testvec not empty" );
     UnitTest::inc_failures();
   }
+  else
+    UnitTest::inc_successes();
   h.vec()->push_back( VecTest{ true } );
   if ( h.vec()->empty() )
   {
     INFO_PRINTLN( "testvec empty" );
     UnitTest::inc_failures();
   }
+  else
+    UnitTest::inc_successes();
   if ( !h.vec()->begin()->test )
   {
     INFO_PRINTLN( "testvec value false" );
     UnitTest::inc_failures();
   }
-  const auto& v = h.vec();
+  else
+    UnitTest::inc_successes();
+  if ( !( *h.vec() )[0].test )
+  {
+    INFO_PRINTLN( "testvec value false" );
+    UnitTest::inc_failures();
+  }
+  else
+    UnitTest::inc_successes();
+  const auto& v = h.vec();  // just needs to compile
   h.clear_vec();
   if ( h.has_vec() )
   {
     INFO_PRINTLN( "testvec not cleared" );
     UnitTest::inc_failures();
   }
+  else
+    UnitTest::inc_successes();
 }
 
 void packet_test()
