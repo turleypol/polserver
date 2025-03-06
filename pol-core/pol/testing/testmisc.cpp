@@ -132,7 +132,13 @@ void dynprops_test()
   }
   else
     UnitTest::inc_successes();
-  const auto& v = h.vec();  // just needs to compile
+  if ( []( const auto& o ) { return o.vec()->empty(); }( h ) )
+  {
+    INFO_PRINTLN( "testvec const !empty" );
+    UnitTest::inc_failures();
+  }
+  else
+    UnitTest::inc_successes();
   h.clear_vec();
   if ( h.has_vec() )
   {
