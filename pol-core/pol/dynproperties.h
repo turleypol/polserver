@@ -409,6 +409,8 @@ public:
   void setmember( DynPropTypes member, const V& value );
   template <typename V>
   void setmemberPointer( DynPropTypes member, V value );
+  template <typename V>
+  void removeProperty( DynPropTypes type );
   size_t estimateSizeDynProps() const;
 
 protected:
@@ -943,6 +945,12 @@ inline void DynamicPropsHolder::setmemberPointer( DynPropTypes member, V value )
   }
   initProps();
   _dynprops->setProperty( member, value );
+}
+template <typename V>
+inline void DynamicPropsHolde::removeProperty( DynPropTypes type )
+{
+  if ( _dynprops )
+    _dynprops->removeProperty<V>( type );
 }
 
 inline size_t DynamicPropsHolder::estimateSizeDynProps() const
