@@ -96,7 +96,7 @@ namespace Core
   }
 // define to generate methods for get/set/has/clear
 #define DYN_PROPERTY_REF( name, type, id, defaultvalue ) \
-  type* name() const                                     \
+  type* name()                                           \
   {                                                      \
     if ( !hasmember( id ) )                              \
       setmember( id, defaultvalue );                     \
