@@ -947,7 +947,7 @@ inline void DynamicPropsHolder::setmemberPointer( DynPropTypes member, V value )
   _dynprops->setProperty( member, value );
 }
 template <typename V>
-inline void DynamicPropsHolde::removeProperty( DynPropTypes type )
+inline void DynamicPropsHolder::removeProperty( DynPropTypes type )
 {
   if ( _dynprops )
     _dynprops->removeProperty<V>( type );
