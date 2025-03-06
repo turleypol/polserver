@@ -383,7 +383,7 @@ public:
   template <typename V>
   bool getmember( DynPropTypes member, V* value ) const;
   template <typename V>
-  V* getmemberRef( DynPropTypes member ) const;
+  V* getmember( DynPropTypes member ) const;
   template <typename V>
   void setmember( DynPropTypes member, const V& value, const V& defaultvalue );
   template <typename V>
@@ -822,7 +822,7 @@ inline bool DynamicPropsHolder::getmember( DynPropTypes member, V* value ) const
 }
 
 template <typename V>
-inline V* DynamicPropsHolder::getmemberRef( DynPropTypes member ) const
+inline V* DynamicPropsHolder::getmember( DynPropTypes member ) const
 {
   if ( !_dynprops )
     return nullptr;
