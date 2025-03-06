@@ -94,7 +94,9 @@ namespace Core
   {                                            \
     return hasmember( id );                    \
   }
-// define to generate methods for get/set/has/clear
+// define to generate methods for get/has/clear
+// it returns a pointer of the property without copy
+// no autodelete
 #define DYN_PROPERTY_REF( name, type, id, defaultvalue ) \
   type* name()                                           \
   {                                                      \
@@ -107,6 +109,10 @@ namespace Core
     if ( !hasmember( id ) )                              \
       return nullptr;                                    \
     return getmember<type>( id );                        \
+  };                                                     \
+  void clear_##name()                                    \
+  {                                                      \
+    removeProperty<type>( id );                          \
   };                                                     \
   bool has_##name() const                                \
   {                                                      \
@@ -809,7 +815,7 @@ inline V* DynProps::getProperty( DynPropTypes type )
   return getPropertyHelper<V>( _props, _any_props, type );
 }
 template <typename V>
-inline const V* DynProps::getProperty( DynPropTypes type )
+inline const V* DynProps::getProperty( DynPropTypes type ) const
 {
   if ( !hasProperty( type ) )
     return nullptr;

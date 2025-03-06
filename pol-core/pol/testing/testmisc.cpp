@@ -111,6 +111,18 @@ void dynprops_test()
     INFO_PRINTLN( "testvec empty" );
     UnitTest::inc_failures();
   }
+  if ( !h.vec()->begin()->test )
+  {
+    INFO_PRINTLN( "testvec value false" );
+    UnitTest::inc_failures();
+  }
+  const auto& v = h.vec();
+  h.clear_vec();
+  if ( h.has_vec() )
+  {
+    INFO_PRINTLN( "testvec not cleared" );
+    UnitTest::inc_failures();
+  }
 }
 
 void packet_test()
