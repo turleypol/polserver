@@ -100,8 +100,13 @@ namespace Core
   {                                                      \
     if ( !hasmember( id ) )                              \
       setmember( id, defaultvalue );                     \
-    auto* val = getmember<type>( id );                   \
-    return val;                                          \
+    return getmember<type>( id );                        \
+  };                                                     \
+  const type* name() const                               \
+  {                                                      \
+    if ( !hasmember( id ) )                              \
+      return nullptr;                                    \
+    return getmember<type>( id );                        \
   };                                                     \
   bool has_##name() const                                \
   {                                                      \
@@ -308,6 +313,8 @@ public:
   V getValue() const;
   template <typename V>
   V* getValueRef();
+  template <typename V>
+  const V* getValueRef() const;
 
 protected:
   DynPropTypes _type;
@@ -325,6 +332,8 @@ public:
   bool getValue( DynPropTypes type, V* value ) const;
   template <typename V>
   V* getValue( DynPropTypes type );
+  template <typename V>
+  const V* getValue( DynPropTypes type ) const;
   template <typename V>
   bool updateValue( DynPropTypes type, const V& value );
   template <typename V>
@@ -355,6 +364,8 @@ public:
   bool getProperty( DynPropTypes type, V* value ) const;
   template <typename V>
   V* getProperty( DynPropTypes type );
+  template <typename V>
+  const V* getProperty( DynPropTypes type ) const;
   // set property (sets also the flag)
   template <typename V>
   void setProperty( DynPropTypes type, const V& value );
@@ -384,6 +395,8 @@ public:
   bool getmember( DynPropTypes member, V* value ) const;
   template <typename V>
   V* getmember( DynPropTypes member );
+  template <typename V>
+  const V* getmember( DynPropTypes member ) const;
   template <typename V>
   void setmember( DynPropTypes member, const V& value, const V& defaultvalue );
   template <typename V>
@@ -540,6 +553,18 @@ inline V* PropHolder<variant_storage>::getValueRef()
 {
   return std::get<V>( &_value );
 }
+template <>
+template <typename V>
+inline const V* PropHolder<std::any>::getValueRef() const
+{
+  return std::any_cast<V>( &_value );
+}
+template <>
+template <typename V>
+inline const V* PropHolder<variant_storage>::getValueRef() const
+{
+  return std::get<V>( &_value );
+}
 
 ////////////////
 // PropHolderContainer
@@ -565,6 +590,19 @@ inline bool PropHolderContainer<Storage>::getValue( DynPropTypes type, V* value 
 template <class Storage>
 template <typename V>
 inline V* PropHolderContainer<Storage>::getValue( DynPropTypes type )
+{
+  for ( PropHolder<Storage>& prop : _props )
+  {
+    if ( prop._type == type )
+    {
+      return prop.template getValueRef<V>();
+    }
+  }
+  return nullptr;
+}
+template <class Storage>
+template <typename V>
+inline const V* PropHolderContainer<Storage>::getValue( DynPropTypes type ) const
 {
   for ( PropHolder<Storage>& prop : _props )
   {
@@ -675,6 +713,23 @@ static typename std::enable_if<!can_be_used_in_variant<V>::value, V*>::type getP
   passert_always( any_props.get() );
   return any_props->getValue<V>( type );
 }
+template <typename V>
+static typename std::enable_if<can_be_used_in_variant<V>::value, const V*>::type getPropertyHelper(
+    const PropHolderContainer<variant_storage>& variant_props,
+    const std::unique_ptr<PropHolderContainer<std::any>>& any_props, DynPropTypes type )
+{
+  (void)any_props;
+  return variant_props.getValue<V>( type );
+}
+template <typename V>
+static typename std::enable_if<!can_be_used_in_variant<V>::value, const V*>::type getPropertyHelper(
+    const PropHolderContainer<variant_storage>& variant_props,
+    const std::unique_ptr<PropHolderContainer<std::any>>& any_props, DynPropTypes type )
+{
+  (void)variant_props;
+  passert_always( any_props.get() );
+  return any_props->getValue<V>( type );
+}
 
 template <typename V>
 static typename std::enable_if<can_be_used_in_variant<V>::value, bool>::type updatePropertyHelper(
@@ -753,6 +808,13 @@ inline V* DynProps::getProperty( DynPropTypes type )
     return nullptr;
   return getPropertyHelper<V>( _props, _any_props, type );
 }
+template <typename V>
+inline const V* DynProps::getProperty( DynPropTypes type )
+{
+  if ( !hasProperty( type ) )
+    return nullptr;
+  return getPropertyHelper<V>( _props, _any_props, type );
+}
 
 template <typename V>
 inline void DynProps::setProperty( DynPropTypes type, const V& value )
@@ -823,6 +885,13 @@ inline bool DynamicPropsHolder::getmember( DynPropTypes member, V* value ) const
 
 template <typename V>
 inline V* DynamicPropsHolder::getmember( DynPropTypes member )
+{
+  if ( !_dynprops )
+    return nullptr;
+  return _dynprops->getProperty<V>( member );
+}
+template <typename V>
+inline const V* DynamicPropsHolder::getmember( DynPropTypes member ) const
 {
   if ( !_dynprops )
     return nullptr;
