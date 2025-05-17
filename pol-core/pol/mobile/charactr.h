@@ -782,7 +782,7 @@ protected:
   DYN_PROPERTY( parrychance_mod, s16, Core::PROP_PARRYCHANCE_MOD, 0 );
 
   Attackable opponent_;
-  AttackableSet opponent_of;
+  DYN_PROPERTY_REF( opponent_of_, AttackableSet, Core::PROP_OPPONENT_OF, AttackableSet{} );
   Core::polclock_t swing_timer_start_clock_;
   Core::OneShotTask* swing_task;
   // ATTRIBUTES / VITALS
@@ -978,7 +978,12 @@ inline bool Character::casting_spell() const
 
 inline const Character::AttackableSet& Character::hostiles() const
 {
-  return opponent_of;
+  if ( !has_opponent_of() )
+  {
+    static empty = AttackableSet{};
+    return empty;
+  }
+  return *opponent_of();
 }
 
 inline bool Character::ignores_line_of_sight() const

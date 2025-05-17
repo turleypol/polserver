@@ -279,7 +279,6 @@ Character::Character( u32 objtype, Core::UOBJ_CLASS uobj_class )
       warmode_wait( 0 ),
       ar_( 0 ),
       opponent_(),
-      opponent_of(),
       swing_timer_start_clock_( 0 ),
       swing_task( nullptr ),
       // ATTRIBUTES / VITALS
@@ -2104,24 +2103,32 @@ void Character::on_death( Items::Item* corpse )
 
 void Character::clear_opponent_of()
 {
-  while ( !opponent_of.empty() )
+  if ( !has_opponent_of_() )
+    return;
+  auto* opps = opponent_of_();
+  while ( !opps->empty() )
   {
-    auto att = *opponent_of.begin();
+    auto att = *opps->begin();
     // note that chr->set_opponent is going to remove
     // its entry from our opponent_of collection,
     // so eventually this loop will exit.
     if ( auto* mob = att.mobile() )  // TODO Attackable
       mob->set_opponent( {}, false );
   }
+  clear_opponent_of_();
 }
 
 void Character::remove_opponent_of( const Attackable& other )
 {
-  opponent_of.erase( other );
+  if ( !has_opponent_of_() )
+    return;
+  opponent_of_()->erase( other );
+  if ( opponent_of_()->empty() )
+    clear_opponent_of_();
 }
 void Character::add_opponent_of( Attackable other )
 {
-  opponent_of.insert( std::move( other ) );
+  opponent_of_()->insert( std::move( other ) );
 }
 
 void Character::die()
@@ -2902,7 +2909,7 @@ void Character::reset_swing_timer()
   if ( swing_task )
     swing_task->cancel();
 
-  if ( opponent_ || !opponent_of.empty() )
+  if ( opponent_ || ( has_opponent_of_() && !opponent_of_()->empty() ) )
   {
     schedule_attack();
   }
@@ -2918,7 +2925,7 @@ bool Character::manual_set_swing_timer( Core::polclock_t clocks )
   if ( swing_task )
     swing_task->cancel();
 
-  if ( opponent_ || !opponent_of.empty() )
+  if ( opponent_ || ( has_opponent_of_() && !opponent_of_()->empty() ) )
   {
     new Core::OneShotTaskInst<Character*>( &swing_task, swing_timer_start_clock_ + clocks + 1,
                                            swing_task_func, this );
@@ -2937,8 +2944,8 @@ Attackable Character::get_opponent() const
 {
   if ( opponent_ )
     return opponent_;
-  else if ( !opponent_of.empty() )
-    return *opponent_of.begin();
+  else if ( has_opponent_of_() && !opponent_of_()->empty() )
+    return *opponent_of_()->begin();
   return {};
 }
 
@@ -2993,9 +3000,9 @@ Attackable Character::get_attackable_opponent() const
       return opponent_;
   }
 
-  if ( !opponent_of.empty() )
+  if ( has_opponent_of_() )
   {
-    for ( auto& who : opponent_of )
+    for ( auto& who : *opponent_of_() )
     {
       INFO_PRINTLN_TRACE( 20 )
       ( "get_attackable_opponent({:#x}): checking opponent_of {:#x}", this->serial,
@@ -3509,11 +3516,14 @@ void Character::check_attack_after_move( bool check_opponents_after_check )
       mob->check_attack_after_move( false );
 
     // attacking can change the opponent_of array drastically.
-    AttackableSet tmp( opponent_of );
-    for ( auto& att : tmp )
+    if ( has_opponent_of_() )
     {
-      if ( auto* mob = att.mobile() )
-        mob->check_attack_after_move( false );
+      AttackableSet tmp( *opponent_of_() );
+      for ( auto& att : tmp )
+      {
+        if ( auto* mob = att.mobile() )
+          mob->check_attack_after_move( false );
+      }
     }
   }
 }
@@ -4400,10 +4410,9 @@ size_t Character::estimatedSize() const
       ;
 
   size += Clib::memsize( attributes ) + Clib::memsize( vitals ) + Clib::memsize( armor_ ) +
-          Clib::memsize( remote_containers_ ) + Clib::memsize( opponent_of ) +
-          Clib::memsize( aggressor_to_ ) + Clib::memsize( lawfully_damaged_ ) +
-          Clib::memsize( to_be_reportable_ ) + Clib::memsize( reportable_ ) +
-          Clib::memsize( buffs_ );
+          Clib::memsize( remote_containers_ ) + Clib::memsize( aggressor_to_ ) +
+          Clib::memsize( lawfully_damaged_ ) + Clib::memsize( to_be_reportable_ ) +
+          Clib::memsize( reportable_ ) + Clib::memsize( buffs_ );
   return size;
 }
 

@@ -194,7 +194,7 @@ void RepSystem::repsys_task( Mobile::Character* amy )
   // If she's innocent at the end of this, they will break off the attack.
   THREAD_CHECKPOINT( tasks, 1001 );
   std::set<Mobile::Character*> defensive_hostiles;
-  for ( const auto& opp : amy->opponent_of )
+  for ( const auto& opp : amy->hostiles() )
   {
     if ( auto* bob = opp.mobile() )
     {
