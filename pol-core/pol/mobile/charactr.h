@@ -980,7 +980,7 @@ inline const Character::AttackableSet& Character::hostiles() const
 {
   if ( !has_opponent_of_() )
   {
-    static empty = AttackableSet{};
+    static auto empty = AttackableSet{};
     return empty;
   }
   return *opponent_of_();
