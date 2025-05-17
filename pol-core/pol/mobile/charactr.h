@@ -978,12 +978,12 @@ inline bool Character::casting_spell() const
 
 inline const Character::AttackableSet& Character::hostiles() const
 {
-  if ( !has_opponent_of() )
+  if ( !has_opponent_of_() )
   {
     static empty = AttackableSet{};
     return empty;
   }
-  return *opponent_of();
+  return *opponent_of_();
 }
 
 inline bool Character::ignores_line_of_sight() const
