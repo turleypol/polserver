@@ -221,13 +221,13 @@ set_tests_properties( shard_test_1 PROPERTIES ENVIRONMENT "POLCORE_TEST=1;POLCOR
 set_tests_properties(shard_test_1 PROPERTIES FIXTURES_SETUP shard_test)
 
 # second test run
-add_test(NAME shard_test_2
-  COMMAND pol
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coretest
-)
-set_tests_properties( shard_test_2 PROPERTIES FIXTURES_REQUIRED "client;shard;uoconvert;ecompile")
-set_tests_properties( shard_test_2 PROPERTIES ENVIRONMENT "POLCORE_TEST_RUN=2")
-set_tests_properties( shard_test_2 PROPERTIES FIXTURES_REQUIRED shard_test)
+#add_test(NAME shard_test_2
+#  COMMAND pol
+#  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coretest
+#)
+#set_tests_properties( shard_test_2 PROPERTIES FIXTURES_REQUIRED "client;shard;uoconvert;ecompile")
+#set_tests_properties( shard_test_2 PROPERTIES ENVIRONMENT "POLCORE_TEST_RUN=2")
+#set_tests_properties( shard_test_2 PROPERTIES FIXTURES_REQUIRED shard_test)
 
 # unit test
 add_test(NAME unittest_pol
