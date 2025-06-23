@@ -1,10 +1,6 @@
 #pragma once
 
 
-#ifdef _MSC_VER
-#pragma warning( push )
-#pragma warning( disable : 4702 )
-#endif
 #include <fmt/compile.h>
 #include <fmt/format.h>
 #include <fmt/os.h>
@@ -29,10 +25,17 @@ public:
   template <typename T>
   void add( const std::string_view& key, T&& value )
   {
+#ifdef _MSC_VER
+#pragma warning( push )
+#pragma warning( disable : 4702 )
+#endif
     if constexpr ( !std::is_same<std::decay_t<T>, bool>::value )
       fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "\t{}\t{}\n" ), key, value );
     else  // force bool to write as 0/1
       fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "\t{}\t{:d}\n" ), key, value );
+#ifdef _MSC_VER
+#pragma warning( pop )
+#endif
   }
   template <typename... Args>
   void comment( const std::string_view& formatstr, Args&&... args )
@@ -48,12 +51,26 @@ public:
   template <typename Str>
   void begin( Str&& key )
   {
+#ifdef _MSC_VER
+#pragma warning( push )
+#pragma warning( disable : 4702 )
+#endif
     fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{}\n{{\n" ), key );
+#ifdef _MSC_VER
+#pragma warning( pop )
+#endif
   }
   template <typename Str, typename StrValue>
   void begin( Str&& key, StrValue&& value )
   {
+#ifdef _MSC_VER
+#pragma warning( push )
+#pragma warning( disable : 4702 )
+#endif
     fmt::format_to( std::back_inserter( _mbuff ), FMT_COMPILE( "{} {}\n{{\n" ), key, value );
+#ifdef _MSC_VER
+#pragma warning( pop )
+#endif
   }
   void end()
   {
@@ -77,6 +94,3 @@ protected:
   fmt::basic_memory_buffer<char, 0x8000> _mbuff;
 };
 }  // namespace Pol::Clib
-#ifdef _MSC_VER
-#pragma warning( pol )
-#endif
