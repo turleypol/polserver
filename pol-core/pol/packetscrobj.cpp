@@ -594,7 +594,7 @@ bool BPacket::SetSize( u16 newsize )
   if ( !is_variable_length )
     return false;
   // unsigned short oldsize = buffer.size();
-  buffer.resize( newsize );
+  buffer.resize( std::max( newsize, 3 ) );
   INFO_PRINTLN( "setsize {} {}", buffer.size(), newsize );
   INFO_PRINTLN( "setsize {}", buffer );
   Clib::Logging::global_logger->wait_for_empty_queue();
