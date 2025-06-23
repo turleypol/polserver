@@ -10,7 +10,6 @@
 #pragma once
 
 #include <cstdint>
-#include <limits>
 #define __PACKED__
 
 /* The PACK_NEEDED define goes after "struct { }" definitions */
@@ -51,9 +50,35 @@ static_assert( sizeof( wchar_t ) == 4, "size missmatch" );
 #error unknown size for wchar_t
 #endif
 
-constexpr u16 operator""_u16( u64 to_short )
+constexpr auto operator""_u8( unsigned long long v )
 {
-  // use your favorite value validation
-  assert( to_short < USHRT_MAX );  // USHRT_MAX from limits.h
-  return static_cast<u16>( to_short );
+  return static_cast<u8>( v );
+}
+constexpr auto operator""_s8( unsigned long long v )
+{
+  return static_cast<s8>( v );
+}
+constexpr auto operator""_u16( unsigned long long v )
+{
+  return static_cast<u16>( v );
+}
+constexpr auto operator""_s16( unsigned long long v )
+{
+  return static_cast<s16>( v );
+}
+constexpr auto operator""_u32( unsigned long long v )
+{
+  return static_cast<u32>( v );
+}
+constexpr auto operator""_s32( unsigned long long v )
+{
+  return static_cast<s32>( v );
+}
+constexpr auto operator""_u64( unsigned long long v )
+{
+  return static_cast<u64>( v );
+}
+constexpr auto operator""_s64( unsigned long long v )
+{
+  return static_cast<s64>( v );
 }
