@@ -595,9 +595,9 @@ bool BPacket::SetSize( u16 newsize )
     return false;
   // unsigned short oldsize = buffer.size();
   buffer.resize( newsize );
-  INFO_PRINTLN( "assign {}", buffer.size() );
-  u16* sizeptr = reinterpret_cast<u16*>( &buffer[1] );
-  *sizeptr = ctBEu16( newsize );
+  INFO_PRINTLN( "setsize {} {}", buffer.size(), newsize );
+  //  u16* sizeptr = reinterpret_cast<u16*>( &buffer[1] );
+  // *sizeptr = ctBEu16( newsize );
   return true;
 }
 
