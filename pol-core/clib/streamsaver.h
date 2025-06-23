@@ -1,5 +1,10 @@
 #pragma once
 
+
+#ifdef _MSC_VER
+#pragma warning( push )
+#pragma warning( disable : 4101 )
+#endif
 #include <fmt/compile.h>
 #include <fmt/format.h>
 #include <fmt/os.h>
@@ -72,3 +77,6 @@ protected:
   fmt::basic_memory_buffer<char, 0x8000> _mbuff;
 };
 }  // namespace Pol::Clib
+#ifdef _MSC_VER
+#pragma warning( pol )
+#endif
