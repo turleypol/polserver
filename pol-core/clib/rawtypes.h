@@ -10,6 +10,7 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
 #define __PACKED__
 
 /* The PACK_NEEDED define goes after "struct { }" definitions */
@@ -42,8 +43,6 @@ static_assert( sizeof( s32 ) == 4, "size missmatch" );
 static_assert( sizeof( s64 ) == 8, "size missmatch" );
 
 // here's where Win32 land and Linux land differ:
-#ifdef __cplusplus
-
 #if defined( _WIN32 )
 static_assert( sizeof( wchar_t ) == 2, "size missmatch" );
 #elif defined( __GNUC__ )
@@ -52,4 +51,9 @@ static_assert( sizeof( wchar_t ) == 4, "size missmatch" );
 #error unknown size for wchar_t
 #endif
 
-#endif
+constexpr u16 operator""_u16( u64 to_short )
+{
+  // use your favorite value validation
+  assert( to_short < USHRT_MAX );  // USHRT_MAX from limits.h
+  return static_cast<u16>( to_short );
+}
