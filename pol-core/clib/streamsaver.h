@@ -1,10 +1,17 @@
 #pragma once
 
 
+#ifdef _MSC_VER
+#pragma warning( push )
+#pragma warning( disable : 4702 )
+#endif
 #include <fmt/compile.h>
 #include <fmt/format.h>
 #include <fmt/os.h>
 #include <fmt/ostream.h>
+#ifdef _MSC_VER
+#pragma warning( pop )
+#endif
 #include <fstream>
 #include <iosfwd>
 #include <iterator>
