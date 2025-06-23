@@ -3,7 +3,7 @@
 
 #ifdef _MSC_VER
 #pragma warning( push )
-#pragma warning( disable : 4101 )
+#pragma warning( disable : 4702 )
 #endif
 #include <fmt/compile.h>
 #include <fmt/format.h>
