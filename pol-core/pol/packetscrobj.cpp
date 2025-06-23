@@ -18,6 +18,7 @@
 
 #include <iomanip>
 #include <stddef.h>
+#include <thread>
 
 #include "../bscript/berror.h"
 #include "../bscript/bobject.h"
@@ -555,9 +556,8 @@ BObjectImp* BPacket::call_polmethod_id( const int id, UOExecutor& ex, bool /*for
 
     BPacket* other = static_cast<BPacket*>( param0 );
     is_variable_length = other->is_variable_length;
-    buffer.resize( other->buffer.size() );
+    buffer = other->buffer;
     INFO_PRINTLN( "assign {}", buffer.size() );
-    std::copy( other->buffer.begin(), other->buffer.end(), buffer.begin() );
     INFO_PRINTLN( "assign {}", buffer );
     return new BLong( 1 );
   }
@@ -596,8 +596,8 @@ bool BPacket::SetSize( u16 newsize )
   // unsigned short oldsize = buffer.size();
   buffer.resize( newsize );
   INFO_PRINTLN( "setsize {} {}", buffer.size(), newsize );
-  //  u16* sizeptr = reinterpret_cast<u16*>( &buffer[1] );
-  // *sizeptr = ctBEu16( newsize );
+  u16* sizeptr = reinterpret_cast<u16*>( &buffer[1] );
+  *sizeptr = (u16)ctBEu16( newsize );
   return true;
 }
 
