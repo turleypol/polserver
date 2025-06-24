@@ -1,0 +1,11 @@
+prefix=/data/data/com.termux/files/home/storage/downloads/turleypol/polserver/lib/fmt-10.2.0/install
+exec_prefix=/data/data/com.termux/files/home/storage/downloads/turleypol/polserver/lib/fmt-10.2.0/install
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: fmt
+Description: A modern formatting library
+Version: 10.2.0
+Libs: -L${libdir} -lfmt
+Cflags: -I${includedir}
+
