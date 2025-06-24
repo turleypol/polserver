@@ -127,10 +127,9 @@ std::unique_ptr<ClassDeclaration> UserFunctionBuilder::class_declaration(
         // 1. The function has parameters.
         if ( auto param_list = func_decl->functionParameters()->functionParameterList() )
         {
-          if ( !param_list->functionParameter().empty() )
+          if ( auto func_params = param_list->functionParameter(); !func_params.empty() )
           {
-            auto param = param_list->functionParameter().front();
-            std::string parameter_name = text( param->IDENTIFIER() );
+            std::string parameter_name = text( func_params.front()->IDENTIFIER() );
 
             // 2. The first parameter is named `this`.
             if ( Clib::caseInsensitiveEqual( parameter_name, "this" ) )
