@@ -134,12 +134,16 @@ inline To clamp_convert( From v )
                                         static_cast<common>( t_max ) ) );
   // Handle signed to unsigned
   if constexpr ( std::is_signed<From>::value && std::is_unsigned<To>::value )
+  {
     return v <= 0 ? 0u
                   : static_cast<To>( std::clamp( static_cast<common>( v ), static_cast<common>( 0 ),
                                                  static_cast<common>( t_max ) ) );
-
-  // Default case for clamping
-  return static_cast<To>( std::clamp( static_cast<common>( v ), static_cast<common>( t_min ),
-                                      static_cast<common>( t_max ) ) );
+  }
+  else
+  {
+    // Default case for clamping
+    return static_cast<To>( std::clamp( static_cast<common>( v ), static_cast<common>( t_min ),
+                                        static_cast<common>( t_max ) ) );
+  }
 }
 }  // namespace Pol::Clib
