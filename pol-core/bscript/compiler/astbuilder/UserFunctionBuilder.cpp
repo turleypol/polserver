@@ -129,7 +129,7 @@ std::unique_ptr<ClassDeclaration> UserFunctionBuilder::class_declaration(
         {
           if ( !param_list->functionParameter().empty() )
           {
-            const auto& param = param_list->functionParameter().front();
+            auto param = param_list->functionParameter().front();
             std::string parameter_name = text( param->IDENTIFIER() );
 
             // 2. The first parameter is named `this`.
