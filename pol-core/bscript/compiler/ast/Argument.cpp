@@ -1,5 +1,6 @@
 #include "Argument.h"
 
+#include <iterator>
 
 #include "bscript/compiler/ast/Expression.h"
 #include "bscript/compiler/ast/NodeVisitor.h"
