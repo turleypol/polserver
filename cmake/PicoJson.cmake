@@ -10,7 +10,7 @@ if (NOT EXISTS ${PICO_SOURCE_DIR})
   ExternalProject_Add(libpicojson_ext
     GIT_REPOSITORY   ${PICO_REPO}
     GIT_TAG          ${PICO_TAG}
-    SOURCE_DIR  ${PICO_SOURCE_DIR}
+    SOURCE_DIR  ${PICO_SOURCE_DIR}/picojson
     PREFIX pico
     
     CONFIGURE_COMMAND ""
