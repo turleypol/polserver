@@ -1,5 +1,8 @@
 message("* libcurl")
-set(CURL_SOURCE_DIR "${POL_EXT_LIB_DIR}/curl-8.2.1")
+set(CURL_REPO "https://github.com/curl/curl")
+set(CURL_TAG "curl-8_14_1")
+
+set(CURL_SOURCE_DIR "${POL_EXT_LIB_DIR}/${CURL_TAG}")
 
 set(CURL_FLAGS -DBUILD_CURL_EXE=OFF -DBUILD_TESTING=OFF -DCURL_STATICLIB=ON -DBUILD_SHARED_LIBS=OFF -DCURL_DISABLE_LDAP=ON -DUSE_LIBIDN2=OFF)
 if (${linux})
@@ -14,7 +17,9 @@ endif()
 
 if(NOT EXISTS "${CURL_LIB}")
   ExternalProject_Add(libcurl_ext
-    URL "${CURL_SOURCE_DIR}/../curl-8.2.1.zip"
+    GIT_REPOSITORY   ${CURL_REPO}
+    GIT_TAG          ${CURL_TAG}
+    GIT_SHALLOW      TRUE
     SOURCE_DIR  "${CURL_SOURCE_DIR}"
     PREFIX curl
     LIST_SEPARATOR |

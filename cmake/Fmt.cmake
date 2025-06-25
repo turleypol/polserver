@@ -34,7 +34,7 @@ if (NOT EXISTS ${FMT_LIB})
     PREFIX fmt
     LIST_SEPARATOR |
     CMAKE_ARGS ${FMT_ARGS}
-    BINARY_DIR ${FMT_SOURCE_DIR}/build
+    BUILD_IN_SOURCE 1
     BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
     INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
 
