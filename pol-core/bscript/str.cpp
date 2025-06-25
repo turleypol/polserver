@@ -12,7 +12,7 @@
 #include <ctype.h>
 #include <cwctype>
 #include <string>
-#include <utf8/utf8.h>
+#include <utf8cpp/utf8.h>
 
 #include "../clib/clib_endian.h"
 #include "../clib/stlutil.h"
