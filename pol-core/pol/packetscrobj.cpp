@@ -596,9 +596,6 @@ bool BPacket::SetSize( u16 newsize )
   // unsigned short oldsize = buffer.size();
   newsize = std::max( newsize, 3_u16 );
   buffer.resize( newsize );
-  INFO_PRINTLN( "setsize {} {}", buffer.size(), newsize );
-  INFO_PRINTLN( "setsize {}", buffer );
-  Clib::Logging::global_logger->wait_for_empty_queue();
   u16* sizeptr = reinterpret_cast<u16*>( &buffer[1] );
   *sizeptr = (u16)ctBEu16( newsize );
   return true;
