@@ -1,4 +1,3 @@
-# 
 message("* libkaitai")
 
 set(KAITAI_REPO "https://github.com/kaitai-io/kaitai_struct_cpp_stl_runtime")
@@ -40,8 +39,8 @@ ExternalProject_Add(libkaitai_ext
 
   BUILD_BYPRODUCTS ${KAITAI_LIB}
 
-  LOG_DOWNLOAD 1
-  LOG_CONFIGURE 1
+  LOG_DOWNLOAD 0
+  LOG_CONFIGURE 0
   LOG_BUILD 1
   LOG_INSTALL 1
   LOG_OUTPUT_ON_FAILURE 1
