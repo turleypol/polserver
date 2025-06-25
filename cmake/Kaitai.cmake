@@ -1,8 +1,10 @@
-# https://github.com/kaitai-io/kaitai_struct_cpp_stl_runtime
-
+# 
 message("* libkaitai")
 
-set(KAITAI_SOURCE_DIR "${POL_EXT_LIB_DIR}/kaitai-runtime")
+set(KAITAI_REPO "https://github.com/kaitai-io/kaitai_struct_cpp_stl_runtime")
+set(KAITAI_TAG "111c9be")
+
+set(KAITAI_SOURCE_DIR "${POL_EXT_LIB_DIR}/kaitai-${KAITAI_TAG}")
 set(KAITAI_INSTALL_DIR "${KAITAI_SOURCE_DIR}/install")
 set(KAITAI_ARGS -DCMAKE_BUILD_TYPE=Release
    -DCMAKE_INSTALL_PREFIX=${KAITAI_INSTALL_DIR}
@@ -25,6 +27,9 @@ else()
 endif()
 
 ExternalProject_Add(libkaitai_ext
+  GIT_REPOSITORY   ${KAITAI_REPO}
+  GIT_TAG          ${KAITAI_TAG}
+  GIT_SHALLOW      TRUE
   SOURCE_DIR  ${KAITAI_SOURCE_DIR}
   PREFIX kaitai
   LIST_SEPARATOR |

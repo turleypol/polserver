@@ -40,8 +40,8 @@ if(NOT EXISTS "${CURL_LIB}")
     LOG_OUTPUT_ON_FAILURE 1
     DOWNLOAD_EXTRACT_TIMESTAMP 1
     EXCLUDE_FROM_ALL 1
-    DEPENDS libz
   )
+  ExternalProject_Add_StepDependencies(libcurl_ext configure libz)
   set_target_properties (libcurl_ext PROPERTIES FOLDER 3rdParty)
   file(MAKE_DIRECTORY ${CURL_INSTALL_DIR}/include) #directory has to exist during configure
 else()

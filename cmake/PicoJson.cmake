@@ -3,6 +3,7 @@ set(PICO_TAG "111c9be")
 
 set(PICO_SOURCE_DIR "${POL_EXT_LIB_DIR}/picojson-${FMT_TAG}")
 
+message("* libpicojson")
 add_library(libpicojson INTERFACE IMPORTED)
 
 if (NOT EXISTS ${PICO_SOURCE_DIR})
@@ -29,3 +30,4 @@ endif()
 set_target_properties(libpicojson PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${PICO_SOURCE_DIR}"
 )
+add_dependencies(libpicojson libpicojson_ext)
