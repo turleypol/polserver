@@ -123,11 +123,11 @@ endif()
 prepare_build()
 cmake_fake_target()
 
+include(cmake/ZLib.cmake) # Curl depends on it
 include(cmake/Antlr.cmake)
 include(cmake/Boost.cmake)
 include(cmake/Benchmark.cmake)
 include(cmake/Cppdap.cmake)
-include(cmake/ZLib.cmake)
 include(cmake/Curl.cmake)
 include(cmake/Efsw.cmake)
 include(cmake/EscriptGrammarLib.cmake)

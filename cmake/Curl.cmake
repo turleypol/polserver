@@ -10,6 +10,7 @@ if (${linux})
   set(CURL_INSTALL_DIR "${CURL_SOURCE_DIR}/INSTALL")
   set(CURL_LIB "${CURL_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/libcurl.a")
 else()
+  # get lib/include dir of zlib
   get_target_property(Z_LIB libz IMPORTED_LOCATION)
   get_target_property(Z_LIB_INCLUDE libz INTERFACE_INCLUDE_DIRECTORIES)
 
@@ -39,8 +40,8 @@ if(NOT EXISTS "${CURL_LIB}")
     LOG_OUTPUT_ON_FAILURE 1
     DOWNLOAD_EXTRACT_TIMESTAMP 1
     EXCLUDE_FROM_ALL 1
+    DEPENDS libz
   )
-  add_dependencies(libcurl_ext libz)
   set_target_properties (libcurl_ext PROPERTIES FOLDER 3rdParty)
   file(MAKE_DIRECTORY ${CURL_INSTALL_DIR}/include) #directory has to exist during configure
 else()
