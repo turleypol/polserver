@@ -33,7 +33,7 @@ ExternalProject_Add(libkaitai_ext
   PREFIX kaitai
   LIST_SEPARATOR |
   CMAKE_ARGS ${KAITAI_ARGS}
-  BINARY_DIR ${KAITAI_SOURCE_DIR}/build
+  BUILD_IN_SOURCE 1
   BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
   INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
 
@@ -57,7 +57,6 @@ set_target_properties(libkaitai PROPERTIES
   INTERFACE_LINK_LIBRARIES libz
   FOLDER 3rdParty
 )
-file(MAKE_DIRECTORY ${KAITAI_SOURCE_DIR}/build) #directory has to exist during configure
 file(MAKE_DIRECTORY ${KAITAI_INSTALL_DIR}/include) #directory has to exist during configure
 
 add_dependencies(libkaitai libkaitai_ext)
