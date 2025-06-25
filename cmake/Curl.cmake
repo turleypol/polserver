@@ -1,6 +1,6 @@
 message("* libcurl")
 set(CURL_REPO "https://github.com/curl/curl")
-set(CURL_TAG "curl-8_14_1")
+set(CURL_TAG "curl-8_2_1")
 
 set(CURL_SOURCE_DIR "${POL_EXT_LIB_DIR}/${CURL_TAG}")
 
