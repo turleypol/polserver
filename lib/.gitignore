@@ -3,4 +3,9 @@ boost_*
 cppdap-*
 curl-*
 efsw-*
+fmt-*
+kaitai-*
+picojson-*
+utf8-*
 zlib-*
+
