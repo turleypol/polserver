@@ -127,6 +127,8 @@ jobs:
         run: |
           cd bin-build
           cmake .. -G Ninja -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
+          ls ../lib/
+          ls ../lib/kaitai-0.10.1
       - name: Build
         run: |
           cd bin-build
