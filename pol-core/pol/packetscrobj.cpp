@@ -18,7 +18,6 @@
 
 #include <iomanip>
 #include <stddef.h>
-#include <thread>
 
 #include "../bscript/berror.h"
 #include "../bscript/bobject.h"
@@ -27,7 +26,6 @@
 #include "../bscript/objmembers.h"
 #include "../bscript/objmethods.h"
 #include "../clib/clib_endian.h"
-#include "../clib/logfacility.h"
 #include "../clib/stlutil.h"
 #include "../clib/strutil.h"
 #include "base/position.h"
@@ -557,8 +555,6 @@ BObjectImp* BPacket::call_polmethod_id( const int id, UOExecutor& ex, bool /*for
     BPacket* other = static_cast<BPacket*>( param0 );
     is_variable_length = other->is_variable_length;
     buffer = other->buffer;
-    INFO_PRINTLN( "assign {}", buffer.size() );
-    INFO_PRINTLN( "assign {}", buffer );
     return new BLong( 1 );
   }
   default:
@@ -593,11 +589,10 @@ bool BPacket::SetSize( u16 newsize )
 {
   if ( !is_variable_length )
     return false;
-  // unsigned short oldsize = buffer.size();
-  newsize = std::max( newsize, 3_u16 );
+  newsize = std::max(newsize, 3_u16);
   buffer.resize( newsize );
   u16* sizeptr = reinterpret_cast<u16*>( &buffer[1] );
-  *sizeptr = (u16)ctBEu16( newsize );
+  *sizeptr = ctBEu16( newsize );
   return true;
 }
 

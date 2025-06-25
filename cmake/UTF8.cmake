@@ -26,6 +26,8 @@ if (NOT EXISTS ${UTF_INSTALL_DIR})
 else()
   message("  - already built")
 endif()
+file(MAKE_DIRECTORY ${UTF_INSTALL_DIR}/include) #directory has to exist during configure
+
 add_library(libutf8 INTERFACE IMPORTED)
 set_target_properties(libutf8 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${UTF_INSTALL_DIR}/include"
