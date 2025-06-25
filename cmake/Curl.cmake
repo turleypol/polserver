@@ -10,9 +10,17 @@ if (${linux})
   set(CURL_INSTALL_DIR "${CURL_SOURCE_DIR}/INSTALL")
   set(CURL_LIB "${CURL_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/libcurl.a")
 else()
+  get_target_property(Z_LIB libz 
+    IMPORTED_LOCATION
+  )
+  get_target_property(Z_LIB_INCLUDE libz 
+    INTERFACE_INCLUDE_DIRECTORIES
+  )
+
   set(CURL_INSTALL_DIR "${CURL_SOURCE_DIR}/builds/libcurl-${ARCH_STRING}-release-static")
   set(CURL_LIB "${CURL_INSTALL_DIR}/lib/libcurl.lib")
-  set(CURL_FLAGS ${CURL_FLAGS} -DCURL_USE_SCHANNEL=ON -DCURL_STATIC_CRT=1 -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake)
+  set(CURL_FLAGS ${CURL_FLAGS} -DCURL_USE_SCHANNEL=ON -DCURL_STATIC_CRT=1 -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake -DZLIB_LIBRARY=${Z_LIB} -DZLIB_INCLUDE_DIR=${Z_LIB_INCLUDE})
+  
 endif()
 
 if(NOT EXISTS "${CURL_LIB}")
@@ -36,6 +44,7 @@ if(NOT EXISTS "${CURL_LIB}")
     DOWNLOAD_EXTRACT_TIMESTAMP 1
     EXCLUDE_FROM_ALL 1
   )
+  add_dependencies(libcurl_ext libz)
   set_target_properties (libcurl_ext PROPERTIES FOLDER 3rdParty)
   file(MAKE_DIRECTORY ${CURL_INSTALL_DIR}/include) #directory has to exist during configure
 else()
