@@ -2,7 +2,7 @@
 message("* libkaitai")
 
 set(KAITAI_REPO "https://github.com/kaitai-io/kaitai_struct_cpp_stl_runtime")
-set(KAITAI_TAG "111c9be")
+set(KAITAI_TAG "0.10.1")
 
 set(KAITAI_SOURCE_DIR "${POL_EXT_LIB_DIR}/kaitai-${KAITAI_TAG}")
 set(KAITAI_INSTALL_DIR "${KAITAI_SOURCE_DIR}/install")
