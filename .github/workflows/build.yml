@@ -134,6 +134,13 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 4
 
+      - name: pico
+        if: always()
+        run: |
+          ls lib
+          ls lib/picojson-111c9be
+          ls ../lib
+          ls ../lib/picojson-111c9be
       - name: Start MySQL
         if: matrix.config.os == 'ubuntu-latest'
         shell: pwsh
