@@ -25,28 +25,32 @@ else()
     )
 endif()
 
-ExternalProject_Add(libkaitai_ext
-  GIT_REPOSITORY   ${KAITAI_REPO}
-  GIT_TAG          ${KAITAI_TAG}
-  GIT_SHALLOW      TRUE
-  SOURCE_DIR  ${KAITAI_SOURCE_DIR}
-  PREFIX kaitai
-  LIST_SEPARATOR |
-  CMAKE_ARGS ${KAITAI_ARGS}
-  BUILD_IN_SOURCE 1
-  BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
-  INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
+if(NOT EXISTS "${KAITAI_LIB}")
+  ExternalProject_Add(libkaitai_ext
+    GIT_REPOSITORY   ${KAITAI_REPO}
+    GIT_TAG          ${KAITAI_TAG}
+    GIT_SHALLOW      TRUE
+    SOURCE_DIR  ${KAITAI_SOURCE_DIR}
+    PREFIX kaitai
+    LIST_SEPARATOR |
+    CMAKE_ARGS ${KAITAI_ARGS}
+    BUILD_IN_SOURCE 1
+    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
+    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
 
-  BUILD_BYPRODUCTS ${KAITAI_LIB}
+    BUILD_BYPRODUCTS ${KAITAI_LIB}
 
-  LOG_DOWNLOAD 0
-  LOG_CONFIGURE 0
-  LOG_BUILD 1
-  LOG_INSTALL 1
-  LOG_OUTPUT_ON_FAILURE 1
-  EXCLUDE_FROM_ALL 1
-)
-ExternalProject_Add_StepDependencies(libkaitai_ext configure libz)
+    LOG_DOWNLOAD 1
+    LOG_CONFIGURE 1
+    LOG_BUILD 1
+    LOG_INSTALL 1
+    LOG_OUTPUT_ON_FAILURE 1
+    EXCLUDE_FROM_ALL 1
+  )
+  ExternalProject_Add_StepDependencies(libkaitai_ext configure libz)
+else()
+  message("  - already build")
+endif()
 
 # imported target to add include/lib dir and additional dependencies
 add_library(libkaitai STATIC IMPORTED)

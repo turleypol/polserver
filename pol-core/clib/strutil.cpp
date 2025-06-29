@@ -248,89 +248,61 @@ uint8_t unicodeToCp1252( uint32_t codepoint )
     switch ( codepoint )
     {
     case 0x20AC:
-      return 128;
-      break;  // €
+      return 128;  // €
     case 0x201A:
-      return 130;
-      break;  // ‚
+      return 130;  // ‚
     case 0x0192:
-      return 131;
-      break;  // ƒ
+      return 131;  // ƒ
     case 0x201E:
-      return 132;
-      break;  // „
+      return 132;  // „
     case 0x2026:
-      return 133;
-      break;  // …
+      return 133;  // …
     case 0x2020:
-      return 134;
-      break;  // †
+      return 134;  // †
     case 0x2021:
-      return 135;
-      break;  // ‡
+      return 135;  // ‡
     case 0x02C6:
-      return 136;
-      break;  // ˆ
+      return 136;  // ˆ
     case 0x2030:
-      return 137;
-      break;  // ‰
+      return 137;  // ‰
     case 0x0160:
-      return 138;
-      break;  // Š
+      return 138;  // Š
     case 0x2039:
-      return 139;
-      break;  // ‹
+      return 139;  // ‹
     case 0x0152:
-      return 140;
-      break;  // Œ
+      return 140;  // Œ
     case 0x017D:
-      return 142;
-      break;  // Ž
+      return 142;  // Ž
     case 0x2018:
-      return 145;
-      break;  // ‘
+      return 145;  // ‘
     case 0x2019:
-      return 146;
-      break;  // ’
+      return 146;  // ’
     case 0x201C:
-      return 147;
-      break;  // “
+      return 147;  // “
     case 0x201D:
-      return 148;
-      break;  // ”
+      return 148;  // ”
     case 0x2022:
-      return 149;
-      break;  // •
+      return 149;  // •
     case 0x2013:
-      return 150;
-      break;  // –
+      return 150;  // –
     case 0x2014:
-      return 151;
-      break;  // —
+      return 151;  // —
     case 0x02DC:
-      return 152;
-      break;  // ˜
+      return 152;  // ˜
     case 0x2122:
-      return 153;
-      break;  // ™
+      return 153;  // ™
     case 0x0161:
-      return 154;
-      break;  // š
+      return 154;  // š
     case 0x203A:
-      return 155;
-      break;  // ›
+      return 155;  // ›
     case 0x0153:
-      return 156;
-      break;  // œ
+      return 156;  // œ
     case 0x017E:
-      return 158;
-      break;  // ž
+      return 158;  // ž
     case 0x0178:
-      return 159;
-      break;  // Ÿ
+      return 159;  // Ÿ
     default:
       return '?';
-      break;
     }
   }
 }
@@ -340,89 +312,61 @@ uint32_t cp1252ToUnicode( uint8_t codepoint )
   switch ( codepoint )
   {
   case 128:
-    return 0x20AC;
-    break;  // €
+    return 0x20AC;  // €
   case 130:
-    return 0x201A;
-    break;  // ‚
+    return 0x201A;  // ‚
   case 131:
-    return 0x0192;
-    break;  // ƒ
+    return 0x0192;  // ƒ
   case 132:
-    return 0x201E;
-    break;  // „
+    return 0x201E;  // „
   case 133:
-    return 0x2026;
-    break;  // …
+    return 0x2026;  // …
   case 134:
-    return 0x2020;
-    break;  // †
+    return 0x2020;  // †
   case 135:
-    return 0x2021;
-    break;  // ‡
+    return 0x2021;  // ‡
   case 136:
-    return 0x02C6;
-    break;  // ˆ
+    return 0x02C6;  // ˆ
   case 137:
-    return 0x2030;
-    break;  // ‰
+    return 0x2030;  // ‰
   case 138:
-    return 0x0160;
-    break;  // Š
+    return 0x0160;  // Š
   case 139:
-    return 0x2039;
-    break;  // ‹
+    return 0x2039;  // ‹
   case 140:
-    return 0x0152;
-    break;  // Œ
+    return 0x0152;  // Œ
   case 142:
-    return 0x017D;
-    break;  // Ž
+    return 0x017D;  // Ž
   case 145:
-    return 0x2018;
-    break;  // ‘
+    return 0x2018;  // ‘
   case 146:
-    return 0x2019;
-    break;  // ’
+    return 0x2019;  // ’
   case 147:
-    return 0x201C;
-    break;  // “
+    return 0x201C;  // “
   case 148:
-    return 0x201D;
-    break;  // ”
+    return 0x201D;  // ”
   case 149:
-    return 0x2022;
-    break;  // •
+    return 0x2022;  // •
   case 150:
-    return 0x2013;
-    break;  // –
+    return 0x2013;  // –
   case 151:
-    return 0x2014;
-    break;  // —
+    return 0x2014;  // —
   case 152:
-    return 0x02DC;
-    break;  // ˜
+    return 0x02DC;  // ˜
   case 153:
-    return 0x2122;
-    break;  // ™
+    return 0x2122;  // ™
   case 154:
-    return 0x0161;
-    break;  // š
+    return 0x0161;  // š
   case 155:
-    return 0x203A;
-    break;  // ›
+    return 0x203A;  // ›
   case 156:
-    return 0x0153;
-    break;  // œ
+    return 0x0153;  // œ
   case 158:
-    return 0x017E;
-    break;  // ž
+    return 0x017E;  // ž
   case 159:
-    return 0x0178;
-    break;  // Ÿ
+    return 0x0178;  // Ÿ
   default:
     return codepoint;
-    break;
   }
 }
 
