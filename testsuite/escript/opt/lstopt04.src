@@ -1,0 +1,9 @@
+// int with string optimization
+include "listfile";
+
+"addition";
+2 + "add";
+
+
+
+print_listfile( "lstopt04" );

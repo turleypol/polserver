@@ -4,7 +4,7 @@
 3: # (consume)
 4: "substraction" (string) len=12 offset=0x12
 5: # (consume)
-6: -1.1 (float) offset=0x1f
+6: 1.1 (float) offset=0x1f
 7: # (consume)
 8: "multiply" (string) len=8 offset=0x27
 9: # (consume)
@@ -12,7 +12,7 @@
 11: # (consume)
 12: "division" (string) len=8 offset=0x38
 13: # (consume)
-14: 0.47619047619047616 (float) offset=0x41
+14: 2.1 (float) offset=0x41
 15: # (consume)
 16: "equal false" (string) len=11 offset=0x49
 17: # (consume)

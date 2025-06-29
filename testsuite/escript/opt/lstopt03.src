@@ -1,7 +1,6 @@
 // double with int optimization
 include "listfile";
-const int := 1;
-const dbl := 2.1;
+
 "addition";
 2.1 + 1;
 "substraction";
@@ -45,4 +44,4 @@ const dbl := 2.1;
 
 
 
-print_listfile( "lstopt01" );
+print_listfile( "lstopt03" );

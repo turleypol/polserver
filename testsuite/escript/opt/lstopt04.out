@@ -1,0 +1,5 @@
+0: "addition" (string) len=8 offset=0x1
+1: # (consume)
+2: "2add" (string) len=4 offset=0xa
+3: # (consume)
+

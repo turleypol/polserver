@@ -4,6 +4,7 @@
 #include "bscript/compiler/ast/BinaryOperator.h"
 #include "bscript/compiler/ast/FloatValue.h"
 #include "bscript/compiler/ast/IntegerValue.h"
+#include "bscript/compiler/ast/StringValue.h"
 
 namespace Pol::Bscript::Compiler
 {
@@ -137,6 +138,20 @@ void BinaryOperatorWithIntegerOptimizer::visit_float_value( FloatValue& rhs )
     break;
   case TOK_OR:
     setInt( lhs.value != 0 || rhs.value != 0.0 );
+    break;
+  default:
+    break;
+  }
+}
+
+void BinaryOperatorWithIntegerOptimizer::visit_string_value( StringValue& rhs )
+{
+  auto setString = [&]( std::string&& val )
+  { optimized_result = std::make_unique<StringValue>( op.source_location, val ); };
+  switch ( op.token_id )
+  {
+  case TOK_ADD:
+    setString( fmt::format( "{}{}", lhs.value, rhs.value ) );
     break;
   default:
     break;
