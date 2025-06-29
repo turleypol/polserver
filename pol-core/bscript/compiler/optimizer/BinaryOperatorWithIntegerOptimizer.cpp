@@ -2,6 +2,7 @@
 
 #include "bscript/compiler/Report.h"
 #include "bscript/compiler/ast/BinaryOperator.h"
+#include "bscript/compiler/ast/FloatValue.h"
 #include "bscript/compiler/ast/IntegerValue.h"
 
 namespace Pol::Bscript::Compiler
@@ -87,4 +88,58 @@ void BinaryOperatorWithIntegerOptimizer::visit_integer_value( IntegerValue& rhs 
   optimized_result = std::make_unique<IntegerValue>( op.source_location, value );
 }
 
+void BinaryOperatorWithIntegerOptimizer::visit_float_value( FloatValue& rhs )
+{
+  auto setInt = [&]( int val )
+  { optimized_result = std::make_unique<IntegerValue>( op.source_location, val ); };
+  auto setDouble = [&]( double val )
+  { optimized_result = std::make_unique<FloatValue>( op.source_location, val ); };
+  auto eql = []( int a, double b ) { return fabs( a - b ) < 0.00000001; };
+  switch ( op.token_id )
+  {
+  case TOK_ADD:
+    setDouble( lhs.value + rhs.value );
+    break;
+  case TOK_SUBTRACT:
+    setDouble( lhs.value - rhs.value );
+    break;
+  case TOK_MULT:
+    setDouble( lhs.value * rhs.value );
+    break;
+  case TOK_DIV:
+    if ( rhs.value == 0 )
+    {
+      report.error( op, "Program would divide by zero" );
+      return;
+    }
+    setDouble( lhs.value / rhs.value );
+    break;
+  case TOK_EQUAL:
+    setInt( eql( lhs.value, rhs.value ) );
+    break;
+  case TOK_NEQ:
+    setInt( !eql( lhs.value, rhs.value ) );
+    break;
+  case TOK_LESSTHAN:
+    setInt( lhs.value < rhs.value );
+    break;
+  case TOK_LESSEQ:
+    setInt( eql( lhs.value, rhs.value ) || ( lhs.value < rhs.value ) );
+    break;
+  case TOK_GRTHAN:
+    setInt( lhs.value > rhs.value );
+    break;
+  case TOK_GREQ:
+    setInt( eql( lhs.value, rhs.value ) || ( lhs.value > rhs.value ) );
+    break;
+  case TOK_AND:
+    setInt( lhs.value != 0 && rhs.value != 0.0 );
+    break;
+  case TOK_OR:
+    setInt( lhs.value != 0 || rhs.value != 0.0 );
+    break;
+  default:
+    break;
+  }
+}
 }  // namespace Pol::Bscript::Compiler

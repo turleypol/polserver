@@ -1,0 +1,8 @@
+EScript Compiler v1.19
+Copyright (C) 1993-2025 Eric N. Swanson
+
+Compiling: opt/lstopt02.src
+/storage/emulated/0/Download/turleypol/polserver/testsuite/escript/opt/lstopt02.src: 0 errors, 0 warnings.
+Writing:   opt/lstopt02.ecl
+Writing:   opt/lstopt02.lst
+Writing:   opt/lstopt02.dbg
