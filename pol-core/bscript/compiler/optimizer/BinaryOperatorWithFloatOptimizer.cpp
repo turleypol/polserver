@@ -3,6 +3,7 @@
 #include "bscript/bobject.h"
 #include "bscript/compiler/Report.h"
 #include "bscript/compiler/ast/BinaryOperator.h"
+#include "bscript/compiler/ast/BooleanValue.h"
 #include "bscript/compiler/ast/FloatValue.h"
 #include "bscript/compiler/ast/IntegerValue.h"
 #include "bscript/compiler/ast/StringValue.h"
@@ -44,6 +45,14 @@ void BinaryOperatorWithFloatOptimizer::visit_float_value( FloatValue& rhs )
       return;
     }
     setDouble( lhs.value / rhs.value );
+    break;
+  case TOK_MODULUS:
+    if ( rhs.value == 0 )
+    {
+      report.error( op, "Program would divide by zero" );
+      return;
+    }
+    setDouble( fmod( lhs.value, rhs.value ) );
     break;
 
   case TOK_EQUAL:
@@ -101,6 +110,14 @@ void BinaryOperatorWithFloatOptimizer::visit_integer_value( IntegerValue& rhs )
     }
     setDouble( lhs.value / rhs.value );
     break;
+  case TOK_MODULUS:
+    if ( rhs.value == 0 )
+    {
+      report.error( op, "Program would divide by zero" );
+      return;
+    }
+    setDouble( fmod( lhs.value, rhs.value ) );
+    break;
   case TOK_EQUAL:
     setInt( eql( lhs.value, rhs.value ) );
     break;
@@ -142,5 +159,30 @@ void BinaryOperatorWithFloatOptimizer::visit_string_value( StringValue& rhs )
   default:
     break;
   }
+}
+
+void BinaryOperatorWithFloatOptimizer::visit_boolean_value( BooleanValue& rhs )
+{
+  bool bval = false;
+  switch ( op.token_id )
+  {
+  case TOK_EQUAL:
+    bval = ( lhs.value != 0.0 ) == rhs.value;
+    break;
+  case TOK_NEQ:
+    bval = ( lhs.value != 0.0 ) != rhs.value;
+    break;
+  case TOK_OR:
+    bval = ( lhs.value != 0.0 ) || rhs.value;
+    break;
+  case TOK_AND:
+    bval = ( lhs.value != 0.0 ) && rhs.value;
+    break;
+  default:
+    return;
+  }
+
+  // Boolean logic operators return 1/0 as BLong, ie. `true || false` == `1`
+  optimized_result = std::make_unique<IntegerValue>( op.source_location, bval );
 }
 }  // namespace Pol::Bscript::Compiler

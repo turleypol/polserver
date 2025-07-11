@@ -1,81 +1,43 @@
-0: "addition" (string) len=8 offset=0x1
-1: # (consume)
-2: 3.1 (float) offset=0xa
-3: # (consume)
-4: "substraction" (string) len=12 offset=0x12
-5: # (consume)
-6: -1.1 (float) offset=0x1f
-7: # (consume)
-8: "multiply" (string) len=8 offset=0x27
-9: # (consume)
-10: 2.1 (float) offset=0x30
-11: # (consume)
-12: "division" (string) len=8 offset=0x38
-13: # (consume)
-14: 0.47619047619047616 (float) offset=0x41
-15: # (consume)
-16: "equal false" (string) len=11 offset=0x49
-17: # (consume)
-18: 0 (integer) offset=0x55
-19: # (consume)
-20: "equal true" (string) len=10 offset=0x59
-21: # (consume)
-22: 1 (integer) offset=0x64
-23: # (consume)
-24: "unequal true" (string) len=12 offset=0x68
-25: # (consume)
-26: 1 (integer) offset=0x75
-27: # (consume)
-28: "unequal false" (string) len=13 offset=0x79
-29: # (consume)
-30: 0 (integer) offset=0x87
-31: # (consume)
-32: "less true" (string) len=9 offset=0x8b
-33: # (consume)
-34: 1 (integer) offset=0x95
-35: # (consume)
-36: "less false" (string) len=10 offset=0x99
-37: # (consume)
-38: 0 (integer) offset=0xa4
-39: # (consume)
-40: "lessequal true" (string) len=14 offset=0xa8
-41: # (consume)
-42: 1 (integer) offset=0xb7
-43: # (consume)
-44: "lessequal false" (string) len=15 offset=0xbb
-45: # (consume)
-46: 0 (integer) offset=0xcb
-47: # (consume)
-48: "greater true" (string) len=12 offset=0xcf
-49: # (consume)
-50: 1 (integer) offset=0xdc
-51: # (consume)
-52: "greater false" (string) len=13 offset=0xe0
-53: # (consume)
-54: 0 (integer) offset=0xee
-55: # (consume)
-56: "greaterequal true" (string) len=17 offset=0xf2
-57: # (consume)
-58: 1 (integer) offset=0x104
-59: # (consume)
-60: "greaterequal false" (string) len=18 offset=0x108
-61: # (consume)
-62: 0 (integer) offset=0x11b
-63: # (consume)
-64: "and true" (string) len=8 offset=0x11f
-65: # (consume)
-66: 1 (integer) offset=0x128
-67: # (consume)
-68: "and false" (string) len=9 offset=0x12c
-69: # (consume)
-70: 0 (integer) offset=0x136
-71: # (consume)
-72: "or true" (string) len=7 offset=0x13a
-73: # (consume)
-74: 1 (integer) offset=0x142
-75: # (consume)
-76: "or false" (string) len=8 offset=0x146
-77: # (consume)
-78: 0 (integer) offset=0x14f
-79: # (consume)
+0: "addition 3.1" (string)
+2: 3.1 (float)
+4: "substraction -1.1" (string)
+6: -1.1 (float)
+8: "multiply 2.1" (string)
+10: 2.1 (float)
+12: "division 5.0" (string)
+14: 5 (float)
+16: "modulus 0.2" (string)
+18: 0.19999999999999996 (float)
+20: "equal false" (string)
+22: 0 (integer)
+24: "equal true" (string)
+26: 1 (integer)
+28: "unequal true" (string)
+30: 1 (integer)
+32: "unequal false" (string)
+34: 0 (integer)
+36: "less true" (string)
+38: 1 (integer)
+40: "less false" (string)
+42: 0 (integer)
+44: "lessequal true" (string)
+46: 1 (integer)
+48: "lessequal false" (string)
+50: 0 (integer)
+52: "greater true" (string)
+54: 1 (integer)
+56: "greater false" (string)
+58: 0 (integer)
+60: "greaterequal true" (string)
+62: 1 (integer)
+64: "greaterequal false" (string)
+66: 0 (integer)
+68: "and true" (string)
+70: 1 (integer)
+72: "and false" (string)
+74: 0 (integer)
+76: "or true" (string)
+78: 1 (integer)
+80: "or false" (string)
+82: 0 (integer)
 
