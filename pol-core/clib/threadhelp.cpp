@@ -220,7 +220,7 @@ void create_thread( ThreadData* td, bool dec_child = false )
   int result = pthread_create( &thread, &create_detached_attr, thread_stub2, td );
   if ( result != 0 )  // added for better debugging
   {
-    POLLOG( "error in create_thread: {} {} \"{}\" {} {} {} {} {} :}\n", result, errno,
+    POLLOG( "error in create_thread: {} {} \"{}\" {} {} {} {} {} {}\n", result, errno,
             strerror( errno ), threads++, reinterpret_cast<const void*>( thread_stub2 ),
             td->name.c_str(), reinterpret_cast<const void*>( td->entry ),
             reinterpret_cast<const void*>( td->entry_noparam ), td->arg );

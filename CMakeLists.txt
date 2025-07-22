@@ -22,7 +22,7 @@ project(polserver
 	DESCRIPTION "Penultima Online"
 	HOMEPAGE_URL "polserver.com")
 
-set (CMAKE_CXX_STANDARD 17)
+set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(POL_VERSION_STR "${polserver_VERSION}")
@@ -168,8 +168,8 @@ foreach(child ${children})
       COMMAND ${CMAKE_COMMAND}
         -Dtestdir=${testdir}
         -Dsubtest=${child}
-        -Decompile=${output_bin_dir}/ecompile
-        -Drunecl=${output_bin_dir}/runecl
+        -Decompile=ecompile #${output_bin_dir}/ecompile
+        -Drunecl=runecl #${output_bin_dir}/runecl
         -Derrfilesuffix=1
         -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/escripttest.cmake
       WORKING_DIRECTORY ${testdir}
@@ -206,7 +206,7 @@ message("adding test targets")
 message("  test_escript")
 add_custom_target(test_escript
   COMMAND ${CMAKE_CTEST_COMMAND}
-    -j8 --output-on-failure -R escript_ -C ${CMAKE_BUILD_TYPE}
+    -j2 --output-on-failure -R escript_ -C ${CMAKE_BUILD_TYPE}
   COMMENT "Run escript tests"
   VERBATIM
   USES_TERMINAL

@@ -20,7 +20,7 @@ public:
   {
     if ( display_errors )
     {
-      auto msg = fmt::format( format, args... );
+      auto msg = fmt::format( fmt::runtime( format ), args... );
       report_error( source_location, msg.c_str() );
     }
     else
@@ -48,7 +48,7 @@ public:
   [[noreturn]] inline void fatal( const SourceLocation& source_location, Str const& format,
                                   Args&&... args )
   {
-    auto msg = fmt::format( format, args... );
+    auto msg = fmt::format( fmt::runtime( format ), args... );
     report_error( source_location, msg.c_str() );
     throw std::runtime_error( msg.c_str() );
   }
@@ -58,7 +58,7 @@ public:
   {
     if ( display_warnings )
     {
-      auto msg = fmt::format( format, args... );
+      auto msg = fmt::format( fmt::runtime( format ), args... );
       report_warning( source_location, msg.c_str() );
     }
     else
@@ -78,7 +78,7 @@ public:
   {
     if ( display_debugs )
     {
-      auto msg = fmt::format( format, args... );
+      auto msg = fmt::format( fmt::runtime( format ), args... );
       report_debug( source_location, msg.c_str() );
     }
   }

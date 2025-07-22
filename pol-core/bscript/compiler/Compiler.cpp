@@ -4,6 +4,8 @@
 #include "bscript/compiler/Report.h"
 #include "bscript/compiler/analyzer/Disambiguator.h"
 #include "bscript/compiler/analyzer/SemanticAnalyzer.h"
+#include "bscript/compiler/analyzer/ShortCircuitWarning.h"
+#include "bscript/compiler/ast/TopLevelStatements.h"
 #include "bscript/compiler/astbuilder/CompilerWorkspaceBuilder.h"
 #include "bscript/compiler/codegen/CodeGenerator.h"
 #include "bscript/compiler/file/PrettifyBuilder.h"
@@ -93,6 +95,8 @@ bool Compiler::compile_file( const std::string& filename )
     compile_file_steps( pathname, report );
     display_outcome( pathname, report );
 
+    profile.warnings += report.warning_count();
+    profile.errors += report.error_count();
     bool have_warning_as_error = report.warning_count() && compilercfg.ErrorOnWarning;
     success = !report.error_count() && !have_warning_as_error;
   }
@@ -126,6 +130,11 @@ void Compiler::compile_file_steps( const std::string& pathname, Report& report )
   if ( report.error_count() )
     return;
 
+  check_short_circuit( *workspace, report );
+  if ( report.error_count() )
+    return;
+
+  // INFO_PRINTLN( "{}", *workspace->top_level_statements );
   output = generate( std::move( workspace ), report );
 }
 
@@ -190,6 +199,12 @@ void Compiler::analyze( CompilerWorkspace& workspace, Report& report )
   SemanticAnalyzer analyzer( workspace, report );
   analyzer.analyze();
   profile.analyze_micros += timer.ellapsed().count();
+}
+
+void Compiler::check_short_circuit( CompilerWorkspace& workspace, Report& report )
+{
+  ShortCircuitWarning warn{ report };
+  warn.warn( workspace );
 }
 
 std::unique_ptr<CompiledScript> Compiler::generate( std::unique_ptr<CompilerWorkspace> workspace,

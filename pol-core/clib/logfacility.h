@@ -14,6 +14,7 @@ Remove the include in all StdAfx.h files or live with the consequences :)
 #include <map>
 #include <memory>
 #include <thread>
+#include <type_traits>
 #include <vector>
 
 #include "Debugging/LogSink.h"
@@ -169,35 +170,62 @@ private:
 
 // macro struct for logging entrypoint
 // performs the actual formatting and sending to sink
+
 template <typename Sink>
 struct Message
 {
-  template <bool newline, typename Str, typename... Args>
-  static void logmsg( Str const& format, Args&&... args )
+  template <bool newline, typename... Args>
+  static void logmsg( fmt::format_string<Args...> format, Args&&... args )
+  {
+    if constexpr ( newline )
+      send( fmt::format( format, std::forward<Args>( args )... ) + '\n' );
+    else
+      send( fmt::format( format, std::forward<Args>( args )... ) );
+  }
+  template <bool newline, typename S, typename... Args>
+  static typename std::enable_if<std::is_same<S, std::string>::value || std::is_pointer<S>::value,
+                                 void>::type
+  logmsg( S const& format, Args&&... args )
   {
     try
     {
-      if constexpr ( sizeof...( args ) == 0 )
-      {
-        if constexpr ( newline )
-          send( std::string( format ) + '\n' );
-        else
-          send( std::string( format ) );
-      }
+      if constexpr ( newline )
+        send( fmt::format( fmt::runtime( format ), std::forward<Args>( args )... ) + '\n' );
       else
-      {
-        if constexpr ( newline )
-          send( fmt::format( format, args... ) + '\n' );
-        else
-          send( fmt::format( format, args... ) );
-      }
+        send( fmt::format( fmt::runtime( format ), std::forward<Args>( args )... ) );
     }
     catch ( ... )
     {
       send( std::string( "failed to format: " ) + format + '\n' );
     }
   }
-
+  /*  template <bool newline, typename Str, typename... Args>
+    static typename std::enable_if<std::is_same<Str, std::string>::value, void>::type logmsg(
+        Str const& format, Args&&... args )
+    {
+      try
+      {
+        if constexpr ( sizeof...( args ) == 0 )
+        {
+          if constexpr ( newline )
+            send( std::string( format ) + '\n' );
+          else
+            send( std::string( format ) );
+        }
+        else
+        {
+          if constexpr ( newline )
+            send( fmt::format( format, args... ) + '\n' );
+          else
+            send( fmt::format( format, args... ) );
+        }
+      }
+      catch ( ... )
+      {
+        send( std::string( "failed to format: " ) + format + '\n' );
+      }
+    }
+  */
   template <typename Str, typename... Args>
   static void logmsglnID( const std::string& id, Str const& format, Args&&... args )
   {
