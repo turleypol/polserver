@@ -177,10 +177,20 @@ struct Message
   template <bool newline, typename... Args>
   static void logmsg( fmt::format_string<Args...> format, Args&&... args )
   {
-    if constexpr ( newline )
-      send( fmt::format( format, std::forward<Args>( args )... ) + '\n' );
+    if constexpr ( sizeof...( args ) == 0 )
+    {
+      if constexpr ( newline )
+        send( std::string( format.str ) + '\n' );
+      else
+        send( std::string( format.str ) );
+    }
     else
-      send( fmt::format( format, std::forward<Args>( args )... ) );
+    {
+      if constexpr ( newline )
+        send( fmt::format( format, std::forward<Args>( args )... ) + '\n' );
+      else
+        send( fmt::format( format, std::forward<Args>( args )... ) );
+    }
   }
   template <bool newline, typename S, typename... Args>
   static typename std::enable_if<std::is_same<S, std::string>::value || std::is_pointer<S>::value,
@@ -189,10 +199,20 @@ struct Message
   {
     try
     {
-      if constexpr ( newline )
-        send( fmt::format( fmt::runtime( format ), std::forward<Args>( args )... ) + '\n' );
+      if constexpr ( sizeof...( args ) == 0 )
+      {
+        if constexpr ( newline )
+          send( std::string( format ) + '\n' );
+        else
+          send( std::string( format ) );
+      }
       else
-        send( fmt::format( fmt::runtime( format ), std::forward<Args>( args )... ) );
+      {
+        if constexpr ( newline )
+          send( fmt::format( fmt::runtime( format ), std::forward<Args>( args )... ) + '\n' );
+        else
+          send( fmt::format( fmt::runtime( format ), std::forward<Args>( args )... ) );
+      }
     }
     catch ( ... )
     {
