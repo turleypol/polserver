@@ -218,7 +218,7 @@ struct Message
       if constexpr ( sizeof...( args ) == 0 )
         send( std::string( format ) + '\n', id );
       else
-        send( fmt::format( fmt::runtime( format ), std::forwars<Args>( args )... ) + '\n', id );
+        send( fmt::format( fmt::runtime( format ), std::forward<Args>( args )... ) + '\n', id );
     }
     catch ( ... )
     {
