@@ -16,30 +16,27 @@ public:
   Report& operator=( const Report& ) = delete;
 
   template <typename Str, typename... Args>
-  inline void error( const SourceLocation& source_location, Str const& format, Args&&... args )
+  inline void error( const SourceLocation& source_location, Str&& format, Args&&... args )
   {
+    ++errors;
     if ( display_errors )
     {
-      auto msg = fmt::format( fmt::runtime( format ), args... );
-      report_error( source_location, msg.c_str() );
-    }
-    else
-    {
-      ++errors;
+      auto msg = fmt::format( fmt::runtime( format ), std::forward<Args>( args )... );
+      ERROR_PRINTLN( "{}: error: {}", source_location, msg );
     }
   }
 
   template <typename Str, typename... Args>
-  inline void error( const SourceFileIdentifier& ident, Str const& format, Args&&... args )
+  inline void error( const SourceFileIdentifier& ident, Str&& format, Args&&... args )
   {
     SourceLocation loc( &ident, 0, 0 );
-    error( loc, format, args... );
+    error( loc, std::forward<Str>( format ), std::forward<Args>( args )... );
   }
 
   template <typename Str, typename... Args>
-  inline void error( const Node& node, Str const& format, Args&&... args )
+  inline void error( const Node& node, Str&& format, Args&&... args )
   {
-    error( node.source_location, format, args... );
+    error( node.source_location, std::forward<Str>( format ), std::forward<Args>( args )... );
   }
 
   // Report.fatal: use this when it's not possible to continue after a user-facing error.
@@ -49,21 +46,18 @@ public:
                                   Args&&... args )
   {
     auto msg = fmt::format( fmt::runtime( format ), args... );
-    report_error( source_location, msg.c_str() );
+    ERROR_PRINTLN( "{}: error: {}", source_location, msg );
     throw std::runtime_error( msg.c_str() );
   }
 
   template <typename Str, typename... Args>
   inline void warning( const SourceLocation& source_location, Str const& format, Args&&... args )
   {
+    ++warnings;
     if ( display_warnings )
     {
       auto msg = fmt::format( fmt::runtime( format ), args... );
-      report_warning( source_location, msg.c_str() );
-    }
-    else
-    {
-      ++warnings;
+      ERROR_PRINTLN( "{}: warning: {}", source_location, msg );
     }
   }
 
@@ -79,7 +73,7 @@ public:
     if ( display_debugs )
     {
       auto msg = fmt::format( fmt::runtime( format ), args... );
-      report_debug( source_location, msg.c_str() );
+      ERROR_PRINTLN( "{}: debug: {}", source_location, msg );
     }
   }
 
@@ -95,10 +89,6 @@ public:
   void reset();
 
 private:
-  void report_error( const SourceLocation&, const char* msg );
-  void report_warning( const SourceLocation&, const char* msg );
-  void report_debug( const SourceLocation&, const char* msg );
-
   const bool display_warnings;
   const bool display_errors;
   const bool display_debugs;

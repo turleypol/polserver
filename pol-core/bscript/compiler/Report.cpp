@@ -14,41 +14,6 @@ Report::Report( bool display_warnings, bool display_errors, bool display_debugs 
 {
 }
 
-void Report::report_error( const SourceLocation& source_location, const char* msg )
-{
-  ++errors;
-  try
-  {
-    ERROR_PRINTLN( "{}: error: {}", source_location, msg );
-  }
-  catch ( ... )
-  {
-  }
-}
-
-void Report::report_warning( const SourceLocation& source_location, const char* msg )
-{
-  ++warnings;
-  try
-  {
-    ERROR_PRINTLN( "{}: warning: {}", source_location, msg );
-  }
-  catch ( ... )
-  {
-  }
-}
-
-void Report::report_debug( const SourceLocation& source_location, const char* msg )
-{
-  try
-  {
-    ERROR_PRINTLN( "{}: debug: {}", source_location, msg );
-  }
-  catch ( ... )
-  {
-  }
-}
-
 unsigned Report::error_count() const
 {
   return errors;

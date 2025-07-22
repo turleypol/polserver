@@ -199,42 +199,26 @@ struct Message
       send( std::string( "failed to format: " ) + format + '\n' );
     }
   }
-  /*  template <bool newline, typename Str, typename... Args>
-    static typename std::enable_if<std::is_same<Str, std::string>::value, void>::type logmsg(
-        Str const& format, Args&&... args )
-    {
-      try
-      {
-        if constexpr ( sizeof...( args ) == 0 )
-        {
-          if constexpr ( newline )
-            send( std::string( format ) + '\n' );
-          else
-            send( std::string( format ) );
-        }
-        else
-        {
-          if constexpr ( newline )
-            send( fmt::format( format, args... ) + '\n' );
-          else
-            send( fmt::format( format, args... ) );
-        }
-      }
-      catch ( ... )
-      {
-        send( std::string( "failed to format: " ) + format + '\n' );
-      }
-    }
-  */
+
+  template <typename... Args>
+  static void logmsglnID( const std::string& id, fmt::format_string<Args...> format,
+                          Args&&... args )
+  {
+    send( fmt::format( format, std::forward<Args>( args )... ) + '\n', id );
+  }
+
   template <typename Str, typename... Args>
-  static void logmsglnID( const std::string& id, Str const& format, Args&&... args )
+  static
+      typename std::enable_if<std::is_same<Str, std::string>::value || std::is_pointer<Str>::value,
+                              void>::type
+      logmsglnID( const std::string& id, Str const& format, Args&&... args )
   {
     try
     {
       if constexpr ( sizeof...( args ) == 0 )
         send( std::string( format ) + '\n', id );
       else
-        send( fmt::format( format, args... ) + '\n', id );
+        send( fmt::format( fmt::runtime( format ), std::forwars<Args>( args )... ) + '\n', id );
     }
     catch ( ... )
     {
