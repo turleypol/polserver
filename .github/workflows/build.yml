@@ -83,6 +83,7 @@ jobs:
           $version = "${{ matrix.config.compiler-version }}"
           sudo apt list -a "$compiler"
           sudo apt-cache policy "$compiler"
+          sudo apt-cache madison "$compiler"
 
           if ($version -ne 'default') {
             sudo apt-get install "$compiler-$version" -y
