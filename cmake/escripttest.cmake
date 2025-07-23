@@ -107,7 +107,7 @@ function (testwithcompiler)
   elseif(test_FORMAT)
     set (testname " [formatted]")
   endif()
-    
+  
   file(GLOB scripts RELATIVE ${testdir} ${testdir}/${subtest}/*)
   foreach(script ${scripts})
     string(FIND "${script}" ".src" out)
@@ -188,5 +188,5 @@ function (testwithcompiler)
 endfunction()
 
 testwithcompiler()
-testwithcompiler(FORMAT)
 testwithcompiler(SHORTCIRCUIT)
+testwithcompiler(FORMAT)
