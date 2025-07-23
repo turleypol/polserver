@@ -37,7 +37,7 @@ private:
 #ifndef _M_X64
   static void ImagehlpStackWalk( PCONTEXT pContext );
 #endif
-  static int __cdecl _tprintf( const TCHAR* format, ... );
+  static int __cdecl tprintf( const TCHAR* format, ... );
 
 #if 1
   static BOOL InitImagehlpFunctions( void );
