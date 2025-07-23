@@ -15,12 +15,12 @@
 // FILE: MSJEXHND.CPP
 //==========================================
 
-#include <tchar.h>
 #include "msjexhnd.h"
-#include <imagehlp.h>
-#include <algorithm>
-#include <stdio.h>
 #include "logfacility.h"
+#include <algorithm>
+#include <imagehlp.h>
+#include <stdio.h>
+#include <tchar.h>
 
 namespace Pol
 {
@@ -182,7 +182,7 @@ void MSJExceptionHandler::GenerateExceptionReport( PEXCEPTION_POINTERS pExceptio
 // Given an exception code, returns a pointer to a static string with a
 // description of the exception
 //======================================================================
-LPTSTR MSJExceptionHandler::GetExceptionString( DWORD dwCode )
+LPCTSTR MSJExceptionHandler::GetExceptionString( DWORD dwCode )
 {
 #define EXCEPTION( x ) \
   case EXCEPTION_##x:  \
@@ -406,7 +406,7 @@ int __cdecl MSJExceptionHandler::_tprintf( const TCHAR* format, ... )
   va_end( argptr );
 
   //    WriteFile( m_hReportFile, szBuff, retValue * sizeof(TCHAR), &cbWritten, 0 );
-  POLLOG_INFO( szBuff );
+  POLLOG_INFO( &szBuff );
 
   return retValue;
 }

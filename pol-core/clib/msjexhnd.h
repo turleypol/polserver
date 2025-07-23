@@ -28,7 +28,7 @@ public:
 
 private:
   // Helper functions
-  static LPTSTR GetExceptionString( DWORD dwCode );
+  static LPCTSTR GetExceptionString( DWORD dwCode );
   static BOOL GetLogicalAddress( PVOID addr, PTSTR szModule, DWORD len, DWORD& section,
                                  DWORD& offset );
 #ifndef _M_X64
@@ -76,6 +76,6 @@ private:
 };
 
 extern MSJExceptionHandler g_MSJExceptionHandler;  // global instance of class
-}
-}
+}  // namespace Clib
+}  // namespace Pol
 #endif  // CLIB_MSJEXHND_H
