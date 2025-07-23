@@ -350,7 +350,7 @@ void TaskThreadPool::init( unsigned int max_count, const std::string& name )
   for ( unsigned int i = 0; i < max_count; ++i )
   {
     _threads.emplace_back(
-        [=]()
+        [this, name]()
         {
           ThreadRegister register_thread( "TaskPool " + name );
           auto f = msg();
