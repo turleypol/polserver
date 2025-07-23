@@ -147,6 +147,9 @@ jobs:
       - name: Test (EScript)
         if: matrix.config.nopch == 0
         run: |
+          cd testsuite/escript
+          ../../bin/ecompile array/array01.src
+          ../../bin/runecl array/array01.ecl
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
       - name: Test (Shard Fixtures)
