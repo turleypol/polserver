@@ -177,20 +177,10 @@ struct Message
   template <bool newline, typename... Args>
   static void logmsg( fmt::format_string<Args...> format, Args&&... args )
   {
-    if constexpr ( sizeof...( args ) == 0 )
-    {
-      if constexpr ( newline )
-        send( std::string{ format.str.data(), format.str.size() } + '\n' );
-      else
-        send( std::string{ format.str.data(), format.str.size() } );
-    }
+    if constexpr ( newline )
+      send( fmt::format( format, std::forward<Args>( args )... ) + '\n' );
     else
-    {
-      if constexpr ( newline )
-        send( fmt::format( format, std::forward<Args>( args )... ) + '\n' );
-      else
-        send( fmt::format( format, std::forward<Args>( args )... ) );
-    }
+      send( fmt::format( format, std::forward<Args>( args )... ) );
   }
   template <bool newline, typename S, typename... Args>
   static typename std::enable_if<std::is_same<S, std::string>::value || std::is_pointer<S>::value,
