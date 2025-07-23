@@ -180,9 +180,9 @@ struct Message
     if constexpr ( sizeof...( args ) == 0 )
     {
       if constexpr ( newline )
-        send( std::string( format.str ) + '\n' );
+        send( std::string{ format.str } + '\n' );
       else
-        send( std::string( format.str ) );
+        send( std::string{ format.str } );
     }
     else
     {
