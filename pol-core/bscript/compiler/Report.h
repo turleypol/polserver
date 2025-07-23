@@ -3,6 +3,7 @@
 
 
 #include "bscript/compiler/ast/Node.h"
+#include "clib/logfacility.h"
 
 namespace Pol::Bscript::Compiler
 {

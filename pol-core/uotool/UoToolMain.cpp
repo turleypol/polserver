@@ -1164,7 +1164,7 @@ UoToolMain::~UoToolMain() {}
 
 void UoToolMain::showHelp()
 {
-  ERROiR_PRINTLN(
+  ERROR_PRINTLN(
       std::string{ "Usage:\n"
                    "    \n"
                    "  UOTOOL command [options ...]\n"

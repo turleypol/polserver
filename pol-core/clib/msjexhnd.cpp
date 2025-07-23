@@ -136,8 +136,8 @@ void MSJExceptionHandler::GenerateExceptionReport( PEXCEPTION_POINTERS pExceptio
   GetLogicalAddress( pExceptionRecord->ExceptionAddress, szFaultingModule,
                      sizeof( szFaultingModule ), section, offset );
 
-  tprintf( _T( "Fault address:  %08X %02X:%08X %s\n" ), pExceptionRecord->ExceptionAddress, section,
-           offset, szFaultingModule );
+  tprintf( _T( "Fault address:  %08X %02X:%08X %s\n" ), (size_t)pExceptionRecord->ExceptionAddress,
+           section, offset, szFaultingModule );
 
   PCONTEXT pCtx = pExceptionInfo->ContextRecord;
 
@@ -406,7 +406,7 @@ int __cdecl MSJExceptionHandler::tprintf( const TCHAR* format, ... )
   va_end( argptr );
 
   //    WriteFile( m_hReportFile, szBuff, retValue * sizeof(TCHAR), &cbWritten, 0 );
-  POLLOG_INFO( &szBuff );
+  POLLOG_INFO( &szBuff[0] );
 
   return retValue;
 }

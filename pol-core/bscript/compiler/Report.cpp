@@ -1,7 +1,6 @@
 #include "Report.h"
 
 #include "bscript/compiler/file/SourceLocation.h"
-#include "clib/logfacility.h"
 
 namespace Pol::Bscript::Compiler
 {
