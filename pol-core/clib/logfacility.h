@@ -170,12 +170,12 @@ private:
 
 
 // concepts to choose between compiletime formatting and runtime
+// fmt::format_string still needs be the parameter type to be able to do compile time checks of the
+// formatting, otherwise it would be done at runtime
 template <typename T, typename... Args>
 concept ConstructableFmtString = requires( T str ) { fmt::format_string<Args...>{ str }; };
 template <typename T>
-concept RuntimeString = requires( T ) { std::is_same_v<T, std::string> || std::is_pointer_v<T>; };
-template <typename T, typename... Args>
-concept CompileTimeFmt = ConstructableFmtString<T, Args...> && !RuntimeString<T>;
+concept RuntimeString = std::same_as<T, std::string> || std::is_pointer_v<T>;
 template <typename T, typename... Args>
 concept RunTimeFmt = ConstructableFmtString<T, Args...> && RuntimeString<T>;
 
@@ -184,19 +184,21 @@ concept RunTimeFmt = ConstructableFmtString<T, Args...> && RuntimeString<T>;
 template <typename Sink>
 struct Message
 {
-  template <bool newline>
-  static void logmsg( CompileTimeFmt auto format_str, auto&&... args )
+  template <bool newline, typename... Args>
+  static void logmsg( fmt::format_string<Args...> format_str, Args&&... args )
   {
     try
     {
       if constexpr ( newline )
-        send( fmt::format( format_str, std::forward<decltype( args )>( args )... ) + '\n' );
+        send( fmt::format( format_str, std::forward<Args>( args )... ) + '\n' );
       else
-        send( fmt::format( format_str, std::forward<decltype( args )>( args )... ) );
+        send( fmt::format( format_str, std::forward<Args>( args )... ) );
     }
     catch ( ... )
     {
-      send( std::string( "failed to format: " ) + format_str + '\n' );
+      const auto& fview = format_str.str;
+      send( std::string( "failed to format compile: " ) +
+            std::string( fview.begin(), fview.end() ) + "\n" );
     }
   }
   template <bool newline>
@@ -222,13 +224,15 @@ struct Message
     }
     catch ( ... )
     {
-      send( std::string( "failed to format: " ) + format + '\n' );
+      send( std::string( "failed to format runtime: " ) + format + '\n' );
     }
   }
 
-  static void logmsglnID( const std::string& id, CompileTimeFmt auto format_str, auto&&... args )
+  template <typename... Args>
+  static void logmsglnID( const std::string& id, fmt::format_string<Args...> format_str,
+                          Args&&... args )
   {
-    send( fmt::format( format_str, std::forward<decltype( args )>( args )... ) + '\n', id );
+    send( fmt::format( format_str, std::forward<Args>( args )... ) + '\n', id );
   }
 
   static void logmsglnID( const std::string& id, RunTimeFmt auto const& format, auto&&... args )
