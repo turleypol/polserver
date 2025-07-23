@@ -94,7 +94,20 @@ function (checkprocfailure output errorfile result)
 endfunction()
 
 # start of test
-function (testwithcompiler formatoption)
+function (testwithcompiler)
+  set (options FORMAT SHORTCIRCUIT)
+  set (value )
+  set (multivalue )
+  cmake_parse_arguments(test "${options}" "${value}" "${multivalue}" ${ARGN})
+  set (ecompilearg "")
+  set (testname "")
+  if(test_SHORTCIRCUIT)
+    set (ecompilearg "-S")
+    set (testname " [shortcircuit]")
+  elseif(test_FORMAT)
+    set (testname " [formatted]")
+  endif()
+    
   file(GLOB scripts RELATIVE ${testdir} ${testdir}/${subtest}/*)
   foreach(script ${scripts})
     string(FIND "${script}" ".src" out)
@@ -103,20 +116,22 @@ function (testwithcompiler formatoption)
     endif()
     string(REPLACE ".src" "" scriptname "${script}")
 
-    if (EXISTS "${testdir}/${scriptname}.out" AND NOT ${formatoption} STREQUAL "")
-      message("${script} [formatted]")
-      string(REPLACE ".src" ".unformatted.src" unformattedscript "${script}")
-      configure_file(${testdir}/${script} ${testdir}/${unformattedscript} COPYONLY)
-      execute_process( COMMAND ${ecompile} ${formatoption} -q -C ecompile.cfg ${script}
-        RESULT_VARIABLE ecompile_format_res
-        OUTPUT_VARIABLE ecompile_format_out
-        ERROR_VARIABLE ecompile_format_out)
-    else()
-      message(${script})
+    message("${script}${testname}")
+    if (test_FORMAT)
+      if (EXISTS "${testdir}/${scriptname}.out")
+        string(REPLACE ".src" ".unformatted.src" unformattedscript "${script}")
+        configure_file(${testdir}/${script} ${testdir}/${unformattedscript} COPYONLY)
+        execute_process( COMMAND ${ecompile} -Fi -q -C ecompile.cfg ${script}
+          RESULT_VARIABLE ecompile_format_res
+          OUTPUT_VARIABLE ecompile_format_out
+          ERROR_VARIABLE ecompile_format_out)
+      else()
+        continue()
+      endif()
     endif()
 
     if (EXISTS "${testdir}/${scriptname}.out" OR EXISTS "${testdir}/${scriptname}.err")
-      execute_process( COMMAND ${ecompile} -l -q -C ecompile.cfg ${script}
+      execute_process( COMMAND ${ecompile} ${ecompilearg} -l -q -C ecompile.cfg ${script}
         RESULT_VARIABLE ecompile_res
         OUTPUT_VARIABLE ecompile_out
         ERROR_VARIABLE ecompile_out)
@@ -172,5 +187,6 @@ function (testwithcompiler formatoption)
   endforeach()
 endfunction()
 
-testwithcompiler("")
-testwithcompiler("-Fi")
+testwithcompiler()
+testwithcompiler(FORMAT)
+testwithcompiler(SHORTCIRCUIT)
