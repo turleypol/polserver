@@ -168,24 +168,39 @@ private:
   std::vector<LogSink*> _registered_sinks;
 };
 
+
+// concepts to choose between compiletime formatting and runtime
+template <typename T, typename... Args>
+concept ConstructableFmtString = requires( T str ) { fmt::format_string<Args...>{ str }; };
+template <typename T>
+concept RuntimeString = requires( T ) { std::is_same_v<T, std::string> || std::is_pointer_v<T>; };
+template <typename T, typename... Args>
+concept CompileTimeFmt = ConstructableFmtString<T, Args...> && !RuntimeString<T>;
+template <typename T, typename... Args>
+concept RunTimeFmt = ConstructableFmtString<T, Args...> && RuntimeString<T>;
+
 // macro struct for logging entrypoint
 // performs the actual formatting and sending to sink
-
 template <typename Sink>
 struct Message
 {
-  template <bool newline, typename... Args>
-  static void logmsg( fmt::format_string<Args...> format, Args&&... args )
+  template <bool newline>
+  static void logmsg( CompileTimeFmt auto format_str, auto&&... args )
   {
-    if constexpr ( newline )
-      send( fmt::format( format, std::forward<Args>( args )... ) + '\n' );
-    else
-      send( fmt::format( format, std::forward<Args>( args )... ) );
+    try
+    {
+      if constexpr ( newline )
+        send( fmt::format( format_str, std::forward<decltype( args )>( args )... ) + '\n' );
+      else
+        send( fmt::format( format_str, std::forward<decltype( args )>( args )... ) );
+    }
+    catch ( ... )
+    {
+      send( std::string( "failed to format: " ) + format_str + '\n' );
+    }
   }
-  template <bool newline, typename S, typename... Args>
-  static typename std::enable_if<std::is_same<S, std::string>::value || std::is_pointer<S>::value,
-                                 void>::type
-  logmsg( S const& format, Args&&... args )
+  template <bool newline>
+  static void logmsg( RunTimeFmt auto const& format, auto&&... args )
   {
     try
     {
@@ -199,9 +214,10 @@ struct Message
       else
       {
         if constexpr ( newline )
-          send( fmt::format( fmt::runtime( format ), std::forward<Args>( args )... ) + '\n' );
+          send( fmt::format( fmt::runtime( format ), std::forward<decltype( args )>( args )... ) +
+                '\n' );
         else
-          send( fmt::format( fmt::runtime( format ), std::forward<Args>( args )... ) );
+          send( fmt::format( fmt::runtime( format ), std::forward<decltype( args )>( args )... ) );
       }
     }
     catch ( ... )
@@ -210,25 +226,21 @@ struct Message
     }
   }
 
-  template <typename... Args>
-  static void logmsglnID( const std::string& id, fmt::format_string<Args...> format,
-                          Args&&... args )
+  static void logmsglnID( const std::string& id, CompileTimeFmt auto format_str, auto&&... args )
   {
-    send( fmt::format( format, std::forward<Args>( args )... ) + '\n', id );
+    send( fmt::format( format_str, std::forward<decltype( args )>( args )... ) + '\n', id );
   }
 
-  template <typename Str, typename... Args>
-  static
-      typename std::enable_if<std::is_same<Str, std::string>::value || std::is_pointer<Str>::value,
-                              void>::type
-      logmsglnID( const std::string& id, Str const& format, Args&&... args )
+  static void logmsglnID( const std::string& id, RunTimeFmt auto const& format, auto&&... args )
   {
     try
     {
       if constexpr ( sizeof...( args ) == 0 )
         send( std::string( format ) + '\n', id );
       else
-        send( fmt::format( fmt::runtime( format ), std::forward<Args>( args )... ) + '\n', id );
+        send(
+            fmt::format( fmt::runtime( format ), std::forward<decltype( args )>( args )... ) + '\n',
+            id );
     }
     catch ( ... )
     {
