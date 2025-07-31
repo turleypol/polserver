@@ -1,7 +1,6 @@
 #include "InstructionGenerator.h"
 
-#include <boost/range/adaptor/reversed.hpp>
-#include <boost/range/adaptor/sliced.hpp>
+#include <ranges>
 
 #include "bscript/compiler/ast/ArrayInitializer.h"
 #include "bscript/compiler/ast/BasicForLoop.h"
@@ -568,7 +567,7 @@ void InstructionGenerator::visit_function_call( FunctionCall& call )
 
 void InstructionGenerator::visit_function_parameter_list( FunctionParameterList& node )
 {
-  for ( auto& child : boost::adaptors::reverse( node.children ) )
+  for ( auto& child : node.children | std::views::reverse )
   {
     child->accept( *this );
   }
@@ -1108,14 +1107,15 @@ void InstructionGenerator::visit_binary_operator_short_circuit( BinaryOperatorSh
   emit.debug_statementbegin();
   update_debug_location( op );
   generate( op.lhs() );
-  FlowControlLabel end;
-  if ( op.token_id == TOK_AND )
-    emit.logical_jmp( end, false );
-  else if ( op.token_id == TOK_OR )
-    emit.logical_jmp( end, true );
+
+  emit.logical_jmp( op.linked_jmp_label ? *op.linked_jmp_label->jmp_label : *op.end_label,
+                    op.oper == ShortCircuitOp::OR );
   generate( op.rhs() );
-  emit.logical_convert();
-  emit.label( end );
+  // dont emit convert if the rhs oper is also a ShortCircuit which generated already a convert, or
+  // the parent
+  if ( op.generate_logical_convert )
+    emit.logical_convert();
+  emit.label( *op.end_label );
 }
 
 }  // namespace Pol::Bscript::Compiler

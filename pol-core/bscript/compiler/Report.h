@@ -61,7 +61,7 @@ public:
   {
     auto msg = fmt::format( format, std::forward<Args>( args )... );
     report_error( source_location, msg );
-    throw std::runtime_error( msg.c_str() );
+    throw std::runtime_error( msg );
   }
 
   template <typename... Args>

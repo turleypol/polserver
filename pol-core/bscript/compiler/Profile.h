@@ -37,9 +37,6 @@ public:
 
   std::atomic<long> cache_hits;
   std::atomic<long> cache_misses;
-
-  std::atomic<size_t> errors;
-  std::atomic<size_t> warnings;
 };
 
 }  // namespace Pol::Bscript::Compiler

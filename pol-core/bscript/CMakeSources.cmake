@@ -230,6 +230,8 @@ set (bscript_sources    # sorted !
   compiler/astbuilder/UserFunctionVisitor.h
   compiler/astbuilder/ValueBuilder.cpp
   compiler/astbuilder/ValueBuilder.h
+  compiler/codegen/AbstractSyntaxTreeStringGenerator.cpp
+  compiler/codegen/AbstractSyntaxTreeStringGenerator.h
   compiler/codegen/CaseDispatchGroupVisitor.cpp
   compiler/codegen/CaseDispatchGroupVisitor.h
   compiler/codegen/ClassDeclarationRegistrar.cpp
@@ -316,6 +318,8 @@ set (bscript_sources    # sorted !
   compiler/optimizer/Optimizer.h
   compiler/optimizer/ReferencedFunctionGatherer.cpp
   compiler/optimizer/ReferencedFunctionGatherer.h
+  compiler/optimizer/ShortCircuitCombiner.cpp
+  compiler/optimizer/ShortCircuitCombiner.h
   compiler/optimizer/UnaryOperatorOptimizer.cpp
   compiler/optimizer/UnaryOperatorOptimizer.h
   compiler/optimizer/ValueConsumerOptimizer.cpp

@@ -53,6 +53,15 @@ void Compiler::write_listing( const std::string& pathname )
   }
 }
 
+void Compiler::write_string_tree( const std::string& pathname )
+{
+  if ( output )
+  {
+    std::ofstream ofs( pathname );
+    ofs << output->tree;
+  }
+}
+
 void Compiler::write_dbg( const std::string& pathname, bool include_debug_text )
 {
   if ( output )
@@ -95,8 +104,6 @@ bool Compiler::compile_file( const std::string& filename )
     compile_file_steps( pathname, report );
     display_outcome( pathname, report );
 
-    profile.warnings += report.warning_count();
-    profile.errors += report.error_count();
     bool have_warning_as_error = report.warning_count() && compilercfg.ErrorOnWarning;
     success = !report.error_count() && !have_warning_as_error;
   }
@@ -134,7 +141,6 @@ void Compiler::compile_file_steps( const std::string& pathname, Report& report )
   if ( report.error_count() )
     return;
 
-  // INFO_PRINTLN( "{}", *workspace->top_level_statements );
   output = generate( std::move( workspace ), report );
 }
 
@@ -211,7 +217,8 @@ std::unique_ptr<CompiledScript> Compiler::generate( std::unique_ptr<CompilerWork
                                                     Report& report )
 {
   Pol::Tools::HighPerfTimer codegen_timer;
-  auto compiled_script = CodeGenerator::generate( std::move( workspace ), report );
+  auto compiled_script = CodeGenerator::generate( std::move( workspace ), report,
+                                                  compilercfg.GenerateAbstractSyntaxTree );
   profile.codegen_micros += codegen_timer.ellapsed().count();
   return compiled_script;
 }

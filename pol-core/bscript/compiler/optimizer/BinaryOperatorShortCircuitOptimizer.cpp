@@ -4,8 +4,6 @@
 #include "bscript/compiler/ast/BinaryOperator.h"
 #include "bscript/compiler/ast/BinaryOperatorShortCircuit.h"
 
-#include <memory>
-
 namespace Pol::Bscript::Compiler
 {
 BinaryOperatorShortCircuitOptimizer::BinaryOperatorShortCircuitOptimizer( Report& ) {}
@@ -18,12 +16,11 @@ void BinaryOperatorShortCircuitOptimizer::visit_binary_operator( BinaryOperator&
   case TOK_OR:
   case TOK_AND:
     optimized_result = std::make_unique<BinaryOperatorShortCircuit>(
-        op.source_location, op.take_lhs(), op.op, op.token_id, op.take_rhs() );
+        op.source_location, op.take_lhs(),
+        op.token_id == TOK_OR ? ShortCircuitOp::OR : ShortCircuitOp::AND, op.take_rhs() );
     break;
   default:
     break;
   }
 }
-
-
 }  // namespace Pol::Bscript::Compiler
