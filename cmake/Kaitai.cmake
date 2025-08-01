@@ -15,6 +15,7 @@ set(KAITAI_ARGS -DCMAKE_BUILD_TYPE=Release
    -DCMAKE_OSX_ARCHITECTURES=${PIPED_OSX_ARCHITECTURES}
    -DCMAKE_POLICY_DEFAULT_CMP0074=NEW # _ROOT vars can be set
    -DCMAKE_DISABLE_FIND_PACKAGE_Iconv=TRUE # we dont want to link against
+   -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
  )
 if (${linux})
   set(KAITAI_LIB "${KAITAI_INSTALL_DIR}/lib/libkaitai_struct_cpp_stl_runtime.a")
