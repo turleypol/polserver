@@ -51,24 +51,12 @@
 #include <exception>
 #include <numeric>
 
-#ifdef ESCRIPT_PROFILE
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#else
-#include <sys/time.h>
-#endif
-#endif
 
 namespace Pol
 {
 namespace Bscript
 {
 std::set<Executor*> executor_instances;
-
-#ifdef ESCRIPT_PROFILE
-escript_profile_map EscriptProfileMap;
-#endif
 
 void display_executor_instances()
 {
@@ -914,19 +902,11 @@ void Executor::execFunc( const Token& token )
   ExecutorModule* em = execmodules[token.module];
 
   func_result_ = nullptr;
-#ifdef ESCRIPT_PROFILE
-  std::stringstream strm;
-  strm << em->functionName( modfunc->funcidx );
-  if ( !fparams.empty() )
-    strm << " [" << fparams[0].get()->impptr()->typeOf() << "]";
-  std::string name( strm.str() );
-  unsigned long profile_start = GetTimeUs();
-#endif
-  BObjectImp* resimp = em->execFunc( modfunc->funcidx );
-#ifdef ESCRIPT_PROFILE
-  profile_escript( name, profile_start );
-#endif
-
+  BObjectImp* resimp;
+  {
+    EscriptProfiler escript_profile{ em, modfunc, fparams };
+    resimp = em->execFunc( modfunc->funcidx );
+  }
   if ( func_result_ )
   {
     if ( resimp )
@@ -946,7 +926,6 @@ void Executor::execFunc( const Token& token )
   }
 
   current_module_function = nullptr;
-  return;
 }
 
 // RSV_LOCAL
@@ -1686,41 +1665,21 @@ void Executor::ins_set_member_id_consume_modulusequal( const Instruction& ins )
 void Executor::ins_get_member( const Instruction& ins )
 {
   BObjectRef& leftref = ValueStack.back();
-
   BObject& left = *leftref;
-
-#ifdef ESCRIPT_PROFILE
-  std::stringstream strm;
-  strm << "MBR_" << leftref->impptr()->typeOf() << " ." << ins.token.tokval();
-  if ( !fparams.empty() )
-    strm << " [" << fparams[0].get()->impptr()->typeOf() << "]";
-  std::string name( strm.str() );
-  unsigned long profile_start = GetTimeUs();
-#endif
-  leftref = left->get_member( ins.token.tokval() );
-#ifdef ESCRIPT_PROFILE
-  profile_escript( name, profile_start );
-#endif
+  {
+    EscriptProfiler escript_profile{ ins, leftref, fparams };
+    leftref = left->get_member( ins.token.tokval() );
+  }
 }
 
 void Executor::ins_get_member_id( const Instruction& ins )
 {
   BObjectRef& leftref = ValueStack.back();
-
   BObject& left = *leftref;
-
-#ifdef ESCRIPT_PROFILE
-  std::stringstream strm;
-  strm << "MBR_" << leftref->impptr()->typeOf() << " ." << ins.token.lval;
-  if ( !fparams.empty() )
-    strm << " [" << fparams[0].get()->impptr()->typeOf() << "]";
-  std::string name( strm.str() );
-  unsigned long profile_start = GetTimeUs();
-#endif
-  leftref = left->get_member_id( ins.token.lval );
-#ifdef ESCRIPT_PROFILE
-  profile_escript( name, profile_start );
-#endif
+  {
+    EscriptProfiler escript_profile{ ins, leftref, fparams };
+    leftref = left->get_member_id( ins.token.lval );
+  }
 }
 
 void Executor::ins_assign_localvar( const Instruction& ins )
@@ -2776,52 +2735,44 @@ void Executor::ins_call_method_id( const Instruction& ins )
     passert_always( continuation == nullptr );
 
     size_t stacksize = ValueStack.size();  // ValueStack can grow
-#ifdef ESCRIPT_PROFILE
-    std::stringstream strm;
-    strm << "MTHID_" << ValueStack.back()->impptr()->typeOf() << " ." << ins.token.lval;
-    if ( !fparams.empty() )
-      strm << " [" << fparams[0].get()->impptr()->typeOf() << "]";
-    std::string name( strm.str() );
-    unsigned long profile_start = GetTimeUs();
-#endif
-    BObjectImp* imp = ValueStack.back()->impptr()->call_method_id( ins.token.lval, *this );
-
-    if ( auto* cont = impptrIf<BContinuation>( imp ) )
+    BObjectImp* imp;
     {
-      continuation = cont;
-      // Set nparams, so the next loop iteration's `getParams` will know how many arguments to
-      // move.
-      nparams = static_cast<unsigned int>( continuation->args.size() );
+      EscriptProfiler escript_profile{ ins, ValueStack.back(), fparams };
+      imp = ValueStack.back()->impptr()->call_method_id( ins.token.lval, *this );
 
-      // Add function reference to stack
-      ValueStack.emplace_back( continuation->func() );
+      if ( auto* cont = impptrIf<BContinuation>( imp ) )
+      {
+        continuation = cont;
+        // Set nparams, so the next loop iteration's `getParams` will know how many arguments to
+        // move.
+        nparams = static_cast<unsigned int>( continuation->args.size() );
 
-      // Move all arguments to the value stack
-      ValueStack.insert( ValueStack.end(), std::make_move_iterator( continuation->args.begin() ),
-                         std::make_move_iterator( continuation->args.end() ) );
+        // Add function reference to stack
+        ValueStack.emplace_back( continuation->func() );
 
-      continuation->args.clear();
+        // Move all arguments to the value stack
+        ValueStack.insert( ValueStack.end(), std::make_move_iterator( continuation->args.begin() ),
+                           std::make_move_iterator( continuation->args.end() ) );
 
-      cleanParams();
+        continuation->args.clear();
 
-      printStack( fmt::format(
-          "call_method_id continuation arguments added to ValueStack, prior to getParams({}) and "
-          "funcref.call()",
-          nparams ) );
+        cleanParams();
 
-      // Next on the stack is a `FuncRef` that we need to call. We will continue the loop and handle
-      // it.
+        printStack( fmt::format(
+            "call_method_id continuation arguments added to ValueStack, prior to getParams({}) and "
+            "funcref.call()",
+            nparams ) );
 
-      // Prior to handling the `FuncRef` in the next loop, it will move from ValueStack to fparam.
-      // Then, having a `continuation` set while processing the `FuncRef`, will create the proper
-      // jumps.
+        // Next on the stack is a `FuncRef` that we need to call. We will continue the loop and
+        // handle it.
 
-      continue;
+        // Prior to handling the `FuncRef` in the next loop, it will move from ValueStack to fparam.
+        // Then, having a `continuation` set while processing the `FuncRef`, will create the proper
+        // jumps.
+
+        continue;
+      }
     }
-
-#ifdef ESCRIPT_PROFILE
-    profile_escript( name, profile_start );
-#endif
     BObjectRef& objref = ValueStack[stacksize - 1];
     if ( func_result_ )
     {
@@ -2945,28 +2896,18 @@ void Executor::ins_call_method( const Instruction& ins )
   }
 
   size_t stacksize = ValueStack.size();  // ValueStack can grow
-#ifdef ESCRIPT_PROFILE
-  std::stringstream strm;
-  strm << "MTH_" << callee->typeOf() << " ." << method_name;
-  if ( !fparams.empty() )
-    strm << " [" << fparams[0].get()->impptr()->typeOf() << "]";
-  std::string name( strm.str() );
-  unsigned long profile_start = GetTimeUs();
-#endif
-#ifdef BOBJECTIMP_DEBUG
   BObjectImp* imp;
-
-  if ( strcmp( method_name, "impptr" ) == 0 )
-    imp = new String( fmt::format( "{}", static_cast<void*>( callee ) ) );
-  else
-    imp = callee->call_method( method_name, *this );
+  {
+    EscriptProfiler escript_profile{ ins, callee, method_name, fparams };
+#ifdef BOBJECTIMP_DEBUG
+    if ( strcmp( method_name, "impptr" ) == 0 )
+      imp = new String( fmt::format( "{}", static_cast<void*>( callee ) ) );
+    else
+      imp = callee->call_method( method_name, *this );
 #else
-  BObjectImp* imp = callee->call_method( method_name, *this );
+    imp = callee->call_method( method_name, *this );
 #endif
-#ifdef ESCRIPT_PROFILE
-  profile_escript( name, profile_start );
-#endif
-
+  }
   BObjectRef& objref = ValueStack[stacksize - 1];
   if ( func_result_ )
   {
@@ -4324,75 +4265,6 @@ bool Executor::builtinMethodForced( const char*& methodname )
   return false;
 }
 
-#ifdef ESCRIPT_PROFILE
-void Executor::profile_escript( std::string name, unsigned long profile_start )
-{
-  unsigned long profile_end = GetTimeUs() - profile_start;
-  escript_profile_map::iterator itr = EscriptProfileMap.find( name );
-  if ( itr != EscriptProfileMap.end() )
-  {
-    itr->second.count++;
-    itr->second.sum += profile_end;
-    if ( itr->second.max < profile_end )
-      itr->second.max = profile_end;
-    else if ( itr->second.min > profile_end )
-      itr->second.min = profile_end;
-  }
-  else
-  {
-    profile_instr profInstr;
-    profInstr.count = 1;
-    profInstr.max = profile_end;
-    profInstr.min = profile_end;
-    profInstr.sum = profile_end;
-    EscriptProfileMap[name] = profInstr;
-  }
-}
-#ifdef _WIN32
-
-unsigned long Executor::GetTimeUs()
-{
-  static bool bInitialized = false;
-  static LARGE_INTEGER lFreq, lStart;
-  static LARGE_INTEGER lDivisor;
-  if ( !bInitialized )
-  {
-    bInitialized = true;
-    QueryPerformanceFrequency( &lFreq );
-    QueryPerformanceCounter( &lStart );
-    lDivisor.QuadPart = lFreq.QuadPart / 1000000;
-  }
-
-  LARGE_INTEGER lEnd;
-  QueryPerformanceCounter( &lEnd );
-  double duration = double( lEnd.QuadPart - lStart.QuadPart ) / lFreq.QuadPart;
-  duration *= 1000000;
-  LONGLONG llDuration = static_cast<LONGLONG>( duration );
-  return llDuration & 0xffffffff;
-}
-#else
-unsigned long Executor::GetTimeUs()
-{
-  static bool bInitialized = false;
-  static timeval t1;
-  if ( !bInitialized )
-  {
-    bInitialized = true;
-    gettimeofday( &t1, nullptr );
-  }
-
-  timeval t2;
-  gettimeofday( &t2, nullptr );
-
-  double elapsedTime;
-  elapsedTime = ( t2.tv_sec - t1.tv_sec ) * 1000000.0;
-  elapsedTime += ( t2.tv_usec - t1.tv_usec );
-
-  long long llDuration = static_cast<long long>( elapsedTime );
-  return llDuration & 0xffffffff;
-}
-#endif
-#endif
 BContinuation* Executor::withContinuation( BContinuation* continuation, BObjectRefVec args )
 {
   auto* func = continuation->func();
@@ -4430,5 +4302,79 @@ bool Executor::ClassMethodKey::operator<( const ClassMethodKey& other ) const
   // Perform a case-insensitive comparison for method_name using stricmp
   return stricmp( method_name.c_str(), other.method_name.c_str() ) < 0;
 }
+
+#ifdef ESCRIPT_PROFILE
+std::map<std::string, EscriptProfiler::profile_instr> EscriptProfiler::escript_profile_map_{};
+EscriptProfiler::EscriptProfiler( ExecutorModule* em, const ModuleFunction* modfunc,
+                                  const std::vector<BObjectRef>& fparams )
+{
+  name_ = em->functionName( modfunc->funcidx );
+  if ( !fparams.empty() )
+    name_ += fmt::format( " [{}]", fparams[0].get()->impptr()->typeOf() );
+}
+EscriptProfiler::EscriptProfiler( const Instruction& ins, const BObjectRef& leftref,
+                                  const std::vector<BObjectRef>& fparams )
+{
+  switch ( ins.token.id )
+  {
+  case INS_GET_MEMBER:
+    name_ = fmt::format( "MBR_{} .{}", leftref->impptr()->typeOf(), ins.token.tokval() );
+    break;
+  case INS_GET_MEMBER_ID:
+    name_ = fmt::format( "MBR_{} .{}", leftref->impptr()->typeOf(), ins.token.lval );
+    break;
+  case INS_CALL_METHOD_ID:
+    name_ = fmt::format( "MTHID_{} .{}", leftref->impptr()->typeOf(), ins.token.lval );
+  default:
+    break;
+  }
+  if ( !fparams.empty() )
+    name_ += fmt::format( " [{}]", fparams[0].get()->impptr()->typeOf() );
+}
+EscriptProfiler::EscriptProfiler( const Instruction& ins, const BObjectImp* callee,
+                                  const char* method_name, const std::vector<BObjectRef>& fparams )
+{
+  switch ( ins.token.id )
+  {
+  case INS_CALL_METHOD:
+    name_ = fmt::format( "MTH_{} .{}", callee->typeOf(), method_name );
+    break;
+  default:
+    break;
+  }
+  if ( !fparams.empty() )
+    name_ += fmt::format( " [{}]", fparams[0].get()->impptr()->typeOf() );
+}
+
+EscriptProfiler::~EscriptProfiler()
+{
+  auto profile_end = timer_.ellapsed().count();
+  auto itr = escript_profile_map_.find( name_ );
+  if ( itr != escript_profile_map_.end() )
+  {
+    itr->second.count++;
+    itr->second.sum += profile_end;
+    if ( itr->second.max < profile_end )
+      itr->second.max = profile_end;
+    else if ( itr->second.min > profile_end )
+      itr->second.min = profile_end;
+  }
+  else
+  {
+    escript_profile_map_[name_] = {
+        .sum = profile_end, .max = profile_end, .min = profile_end, .count = 1 };
+  }
+}
+std::string EscriptProfiler::result()
+{
+  std::string buffer = "FuncName,Count,Min,Max,Sum,Avarage\n";
+  for ( const auto& [name, profile] : escript_profile_map_ )
+  {
+    fmt::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{:.2f}\n", name, profile.count,
+                    profile.min, profile.max, profile.sum, profile.sum / ( 1.0 * profile.count ) );
+  }
+  return buffer;
+}
+#endif
 }  // namespace Bscript
 }  // namespace Pol
