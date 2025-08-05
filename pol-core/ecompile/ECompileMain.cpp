@@ -326,7 +326,9 @@ bool compile_file( const fs::path& path )
   if ( compilercfg.OnlyCompileUpdatedScripts && !force_update )
   {
     bool all_old = true;
-    auto ecl_timestamp = fs::last_write_time( filename_ecl );
+    fs::file_time_type ecl_timestamp = fs::file_time_type::min();
+    if ( fs::exists( filename_ecl ) )
+      ecl_timestamp = fs::last_write_time( filename_ecl );
     if ( fs::last_write_time( path ) >= ecl_timestamp )
     {
       if ( compilercfg.VerbosityLevel > 0 )
@@ -343,7 +345,7 @@ bool compile_file( const fs::path& path )
         std::string depname;
         while ( getline( ifs, depname ) )
         {
-          if ( fs::last_write_time( depname ) >= ecl_timestamp )
+          if ( !fs::exists( depname ) || ( fs::last_write_time( depname ) >= ecl_timestamp ) )
           {
             if ( compilercfg.VerbosityLevel > 0 )
               INFO_PRINTLN( "{} is newer than {}", depname, filename_ecl );
@@ -368,99 +370,97 @@ bool compile_file( const fs::path& path )
   }
 
 
+  if ( !quiet )
+    INFO_PRINTLN( "Compiling: {}", path );
+
+  std::unique_ptr<Compiler::Compiler> compiler = create_compiler();
+
+  bool success = compiler->compile_file( path.generic_string() );
+  summary.TotalWarnings += compiler->warnings_count();
+
+  em_parse_tree_cache.keep_some();
+  inc_parse_tree_cache.keep_some();
+
+  if ( expect_compile_failure )
+  {
+    if ( !success )  // good, it failed
+    {
+      if ( !quiet )
+        INFO_PRINTLN( "Compilation failed as expected." );
+      return true;
+    }
+    else
+    {
+      throw std::runtime_error( "Compilation succeeded (-e indicates failure was expected)" );
+    }
+  }
+
+  if ( !success )
+    throw std::runtime_error( "Error compiling file" );
+
+
+  if ( !quiet )
+    INFO_PRINTLN( "Writing:   {}", filename_ecl );
+
+  if ( !compiler->write_ecl( filename_ecl.generic_string() ) )
+  {
+    throw std::runtime_error( "Error writing output file" );
+  }
+
+  if ( compilercfg.GenerateListing )
   {
     if ( !quiet )
-      INFO_PRINTLN( "Compiling: {}", path );
-
-    std::unique_ptr<Compiler::Compiler> compiler = create_compiler();
-
-    bool success = compiler->compile_file( path.generic_string() );
-    summary.TotalWarnings += compiler->warnings_count();
-
-    em_parse_tree_cache.keep_some();
-    inc_parse_tree_cache.keep_some();
-
-    if ( expect_compile_failure )
-    {
-      if ( !success )  // good, it failed
-      {
-        if ( !quiet )
-          INFO_PRINTLN( "Compilation failed as expected." );
-        return true;
-      }
-      else
-      {
-        throw std::runtime_error( "Compilation succeeded (-e indicates failure was expected)" );
-      }
-    }
-
-    if ( !success )
-      throw std::runtime_error( "Error compiling file" );
-
-
+      INFO_PRINTLN( "Writing:   {}", filename_lst );
+    compiler->write_listing( filename_lst.generic_string() );
+  }
+  else if ( fs::exists( filename_lst ) )
+  {
     if ( !quiet )
-      INFO_PRINTLN( "Writing:   {}", filename_ecl );
+      INFO_PRINTLN( "Deleting:  {}", filename_lst );
+    fs::remove( filename_lst );
+  }
 
-    if ( !compiler->write_ecl( filename_ecl.generic_string() ) )
-    {
-      throw std::runtime_error( "Error writing output file" );
-    }
+  if ( compilercfg.GenerateAbstractSyntaxTree )
+  {
+    if ( !quiet )
+      INFO_PRINTLN( "Writing:   {}", filename_ast );
+    compiler->write_string_tree( filename_ast.generic_string() );
+  }
+  else if ( fs::exists( filename_ast ) )
+  {
+    if ( !quiet )
+      INFO_PRINTLN( "Deleting:  {}", filename_ast );
+    fs::remove( filename_ast );
+  }
 
-    if ( compilercfg.GenerateListing )
+  if ( compilercfg.GenerateDebugInfo )
+  {
+    if ( !quiet )
     {
-      if ( !quiet )
-        INFO_PRINTLN( "Writing:   {}", filename_lst );
-      compiler->write_listing( filename_lst.generic_string() );
+      INFO_PRINTLN( "Writing:   {}", filename_dbg );
+      if ( compilercfg.GenerateDebugTextInfo )
+        INFO_PRINTLN( "Writing:   {}.txt", filename_dbg );
     }
-    else if ( fs::exists( filename_lst ) )
-    {
-      if ( !quiet )
-        INFO_PRINTLN( "Deleting:  {}", filename_lst );
-      fs::remove( filename_lst );
-    }
+    compiler->write_dbg( filename_dbg.generic_string(), compilercfg.GenerateDebugTextInfo );
+  }
+  else if ( fs::exists( filename_dbg ) )
+  {
+    if ( !quiet )
+      INFO_PRINTLN( "Deleting:  {}", filename_dbg );
+    fs::remove( filename_dbg );
+  }
 
-    if ( compilercfg.GenerateAbstractSyntaxTree )
-    {
-      if ( !quiet )
-        INFO_PRINTLN( "Writing:   {}", filename_ast );
-      compiler->write_string_tree( filename_ast.generic_string() );
-    }
-    else if ( fs::exists( filename_ast ) )
-    {
-      if ( !quiet )
-        INFO_PRINTLN( "Deleting:  {}", filename_ast );
-      fs::remove( filename_ast );
-    }
-
-    if ( compilercfg.GenerateDebugInfo )
-    {
-      if ( !quiet )
-      {
-        INFO_PRINTLN( "Writing:   {}", filename_dbg );
-        if ( compilercfg.GenerateDebugTextInfo )
-          INFO_PRINTLN( "Writing:   {}.txt", filename_dbg );
-      }
-      compiler->write_dbg( filename_dbg.generic_string(), compilercfg.GenerateDebugTextInfo );
-    }
-    else if ( fs::exists( filename_dbg ) )
-    {
-      if ( !quiet )
-        INFO_PRINTLN( "Deleting:  {}", filename_dbg );
-      fs::remove( filename_dbg );
-    }
-
-    if ( compilercfg.GenerateDependencyInfo )
-    {
-      if ( !quiet )
-        INFO_PRINTLN( "Writing:   {}", filename_dep );
-      compiler->write_included_filenames( filename_dep.generic_string() );
-    }
-    else if ( fs::exists( filename_dep ) )
-    {
-      if ( !quiet )
-        INFO_PRINTLN( "Deleting:  {}", filename_dep );
-      fs::remove( filename_dep );
-    }
+  if ( compilercfg.GenerateDependencyInfo )
+  {
+    if ( !quiet )
+      INFO_PRINTLN( "Writing:   {}", filename_dep );
+    compiler->write_included_filenames( filename_dep.generic_string() );
+  }
+  else if ( fs::exists( filename_dep ) )
+  {
+    if ( !quiet )
+      INFO_PRINTLN( "Deleting:  {}", filename_dep );
+    fs::remove( filename_dep );
   }
   return true;
 }
