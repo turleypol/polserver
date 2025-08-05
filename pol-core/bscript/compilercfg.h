@@ -1,25 +1,17 @@
-/** @file
- *
- * @par History
- */
+#pragma once
 
-
-#ifndef BSCRIPT_COMPILERCFG_H
-#define BSCRIPT_COMPILERCFG_H
-
+#include <filesystem>
 #include <string>
 #include <vector>
 
-namespace Pol
-{
-namespace Bscript
+namespace Pol::Bscript
 {
 struct CompilerConfig
 {
-  std::vector<std::string> PackageRoot;
-  std::string IncludeDirectory;
-  std::string ModuleDirectory;
-  std::string PolScriptRoot;
+  std::vector<std::filesystem::path> PackageRoot;
+  std::filesystem::path IncludeDirectory;
+  std::filesystem::path ModuleDirectory;
+  std::filesystem::path PolScriptRoot;
   bool GenerateListing;
   bool GenerateDebugInfo;
   bool GenerateDebugTextInfo;
@@ -73,11 +65,9 @@ struct CompilerConfig
   bool FormatterAllowShortCaseLabelsOnASingleLine = true;
   bool FormatterAllowShortFuncRefsOnASingleLine = true;
 
-  void Read( const std::string& path );
+  void Read( const std::filesystem::path& path );
   void SetDefaults();
 };
 
 extern CompilerConfig compilercfg;
-}  // namespace Bscript
-}  // namespace Pol
-#endif
+}  // namespace Pol::Bscript

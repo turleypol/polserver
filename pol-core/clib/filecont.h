@@ -1,6 +1,7 @@
 #ifndef CLIB_FILECONT_H
 #define CLIB_FILECONT_H
 
+#include <filesystem>
 #include <string>
 namespace Pol
 {
@@ -12,11 +13,12 @@ namespace Clib
 class FileContents
 {
 public:
-  FileContents( const char* filname, bool suppress_error_print = false );
+  FileContents( const std::filesystem::path& file, bool suppress_error_print = false );
 
   const std::string& str_contents() const;
-  const char* contents() const;
   void set_contents( const std::string& str );
+
+  std::string&& take() &&;
 
 private:
   std::string contents_;

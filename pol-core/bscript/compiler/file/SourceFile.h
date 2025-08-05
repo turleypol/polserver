@@ -1,6 +1,7 @@
 #ifndef POLSERVER_SOURCEFILE_H
 #define POLSERVER_SOURCEFILE_H
 
+#include <filesystem>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -28,11 +29,12 @@ class SourceLocation;
 class SourceFile
 {
 public:
-  SourceFile( const std::string& pathname, const std::string& contents, Profile& );
+  SourceFile( const std::filesystem::path& path, const std::string& contents, Profile& );
   ~SourceFile();
 
   static bool enforced_case_sensitivity_mismatch( const SourceLocation& referencing_location,
-                                                  const std::string& pathname, Report& report );
+                                                  const std::filesystem::path& path,
+                                                  Report& report );
   static std::shared_ptr<SourceFile> load( const SourceFileIdentifier&, Profile&, Report& );
 
   void propagate_errors_to( Report&, const SourceFileIdentifier& );
@@ -48,7 +50,7 @@ public:
   std::vector<antlr4::Token*> get_hidden_tokens_before( const Position& position );
   std::vector<antlr4::Token*> get_hidden_tokens_before( size_t tokenIndex );
 
-  const std::string pathname;
+  const std::filesystem::path path;
 
 private:
   antlr4::ANTLRInputStream input;
@@ -68,6 +70,9 @@ private:
 
   template <typename T, typename Fn>
   T* two_stage_parse( Fn callback );
+
+  static bool is_web_script( const std::filesystem::path& file );
+  static std::string preprocess_web_script( const std::string& input );
 };
 
 }  // namespace Pol::Bscript::Compiler

@@ -1,6 +1,7 @@
 #include "SourceFile.h"
 
 #include <cstring>
+#include <filesystem>
 
 #include "clib/filecont.h"
 #include "clib/fileutil.h"
@@ -15,25 +16,25 @@ using EscriptGrammar::EscriptLexer;
 using EscriptGrammar::EscriptParser;
 using EscriptGrammar::EscriptParserVisitor;
 
+namespace fs = std::filesystem;
+
 namespace Pol::Bscript::Compiler
 {
-bool is_web_script( const char* filename );
-std::string preprocess_web_script( const std::string& input );
 
-SourceFile::SourceFile( const std::string& pathname, const std::string& contents, Profile& profile )
-    : pathname( pathname ),
+SourceFile::SourceFile( const fs::path& path, const std::string& contents, Profile& profile )
+    : path( path ),
       input( contents ),
       conformer( &input ),
       lexer( &conformer ),
       token_stream( &lexer ),
       parser( &token_stream ),
-      error_listener( pathname, profile ),
+      error_listener( path, profile ),
       compilation_unit( nullptr ),
       module_unit( nullptr ),
       evaluate_unit( nullptr ),
       access_count( 0 )
 {
-  input.name = pathname;
+  input.name = path.generic_string();
 
   lexer.removeErrorListeners();
   lexer.addErrorListener( &error_listener );
@@ -54,11 +55,14 @@ void SourceFile::propagate_errors_to( Report& report, const SourceFileIdentifier
 
 #if defined( _WIN32 ) || defined( __APPLE__ )
 bool SourceFile::enforced_case_sensitivity_mismatch( const SourceLocation& referencing_location,
-                                                     const std::string& pathname, Report& report )
+                                                     const fs::path& path, Report& report )
 {
-  std::string truename = Clib::GetTrueName( pathname.c_str() );
-  std::string filepart = Clib::GetFilePart( pathname.c_str() );
-  if ( truename != filepart && Clib::FileExists( pathname ) )
+  // If the file does not exist, we cannot check for case sensitivity.
+  if ( !fs::exists( path ) )
+    return false;
+  auto truename = fs::canonical( path ).filename().string();
+  auto filepart = path.filename().string();
+  if ( truename != filepart )
   {
     if ( compilercfg.ErrorOnFileCaseMissmatch )
     {
@@ -79,7 +83,7 @@ bool SourceFile::enforced_case_sensitivity_mismatch( const SourceLocation& refer
   return false;
 }
 #else
-bool SourceFile::enforced_case_sensitivity_mismatch( const SourceLocation&, const std::string&,
+bool SourceFile::enforced_case_sensitivity_mismatch( const SourceLocation&, const fs::path&,
                                                      Report& )
 {
   return false;
@@ -89,24 +93,22 @@ bool SourceFile::enforced_case_sensitivity_mismatch( const SourceLocation&, cons
 std::shared_ptr<SourceFile> SourceFile::load( const SourceFileIdentifier& ident, Profile& profile,
                                               Report& report )
 {
-  const std::string& pathname = ident.pathname;
   try
   {
-    Clib::FileContents fc( pathname.c_str(), true );
-    std::string contents( fc.contents() );
+    std::string contents( Clib::FileContents{ ident.path, true }.take() );
 
     Clib::sanitizeUnicodeWithIso( &contents );
 
-    if ( is_web_script( pathname.c_str() ) )
+    if ( is_web_script( ident.path ) )
     {
       contents = preprocess_web_script( contents );
     }
 
-    return std::make_shared<SourceFile>( pathname, contents, profile );
+    return std::make_shared<SourceFile>( ident.path, contents, profile );
   }
   catch ( ... )
   {
-    report.error( ident, "Unable to read file '{}'.", pathname );
+    report.error( ident, "Unable to read file '{}'.", ident.path );
     return {};
   }
 }
@@ -211,21 +213,16 @@ std::vector<antlr4::Token*> SourceFile::get_all_tokens()
 /**
  * Given a file name, tells if this is a web script
  */
-bool is_web_script( const char* file )
+bool SourceFile::is_web_script( const fs::path& file )
 {
-  const char* ext = strstr( file, ".hsr" );
-  if ( ext && memcmp( ext, ".hsr", 5 ) == 0 )
-    return true;
-  ext = strstr( file, ".asp" );
-  if ( ext && memcmp( ext, ".asp", 5 ) == 0 )
-    return true;
-  return false;
+  auto ext = file.extension();
+  return ext.compare( ".hsr" ) || ext.compare( ".asp" );
 }
 
 /**
  * Transforms the raw html page into a script with a single WriteHtml() instruction
  */
-std::string preprocess_web_script( const std::string& input )
+std::string SourceFile::preprocess_web_script( const std::string& input )
 {
   std::string output;
   output = "use http;";

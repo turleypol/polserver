@@ -64,7 +64,6 @@ static LogFileBehaviour flexlogBehaviour = { "",  // dummy name
 LogFacility* global_logger = nullptr;
 void initLogging( LogFacility* logger )
 {
-  //  INFO_PRINTLN( "formatfailing{}{}", true );
   global_logger = logger;
   // on start check if Visual Studio is attached
   // if so print cout and cerr msgs also in the VS console

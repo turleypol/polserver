@@ -22,6 +22,8 @@
 #include "clib/timer.h"
 #include "compilercfg.h"
 
+#include <fmt/std.h>
+
 namespace Pol::Bscript::Compiler
 {
 Compiler::Compiler( SourceFileCache& em_cache, SourceFileCache& inc_cache, Profile& profile )
@@ -31,11 +33,11 @@ Compiler::Compiler( SourceFileCache& em_cache, SourceFileCache& inc_cache, Profi
 
 Compiler::~Compiler() = default;
 
-bool Compiler::write_ecl( const std::string& pathname )
+bool Compiler::write_ecl( const std::filesystem::path& path )
 {
   if ( output )
   {
-    CompiledScriptSerializer( *output ).write( pathname );
+    CompiledScriptSerializer( *output ).write( path );
     return true;
   }
   else
@@ -44,44 +46,46 @@ bool Compiler::write_ecl( const std::string& pathname )
   }
 }
 
-void Compiler::write_listing( const std::string& pathname )
+void Compiler::write_listing( const std::filesystem::path& path )
 {
   if ( output )
   {
-    std::ofstream ofs( pathname );
+    std::ofstream ofs( path );
     ListingWriter( *output ).write( ofs );
   }
 }
 
-void Compiler::write_string_tree( const std::string& pathname )
+void Compiler::write_string_tree( const std::filesystem::path& path )
 {
   if ( output )
   {
-    std::ofstream ofs( pathname );
+    std::ofstream ofs( path );
     ofs << output->tree;
   }
 }
 
-void Compiler::write_dbg( const std::string& pathname, bool include_debug_text )
+void Compiler::write_dbg( const std::filesystem::path& path, bool include_debug_text )
 {
   if ( output )
   {
-    std::ofstream ofs( pathname, std::ofstream::binary );
-    auto text_ofs = include_debug_text ? std::make_unique<std::ofstream>( pathname + ".txt" )
-                                       : std::unique_ptr<std::ofstream>();
+    std::ofstream ofs( path, std::ofstream::binary );
+    auto text_ofs =
+        include_debug_text
+            ? std::make_unique<std::ofstream>( std::filesystem::path{ path }.concat( ".txt" ) )
+            : std::unique_ptr<std::ofstream>();
 
     DebugStoreSerializer( *output ).write( ofs, text_ofs.get() );
   }
 }
 
-void Compiler::write_included_filenames( const std::string& pathname )
+void Compiler::write_included_filenames( const std::filesystem::path& path )
 {
   if ( output )
   {
-    std::ofstream ofs( pathname );
+    std::ofstream ofs( path );
     for ( auto& r : output->source_file_identifiers )
     {
-      ofs << r->pathname << "\n";
+      ofs << r->path << "\n";
     }
   }
 }
@@ -91,21 +95,22 @@ void Compiler::set_include_compile_mode()
   user_function_inclusion = UserFunctionInclusion::All;
 }
 
-bool Compiler::compile_file( const std::string& filename )
+bool Compiler::compile_file( const std::filesystem::path& path )
 {
   bool success;
   try
   {
-    auto pathname = Clib::FullPath( filename.c_str() );
+    auto fullpath = std::filesystem::absolute( path );
 
     Report report( compilercfg.DisplayWarnings || compilercfg.ErrorOnWarning,
                    true /* display errors */, compilercfg.DisplayDebugs );
 
-    compile_file_steps( pathname, report );
-    display_outcome( pathname, report );
+    compile_file_steps( fullpath, report );
+    display_outcome( fullpath, report );
 
     bool have_warning_as_error = report.warning_count() && compilercfg.ErrorOnWarning;
     success = !report.error_count() && !have_warning_as_error;
+    warnings = report.warning_count();
   }
   catch ( std::exception& ex )
   {
@@ -115,9 +120,9 @@ bool Compiler::compile_file( const std::string& filename )
   return success;
 }
 
-void Compiler::compile_file_steps( const std::string& pathname, Report& report )
+void Compiler::compile_file_steps( const std::filesystem::path& path, Report& report )
 {
-  std::unique_ptr<CompilerWorkspace> workspace = build_workspace( pathname, report );
+  std::unique_ptr<CompilerWorkspace> workspace = build_workspace( path, report );
   if ( report.error_count() )
     return;
 
@@ -144,20 +149,20 @@ void Compiler::compile_file_steps( const std::string& pathname, Report& report )
   output = generate( std::move( workspace ), report );
 }
 
-bool Compiler::format_file( const std::string& filename, bool is_module, bool inplace )
+bool Compiler::format_file( const std::filesystem::path& path, bool is_module, bool inplace )
 {
-  if ( !Clib::filesize( filename.c_str() ) )
+  if ( !std::filesystem::file_size( path ) )
     return true;
 
   Report report( false, true );
   PrettifyBuilder prettify_builder( profile, report );
-  auto formatted = prettify_builder.build( filename, is_module );
+  auto formatted = prettify_builder.build( path, is_module );
   if ( report.error_count() )
     return false;
   if ( inplace )
   {
     std::ofstream filestream;
-    filestream.open( filename, std::ios_base::out | std::ios_base::trunc | std::ios::binary );
+    filestream.open( path, std::ios_base::out | std::ios_base::trunc | std::ios::binary );
     filestream << formatted;
     filestream.flush();
   }
@@ -166,12 +171,12 @@ bool Compiler::format_file( const std::string& filename, bool is_module, bool in
   return true;
 }
 
-std::unique_ptr<CompilerWorkspace> Compiler::build_workspace( const std::string& pathname,
+std::unique_ptr<CompilerWorkspace> Compiler::build_workspace( const std::filesystem::path& path,
                                                               Report& report )
 {
   Pol::Tools::HighPerfTimer timer;
   CompilerWorkspaceBuilder workspace_builder( em_cache, inc_cache, profile, report );
-  auto workspace = workspace_builder.build( pathname, user_function_inclusion );
+  auto workspace = workspace_builder.build( path, user_function_inclusion );
   profile.build_workspace_micros += timer.ellapsed().count();
   return workspace;
 }
@@ -223,12 +228,16 @@ std::unique_ptr<CompiledScript> Compiler::generate( std::unique_ptr<CompilerWork
   return compiled_script;
 }
 
-void Compiler::display_outcome( const std::string& filename, Report& report )
+void Compiler::display_outcome( const std::filesystem::path& path, Report& report )
 {
-  auto msg = fmt::format( "{}: {} errors", filename, report.error_count() );
+  auto msg = fmt::format( "{}: {} errors", path, report.error_count() );
   if ( compilercfg.DisplayWarnings || compilercfg.ErrorOnWarning )
     msg += fmt::format( ", {} warnings", report.warning_count() );
   INFO_PRINTLN( msg + '.' );
 }
 
+unsigned Compiler::warnings_count() const
+{
+  return warnings;
+}
 }  // namespace Pol::Bscript::Compiler

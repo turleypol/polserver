@@ -4,8 +4,8 @@
 
 namespace Pol::Bscript::Compiler
 {
-SourceFileIdentifier::SourceFileIdentifier( unsigned index, std::string pathname )
-    : index( index ), pathname( std::move( pathname ) ), _lines()
+SourceFileIdentifier::SourceFileIdentifier( unsigned index, std::filesystem::path path )
+    : index( index ), path( std::move( path ) ), _lines()
 {
 }
 
@@ -14,8 +14,7 @@ const std::vector<std::string>& SourceFileIdentifier::getLines() const
   if ( !_lines.empty() )
     return _lines;
 
-  Clib::FileContents cont{ pathname.c_str(), true };
-  std::string content{ cont.contents() };
+  std::string content{ Clib::FileContents{ path, true }.take() };
   Clib::sanitizeUnicodeWithIso( &content );
   std::string::size_type pos = 0;
   std::string::size_type prev = 0;

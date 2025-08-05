@@ -14,9 +14,9 @@ PrettifyBuilder::PrettifyBuilder( Profile& profile, Report& report )
 {
 }
 
-std::string PrettifyBuilder::build( const std::string& pathname, bool is_module )
+std::string PrettifyBuilder::build( const std::filesystem::path& path, bool is_module )
 {
-  auto ident = std::make_unique<SourceFileIdentifier>( 0, pathname );
+  auto ident = std::make_unique<SourceFileIdentifier>( 0, path );
 
   SourceLocation source_location( ident.get(), 0, 0 );
 
@@ -24,7 +24,7 @@ std::string PrettifyBuilder::build( const std::string& pathname, bool is_module 
 
   if ( !sf || report.error_count() )
   {
-    report.error( *ident, "Unable to load '{}'.", pathname );
+    report.error( *ident, "Unable to load '{}'.", path );
     return {};
   }
   PrettifyFileProcessor prettify_processor( *ident, profile, report );

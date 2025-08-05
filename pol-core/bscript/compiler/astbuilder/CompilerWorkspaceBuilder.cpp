@@ -30,18 +30,18 @@ CompilerWorkspaceBuilder::CompilerWorkspaceBuilder( SourceFileCache& em_cache,
 }
 
 std::unique_ptr<CompilerWorkspace> CompilerWorkspaceBuilder::build(
-    const std::string& pathname, UserFunctionInclusion user_function_inclusion )
+    const std::filesystem::path& path, UserFunctionInclusion user_function_inclusion )
 {
   auto compiler_workspace = std::make_unique<CompilerWorkspace>( report );
   BuilderWorkspace workspace( *compiler_workspace, em_cache, inc_cache, profile, report );
 
-  auto ident = std::make_unique<SourceFileIdentifier>( 0, pathname );
+  auto ident = std::make_unique<SourceFileIdentifier>( 0, path );
 
   SourceLocation source_location( ident.get(), 0, 0 );
 
-  if ( SourceFile::enforced_case_sensitivity_mismatch( source_location, pathname, report ) )
+  if ( SourceFile::enforced_case_sensitivity_mismatch( source_location, path, report ) )
   {
-    report.error( *ident, "Refusing to load '{}'.", pathname );
+    report.error( *ident, "Refusing to load '{}'.", path );
     return {};
   }
 
@@ -49,14 +49,14 @@ std::unique_ptr<CompilerWorkspace> CompilerWorkspaceBuilder::build(
 
   if ( !sf || report.error_count() )
   {
-    report.error( *ident, "Unable to load '{}'.", pathname );
+    report.error( *ident, "Unable to load '{}'.", path );
     return {};
   }
 
   SourceFileProcessor src_processor( *ident, workspace, true, user_function_inclusion );
 
   workspace.compiler_workspace.referenced_source_file_identifiers.push_back( std::move( ident ) );
-  workspace.source_files[sf->pathname] = sf;
+  workspace.source_files[sf->path] = sf;
 
   compiler_workspace->top_level_statements =
       std::make_unique<TopLevelStatements>( source_location );

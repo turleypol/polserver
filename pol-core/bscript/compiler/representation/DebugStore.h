@@ -1,6 +1,7 @@
 #ifndef POLSERVER_DEBUGSTORE_H
 #define POLSERVER_DEBUGSTORE_H
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,7 @@ class LocalVariableScopeInfo;
 class DebugStore
 {
 public:
-  explicit DebugStore( std::vector<std::string> filenames );
+  explicit DebugStore( std::vector<std::filesystem::path> filenames );
   DebugStore( DebugStore&& ) noexcept;
   ~DebugStore();
 
@@ -42,7 +43,7 @@ private:
   friend class DebugStoreSerializer;
   friend class ListingWriter;
   std::vector<DebugBlock> blocks;
-  std::vector<std::string> filenames;
+  std::vector<std::filesystem::path> filenames;
   std::vector<InstructionInfo> instructions;
   std::vector<UserFunctionInfo> user_functions;
 };

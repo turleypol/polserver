@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-#include <boost/stacktrace.hpp>
+// #include <boost/stacktrace.hpp>
 
 #include "../Debugging/ExceptionParser.h"
 #include "../logfacility.h"
@@ -42,7 +42,7 @@ void terminate_handler()
 {
   try
   {
-    std::cerr << "Terminate failure:\n" << boost::stacktrace::stacktrace() << std::endl;
+    std::cerr << "Terminate failure:\n";  // << boost::stacktrace::stacktrace() << std::endl;
   }
   catch ( ... )
   {

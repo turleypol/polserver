@@ -1,5 +1,6 @@
 #include "CodeGenerator.h"
 
+#include <filesystem>
 #include <memory>
 
 #include "StoredToken.h"
@@ -39,12 +40,12 @@ std::unique_ptr<CompiledScript> CodeGenerator::generate(
   CodeSection code;
   DataSection data;
 
-  std::vector<std::string> debug_filenames;
+  std::vector<std::filesystem::path> debug_filenames;
   // For parity with OG compiler, debug file #0 is always empty.
   debug_filenames.emplace_back( "" );
   for ( auto& ident : workspace->referenced_source_file_identifiers )
   {
-    debug_filenames.push_back( ident->pathname );
+    debug_filenames.push_back( ident->path );
   }
   DebugStore debug( std::move( debug_filenames ) );
 

@@ -1685,8 +1685,7 @@ void PrettifyFileProcessor::preprocess( SourceFile& sf )
 
 std::vector<std::string> PrettifyFileProcessor::load_raw_file()
 {
-  Clib::FileContents fc( source_file_identifier.pathname.c_str(), true );
-  const auto& contents = fc.str_contents();
+  auto contents = Clib::FileContents{ source_file_identifier.path, true }.take();
   std::vector<std::string> rawlines;
   std::string currline;
   for ( size_t i = 0; i < contents.size(); ++i )

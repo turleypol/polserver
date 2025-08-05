@@ -1,8 +1,8 @@
 #ifndef POLSERVER_COMPILERWORKSPACEBUILDER_H
 #define POLSERVER_COMPILERWORKSPACEBUILDER_H
 
+#include <filesystem>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "bscript/compiler/model/UserFunctionInclusion.h"
@@ -22,7 +22,8 @@ public:
   CompilerWorkspaceBuilder( SourceFileCache& em_cache, SourceFileCache& inc_cache, Profile&,
                             Report& );
 
-  std::unique_ptr<CompilerWorkspace> build( const std::string& pathname, UserFunctionInclusion );
+  std::unique_ptr<CompilerWorkspace> build( const std::filesystem::path& path,
+                                            UserFunctionInclusion );
 
 private:
   void build_referenced_user_functions( BuilderWorkspace& );

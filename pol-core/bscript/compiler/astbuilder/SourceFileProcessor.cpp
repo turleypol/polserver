@@ -22,10 +22,10 @@
 #include "plib/pkg.h"
 
 using EscriptGrammar::EscriptParser;
-
+namespace fs = std::filesystem;
 namespace Pol::Bscript::Compiler
 {
-std::string getpathof( const std::string& fname );
+fs::path getpathof( const fs::path& fname );
 
 SourceFileProcessor::SourceFileProcessor( const SourceFileIdentifier& source_file_identifier,
                                           BuilderWorkspace& workspace, bool is_src,
@@ -44,15 +44,14 @@ void SourceFileProcessor::use_module( const std::string& module_name,
                                       SourceLocation& including_location,
                                       long long* micros_counted )
 {
-  std::string pathname =
-      Clib::FullPath( ( compilercfg.ModuleDirectory + module_name + ".em" ).c_str() );
-  if ( workspace.source_files.find( pathname ) != workspace.source_files.end() )
+  auto path = compilercfg.ModuleDirectory / ( module_name + ".em" );
+  if ( workspace.source_files.find( path ) != workspace.source_files.end() )
     return;
 
   auto ident = std::make_unique<SourceFileIdentifier>(
       static_cast<unsigned>(
           workspace.compiler_workspace.referenced_source_file_identifiers.size() ),
-      pathname );
+      path );
 
   Pol::Tools::HighPerfTimer load_timer;
   auto sf = workspace.em_cache.load( *ident, report );
@@ -64,7 +63,7 @@ void SourceFileProcessor::use_module( const std::string& module_name,
     // that would just be noise, like missing module function declarations or constants.
     report.fatal( including_location, "Unable to use module '{}'.", module_name );
   }
-  workspace.source_files[pathname] = sf;
+  workspace.source_files[path] = sf;
 
   ModuleProcessor module_processor( *ident, workspace, module_name );
   workspace.compiler_workspace.referenced_source_file_identifiers.push_back( std::move( ident ) );
@@ -136,8 +135,7 @@ void SourceFileProcessor::handle_include_declaration( EscriptParser::IncludeDecl
     source_location.internal_error(
         "Unable to include module: expected a string literal or identifier.\n" );
 
-  std::optional<std::string> maybe_canonical_include_pathname =
-      locate_include_file( source_location, include_name );
+  auto maybe_canonical_include_pathname = locate_include_file( source_location, include_name );
 
   if ( !maybe_canonical_include_pathname )
   {
@@ -146,7 +144,7 @@ void SourceFileProcessor::handle_include_declaration( EscriptParser::IncludeDecl
     return;
   }
 
-  std::string canonical_include_pathname = maybe_canonical_include_pathname.value();
+  auto canonical_include_pathname = maybe_canonical_include_pathname.value();
 
   if ( workspace.source_files.count( canonical_include_pathname ) == 0 )
   {
@@ -164,19 +162,19 @@ void SourceFileProcessor::handle_include_declaration( EscriptParser::IncludeDecl
 
     SourceFileProcessor include_processor( *ident, workspace, false, user_function_inclusion );
     workspace.compiler_workspace.referenced_source_file_identifiers.push_back( std::move( ident ) );
-    workspace.source_files[sf->pathname] = sf;
+    workspace.source_files[sf->path] = sf;
 
     include_processor.process_include( *sf, micros_counted );
   }
 }
 
-std::optional<std::string> SourceFileProcessor::locate_include_file(
+std::optional<fs::path> SourceFileProcessor::locate_include_file(
     const SourceLocation& source_location, const std::string& include_name )
 {
   std::string filename_part = include_name + ".inc";
 
-  std::string current_file_path = getpathof( source_location.source_file_identifier->pathname );
-  std::string filename_full = current_file_path + filename_part;
+  auto current_file_path = getpathof( source_location.source_file_identifier->path );
+  auto filename_full = current_file_path / filename_part;
 
   if ( filename_part[0] == ':' )
   {
@@ -186,17 +184,17 @@ std::optional<std::string> SourceFileProcessor::locate_include_file(
     {
       if ( pkg != nullptr )
       {
-        filename_full = pkg->dir() + path;
-        std::string try_filename_full = pkg->dir() + "include/" + path;
+        filename_full = fs::path{ pkg->dir() } / path;
+        std::string try_filename_full = fs::path{ pkg->dir() } / "include" / path;
 
         if ( compilercfg.VerbosityLevel >= 10 )
           INFO_PRINTLN( "Searching for {}", filename_full );
 
-        if ( !Clib::FileExists( filename_full.c_str() ) )
+        if ( !fs::exists( filename_full ) )
         {
           if ( compilercfg.VerbosityLevel >= 10 )
             INFO_PRINTLN( "Searching for {}", try_filename_full );
-          if ( Clib::FileExists( try_filename_full.c_str() ) )
+          if ( fs::exists( try_filename_full ) )
           {
             if ( compilercfg.VerbosityLevel >= 10 )
               INFO_PRINTLN( "Found {}", try_filename_full );
@@ -209,19 +207,19 @@ std::optional<std::string> SourceFileProcessor::locate_include_file(
           if ( compilercfg.VerbosityLevel >= 10 )
             INFO_PRINTLN( "Found {}", filename_full );
 
-          if ( Clib::FileExists( try_filename_full.c_str() ) )
+          if ( fs::exists( try_filename_full ) )
             report.warning( source_location, "Found '{}' and '{}'! Will use first file!",
                             filename_full, try_filename_full );
         }
       }
       else
       {
-        filename_full = compilercfg.PolScriptRoot + path;
+        filename_full = compilercfg.PolScriptRoot / path;
 
         if ( compilercfg.VerbosityLevel >= 10 )
         {
           INFO_PRINTLN( "Searching for {}", filename_full );
-          if ( Clib::FileExists( filename_full.c_str() ) )
+          if ( fs::exists( filename_full ) )
             INFO_PRINTLN( "Found {}", filename_full );
         }
       }
@@ -238,12 +236,12 @@ std::optional<std::string> SourceFileProcessor::locate_include_file(
     if ( compilercfg.VerbosityLevel >= 10 )
       INFO_PRINTLN( "Searching for {}", filename_full );
 
-    if ( !Clib::FileExists( filename_full.c_str() ) )
+    if ( !fs::exists( filename_full ) )
     {
-      std::string try_filename_full = compilercfg.IncludeDirectory + filename_part;
+      auto try_filename_full = compilercfg.IncludeDirectory / filename_part;
       if ( compilercfg.VerbosityLevel >= 10 )
         INFO_PRINTLN( "Searching for {}", try_filename_full );
-      if ( Clib::FileExists( try_filename_full.c_str() ) )
+      if ( fs::exists( try_filename_full ) )
       {
         if ( compilercfg.VerbosityLevel >= 10 )
           INFO_PRINTLN( "Found {}", try_filename_full );
@@ -263,10 +261,10 @@ std::optional<std::string> SourceFileProcessor::locate_include_file(
     return {};
   }
 
-  filename_full = Clib::FullPath( filename_full.c_str() );
+  filename_full = fs::absolute( filename_full );
 
   if ( !filename_full.empty() )
-    return std::optional<std::string>( filename_full );
+    return std::optional<fs::path>( filename_full );
   else
     return {};
 }
@@ -400,12 +398,10 @@ SourceLocation SourceFileProcessor::location_for( antlr4::ParserRuleContext& ctx
   return { &source_file_identifier, ctx };
 }
 
-std::string getpathof( const std::string& fname )
+fs::path getpathof( const fs::path& fname )
 {
-  std::string::size_type pos = fname.find_last_of( "\\/" );
-  if ( pos == std::string::npos )
-    return "./";
-  else
-    return fname.substr( 0, pos + 1 );
+  if ( fname.has_parent_path() )
+    return fname.parent_path();
+  return fs::path( "." );
 }
 }  // namespace Pol::Bscript::Compiler

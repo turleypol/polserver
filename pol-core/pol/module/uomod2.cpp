@@ -1917,7 +1917,7 @@ BObjectImp* GetCoreVariable( const char* corevar )
   if ( stricmp( corevar, "memory_usage" ) == 0 )
     return new BLong( static_cast<int>( Clib::getCurrentMemoryUsage() / 1024 ) );
   if ( stricmp( corevar, "poldir" ) == 0 )
-    return new String( Clib::ProgramConfig::programDir() );
+    return new String( Clib::ProgramConfig::programDir().generic_string() );
 
   return new BError( std::string( "Unknown core variable " ) + corevar );
 }

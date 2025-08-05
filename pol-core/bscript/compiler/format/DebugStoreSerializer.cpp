@@ -31,9 +31,10 @@ void DebugStoreSerializer::write( std::ofstream& ofs, std::ofstream* text_ofs )
   {
     if ( text_ofs )
       *text_ofs << "File " << filenum++ << ": " << filename << std::endl;
-    count = static_cast<unsigned int>( filename.size() + 1 );
+    auto name = filename.generic_string();
+    count = static_cast<unsigned int>( name.size() + 1 );
     ofs.write( reinterpret_cast<char*>( &count ), sizeof count );
-    ofs.write( filename.c_str(), count );
+    ofs.write( name.c_str(), count );
   }
   count = static_cast<uint32_t>( compiled_script.global_variable_names.size() );
   ofs.write( reinterpret_cast<char*>( &count ), sizeof count );

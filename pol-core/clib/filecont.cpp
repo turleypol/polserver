@@ -9,6 +9,7 @@
 #include "logfacility.h"
 #include "strutil.h"
 #include <cstdio>
+#include <numeric>
 
 namespace Pol
 {
@@ -20,9 +21,9 @@ namespace Clib
  * @param filename Full path of the file to be read
  * @throws std::runtime_error When something goes wrong when reading the file
  */
-FileContents::FileContents( const char* filename, bool suppress_error_print )
+FileContents::FileContents( const std::filesystem::path& filename, bool suppress_error_print )
 {
-  FILE* fp = fopen( filename, "rb" );
+  FILE* fp = fopen( filename.c_str(), "rb" );
   if ( fp == nullptr )
   {
     if ( !suppress_error_print )
@@ -46,17 +47,14 @@ FileContents::FileContents( const char* filename, bool suppress_error_print )
   fclose( fp );
 }
 
-/**
- * Returns a pointer to the file content
- */
-const char* FileContents::contents() const
-{
-  return contents_.c_str();
-}
-
 const std::string& FileContents::str_contents() const
 {
   return contents_;
+}
+
+std::string&& FileContents::take() &&
+{
+  return std::move( contents_ );
 }
 
 /**
