@@ -1,6 +1,7 @@
 #include "ProgramConfig.h"
 #include "pol_global_config.h"
 #include "pol_revision.h"
+#include <filesystem>
 #include <string>
 
 namespace Pol::Clib
@@ -17,9 +18,7 @@ fs::path ProgramConfig::m_programDir = "";
 void ProgramConfig::configureProgramEnvironment( const std::string& programName )
 {
   m_programName = programName;
-
-  fs::path exeDir = programName;
-  exeDir.remove_filename();
+  fs::path exeDir = fs::absolute( programName );
   m_programDir = exeDir.remove_filename().lexically_normal();
 }
 

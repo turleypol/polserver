@@ -23,7 +23,7 @@ namespace Clib
  */
 FileContents::FileContents( const std::filesystem::path& filename, bool suppress_error_print )
 {
-  FILE* fp = fopen( filename.c_str(), "rb" );
+  FILE* fp = fopen( filename.string().c_str(), "rb" );
   if ( fp == nullptr )
   {
     if ( !suppress_error_print )

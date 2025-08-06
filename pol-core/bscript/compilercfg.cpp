@@ -6,7 +6,6 @@
 #include "../clib/Program/ProgramConfig.h"
 #include "../clib/cfgelem.h"
 #include "../clib/cfgfile.h"
-#include "../clib/fileutil.h"
 
 namespace Pol::Bscript
 {
@@ -96,8 +95,10 @@ void CompilerConfig::Read( const fs::path& path )
       elem.remove_bool( "FormatterAllowShortFuncRefsOnASingleLine", true );
 
 
-  // This is where we TRY to validate full paths from what was provided in the
-  // ecompile.cfg.
+// This is where we TRY to validate full paths from what was provided in the
+// ecompile.cfg.
+// On Windows ecompile.exe is expected to be located in scripts/
+#ifdef WIN32
   fs::path MyPath{ path };
   // If it's just "ecompile.cfg", let's change it to the exe's path which it SHOULD be
   // with.
@@ -106,6 +107,7 @@ void CompilerConfig::Read( const fs::path& path )
     // Let's find the NEXT-TO-LAST / in the path, and remove from there on. Oh yay!
     // To bad we can't just force everyone to use ABSOLUTE PATHS NANDO. :o
     MyPath = PROG_CONFIG::programDir();
+    // from root/scripts/ to root/
     if ( !MyPath.has_filename() )
       MyPath = MyPath.parent_path();  // remove trailing /
     MyPath = MyPath.parent_path();
@@ -124,6 +126,21 @@ void CompilerConfig::Read( const fs::path& path )
                               return pr;
                             return ( MyPath / pr ).lexically_normal();
                           } );
+#else  // on Linux ecompile can be everywhere it only depends on the current working directory
+  if ( !IncludeDirectory.is_absolute() )
+    IncludeDirectory = fs::absolute( IncludeDirectory ).lexically_normal();
+  if ( !ModuleDirectory.is_absolute() )
+    ModuleDirectory = fs::absolute( ModuleDirectory ).lexically_normal();
+  if ( !PolScriptRoot.is_absolute() )
+    PolScriptRoot = fs::absolute( PolScriptRoot ).lexically_normal();
+  std::ranges::transform( PackageRoot, PackageRoot.begin(),
+                          []( const fs::path& pr )
+                          {
+                            if ( pr.is_absolute() )
+                              return pr;
+                            return fs::absolute( pr ).lexically_normal();
+                          } );
+#endif
 }
 
 void CompilerConfig::SetDefaults()

@@ -186,7 +186,7 @@ void compile_inc( const fs::path& path )
 bool format_file( const fs::path& path )
 {
   auto ext = path.extension();
-  if ( ext.compare( ".src" ) != 0 && ext.compare( ".inc" ) != 0 && ext.compare( ".em" ) != 0 )
+  if ( ext != ".src" && ext != ".inc" && ext != ".em" )
   {
     ERROR_PRINTLN(
         "Didn't find '.src', '.inc', or '.em' extension on source filename '{}'! ..Ignoring",
@@ -199,8 +199,8 @@ bool format_file( const fs::path& path )
 
   std::unique_ptr<Compiler::Compiler> compiler = create_compiler();
 
-  bool success = compiler->format_file( path.generic_string(), ext.compare( ".em" ) == 0,
-                                        format_source_inplace );
+  bool success =
+      compiler->format_file( path.generic_string(), ext == ".em", format_source_inplace );
 
   if ( expect_compile_failure )
   {
@@ -305,13 +305,13 @@ void add_dependency_info( const fs::path& filepath_src,
 bool compile_file( const fs::path& path )
 {
   auto ext = path.extension();
-  if ( !ext.compare( ".inc" ) )
+  if ( ext == ".inc" )
   {
     compile_inc( path );
     return true;
   }
 
-  if ( ext.compare( ".src" ) != 0 && ext.compare( ".hsr" ) != 0 && ext.compare( ".asp" ) != 0 )
+  if ( ext != ".src" && ext != ".hsr" && ext != ".asp" )
   {
     ERROR_PRINTLN( "Didn't find '.src', '.hsr', or '.asp' extension on source filename '{}'!",
                    path );
@@ -493,8 +493,8 @@ void process_file_wrapper( const fs::path& path, std::set<fs::path>* removed_dep
   if ( watch_source )
   {
     fs::path filepath = fs::canonical( path );
-    auto ext = filepath.extension().generic_string();
-    if ( ext.compare( ".src" ) == 0 || ext.compare( ".hsr" ) == 0 || ext.compare( ".asp" ) == 0 )
+    auto ext = filepath.extension();
+    if ( ext == ".src" || ext == ".hsr" || ext == ".asp" )
     {
       add_dependency_info( filepath, removed_dependencies, new_dependencies );
     }
@@ -747,12 +747,11 @@ void recurse_call( const std::vector<fs::path>& basedirs, bool inc_files,
       const auto ext = file.extension();
       if ( inc_files )
       {
-        if ( !ext.compare( ".inc" ) )
+        if ( ext == ".inc" )
           if ( files.insert( file ).second )
             callback( file );
       }
-      else if ( !ext.compare( ".src" ) || !ext.compare( ".hsr" ) ||
-                ( compilercfg.CompileAspPages && !ext.compare( ".asp" ) ) )
+      else if ( ext == ".src" || ext == ".hsr" || ( compilercfg.CompileAspPages && ext == ".asp" ) )
       {
         if ( files.insert( file ).second )
           callback( file );
@@ -885,7 +884,7 @@ void EnterWatchMode()
     else
     {
       auto ext = filepath.extension();
-      if ( ext.compare( ".src" ) == 0 || ext.compare( ".hsr" ) == 0 || ext.compare( ".asp" ) == 0 )
+      if ( ext == ".src" || ext == ".hsr" || ext == ".asp" )
       {
         to_compile.emplace( filepath );
       }

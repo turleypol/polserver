@@ -216,7 +216,7 @@ std::vector<antlr4::Token*> SourceFile::get_all_tokens()
 bool SourceFile::is_web_script( const fs::path& file )
 {
   auto ext = file.extension();
-  return ext.compare( ".hsr" ) || ext.compare( ".asp" );
+  return ext == ".hsr" || ext == ".asp";
 }
 
 /**

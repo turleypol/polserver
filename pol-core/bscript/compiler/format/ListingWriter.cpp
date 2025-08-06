@@ -27,7 +27,7 @@ void ListingWriter::write( std::ofstream& ofs )
     if ( last_file != debug_inst[i].file_index || last_line != debug_inst[i].line_number )
     {
       auto file = compiled_script.debug.filenames[debug_inst[i].file_index];
-      if ( !file.extension().compare( ".em" ) )
+      if ( file.extension() == ".em" )
       {
         SourceLocation loc{
             compiled_script.source_file_identifiers[debug_inst[i].file_index - 1].get(),
