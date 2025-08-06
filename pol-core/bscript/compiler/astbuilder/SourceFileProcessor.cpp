@@ -184,8 +184,8 @@ std::optional<fs::path> SourceFileProcessor::locate_include_file(
     {
       if ( pkg != nullptr )
       {
-        filename_full = fs::path{ pkg->dir() } / path;
-        std::string try_filename_full = fs::path{ pkg->dir() } / "include" / path;
+        filename_full = pkg->dir() / path;
+        auto try_filename_full = pkg->dir() / "include" / path;
 
         if ( compilercfg.VerbosityLevel >= 10 )
           INFO_PRINTLN( "Searching for {}", filename_full );

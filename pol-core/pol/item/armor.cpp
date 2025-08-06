@@ -7,8 +7,11 @@
 
 #include "armor.h"
 
+#include <filesystem>
 #include <stddef.h>
 #include <stdexcept>
+
+#include <fmt/std.h>
 
 #include "../../bscript/bstruct.h"
 #include "../../bscript/executor.h"
@@ -61,12 +64,12 @@ ArmorDesc::ArmorDesc( u32 objtype, Clib::ConfigElem& elem, const Plib::Package* 
     }
     catch ( std::runtime_error& )
     {
-      std::string tmp = fmt::format( "Error in Objtype {:#x} {}itemdesc.cfg", objtype,
-                                     pkg == nullptr ? "config/" :
+      ERROR_PRINTLN( "Error in Objtype {:#x} {}", objtype,
+                     ( pkg == nullptr ? std::filesystem::path{ "config" } :
 
-                                                    pkg->dir() );
+                                      pkg->dir() ) /
+                         "itemdesc.cfg" );
 
-      ERROR_PRINTLN( tmp );
       throw;
     }
   }
@@ -85,11 +88,11 @@ ArmorDesc::ArmorDesc( u32 objtype, Clib::ConfigElem& elem, const Plib::Package* 
       }
       catch ( std::runtime_error& )
       {
-        std::string tmp = fmt::format( "Error in Objtype {:#x} {}itemdesc.cfg", objtype,
-                                       pkg == nullptr ? "config/" :
+        ERROR_PRINTLN( "Error in Objtype {:#x} {}", objtype,
+                       ( pkg == nullptr ? std::filesystem::path{ "config" } :
 
-                                                      pkg->dir() );
-        ERROR_PRINTLN( tmp );
+                                        pkg->dir() ) /
+                           "itemdesc.cfg" );
         throw;
       }
     }

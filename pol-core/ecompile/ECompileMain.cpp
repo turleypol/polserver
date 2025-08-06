@@ -199,8 +199,7 @@ bool format_file( const fs::path& path )
 
   std::unique_ptr<Compiler::Compiler> compiler = create_compiler();
 
-  bool success =
-      compiler->format_file( path.generic_string(), ext == ".em", format_source_inplace );
+  bool success = compiler->format_file( path, ext == ".em", format_source_inplace );
 
   if ( expect_compile_failure )
   {
@@ -375,7 +374,7 @@ bool compile_file( const fs::path& path )
 
   std::unique_ptr<Compiler::Compiler> compiler = create_compiler();
 
-  bool success = compiler->compile_file( path.generic_string() );
+  bool success = compiler->compile_file( path );
   summary.TotalWarnings += compiler->warnings_count();
 
   em_parse_tree_cache.keep_some();
@@ -402,7 +401,7 @@ bool compile_file( const fs::path& path )
   if ( !quiet )
     INFO_PRINTLN( "Writing:   {}", filename_ecl );
 
-  if ( !compiler->write_ecl( filename_ecl.generic_string() ) )
+  if ( !compiler->write_ecl( filename_ecl ) )
   {
     throw std::runtime_error( "Error writing output file" );
   }
@@ -411,7 +410,7 @@ bool compile_file( const fs::path& path )
   {
     if ( !quiet )
       INFO_PRINTLN( "Writing:   {}", filename_lst );
-    compiler->write_listing( filename_lst.generic_string() );
+    compiler->write_listing( filename_lst );
   }
   else if ( fs::exists( filename_lst ) )
   {
@@ -424,7 +423,7 @@ bool compile_file( const fs::path& path )
   {
     if ( !quiet )
       INFO_PRINTLN( "Writing:   {}", filename_ast );
-    compiler->write_string_tree( filename_ast.generic_string() );
+    compiler->write_string_tree( filename_ast );
   }
   else if ( fs::exists( filename_ast ) )
   {
@@ -441,7 +440,7 @@ bool compile_file( const fs::path& path )
       if ( compilercfg.GenerateDebugTextInfo )
         INFO_PRINTLN( "Writing:   {}.txt", filename_dbg );
     }
-    compiler->write_dbg( filename_dbg.generic_string(), compilercfg.GenerateDebugTextInfo );
+    compiler->write_dbg( filename_dbg, compilercfg.GenerateDebugTextInfo );
   }
   else if ( fs::exists( filename_dbg ) )
   {
@@ -454,7 +453,7 @@ bool compile_file( const fs::path& path )
   {
     if ( !quiet )
       INFO_PRINTLN( "Writing:   {}", filename_dep );
-    compiler->write_included_filenames( filename_dep.generic_string() );
+    compiler->write_included_filenames( filename_dep );
   }
   else if ( fs::exists( filename_dep ) )
   {
@@ -736,7 +735,7 @@ void recurse_call( const std::vector<fs::path>& basedirs, bool inc_files,
       if ( Clib::exit_signalled )
         return;
       auto file = dir_itr->path();
-      if ( auto fn = file.filename().string(); !fn.empty() && *fn.begin() == '.' )
+      if ( const auto& fn = file.filename().native(); !fn.empty() && *fn.begin() == '.' )
       {
         if ( dir_itr->is_directory() )
           dir_itr.disable_recursion_pending();

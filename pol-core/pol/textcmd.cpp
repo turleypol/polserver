@@ -14,6 +14,7 @@
 
 #include <cstddef>
 #include <ctype.h>
+#include <filesystem>
 #include <iosfwd>
 #include <stdio.h>
 #include <stdlib.h>
@@ -68,6 +69,7 @@ namespace Pol
 {
 namespace Core
 {
+namespace fs = std::filesystem;
 bool wordicmp::operator()( const std::string& lhs, const std::string& rhs ) const
 {
   size_t len = std::min( lhs.size(), rhs.size() );
@@ -499,17 +501,15 @@ std::string get_textcmd_help( Mobile::Character* chr, const std::string& cmd )
     CmdLevel& cmdlevel = gamestate.cmdlevels[i];
     for ( unsigned diridx = 0; diridx < cmdlevel.searchlist.size(); ++diridx )
     {
-      std::string filename;
-
       Plib::Package* pkg = cmdlevel.searchlist[diridx].pkg;
-      filename = cmdlevel.searchlist[diridx].dir + cmd + std::string( ".txt" );
+      auto filename = cmdlevel.searchlist[diridx].dir / ( cmd + ".txt" );
       if ( pkg )
-        filename = pkg->dir() + filename;
+        filename = pkg->dir() / filename;
 
-      if ( Clib::FileExists( filename.c_str() ) )
+      if ( fs::exists( filename ) )
       {
         std::string result;
-        std::ifstream ifs( filename.c_str(), std::ios::binary );
+        std::ifstream ifs( filename, std::ios::binary );
         char temp[64];
         do
         {
@@ -558,9 +558,9 @@ bool start_textcmd_script( Network::Client* client, const std::string& text,
       ScriptDef sd;
       Plib::Package* pkg = cmdlevel.searchlist[diridx].pkg;
       if ( pkg )
-        sd.quickconfig( pkg, cmdlevel.searchlist[diridx].dir + scriptname + ".ecl" );
+        sd.quickconfig( pkg, cmdlevel.searchlist[diridx].dir / ( scriptname + ".ecl" ) );
       else
-        sd.quickconfig( cmdlevel.searchlist[diridx].dir + scriptname + ".ecl" );
+        sd.quickconfig( cmdlevel.searchlist[diridx].dir / ( scriptname + ".ecl" ) );
       if ( !sd.exists() )
         continue;
 

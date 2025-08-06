@@ -240,7 +240,7 @@ ItemDesc::ItemDesc( u32 objtype, Clib::ConfigElem& elem, Type type, const Plib::
       props( Core::CPropProfiler::Type::ITEM ),
       method_script( nullptr ),
       save_on_exit( elem.remove_bool( "SaveOnExit", true ) )
-      // NOTE: do not forget the other constructor!
+// NOTE: do not forget the other constructor!
 
 {
   if ( type == BOATDESC || type == HOUSEDESC )
@@ -1316,16 +1316,8 @@ const ItemDesc* CreateItemDescriptor( Bscript::BStruct* itemdesc_struct )
 }
 
 
-void read_itemdesc_file( const char* filename, Plib::Package* pkg = nullptr )
+void read_itemdesc_file( const std::filesystem::path& filename, Plib::Package* pkg = nullptr )
 {
-  /*
-      if (1)
-      {
-      ref_ptr<StoredConfigFile> scfg = FindConfigFile( "config/itemdesc.cfg" );
-      ConfigFile cf( filename );
-      scfg->load( cf );
-      }
-      */
   Clib::ConfigFile cf( filename,
                        "CONTAINER ITEM DOOR WEAPON ARMOR BOAT HOUSE SPELLBOOK SPELLSCROLL MAP" );
 
@@ -1334,21 +1326,12 @@ void read_itemdesc_file( const char* filename, Plib::Package* pkg = nullptr )
   {
     ItemDesc* descriptor = ItemDesc::create( elem, pkg );
 
-
-    // string unused_name, unused_value;
-    // while (elem.remove_first_prop( &unused_name, &unused_value ))
-    //{
-    //  elem.warn_with_line( "Property '" + unused_name + "' (value '" + unused_value + "') is
-    // unused." );
-    //}
-
     if ( has_itemdesc( descriptor->objtype ) )
     {
       auto objpkg = find_itemdesc( descriptor->objtype ).pkg;
-      std::string tmp =
-          fmt::format( "Error: Objtype {:#x} is already defined in {}itemdesc.cfg",
-                       descriptor->objtype, objpkg == nullptr ? "config/" : objpkg->dir() );
-      ERROR_PRINTLN( tmp );
+      ERROR_PRINTLN( "Error: Objtype {:#x} is already defined in {}", descriptor->objtype,
+                     ( objpkg == nullptr ? std::filesystem::path{ "config" } : objpkg->dir() ) /
+                         "itemdesc.cfg" );
 
       elem.throw_error(
           fmt::format( "ObjType {:#x} defined more than once.", descriptor->objtype ) );
@@ -1362,11 +1345,10 @@ void read_itemdesc_file( const char* filename, Plib::Package* pkg = nullptr )
 
 void load_package_itemdesc( Plib::Package* pkg )
 {
-  // string filename = pkg->dir() + "itemdesc.cfg";
-  std::string filename = GetPackageCfgPath( pkg, "itemdesc.cfg" );
-  if ( Clib::FileExists( filename.c_str() ) )
+  auto filename = GetPackageCfgPath( pkg, "itemdesc.cfg" );
+  if ( std::filesystem::exists( filename ) )
   {
-    read_itemdesc_file( filename.c_str(), pkg );
+    read_itemdesc_file( filename, pkg );
   }
 }
 
@@ -1430,11 +1412,8 @@ void write_objtypes_txt()
 
 void load_itemdesc()
 {
-  //  CreateEmptyStoredConfigFile( "config/itemdesc.cfg" );
-  if ( Clib::FileExists( "config/itemdesc.cfg" ) )
+  if ( std::filesystem::exists( "config/itemdesc.cfg" ) )
     read_itemdesc_file( "config/itemdesc.cfg" );
-  //  read_itemdesc_file( "config/wepndesc.cfg" );
-  //  read_itemdesc_file( "config/armrdesc.cfg" );
   for ( auto& pkg : Plib::systemstate.packages )
     load_package_itemdesc( pkg );
 

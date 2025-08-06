@@ -1,12 +1,6 @@
-/** @file
- *
- * @par History
- */
+#pragma once
 
-
-#ifndef PKG_H
-#define PKG_H
-
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -41,9 +35,9 @@ private:
 class Package
 {
 public:
-  Package( const std::string& pkg_dir, Clib::ConfigElem& elem );
+  Package( const std::filesystem::path& pkg_dir, Clib::ConfigElem& elem );
 
-  const std::string& dir() const;
+  const std::filesystem::path& dir() const;
   const std::string& name() const;
   const std::string& version() const;
   std::string desc() const;
@@ -56,7 +50,7 @@ public:
   size_t estimateSize() const;
 
 private:
-  std::string dir_;
+  std::filesystem::path dir_;
   std::string name_;
   std::string version_;
 
@@ -68,13 +62,12 @@ private:
 
   bool provides_system_home_page_;
 
-private:  // not implemented:
-  Package( const Package& );
-  Package& operator=( const Package& );
+  Package( const Package& ) = delete;
+  Package& operator=( const Package& ) = delete;
 };
 
 
-inline const std::string& Package::dir() const
+inline const std::filesystem::path& Package::dir() const
 {
   return dir_;
 }
@@ -97,10 +90,9 @@ void load_all_cfgs( const char* cfgname, const char* taglist,
                     void ( *loadentry )( const Package*, Clib::ConfigElem& ) );
 
 void load_packages( bool quiet = false );
-void load_packages( const std::string& basedir, bool quiet = false );
+void load_packages( const std::filesystem::path& basedir, bool quiet = false );
 void replace_packages();
 void check_package_deps();
-std::string GetPackageCfgPath( const Package* pkg, const std::string& filename );
-}
-}
-#endif
+std::filesystem::path GetPackageCfgPath( const Package* pkg, const std::string& filename );
+}  // namespace Plib
+}  // namespace Pol

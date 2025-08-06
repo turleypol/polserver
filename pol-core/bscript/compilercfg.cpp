@@ -18,7 +18,7 @@ void CompilerConfig::Read( const fs::path& path )
   bool win_platform = false;
 #endif
 
-  Clib::ConfigFile cf( path.c_str() );
+  Clib::ConfigFile cf( path );
   Clib::ConfigElem elem;
   cf.readraw( elem );
 
