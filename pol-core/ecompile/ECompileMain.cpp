@@ -721,7 +721,7 @@ void apply_configuration()
 }
 
 void recurse_call( const std::vector<fs::path>& basedirs, bool inc_files,
-                   const std::function<void( const std::string& )>& callback )
+                   const std::function<void( const fs::path& )>& callback )
 {
   std::set<fs::path> files;
   for ( const auto& basedir : basedirs )
