@@ -57,7 +57,7 @@ bool CmdLevel::matches( const std::string& i_name ) const
   }
   return false;
 }
-void CmdLevel::add_searchdir( Plib::Package* pkg, const fs::path dir )
+void CmdLevel::add_searchdir( Plib::Package* pkg, const fs::path& dir )
 {
   searchlist.emplace_back( SearchDir{ pkg, dir } );
 }
