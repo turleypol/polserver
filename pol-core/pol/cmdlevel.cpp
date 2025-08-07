@@ -200,12 +200,10 @@ void process_package_cmds_cfg( Plib::Package* pkg )
 // look for a "textcmd/cmdlevel" or "commands/cmdlevel" directory for each name and alias
 void implicit_package_cmds_cfg( Plib::Package* pkg )
 {
-  for ( const auto& cmdlevel : gamestate.cmdlevels )
+  for ( auto& cmdlevel : gamestate.cmdlevels )
   {
-    fs::path part;
-
     // first check for the package name
-    part = fs::path{ "textcmd" } / cmdlevel.name;
+    auto part = fs::path{ "textcmd" } / cmdlevel.name;
     if ( fs::exists( pkg->dir() / part ) )
       cmdlevel.add_searchdir_front( pkg, part.generic_string() );
 
