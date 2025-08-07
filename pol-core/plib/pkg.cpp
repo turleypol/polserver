@@ -192,7 +192,7 @@ Package::Package( const fs::path& pkg_dir, Clib::ConfigElem& elem )
 
 std::string Package::desc() const
 {
-  return name() + " (" + dir().native() + ")";
+  return name() + " (" + dir().string() + ")";
 }
 
 bool Package::check_replacements() const
