@@ -576,7 +576,7 @@ ConfigFile::ConfigFile( const std::filesystem::path& i_filename, const char* all
       _element_line_start( 0 ),
       _cur_line( 0 )
 {
-  init( i_filename.c_str(), allowed_types_str );
+  init( i_filename.string().c_str(), allowed_types_str );
 }
 
 void ConfigFile::init( const char* i_filename, const char* allowed_types_str )

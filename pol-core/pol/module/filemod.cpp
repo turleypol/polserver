@@ -337,7 +337,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ReadFile()
 
   std::ifstream ifs( filepath );
   if ( !ifs.is_open() )
-    return new BError( "File not found: " + filepath );
+    return new BError( "File not found: " + filepath.native() );
 
   std::unique_ptr<Bscript::ObjArray> arr( new Bscript::ObjArray() );
 
@@ -386,7 +386,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_WriteFile()
   std::ofstream ofs( tmppath, std::ios::out | std::ios::trunc );
 
   if ( !ofs.is_open() )
-    return new BError( "File not found: " + filepath );
+    return new BError( "File not found: " + filepath.native() );
 
   for ( unsigned i = 0; i < contents->ref_arr.size(); ++i )
   {
@@ -413,14 +413,16 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_WriteFile()
   }
   if ( fs::exists( filepath ) )
   {
-    if ( std::error_code ec; !fs::rename( filepath, bakpath, ec ) )
+    std::error_code ec;
+    if ( fs::rename( filepath, bakpath, ec ); ec )
     {
       std::string message =
           "Unable to rename " + filepath.native() + " to " + bakpath.native() + ": " + ec.message();
       return new BError( message );
     }
   }
-  if ( std::error_code ec; !fs::rename( tmppath, filepath, ec ) )
+  std::error_code ec;
+  if ( fs::rename( tmppath, filepath, ec ); ec )
   {
     std::string message =
         "Unable to rename " + tmppath.native() + " to " + filepath.native() + ": " + ec.message();
@@ -459,7 +461,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_AppendToFile()
   std::ofstream ofs( filepath, std::ios::out | std::ios::app );
 
   if ( !ofs.is_open() )
-    return new BError( "Unable to open file: " + filepath );
+    return new BError( "Unable to open file: " + filepath.native() );
 
   for ( unsigned i = 0; i < contents->ref_arr.size(); ++i )
   {
