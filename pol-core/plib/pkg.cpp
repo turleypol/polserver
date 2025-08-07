@@ -328,7 +328,7 @@ void load_packages( const fs::path& basedir, bool quiet )
   {
     if ( !dir_itr->is_directory() )
       continue;
-    if ( const auto& fn = dir_itr->path().filename().native();
+    if ( const auto& fn = dir_itr->path().filename().string();
          !fn.empty() && ( *fn.begin() == '.' || fn == "template" ) )
     {
       dir_itr.disable_recursion_pending();

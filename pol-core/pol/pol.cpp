@@ -159,6 +159,7 @@
 #include <cstdio>
 #include <cstring>
 #include <exception>
+#include <filesystem>
 #include <iosfwd>
 #include <string>
 
@@ -866,7 +867,7 @@ void run_start_scripts()
   {
     auto scriptname = pkg->dir() / "start.ecl";
 
-    if ( fs::exists( scriptname ) )
+    if ( std::filesystem::exists( scriptname ) )
     {
       ScriptDef script( "start", pkg, "" );
       Bscript::BObject obj( run_script_to_completion( script ) );

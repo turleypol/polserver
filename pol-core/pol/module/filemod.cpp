@@ -337,7 +337,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ReadFile()
 
   std::ifstream ifs( filepath );
   if ( !ifs.is_open() )
-    return new BError( "File not found: " + filepath.native() );
+    return new BError( "File not found: " + filepath.string() );
 
   std::unique_ptr<Bscript::ObjArray> arr( new Bscript::ObjArray() );
 
@@ -386,7 +386,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_WriteFile()
   std::ofstream ofs( tmppath, std::ios::out | std::ios::trunc );
 
   if ( !ofs.is_open() )
-    return new BError( "File not found: " + filepath.native() );
+    return new BError( "File not found: " + filepath.string() );
 
   for ( unsigned i = 0; i < contents->ref_arr.size(); ++i )
   {
@@ -406,7 +406,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_WriteFile()
   {
     if ( std::error_code ec; !fs::remove( bakpath, ec ) )
     {
-      std::string message = "Unable to remove " + filepath.native() + ": " + ec.message();
+      std::string message = "Unable to remove " + filepath.string() + ": " + ec.message();
 
       return new BError( message );
     }
@@ -417,7 +417,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_WriteFile()
     if ( fs::rename( filepath, bakpath, ec ); ec )
     {
       std::string message =
-          "Unable to rename " + filepath.native() + " to " + bakpath.native() + ": " + ec.message();
+          "Unable to rename " + filepath.string() + " to " + bakpath.string() + ": " + ec.message();
       return new BError( message );
     }
   }
@@ -425,7 +425,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_WriteFile()
   if ( fs::rename( tmppath, filepath, ec ); ec )
   {
     std::string message =
-        "Unable to rename " + tmppath.native() + " to " + filepath.native() + ": " + ec.message();
+        "Unable to rename " + tmppath.string() + " to " + filepath.string() + ": " + ec.message();
     return new BError( message );
   }
 
@@ -461,7 +461,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_AppendToFile()
   std::ofstream ofs( filepath, std::ios::out | std::ios::app );
 
   if ( !ofs.is_open() )
-    return new BError( "Unable to open file: " + filepath.native() );
+    return new BError( "Unable to open file: " + filepath.string() );
 
   for ( unsigned i = 0; i < contents->ref_arr.size(); ++i )
   {
@@ -516,7 +516,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_LogToFile()
     std::ofstream ofs( filepath, std::ios::out | std::ios::app );
 
     if ( !ofs.is_open() )
-      return new BError( "Unable to open file: " + filepath.native() );
+      return new BError( "Unable to open file: " + filepath.string() );
 
     if ( flags & Core::LOG_DATETIME )
     {
@@ -633,7 +633,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
   std::error_code ec;
   for ( const auto& dir_entry : fs::directory_iterator( path, ec ) )
   {
-    if ( const auto& fn = dir_entry.path().filename().native(); !fn.empty() && *fn.begin() == '.' )
+    if ( const auto& fn = dir_entry.path().filename().string(); !fn.empty() && *fn.begin() == '.' )
       continue;
     if ( dir_entry.is_directory() )
     {
