@@ -7,6 +7,8 @@
 #include "bscript/compiler/file/SourceFileIdentifier.h"
 #include "bscript/compiler/file/SourceLocation.h"
 
+#include <fmt/std.h>
+
 namespace Pol::Bscript::Compiler
 {
 PrettifyBuilder::PrettifyBuilder( Profile& profile, Report& report )
