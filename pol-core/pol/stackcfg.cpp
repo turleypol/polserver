@@ -6,6 +6,7 @@
 
 #include "stackcfg.h"
 
+#include <filesystem>
 #include <string>
 
 #include "../clib/cfgelem.h"
@@ -21,6 +22,7 @@ namespace Pol
 {
 namespace Core
 {
+namespace fs = std::filesystem;
 void read_stacking_cfg( Clib::ConfigFile& cf )
 {
   Clib::ConfigElem elem;
@@ -39,25 +41,22 @@ void read_stacking_cfg( Clib::ConfigFile& cf )
 
 void load_stacking_cfg()
 {
-  std::string main_cfg = "config/stacking.cfg";
+  fs::path main_cfg = "config/stacking.cfg";
 
-  if ( Clib::FileExists( main_cfg.c_str() ) )
+  if ( fs::exists( main_cfg ) )
   {
-    Clib::ConfigFile cf_main( main_cfg.c_str() );
+    Clib::ConfigFile cf_main( main_cfg );
     read_stacking_cfg( cf_main );
   }
-  for ( Plib::Packages::iterator itr = Plib::systemstate.packages.begin();
-        itr != Plib::systemstate.packages.end(); ++itr )
+  for ( const auto& pkg : Plib::systemstate.packages )
   {
-    Plib::Package* pkg = ( *itr );
-    // string filename = pkg->dir() + cfgname + ".cfg";
-    std::string filename = Plib::GetPackageCfgPath( pkg, "stacking.cfg" );
-    if ( Clib::FileExists( filename.c_str() ) )
+    auto filename = Plib::GetPackageCfgPath( pkg, "stacking.cfg" );
+    if ( fs::exists( filename ) )
     {
-      Clib::ConfigFile cf( filename.c_str() );
+      Clib::ConfigFile cf( filename );
       read_stacking_cfg( cf );
     }
   }
 }
-}
-}
+}  // namespace Core
+}  // namespace Pol

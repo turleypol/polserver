@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <iterator>
+#include <ranges>
 
 #include "../bscript/bobject.h"
 #include "../bscript/config.h"
@@ -123,15 +124,13 @@ int RunEclMain::runeclScript( std::string fileName )
   }
   exe.setProgram( program.get() );
   // find and set pkg
-  std::string dir = fileName;
-  Clib::strip_one( dir );
-  dir = Clib::normalized_dir_form( dir );
+  auto dir = fs::path( fileName ).parent_path().generic_string();
   Plib::load_packages( true /*quiet*/ );
 
   const auto& pkgs = Plib::systemstate.packages;
-  auto pkg =
-      std::find_if( pkgs.begin(), pkgs.end(),
-                    [&dir]( Plib::Package* p ) { return Clib::stringicmp( p->dir(), dir ) == 0; } );
+
+  auto pkg = std::ranges::find_if( [&dir]( Plib::Package* p )
+                                   { return Clib::stringicmp( p->dir().string(), dir ) == 0; } );
   if ( pkg != pkgs.end() )
   {
     program->pkg = *pkg;

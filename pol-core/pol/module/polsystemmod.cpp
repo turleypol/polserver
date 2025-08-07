@@ -13,6 +13,7 @@
 
 #include "polsystemmod.h"
 #include <ctime>
+#include <filesystem>
 #include <fstream>
 #include <string>
 
@@ -50,6 +51,7 @@
 
 #include <module_defs/polsys.h>
 
+namespace fs = std::filesystem;
 namespace Pol
 {
 namespace Core
@@ -95,7 +97,7 @@ BObjectRef PackageObjImp::get_member( const char* membername )
   else if ( stricmp( membername, "supports_http" ) == 0 )
   {
     const Plib::Package* pkg = value().Ptr();
-    return BObjectRef( new BLong( Clib::FileExists( pkg->dir() + "www" ) ) );
+    return BObjectRef( new BLong( fs::exists( pkg->dir() / "www" ) ) );
   }
   else if ( stricmp( membername, "npcdesc" ) == 0 )
   {
@@ -106,7 +108,7 @@ BObjectRef PackageObjImp::get_member( const char* membername )
   else if ( stricmp( membername, "dir" ) == 0 )
   {
     const Plib::Package* pkg = value().Ptr();
-    return BObjectRef( new String( pkg->dir() ) );
+    return BObjectRef( new String( pkg->dir().generic_string() ) );
   }
   else if ( stricmp( membername, "desc" ) == 0 )
   {

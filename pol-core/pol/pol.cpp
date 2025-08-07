@@ -864,9 +864,9 @@ void run_start_scripts()
   run_script_to_completion( "start" );
   for ( const auto& pkg : Plib::systemstate.packages )
   {
-    std::string scriptname = pkg->dir() + "start.ecl";
+    auto scriptname = pkg->dir() / "start.ecl";
 
-    if ( Clib::FileExists( scriptname.c_str() ) )
+    if ( fs::exists( scriptname ) )
     {
       ScriptDef script( "start", pkg, "" );
       Bscript::BObject obj( run_script_to_completion( script ) );
