@@ -5,6 +5,7 @@
 
 #include <ctime>
 
+#include <filesystem>
 #include <iostream>
 #include <iterator>
 #include <ranges>
@@ -51,7 +52,7 @@ namespace Clib
 using namespace std;
 using namespace Pol::Bscript;
 using namespace Pol::Module;
-
+namespace fs = std::filesystem;
 ///////////////////////////////////////////////////////////////////////////////
 
 RunEclMain::RunEclMain() : ProgramMain(), m_quiet( false ), m_debug( false ), m_profile( false ) {}
