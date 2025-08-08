@@ -26,7 +26,7 @@ std::string full_scriptname( const std::string& spec, const Plib::Package* pkg,
   {
     if ( p.extension() != ".ecl" )
       p += ".ecl";
-    return p
+    return p;
   };
 
   if ( pkg != nullptr )

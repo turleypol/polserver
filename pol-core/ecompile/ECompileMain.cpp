@@ -735,7 +735,7 @@ void recurse_call( const std::vector<fs::path>& basedirs, bool inc_files,
       if ( Clib::exit_signalled )
         return;
       auto file = dir_itr->path();
-      if ( const auto& fn = file.filename().native(); !fn.empty() && *fn.begin() == '.' )
+      if ( auto fn = file.filename().string(); !fn.empty() && *fn.begin() == '.' )
       {
         if ( dir_itr->is_directory() )
           dir_itr.disable_recursion_pending();
