@@ -146,8 +146,7 @@ std::unique_ptr<Bscript::ObjArray> ListCommandsInPackageAtCmdlevel( Plib::Packag
     {
       if ( !dir_entry.is_regular_file() )
         continue;
-      if ( const auto& fn = dir_entry.path().filename().native();
-           !fn.empty() && *fn.begin() == '.' )
+      if ( auto fn = dir_entry.path().filename().string(); !fn.empty() && *fn.begin() == '.' )
         continue;
 
       const auto ext = dir_entry.path().extension();

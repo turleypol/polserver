@@ -22,7 +22,7 @@ std::string full_scriptname( const std::string& spec, const Plib::Package* pkg,
   if ( spec.empty() )
     return spec;
   fs::path filename( spec );
-  auto addecl = []( fs::path& p )
+  auto addecl = []( fs::path&& p )
   {
     if ( p.extension() != ".ecl" )
       p += ".ecl";
