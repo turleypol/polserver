@@ -175,8 +175,8 @@ jobs:
         run: |
           cd bin-build
           cd coretest
-          python summary.py > summary.txt
-          echo "$(cat summary.txt)" >> $GITHUB_STEP_SUMMARY
+          python summary.py > $GITHUB_STEP_SUMMARY
+          #cat summary.txt
       - name: Upload coretest folder
         if: matrix.config.nopch == 0 && always()
         uses: actions/upload-artifact@v4
@@ -186,7 +186,7 @@ jobs:
 
       - name: Create Artefact
         if: matrix.config.nopch == 0
-        run: |
+        un: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target package
           cd ../bin
