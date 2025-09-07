@@ -849,6 +849,7 @@ public:
     antlr4::tree::TerminalNode *IDENTIFIER();
     EnumListContext *enumList();
     antlr4::tree::TerminalNode *ENDENUM();
+    antlr4::tree::TerminalNode *CLASS();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -952,6 +953,7 @@ public:
     antlr4::tree::TerminalNode *COLON();
     IntegerLiteralContext *integerLiteral();
     BoolLiteralContext *boolLiteral();
+    ScopedIdentifierContext *scopedIdentifier();
     antlr4::tree::TerminalNode *UNINIT();
     antlr4::tree::TerminalNode *IDENTIFIER();
     antlr4::tree::TerminalNode *STRING_LITERAL();
