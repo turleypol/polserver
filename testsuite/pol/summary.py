@@ -8,18 +8,14 @@ if not os.path.exists("log/pol.log"):
 content = None
 with open("log/pol.log", "r") as file:
     content = file.readlines()
-active_pkg=None
-active_script=None
-active_function=None
 failed=None
-end=None
 lines=""
-output=""
 tests=0
 fails=0
-output+="|pkg|script|function|result|duration|output|\n"
+output="|pkg|script|function|result|duration|output|\n"
 output+="|-|-|-|-|-|-|\n"
 for line in content:
+    line = line.rstrip()
     m=re.match(r"\[.*\] (\w+) \(testpkgs/(\w+)/\)", line)
     if m is not None:
         active_pkg = m.group(2)
@@ -38,24 +34,23 @@ for line in content:
     m=re.match(r"\[.*\]       failed: (.*)", line)
     if m is not None:
         failed = m.group(1)
-        dur=""
+        dur="-"
         fails+=1
-        fstr = failed
-        fout = lines
+        fstr = ":x:"
+        fout = lines+failed
     else: 
         m=re.match(r"\[.*\]     \.\.(.*)ms", line)
         if m is not None:
-            dur = m.group(1)
+            dur = m.group(1)+"ms"
             fstr = ":white_check_mark:"
             fout = ""
     if m is not None:
         tests+=1
-        output+=f"| | |{active_function}|{fstr}|{dur}ms|{fout}|\n"
-        end = m.group(1)
+        output+=f"| | |{active_function}|{fstr}|{dur}|{fout}|\n"
         failed = None
         lines=""
     else:
-        lines+=line.rstrip()+"<br/>"
+        lines+=line+"<br/>"
 
 
 print(f"<details><summary>{fails} tests failed out of {tests}</summary>")
