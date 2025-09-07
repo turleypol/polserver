@@ -2,7 +2,6 @@ import re
 import os
 import sys
 
-print("# Pol test summary")
 if not os.path.exists("log/pol.log"):
     print("no testrun")
     sys.exit(0)
