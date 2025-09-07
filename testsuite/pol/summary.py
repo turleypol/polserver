@@ -48,7 +48,7 @@ for line in content:
             fails+=1
             fstr = failed
             fout = lines
-        output+=f"| | |{active_function}|{fstr}|{dur}ms}|{fout}|\n"
+        output+=f"| | |{active_function}|{fstr}|{dur}ms|{fout}|\n"
         end = m.group(1)
         failed = None
         lines=""
