@@ -16,6 +16,7 @@ failed=None
 end=None
 lines=""
 print("<details><summary>Raw log</summary>")
+print("")
 print("|", "pkg","|","script","|","function","|","result","|","duration","|","output","|")
 print("|", "-","|","-","|","-","|","-","|","-","|","-","|")
 for line in content:
