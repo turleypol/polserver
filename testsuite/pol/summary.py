@@ -33,21 +33,23 @@ for line in content:
     m=re.match(r"\[.*\]     Calling (\w+)\.\.", line)
     if m is not None:
         active_function = m.group(1)
+        lines=""
         continue
-    m=re.match(r"\[.*\]     failed: (.*)", line)
+    m=re.match(r"\[.*\]       failed: (.*)", line)
     if m is not None:
         failed = m.group(1)
-        continue
-    m=re.match(r"\[.*\]     \.\.(.*)ms", line)
+        dur=""
+        fails+=1
+        fstr = failed
+        fout = lines
+    else: 
+        m=re.match(r"\[.*\]     \.\.(.*)ms", line)
+        if m is not None:
+            dur = m.group(1)
+            fstr = ":white_check_mark:"
+            fout = ""
     if m is not None:
-        dur = m.group(1)
-        fstr = ":white_check_mark:"
-        fout = ""
         tests+=1
-        if failed is not None:
-            fails+=1
-            fstr = failed
-            fout = lines
         output+=f"| | |{active_function}|{fstr}|{dur}ms|{fout}|\n"
         end = m.group(1)
         failed = None
