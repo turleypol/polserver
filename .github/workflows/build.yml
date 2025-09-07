@@ -176,7 +176,7 @@ jobs:
           cd bin-build
           ls .
           cd coretest
-          echo python summary.py > summary.txt
+          python summary.py > summary.txt
           echo "$(<summary.txt)" >> $GITHUB_STEP_SUMMARY
       - name: Upload coretest folder
         if: matrix.config.nopch == 0 && always()
