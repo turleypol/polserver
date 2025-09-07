@@ -2,7 +2,7 @@
 #define POLSERVER_ERRORLISTENER_H
 
 #include "bscript/compiler/Antlr4Inc.h"
-#include <filesystem>
+
 namespace Pol::Bscript::Compiler
 {
 class Profile;
@@ -12,7 +12,7 @@ class SourceFileIdentifier;
 class ErrorListener : public antlr4::BaseErrorListener
 {
 public:
-  ErrorListener( std::filesystem::path path, Profile& profile );
+  ErrorListener( std::string pathname, Profile& profile );
   ErrorListener( const ErrorListener& ) = delete;
   ErrorListener& operator=( const ErrorListener& ) = delete;
 
@@ -27,11 +27,10 @@ public:
                         antlr4::atn::ATNConfigSet* configs ) override;
 
 private:
-  const std::filesystem::path path;
+  const std::string pathname;
   Profile& profile;
 
-  struct ErrorMessage
-  {
+  struct ErrorMessage {
     const std::string message;
     const size_t line_number;
     const size_t char_column;

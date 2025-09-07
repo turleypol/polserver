@@ -7,7 +7,6 @@
 
 #include "equipmnt.h"
 
-#include <filesystem>
 #include <stddef.h>
 
 #include "../../bscript/executor.h"
@@ -182,7 +181,7 @@ void allocate_intrinsic_equipment_serials()
 /// must be called at startup
 void load_npc_intrinsic_equip()
 {
-  if ( std::filesystem::exists( "config/npcdesc.cfg" ) )
+  if ( Clib::FileExists( "config/npcdesc.cfg" ) )
   {
     Clib::ConfigFile cf( "config/npcdesc.cfg" );
     Clib::ConfigElem elem;
@@ -194,11 +193,11 @@ void load_npc_intrinsic_equip()
   }
   for ( const auto& pkg : Plib::systemstate.packages )
   {
-    auto filename = Plib::GetPackageCfgPath( pkg, "npcdesc.cfg" );
+    std::string filename = Plib::GetPackageCfgPath( pkg, "npcdesc.cfg" );
 
-    if ( std::filesystem::exists( filename ) )
+    if ( Clib::FileExists( filename.c_str() ) )
     {
-      Clib::ConfigFile cf( filename );
+      Clib::ConfigFile cf( filename.c_str() );
       Clib::ConfigElem elem;
       while ( cf.read( elem ) )
       {

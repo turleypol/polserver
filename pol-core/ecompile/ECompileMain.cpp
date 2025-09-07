@@ -1,6 +1,5 @@
 #include "ECompileMain.h"
 
-#include <atomic>
 #include <cstdio>
 #include <exception>
 #include <filesystem>
@@ -127,11 +126,10 @@ std::string CfgPathEnv;  // ECOMPILE_CFG_PATH=zzz"
 
 struct Summary
 {
-  std::atomic<unsigned> UpToDateScripts = 0;
-  std::atomic<unsigned> CompiledScripts = 0;
-  std::atomic<unsigned> ScriptsWithCompileErrors = 0;
+  unsigned UpToDateScripts = 0;
+  unsigned CompiledScripts = 0;
+  unsigned ScriptsWithCompileErrors = 0;
   size_t ThreadCount = 0;
-  std::atomic<unsigned> TotalWarnings = 0;
   Compiler::Profile profile;
 } summary;
 
@@ -168,7 +166,7 @@ void load_packages()
   }
 }
 
-void compile_inc( const fs::path& path )
+void compile_inc( const std::string& path )
 {
   if ( !quiet )
     INFO_PRINTLN( "Compiling: {}", path );
@@ -177,16 +175,20 @@ void compile_inc( const fs::path& path )
 
   compiler->set_include_compile_mode();
   bool res = compiler->compile_file( path );
-  summary.TotalWarnings += compiler->warnings_count();
 
   if ( !res )
     throw std::runtime_error( "Error compiling file" );
 }
 
-bool format_file( const fs::path& path )
+bool format_file( const std::string& path )
 {
-  auto ext = path.extension();
-  if ( ext != ".src" && ext != ".inc" && ext != ".em" )
+  std::string ext( "" );
+
+  std::string::size_type pos = path.rfind( '.' );
+  if ( pos != std::string::npos )
+    ext = path.substr( pos );
+
+  if ( ext.compare( ".src" ) != 0 && ext.compare( ".inc" ) != 0 && ext.compare( ".em" ) != 0 )
   {
     ERROR_PRINTLN(
         "Didn't find '.src', '.inc', or '.em' extension on source filename '{}'! ..Ignoring",
@@ -199,7 +201,8 @@ bool format_file( const fs::path& path )
 
   std::unique_ptr<Compiler::Compiler> compiler = create_compiler();
 
-  bool success = compiler->format_file( path, ext == ".em", format_source_inplace );
+  bool success =
+      compiler->format_file( path.c_str(), ext.compare( ".em" ) == 0, format_source_inplace );
 
   if ( expect_compile_failure )
   {
@@ -301,34 +304,38 @@ void add_dependency_info( const fs::path& filepath_src,
  * @param path path of the file to be compiled
  * @return TRUE if the file was compiled, FALSE otherwise (eg. the file is up-to-date)
  */
-bool compile_file( const fs::path& path )
+bool compile_file( const std::string& path )
 {
-  auto ext = path.extension();
-  if ( ext == ".inc" )
+  std::string ext( "" );
+
+  std::string::size_type pos = path.rfind( '.' );
+  if ( pos != std::string::npos )
+    ext = path.substr( pos );
+
+  if ( !ext.compare( ".inc" ) )
   {
     compile_inc( path );
     return true;
   }
 
-  if ( ext != ".src" && ext != ".hsr" && ext != ".asp" )
+  if ( ext.compare( ".src" ) != 0 && ext.compare( ".hsr" ) != 0 && ext.compare( ".asp" ) != 0 )
   {
     ERROR_PRINTLN( "Didn't find '.src', '.hsr', or '.asp' extension on source filename '{}'!",
                    path );
     throw std::runtime_error( "Error in source filename" );
   }
-  auto filename_ecl = fs::path{ path }.replace_extension( ".ecl" );
-  auto filename_lst = fs::path{ path }.replace_extension( ".lst" );
-  auto filename_ast = fs::path{ path }.replace_extension( ".ast" );
-  auto filename_dep = fs::path{ path }.replace_extension( ".dep" );
-  auto filename_dbg = fs::path{ path }.replace_extension( ".dbg" );
+  std::string fname = path;
+  std::string filename_ecl = fname.replace( pos, 4, ".ecl" );
+  std::string filename_lst = fname.replace( pos, 4, ".lst" );
+  std::string filename_ast = fname.replace( pos, 4, ".ast" );
+  std::string filename_dep = fname.replace( pos, 4, ".dep" );
+  std::string filename_dbg = fname.replace( pos, 4, ".dbg" );
 
   if ( compilercfg.OnlyCompileUpdatedScripts && !force_update )
   {
     bool all_old = true;
-    fs::file_time_type ecl_timestamp = fs::file_time_type::min();
-    if ( fs::exists( filename_ecl ) )
-      ecl_timestamp = fs::last_write_time( filename_ecl );
-    if ( fs::last_write_time( path ) >= ecl_timestamp )
+    unsigned int ecl_timestamp = Clib::GetFileTimestamp( filename_ecl.c_str() );
+    if ( Clib::GetFileTimestamp( path.c_str() ) >= ecl_timestamp )
     {
       if ( compilercfg.VerbosityLevel > 0 )
         INFO_PRINTLN( "{} is newer than {}", path, filename_ecl );
@@ -337,14 +344,14 @@ bool compile_file( const fs::path& path )
 
     if ( all_old )
     {
-      std::ifstream ifs( filename_dep );
+      std::ifstream ifs( filename_dep.c_str() );
       // if the file doesn't exist, gotta build.
       if ( ifs.is_open() )
       {
         std::string depname;
         while ( getline( ifs, depname ) )
         {
-          if ( !fs::exists( depname ) || ( fs::last_write_time( depname ) >= ecl_timestamp ) )
+          if ( Clib::GetFileTimestamp( depname.c_str() ) >= ecl_timestamp )
           {
             if ( compilercfg.VerbosityLevel > 0 )
               INFO_PRINTLN( "{} is newer than {}", depname, filename_ecl );
@@ -369,109 +376,111 @@ bool compile_file( const fs::path& path )
   }
 
 
-  if ( !quiet )
-    INFO_PRINTLN( "Compiling: {}", path );
-
-  std::unique_ptr<Compiler::Compiler> compiler = create_compiler();
-
-  bool success = compiler->compile_file( path );
-  summary.TotalWarnings += compiler->warnings_count();
-
-  em_parse_tree_cache.keep_some();
-  inc_parse_tree_cache.keep_some();
-
-  if ( expect_compile_failure )
   {
-    if ( !success )  // good, it failed
+    if ( !quiet )
+      INFO_PRINTLN( "Compiling: {}", path );
+
+    std::unique_ptr<Compiler::Compiler> compiler = create_compiler();
+
+    bool success = compiler->compile_file( path.c_str() );
+
+    em_parse_tree_cache.keep_some();
+    inc_parse_tree_cache.keep_some();
+
+    if ( expect_compile_failure )
+    {
+      if ( !success )  // good, it failed
+      {
+        if ( !quiet )
+          INFO_PRINTLN( "Compilation failed as expected." );
+        return true;
+      }
+      else
+      {
+        throw std::runtime_error( "Compilation succeeded (-e indicates failure was expected)" );
+      }
+    }
+
+    if ( !success )
+      throw std::runtime_error( "Error compiling file" );
+
+
+    if ( !quiet )
+      INFO_PRINTLN( "Writing:   {}", filename_ecl );
+
+    if ( !compiler->write_ecl( filename_ecl ) )
+    {
+      throw std::runtime_error( "Error writing output file" );
+    }
+
+    if ( compilercfg.GenerateListing )
     {
       if ( !quiet )
-        INFO_PRINTLN( "Compilation failed as expected." );
-      return true;
+        INFO_PRINTLN( "Writing:   {}", filename_lst );
+      compiler->write_listing( filename_lst );
     }
-    else
+    else if ( Clib::FileExists( filename_lst.c_str() ) )
     {
-      throw std::runtime_error( "Compilation succeeded (-e indicates failure was expected)" );
+      if ( !quiet )
+        INFO_PRINTLN( "Deleting:  {}", filename_lst );
+      Clib::RemoveFile( filename_lst );
     }
-  }
 
-  if ( !success )
-    throw std::runtime_error( "Error compiling file" );
-
-
-  if ( !quiet )
-    INFO_PRINTLN( "Writing:   {}", filename_ecl );
-
-  if ( !compiler->write_ecl( filename_ecl ) )
-  {
-    throw std::runtime_error( "Error writing output file" );
-  }
-
-  if ( compilercfg.GenerateListing )
-  {
-    if ( !quiet )
-      INFO_PRINTLN( "Writing:   {}", filename_lst );
-    compiler->write_listing( filename_lst );
-  }
-  else if ( fs::exists( filename_lst ) )
-  {
-    if ( !quiet )
-      INFO_PRINTLN( "Deleting:  {}", filename_lst );
-    fs::remove( filename_lst );
-  }
-
-  if ( compilercfg.GenerateAbstractSyntaxTree )
-  {
-    if ( !quiet )
-      INFO_PRINTLN( "Writing:   {}", filename_ast );
-    compiler->write_string_tree( filename_ast );
-  }
-  else if ( fs::exists( filename_ast ) )
-  {
-    if ( !quiet )
-      INFO_PRINTLN( "Deleting:  {}", filename_ast );
-    fs::remove( filename_ast );
-  }
-
-  if ( compilercfg.GenerateDebugInfo )
-  {
-    if ( !quiet )
+    if ( compilercfg.GenerateAbstractSyntaxTree )
     {
-      INFO_PRINTLN( "Writing:   {}", filename_dbg );
-      if ( compilercfg.GenerateDebugTextInfo )
-        INFO_PRINTLN( "Writing:   {}.txt", filename_dbg );
+      if ( !quiet )
+        INFO_PRINTLN( "Writing:   {}", filename_ast );
+      compiler->write_string_tree( filename_ast );
     }
-    compiler->write_dbg( filename_dbg, compilercfg.GenerateDebugTextInfo );
-  }
-  else if ( fs::exists( filename_dbg ) )
-  {
-    if ( !quiet )
-      INFO_PRINTLN( "Deleting:  {}", filename_dbg );
-    fs::remove( filename_dbg );
-  }
+    else if ( Clib::FileExists( filename_ast.c_str() ) )
+    {
+      if ( !quiet )
+        INFO_PRINTLN( "Deleting:  {}", filename_ast );
+      Clib::RemoveFile( filename_ast );
+    }
 
-  if ( compilercfg.GenerateDependencyInfo )
-  {
-    if ( !quiet )
-      INFO_PRINTLN( "Writing:   {}", filename_dep );
-    compiler->write_included_filenames( filename_dep );
-  }
-  else if ( fs::exists( filename_dep ) )
-  {
-    if ( !quiet )
-      INFO_PRINTLN( "Deleting:  {}", filename_dep );
-    fs::remove( filename_dep );
+    if ( compilercfg.GenerateDebugInfo )
+    {
+      if ( !quiet )
+      {
+        INFO_PRINTLN( "Writing:   {}", filename_dbg );
+        if ( compilercfg.GenerateDebugTextInfo )
+          INFO_PRINTLN( "Writing:   {}.txt", filename_dbg );
+      }
+      compiler->write_dbg( filename_dbg, compilercfg.GenerateDebugTextInfo );
+    }
+    else if ( Clib::FileExists( filename_dbg.c_str() ) )
+    {
+      if ( !quiet )
+        INFO_PRINTLN( "Deleting:  {}", filename_dbg );
+      Clib::RemoveFile( filename_dbg );
+    }
+
+    if ( compilercfg.GenerateDependencyInfo )
+    {
+      if ( !quiet )
+        INFO_PRINTLN( "Writing:   {}", filename_dep );
+      compiler->write_included_filenames( filename_dep );
+    }
+    else if ( Clib::FileExists( filename_dep.c_str() ) )
+    {
+      if ( !quiet )
+        INFO_PRINTLN( "Deleting:  {}", filename_dep );
+      Clib::RemoveFile( filename_dep );
+    }
   }
   return true;
 }
 
-bool process_file( const fs::path& path )
+bool process_file( const std::string& path )
 {
   if ( format_source )
     return format_file( path );
   return compile_file( path );
 }
 
-void process_file_wrapper( const fs::path& path, std::set<fs::path>* removed_dependencies = nullptr,
+void process_file_wrapper( const std::string& path,
+                           std::set<fs::path>* removed_dependencies = nullptr,
                            std::set<fs::path>* new_dependencies = nullptr )
 {
   try
@@ -491,9 +500,9 @@ void process_file_wrapper( const fs::path& path, std::set<fs::path>* removed_dep
 
   if ( watch_source )
   {
-    fs::path filepath = fs::canonical( path );
-    auto ext = filepath.extension();
-    if ( ext == ".src" || ext == ".hsr" || ext == ".asp" )
+    fs::path filepath = fs::canonical( fs::path( path ) );
+    auto ext = filepath.extension().generic_string();
+    if ( ext.compare( ".src" ) == 0 || ext.compare( ".hsr" ) == 0 || ext.compare( ".asp" ) == 0 )
     {
       add_dependency_info( filepath, removed_dependencies, new_dependencies );
     }
@@ -721,9 +730,9 @@ void apply_configuration()
 }
 
 void recurse_call( const std::vector<fs::path>& basedirs, bool inc_files,
-                   const std::function<void( const fs::path& )>& callback )
+                   const std::function<void( const std::string& )>& callback )
 {
-  std::set<fs::path> files;
+  std::set<std::string> files;
   for ( const auto& basedir : basedirs )
   {
     if ( !fs::is_directory( basedir ) )
@@ -734,8 +743,7 @@ void recurse_call( const std::vector<fs::path>& basedirs, bool inc_files,
     {
       if ( Clib::exit_signalled )
         return;
-      auto file = dir_itr->path();
-      if ( auto fn = file.filename().string(); !fn.empty() && *fn.begin() == '.' )
+      if ( auto fn = dir_itr->path().filename().string(); !fn.empty() && *fn.begin() == '.' )
       {
         if ( dir_itr->is_directory() )
           dir_itr.disable_recursion_pending();
@@ -743,14 +751,16 @@ void recurse_call( const std::vector<fs::path>& basedirs, bool inc_files,
       }
       else if ( !dir_itr->is_regular_file() )
         continue;
-      const auto ext = file.extension();
+      const auto ext = dir_itr->path().extension();
+      const auto file = dir_itr->path().generic_string();
       if ( inc_files )
       {
-        if ( ext == ".inc" )
+        if ( !ext.compare( ".inc" ) )
           if ( files.insert( file ).second )
             callback( file );
       }
-      else if ( ext == ".src" || ext == ".hsr" || ( compilercfg.CompileAspPages && ext == ".asp" ) )
+      else if ( !ext.compare( ".src" ) || !ext.compare( ".hsr" ) ||
+                ( compilercfg.CompileAspPages && !ext.compare( ".asp" ) ) )
       {
         if ( files.insert( file ).second )
           callback( file );
@@ -763,40 +773,54 @@ void process_dirs( const std::vector<fs::path>& dirs, bool compile_inc )
 {
   if ( !compilercfg.ThreadedCompilation )
   {
-    recurse_call( dirs, compile_inc, []( const fs::path& file ) { process_file_wrapper( file ); } );
+    recurse_call( dirs, compile_inc,
+                  []( const std::string& file ) { process_file_wrapper( file ); } );
     return;
   }
+  std::atomic<unsigned> compiled_scripts( 0 );
+  std::atomic<unsigned> uptodate_scripts( 0 );
+  std::atomic<unsigned> error_scripts( 0 );
   std::atomic<bool> par_keep_building( true );
-  unsigned int thread_count = std::max( 2u, std::thread::hardware_concurrency() * 2 );
-  if ( compilercfg.NumberOfThreads )
-    thread_count = static_cast<unsigned>( compilercfg.NumberOfThreads );
-  threadhelp::TaskThreadPool pool( thread_count, "ecompile" );
-  summary.ThreadCount = pool.size();
-  auto callback = [&]( const fs::path& file )
   {
-    pool.push(
-        [&, file]()
-        {
-          if ( !par_keep_building || Clib::exit_signalled )
-            return;
-          try
+    unsigned int thread_count = std::max( 2u, std::thread::hardware_concurrency() * 2 );
+    if ( compilercfg.NumberOfThreads )
+      thread_count = static_cast<unsigned>( compilercfg.NumberOfThreads );
+    threadhelp::TaskThreadPool pool( thread_count, "ecompile" );
+    summary.ThreadCount = pool.size();
+    auto callback = [&]( const std::string& file )
+    {
+      pool.push(
+          [&, file]()
           {
-            process_file_wrapper( file );
-          }
-          catch ( std::exception& e )
-          {
-            ERROR_PRINTLN( "failed to compile {}: {}", file, e.what() );
-            if ( !keep_building )
+            if ( !par_keep_building || Clib::exit_signalled )
+              return;
+            try
+            {
+              if ( process_file( file ) )
+                ++compiled_scripts;
+              else
+                ++uptodate_scripts;
+            }
+            catch ( std::exception& e )
+            {
+              ++compiled_scripts;
+              ++error_scripts;
+              ERROR_PRINTLN( "failed to compile {}: {}", file, e.what() );
+              if ( !keep_building )
+                par_keep_building = false;
+            }
+            catch ( ... )
+            {
               par_keep_building = false;
-          }
-          catch ( ... )
-          {
-            par_keep_building = false;
-            Clib::force_backtrace();
-          }
-        } );
-  };
-  recurse_call( dirs, compile_inc, callback );
+              Clib::force_backtrace();
+            }
+          } );
+    };
+    recurse_call( dirs, compile_inc, callback );
+  }
+  summary.CompiledScripts = compiled_scripts;
+  summary.UpToDateScripts = uptodate_scripts;
+  summary.ScriptsWithCompileErrors = error_scripts;
 }
 
 void DisplaySummary( const Tools::Timer<>& timer )
@@ -811,8 +835,6 @@ void DisplaySummary( const Tools::Timer<>& timer )
   if ( summary.ScriptsWithCompileErrors )
     tmp += fmt::format( "    {} of those script{} had errors.\n", summary.ScriptsWithCompileErrors,
                         ( summary.ScriptsWithCompileErrors == 1 ? "" : "s" ) );
-  if ( summary.TotalWarnings )
-    tmp += fmt::format( "    Total warnings: {}.\n", summary.TotalWarnings );
 
   if ( summary.UpToDateScripts )
     tmp += fmt::format( "    {} script{} already up-to-date.\n", summary.UpToDateScripts,
@@ -883,7 +905,7 @@ void EnterWatchMode()
     else
     {
       auto ext = filepath.extension();
-      if ( ext == ".src" || ext == ".hsr" || ext == ".asp" )
+      if ( ext.compare( ".src" ) == 0 || ext.compare( ".hsr" ) == 0 || ext.compare( ".asp" ) == 0 )
       {
         to_compile.emplace( filepath );
       }
@@ -921,8 +943,9 @@ void EnterWatchMode()
     }
   };
 
-  auto add_dir = [&]( const fs::path& dir )
+  auto add_dir = [&]( const std::string& elem )
   {
+    fs::path dir( elem );
     if ( fs::exists( dir ) )
     {
       auto dirpath = fs::canonical( dir );
@@ -1010,7 +1033,8 @@ void EnterWatchMode()
           std::set<fs::path> new_dependencies;
           try
           {
-            process_file_wrapper( filepath, &removed_dependencies, &new_dependencies );
+            process_file_wrapper( filepath.generic_string(), &removed_dependencies,
+                                  &new_dependencies );
           }
           catch ( ... )
           {
@@ -1123,10 +1147,9 @@ bool run( int argc, char** argv, int* res )
     {
       any = true;
 #ifdef _WIN32
-      Clib::forspec( argv[i],
-                     []( const char* pathname ) { process_file_wrapper( fs::path( pathname ) ); } );
+      Clib::forspec( argv[i], []( const char* pathname ) { process_file_wrapper( pathname ); } );
 #else
-      process_file_wrapper( fs::path( argv[i] ) );
+      process_file_wrapper( argv[i] );
 #endif
     }
   }
@@ -1182,17 +1205,17 @@ void read_config_file( int argc, char* argv[] )
   const char* env_ecompile_cfg_path = getenv( "ECOMPILE_CFG_PATH" );
   if ( env_ecompile_cfg_path != nullptr )
   {
-    compilercfg.Read( fs::path( env_ecompile_cfg_path ) );
+    compilercfg.Read( std::string( env_ecompile_cfg_path ) );
     return;
   }
 
   // no -C arg, so use binary path (hope it's right..sigh.)
-  auto cfgpath = PROG_CONFIG::programDir() / "ecompile.cfg";
-  if ( fs::exists( "ecompile.cfg" ) )
+  std::string cfgpath = PROG_CONFIG::programDir() + "ecompile.cfg";
+  if ( Clib::FileExists( "ecompile.cfg" ) )
   {
     compilercfg.Read( "ecompile.cfg" );
   }
-  else if ( fs::exists( cfgpath ) )
+  else if ( Clib::FileExists( cfgpath ) )
   {
     compilercfg.Read( cfgpath );
   }

@@ -6,8 +6,7 @@
 
 namespace Pol::Bscript::Compiler
 {
-DebugStore::DebugStore( std::vector<std::filesystem::path> filenames )
-    : filenames( std::move( filenames ) )
+DebugStore::DebugStore( std::vector<std::string> filenames ) : filenames( std::move( filenames ) )
 {
   std::vector<std::string> empty;
   blocks.emplace_back( 0, 0, empty );

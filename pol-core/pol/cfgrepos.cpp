@@ -17,10 +17,8 @@
 
 #include "cfgrepos.h"
 
-#include <cstdlib>
 #include <ctype.h>
 #include <exception>
-#include <filesystem>
 #include <iosfwd>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -42,7 +40,6 @@ namespace Pol
 {
 namespace Core
 {
-namespace fs = std::filesystem;
 StoredConfigElem::StoredConfigElem( Clib::ConfigElem& elem )
 {
   std::string propname, propval;
@@ -276,19 +273,23 @@ ConfigFileRef FindConfigFile( const std::string& filename, const std::string& al
     {
       bool any = false;
       ref_ptr<StoredConfigFile> scfg( new StoredConfigFile() );
-      auto main_cfg = fs::path{ "config" } / ( allpkgbase + ".cfg" );
-      if ( fs::exists( main_cfg ) )
+      std::string main_cfg = "config/" + allpkgbase + ".cfg";
+      if ( Clib::FileExists( main_cfg.c_str() ) )
       {
-        Clib::ConfigFile cf_main( main_cfg );
+        Clib::ConfigFile cf_main( main_cfg.c_str() );
         scfg->load( cf_main );
         any = true;
       }
-      for ( const auto& pkg : Plib::systemstate.packages )
+      for ( Plib::Packages::iterator pitr = Plib::systemstate.packages.begin(),
+                                     pitrend = Plib::systemstate.packages.end();
+            pitr != pitrend; ++pitr )
       {
-        auto pkgfilename = GetPackageCfgPath( pkg, allpkgbase + ".cfg" );
-        if ( fs::exists( pkgfilename ) )
+        Plib::Package* pkg = ( *pitr );
+        // string pkgfilename = pkg->dir() + allpkgbase + ".cfg";
+        std::string pkgfilename = GetPackageCfgPath( pkg, allpkgbase + ".cfg" );
+        if ( Clib::FileExists( pkgfilename.c_str() ) )
         {
-          Clib::ConfigFile cf( pkgfilename );
+          Clib::ConfigFile cf( pkgfilename.c_str() );
           scfg->load( cf );
           any = true;
         }
@@ -300,8 +301,7 @@ ConfigFileRef FindConfigFile( const std::string& filename, const std::string& al
     }
     else
     {
-      auto filepath = fs::path{ filename };
-      if ( !fs::exists( filepath ) )
+      if ( !Clib::FileExists( filename.c_str() ) )
       {
         if ( Plib::systemstate.config.report_missing_configs )
         {
@@ -310,7 +310,7 @@ ConfigFileRef FindConfigFile( const std::string& filename, const std::string& al
         return ConfigFileRef( nullptr );
       }
 
-      Clib::ConfigFile cf( filepath );
+      Clib::ConfigFile cf( filename.c_str() );
 
       ref_ptr<StoredConfigFile> scfg( new StoredConfigFile() );
       scfg->load( cf );

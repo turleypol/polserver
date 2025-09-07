@@ -28,7 +28,7 @@
 #include "shlwapi.h"
 #endif
 
-// #include <boost/stacktrace.hpp>
+#include <boost/stacktrace.hpp>
 
 #define MAX_STACK_TRACE_DEPTH 200
 #define MAX_STACK_TRACE_STEP_LENGTH 512
@@ -560,13 +560,13 @@ void ExceptionParser::initGlobalExceptionCatching()
 
 string ExceptionParser::getTrace()
 {
-  //  auto stack = boost::stacktrace::stacktrace::from_current_exception();
+  auto stack = boost::stacktrace::stacktrace::from_current_exception();
   // current_exception does not always work, eg no active exception
   // and needs linking with libboost_stacktrace_backtrace, which as of now is not possible with
   // Apple. Current stacktrace as fallback, which should give enough infos
-  // if ( stack.empty() )
-  //    stack = boost::stacktrace::stacktrace();
-  return {};  // boost::stacktrace::to_string( stack );
+  if ( stack.empty() )
+    stack = boost::stacktrace::stacktrace();
+  return boost::stacktrace::to_string( stack );
 }
 
 void ExceptionParser::configureProgramAbortReportingSystem( bool active, std::string server,

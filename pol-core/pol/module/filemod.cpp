@@ -303,13 +303,13 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_FileExists()
   if ( path.find( ".." ) != std::string::npos )
     return new BError( "No parent path traversal allowed." );
 
-  fs::path filepath;
+  std::string filepath;
   if ( outpkg == nullptr )
     filepath = path;
   else
-    filepath = outpkg->dir() / path;
+    filepath = outpkg->dir() + path;
 
-  return new BLong( fs::exists( filepath ) );
+  return new BLong( Clib::FileExists( filepath ) );
 }
 
 Bscript::BObjectImp* FileAccessExecutorModule::mf_ReadFile()
@@ -329,15 +329,15 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ReadFile()
   if ( !HasReadAccess( exec.prog()->pkg, outpkg, path ) )
     return new BError( "Access denied" );
 
-  fs::path filepath;
+  std::string filepath;
   if ( outpkg == nullptr )
     filepath = path;
   else
-    filepath = outpkg->dir() / path;
+    filepath = outpkg->dir() + path;
 
-  std::ifstream ifs( filepath );
+  std::ifstream ifs( filepath.c_str() );
   if ( !ifs.is_open() )
-    return new BError( "File not found: " + filepath.string() );
+    return new BError( "File not found: " + filepath );
 
   std::unique_ptr<Bscript::ObjArray> arr( new Bscript::ObjArray() );
 
@@ -374,19 +374,19 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_WriteFile()
   if ( !HasWriteAccess( exec.prog()->pkg, outpkg, path ) )
     return new BError( "Access denied" );
 
-  fs::path filepath;
+  std::string filepath;
   if ( outpkg == nullptr )
     filepath = path;
   else
-    filepath = outpkg->dir() / path;
+    filepath = outpkg->dir() + path;
 
-  auto bakpath = fs::path{ filepath }.concat( ".bak" );
-  auto tmppath = fs::path{ filepath }.concat( ".tmp" );
+  std::string bakpath = filepath + ".bak";
+  std::string tmppath = filepath + ".tmp";
 
-  std::ofstream ofs( tmppath, std::ios::out | std::ios::trunc );
+  std::ofstream ofs( tmppath.c_str(), std::ios::out | std::ios::trunc );
 
   if ( !ofs.is_open() )
-    return new BError( "File not found: " + filepath.string() );
+    return new BError( "File not found: " + filepath );
 
   for ( unsigned i = 0; i < contents->ref_arr.size(); ++i )
   {
@@ -402,30 +402,31 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_WriteFile()
     return new BError( "Error during write." );
   ofs.close();
 
-  if ( fs::exists( bakpath ) )
+  if ( Clib::FileExists( bakpath ) )
   {
-    if ( std::error_code ec; !fs::remove( bakpath, ec ) )
+    if ( unlink( bakpath.c_str() ) )
     {
-      std::string message = "Unable to remove " + filepath.string() + ": " + ec.message();
+      int err = errno;
+      std::string message = "Unable to remove " + filepath + ": " + strerror( err );
 
       return new BError( message );
     }
   }
-  if ( fs::exists( filepath ) )
+  if ( Clib::FileExists( filepath ) )
   {
-    std::error_code ec;
-    if ( fs::rename( filepath, bakpath, ec ); ec )
+    if ( rename( filepath.c_str(), bakpath.c_str() ) )
     {
+      int err = errno;
       std::string message =
-          "Unable to rename " + filepath.string() + " to " + bakpath.string() + ": " + ec.message();
+          "Unable to rename " + filepath + " to " + bakpath + ": " + strerror( err );
       return new BError( message );
     }
   }
-  std::error_code ec;
-  if ( fs::rename( tmppath, filepath, ec ); ec )
+  if ( rename( tmppath.c_str(), filepath.c_str() ) )
   {
+    int err = errno;
     std::string message =
-        "Unable to rename " + tmppath.string() + " to " + filepath.string() + ": " + ec.message();
+        "Unable to rename " + tmppath + " to " + filepath + ": " + strerror( err );
     return new BError( message );
   }
 
@@ -452,16 +453,16 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_AppendToFile()
   if ( !HasAppendAccess( exec.prog()->pkg, outpkg, path ) )
     return new BError( "Access denied" );
 
-  fs::path filepath;
+  std::string filepath;
   if ( outpkg == nullptr )
     filepath = path;
   else
-    filepath = outpkg->dir() / path;
+    filepath = outpkg->dir() + path;
 
-  std::ofstream ofs( filepath, std::ios::out | std::ios::app );
+  std::ofstream ofs( filepath.c_str(), std::ios::out | std::ios::app );
 
   if ( !ofs.is_open() )
-    return new BError( "Unable to open file: " + filepath.string() );
+    return new BError( "Unable to open file: " + filepath );
 
   for ( unsigned i = 0; i < contents->ref_arr.size(); ++i )
   {
@@ -507,16 +508,16 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_LogToFile()
     if ( !HasAppendAccess( exec.prog()->pkg, outpkg, path ) )
       return new BError( "Access denied" );
 
-    fs::path filepath;
+    std::string filepath;
     if ( outpkg == nullptr )
       filepath = path;
     else
-      filepath = outpkg->dir() / path;
+      filepath = outpkg->dir() + path;
 
-    std::ofstream ofs( filepath, std::ios::out | std::ios::app );
+    std::ofstream ofs( filepath.c_str(), std::ios::out | std::ios::app );
 
     if ( !ofs.is_open() )
-      return new BError( "Unable to open file: " + filepath.string() );
+      return new BError( "Unable to open file: " + filepath );
 
     if ( flags & Core::LOG_DATETIME )
     {
@@ -565,11 +566,11 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_OpenBinaryFile()
       return new BError( "Access denied" );
   }
 
-  fs::path filepath;
+  std::string filepath;
   if ( outpkg == nullptr )
     filepath = path;
   else
-    filepath = outpkg->dir() / path;
+    filepath = outpkg->dir() + path;
 
   return new Core::BBinaryfile( filepath, mode, bigendian == 1 ? true : false );
 }
@@ -581,18 +582,19 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_CreateDirectory()
     return new BError( "Invalid parameter type" );
 
   const Plib::Package* outpkg;
-  std::string path_s;
-  if ( !pkgdef_split( dirname->value(), exec.prog()->pkg, &outpkg, &path_s ) )
+  std::string path;
+  if ( !pkgdef_split( dirname->value(), exec.prog()->pkg, &outpkg, &path ) )
     return new BError( "Error in dirname descriptor" );
-  if ( path_s.find( ".." ) != std::string::npos )
+  if ( path.find( ".." ) != std::string::npos )
     return new BError( "No parent path traversal please." );
 
-  auto path = fs::path{ path_s };
   if ( outpkg != nullptr )
-    path = outpkg->dir() / path;
-  if ( fs::is_directory( path ) )
+    path = outpkg->dir() + path;
+  path = Clib::normalized_dir_form( path );
+  if ( Clib::IsDirectory( path.c_str() ) )
     return new BError( "Directory already exists." );
-  if ( std::error_code ec; !fs::create_directories( path, ec ) )
+  int res = Clib::make_dir( path.c_str() );
+  if ( res != 0 )
     return new BError( "Could not create directory." );
   return new BLong( 1 );
 }
@@ -607,16 +609,16 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
     return new BError( "Invalid parameter type" );
 
   const Plib::Package* outpkg;
-  std::string path_s;
-  if ( !pkgdef_split( dirname->value(), exec.prog()->pkg, &outpkg, &path_s ) )
+  std::string path;
+  if ( !pkgdef_split( dirname->value(), exec.prog()->pkg, &outpkg, &path ) )
     return new BError( "Error in dirname descriptor" );
-  if ( path_s.find( ".." ) != std::string::npos )
+  if ( path.find( ".." ) != std::string::npos )
     return new BError( "No parent path traversal please." );
 
-  auto path = fs::path{ path_s };
   if ( outpkg != nullptr )
-    path = outpkg->dir() / path;
-  if ( std::error_code ec; !fs::is_directory( path, ec ) )
+    path = outpkg->dir() + path;
+  path = Clib::normalized_dir_form( path );
+  if ( !Clib::IsDirectory( path.c_str() ) )
     return new BError( "Directory not found." );
   bool asterisk = false;
   bool nofiles = false;
@@ -633,7 +635,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
   std::error_code ec;
   for ( const auto& dir_entry : fs::directory_iterator( path, ec ) )
   {
-    if ( const auto& fn = dir_entry.path().filename().string(); !fn.empty() && *fn.begin() == '.' )
+    if ( auto fn = dir_entry.path().filename().string(); !fn.empty() && *fn.begin() == '.' )
       continue;
     if ( dir_entry.is_directory() )
     {
@@ -671,12 +673,12 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_OpenXMLFile()
   if ( !HasReadAccess( exec.prog()->pkg, outpkg, path ) )
     return new BError( "Access denied" );
 
-  fs::path filepath;
+  std::string filepath;
   if ( outpkg == nullptr )
     filepath = path;
   else
-    filepath = outpkg->dir() / path;
-  if ( !fs::exists( filepath ) )
+    filepath = outpkg->dir() + path;
+  if ( !Clib::FileExists( filepath ) )
     return new BError( "File does not exist" );
   std::unique_ptr<Core::BXMLfile> xml( new Core::BXMLfile( filepath ) );
   if ( !xml->isTrue() )
@@ -693,7 +695,7 @@ void load_fileaccess_cfg()
 {
   Core::configurationbuffer.file_access_rules.clear();
 
-  if ( !fs::exists( "config/fileaccess.cfg" ) )
+  if ( !Clib::FileExists( "config/fileaccess.cfg" ) )
     return;
 
   Clib::ConfigFile cf( "config/fileaccess.cfg", "FileAccess" );

@@ -1,16 +1,23 @@
+/** @file
+ *
+ * @par History
+ */
+
+
 #include "compilercfg.h"
 
-#include <ranges>
 #include <stdlib.h>
 
 #include "../clib/Program/ProgramConfig.h"
 #include "../clib/cfgelem.h"
 #include "../clib/cfgfile.h"
+#include "../clib/fileutil.h"
 
-namespace Pol::Bscript
+namespace Pol
 {
-namespace fs = std::filesystem;
-void CompilerConfig::Read( const fs::path& path )
+namespace Bscript
+{
+void CompilerConfig::Read( const std::string& path )
 {
 #ifdef _WIN32
   bool win_platform = true;
@@ -18,7 +25,7 @@ void CompilerConfig::Read( const fs::path& path )
   bool win_platform = false;
 #endif
 
-  Clib::ConfigFile cf( path );
+  Clib::ConfigFile cf( path.c_str() );
   Clib::ConfigElem elem;
   cf.readraw( elem );
 
@@ -28,14 +35,14 @@ void CompilerConfig::Read( const fs::path& path )
   std::string tmp;
   while ( elem.remove_prop( "PackageRoot", &tmp ) )
   {
-    PackageRoot.push_back( fs::path{ tmp }.lexically_normal() );
+    PackageRoot.push_back( Clib::normalized_dir_form( tmp ) );
   }
   if ( elem.remove_prop( "IncludeDirectory", &tmp ) )
   {
-    IncludeDirectory = fs::path{ tmp }.lexically_normal();
+    IncludeDirectory = Clib::normalized_dir_form( tmp );
   }
-  ModuleDirectory = fs::path{ elem.remove_string( "ModuleDirectory" ) }.lexically_normal();
-  PolScriptRoot = fs::path{ elem.remove_string( "PolScriptRoot" ) }.lexically_normal();
+  ModuleDirectory = Clib::normalized_dir_form( elem.remove_string( "ModuleDirectory" ) );
+  PolScriptRoot = Clib::normalized_dir_form( elem.remove_string( "PolScriptRoot" ) );
   GenerateListing = elem.remove_bool( "GenerateListing", false );
   GenerateDebugInfo = elem.remove_bool( "GenerateDebugInfo", false );
   GenerateDebugTextInfo = elem.remove_bool( "GenerateDebugTextInfo", false );
@@ -95,51 +102,56 @@ void CompilerConfig::Read( const fs::path& path )
       elem.remove_bool( "FormatterAllowShortFuncRefsOnASingleLine", true );
 
 
-// This is where we TRY to validate full paths from what was provided in the
-// ecompile.cfg.
-// On Windows ecompile.exe is expected to be located in scripts/
+  // This is where we TRY to validate full paths from what was provided in the
+  // ecompile.cfg. Maybe Turley or Shini can find the best way to do this in *nix.
 #ifdef WIN32
-  fs::path MyPath{ path };
+  std::string MyPath = path.c_str();
   // If it's just "ecompile.cfg", let's change it to the exe's path which it SHOULD be
   // with.
-  if ( !MyPath.has_parent_path() )
+  if ( stricmp( MyPath.c_str(), "ecompile.cfg" ) == 0 )
   {
+    std::string workingDir = PROG_CONFIG::programDir();
+
     // Let's find the NEXT-TO-LAST / in the path, and remove from there on. Oh yay!
     // To bad we can't just force everyone to use ABSOLUTE PATHS NANDO. :o
-    MyPath = PROG_CONFIG::programDir();
-    // from root/scripts/ to root/
-    if ( !MyPath.has_filename() )
-      MyPath = MyPath.parent_path();  // remove trailing /
-    MyPath = MyPath.parent_path();
+    MyPath = workingDir.substr( 0, workingDir.length() - 1 );
+    MyPath = MyPath.substr( 0, MyPath.find_last_of( '/' ) + 1 );
+  }
+  if ( IncludeDirectory.find( ':' ) == std::string::npos )
+  {
+    if ( IncludeDirectory.substr( 0, 1 ) !=
+         "." )  // Let's make sure they didn't try using this method
+    {
+      IncludeDirectory = MyPath + IncludeDirectory;
+    }
+  }
+  if ( ModuleDirectory.find( ':' ) == std::string::npos )
+  {
+    if ( ModuleDirectory.substr( 0, 1 ) !=
+         "." )  // Let's make sure they didn't try using this method
+    {
+      ModuleDirectory = MyPath + ModuleDirectory;
+    }
+  }
+  if ( PolScriptRoot.find( ':' ) == std::string::npos )
+  {
+    if ( PolScriptRoot.substr( 0, 1 ) != "." )  // Let's make sure they didn't try using this method
+    {
+      PolScriptRoot = MyPath + PolScriptRoot;
+    }
+  }
+  for ( unsigned pr = 0; pr < PackageRoot.size(); ++pr )
+  {
+    if ( PackageRoot[pr].find( ':' ) == std::string::npos )
+    {
+      if ( PackageRoot[pr].substr( 0, 1 ) !=
+           "." )  // Let's make sure they didn't try using this method
+      {
+        PackageRoot[pr] = MyPath + PackageRoot[pr];
+      }
+    }
   }
 
-  if ( !IncludeDirectory.is_absolute() )
-    IncludeDirectory = ( MyPath / IncludeDirectory ).lexically_normal();
-  if ( !ModuleDirectory.is_absolute() )
-    ModuleDirectory = ( MyPath / ModuleDirectory ).lexically_normal();
-  if ( !PolScriptRoot.is_absolute() )
-    PolScriptRoot = ( MyPath / PolScriptRoot ).lexically_normal();
-  std::ranges::transform( PackageRoot, PackageRoot.begin(),
-                          [&MyPath]( const fs::path& pr )
-                          {
-                            if ( pr.is_absolute() )
-                              return pr;
-                            return ( MyPath / pr ).lexically_normal();
-                          } );
-#else  // on Linux ecompile can be everywhere it only depends on the current working directory
-  if ( !IncludeDirectory.is_absolute() )
-    IncludeDirectory = fs::absolute( IncludeDirectory ).lexically_normal();
-  if ( !ModuleDirectory.is_absolute() )
-    ModuleDirectory = fs::absolute( ModuleDirectory ).lexically_normal();
-  if ( !PolScriptRoot.is_absolute() )
-    PolScriptRoot = fs::absolute( PolScriptRoot ).lexically_normal();
-  std::ranges::transform( PackageRoot, PackageRoot.begin(),
-                          []( const fs::path& pr )
-                          {
-                            if ( pr.is_absolute() )
-                              return pr;
-                            return fs::absolute( pr ).lexically_normal();
-                          } );
 #endif
 }
 
@@ -148,10 +160,10 @@ void CompilerConfig::SetDefaults()
   const char* tmp;
 
   tmp = getenv( "ECOMPILE_PATH_EM" );
-  ModuleDirectory = tmp ? fs::path{ tmp }.lexically_normal() : PROG_CONFIG::programDir();
+  ModuleDirectory = tmp ? Clib::normalized_dir_form( tmp ) : PROG_CONFIG::programDir();
 
   tmp = getenv( "ECOMPILE_PATH_INC" );
-  IncludeDirectory = tmp ? fs::path{ tmp }.lexically_normal() : PROG_CONFIG::programDir();
+  IncludeDirectory = tmp ? Clib::normalized_dir_form( tmp ) : PROG_CONFIG::programDir();
 
   PolScriptRoot = IncludeDirectory;
 
@@ -162,4 +174,5 @@ void CompilerConfig::SetDefaults()
 }
 
 CompilerConfig compilercfg;
-}  // namespace Pol::Bscript
+}  // namespace Bscript
+}  // namespace Pol

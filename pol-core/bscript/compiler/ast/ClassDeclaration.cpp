@@ -7,7 +7,6 @@
 #include "bscript/compiler/file/SourceFileIdentifier.h"
 #include "bscript/compiler/model/ClassLink.h"
 #include "bscript/compiler/model/FunctionLink.h"
-#include <fmt/std.h>
 
 namespace Pol::Bscript::Compiler
 {
@@ -49,6 +48,6 @@ std::vector<std::reference_wrapper<ClassParameterDeclaration>> ClassDeclaration:
 
 std::string ClassDeclaration::type_tag() const
 {
-  return fmt::format( "{}@{}", name, source_location.source_file_identifier->path );
+  return fmt::format( "{}@{}", name, source_location.source_file_identifier->pathname );
 }
 }  // namespace Pol::Bscript::Compiler

@@ -162,7 +162,7 @@ dap::ResponseOrError<dap::LaunchResponse> DebugClientThread::handle_launch(
       const Plib::Package* package = nullptr;
       for ( const auto* pkg : Plib::systemstate.packages )
       {
-        if ( relative.find( pkg->dir().string() ) == 0 )
+        if ( relative.find( pkg->dir() ) == 0 )
         {
           package = pkg;
           break;
@@ -170,8 +170,8 @@ dap::ResponseOrError<dap::LaunchResponse> DebugClientThread::handle_launch(
       }
       if ( package )
       {
-        config_result = sd.config_nodie( relative.substr( package->dir().string().length() ),
-                                         package, "scripts/" );
+        config_result =
+            sd.config_nodie( relative.substr( package->dir().length() ), package, "scripts/" );
       }
       else
       {

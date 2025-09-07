@@ -17,7 +17,6 @@
 #include <stdio.h>
 #endif
 
-#include <filesystem>
 #include <set>
 #include <string>
 #include <time.h>
@@ -46,7 +45,6 @@ class ConfigFile : public ConfigSource
 public:
   explicit ConfigFile( const char* filename = nullptr, const char* allowed_types = nullptr );
   explicit ConfigFile( const std::string& filename, const char* allowed_types = nullptr );
-  explicit ConfigFile( const std::filesystem::path& filename, const char* allowed_types = nullptr );
   virtual ~ConfigFile();
 
   void open( const char* i_filename );

@@ -1,10 +1,10 @@
 #ifndef POLSERVER_SOURCEFILECACHE_H
 #define POLSERVER_SOURCEFILECACHE_H
 
-#include <filesystem>
 #include <map>
 #include <memory>
 #include <mutex>
+#include <string>
 
 namespace Pol::Bscript::Compiler
 {
@@ -29,8 +29,8 @@ private:
   unsigned keep;
 
   std::mutex mutex;
-  std::map<std::filesystem::path, std::shared_ptr<SourceFile>> files;
-  std::map<std::filesystem::path, unsigned> frequency;
+  std::map<std::string, std::shared_ptr<SourceFile>> files;
+  std::map<std::string, unsigned> frequency;
   Profile& profile;
 };
 

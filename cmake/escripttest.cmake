@@ -48,10 +48,8 @@ endfunction()
 
 function (compareresult scriptname result optimized)
   set (outname "${scriptname}.out")
-    message("compare ${optimized}")
   if (optimized AND EXISTS "${scriptname}.optimized.out")
     set (outname "${scriptname}.optimized.out")
-    message("use opt")
   endif()
 
   execute_process(
@@ -203,6 +201,6 @@ function (testwithcompiler)
   endforeach()
 endfunction()
 
-#testwithcompiler()
+testwithcompiler()
 testwithcompiler(SHORTCIRCUIT)
-#testwithcompiler(FORMAT)
+testwithcompiler(FORMAT)

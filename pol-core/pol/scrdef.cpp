@@ -3,8 +3,8 @@
  * @par History
  */
 
+
 #include "scrdef.h"
-#include <filesystem>
 
 #include "../bscript/escrutil.h"
 #include "../clib/fileutil.h"
@@ -15,27 +15,19 @@ namespace Pol
 {
 namespace Core
 {
-namespace fs = std::filesystem;
 std::string full_scriptname( const std::string& spec, const Plib::Package* pkg,
                              const char* mainpfx )
 {
   if ( spec.empty() )
     return spec;
-  fs::path filename( spec );
-  auto addecl = []( fs::path&& p )
-  {
-    if ( p.extension() != ".ecl" )
-      p += ".ecl";
-    return p;
-  };
 
   if ( pkg != nullptr )
-    return addecl( pkg->dir() / spec );
+    return Bscript::normalize_ecl_filename( pkg->dir() + spec );
 
   if ( spec.find( '/' ) == std::string::npos )
-    return addecl( fs::path{ mainpfx } / spec );
+    return Bscript::normalize_ecl_filename( mainpfx + spec );
   else
-    return addecl( fs::path{ "scripts" } / spec );
+    return Bscript::normalize_ecl_filename( "scripts/" + spec );
 }
 
 ScriptDef::ScriptDef( const std::string& iname, const Plib::Package* ipkg, const char* mainpfx )
@@ -128,7 +120,7 @@ std::string ScriptDef::relativename( const Plib::Package* pkg ) const
 void ScriptDef::quickconfig( const Plib::Package* pkg, const std::string& name_ecl )
 {
   localname_ = "unknown";
-  name_ = pkg->dir() / name_ecl;
+  name_ = pkg->dir() + name_ecl;
   pkg_ = pkg;
 }
 
@@ -141,7 +133,9 @@ void ScriptDef::quickconfig( const std::string& name_ecl )
 
 bool ScriptDef::exists() const
 {
-  return !empty() && fs::exists( name() );
+  return !empty() && Clib::FileExists( c_str() );
+  // ref_ptr<EScriptProgram> prog = find_script2( *this, false, true );
+  // return (prog.get() != nullptr);
 }
 
 void ScriptDef::clear()
@@ -155,5 +149,5 @@ size_t ScriptDef::estimatedSize() const
 {
   return sizeof( ScriptDef );
 }
-}  // namespace Core
-}  // namespace Pol
+}
+}

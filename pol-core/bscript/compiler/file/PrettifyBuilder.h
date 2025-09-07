@@ -1,6 +1,6 @@
 #pragma once
 
-#include <filesystem>
+#include <string>
 
 namespace Pol::Bscript::Compiler
 {
@@ -12,7 +12,7 @@ class PrettifyBuilder
 public:
   PrettifyBuilder( Profile&, Report& );
 
-  std::string build( const std::filesystem::path& path, bool is_module );
+  std::string build( const std::string& pathname, bool is_module );
 
   Profile& profile;
   Report& report;

@@ -627,14 +627,14 @@ bool decode_page( const std::string& ipage, Plib::Package** ppkg, std::string* p
     if ( pkg == nullptr )
       return false;
 
-    filedir = pkg->dir() / "www";
+    filedir = pkg->dir() + "www";
   }
   else
   {
     if ( gamestate.wwwroot_pkg != nullptr )
     {
-      filedir = gamestate.wwwroot_pkg->dir() / "www";
-      retdir = gamestate.wwwroot_pkg->dir() / "www";
+      filedir = gamestate.wwwroot_pkg->dir() + "www";
+      retdir = gamestate.wwwroot_pkg->dir() + "www";
     }
     else
     {
@@ -679,7 +679,7 @@ bool decode_page( const std::string& ipage, Plib::Package** ppkg, std::string* p
     }
     else
     {
-      retdir = pkg->dir() / "www";
+      retdir = pkg->dir() + "www";
     }
   }
 

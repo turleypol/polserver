@@ -12,8 +12,8 @@ std::set<std::string, Clib::ci_cmp_pred> easily_overlooked_reserved_words = {
     "as",   "byval", "double", "downto", "float", "hash", "in",     "integer", "is",
     "long", "out",   "real",   "signed", "stack", "step", "string", "to",      "unsigned" };
 
-ErrorListener::ErrorListener( std::filesystem::path path, Profile& profile )
-    : path( std::move( path ) ), profile( profile )
+ErrorListener::ErrorListener( std::string pathname, Profile& profile )
+    : pathname( std::move( pathname ) ), profile( profile )
 {
 }
 

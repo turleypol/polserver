@@ -187,11 +187,11 @@ Bscript::BObjectImp* BXMLfile::call_method_id( const int id, Executor& ex, bool 
       if ( !Module::HasWriteAccess( ex.prog()->pkg, outpkg, path ) )
         return new BError( "Access denied" );
 
-      std::filesystem::path filepath;
+      std::string filepath;
       if ( outpkg == nullptr )
         filepath = path;
       else
-        filepath = outpkg->dir() / path;
+        filepath = outpkg->dir() + path;
 
       return new BLong( file.SaveFile( filepath ) ? 1 : 0 );
     }

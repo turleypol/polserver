@@ -1,25 +1,46 @@
 #include "ProgramConfig.h"
 #include "pol_global_config.h"
 #include "pol_revision.h"
-#include <filesystem>
 #include <string>
 
-namespace Pol::Clib
+namespace Pol
 {
-namespace fs = std::filesystem;
+namespace Clib
+{
+using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
 std::string ProgramConfig::m_programName = "";
-fs::path ProgramConfig::m_programDir = "";
+std::string ProgramConfig::m_programDir = "";
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ProgramConfig::configureProgramEnvironment( const std::string& programName )
 {
   m_programName = programName;
-  fs::path exeDir = fs::absolute( programName );
-  m_programDir = exeDir.remove_filename().lexically_normal();
+
+  std::string exeDir = programName;
+  std::string::size_type bslashpos;
+  while ( std::string::npos != ( bslashpos = exeDir.find( '\\' ) ) )
+  {
+    exeDir.replace( bslashpos, 1, 1, '/' );
+  }
+
+  std::string::size_type pos = exeDir.find_last_of( '/' );
+  if ( pos != std::string::npos )
+  {
+    exeDir.erase( pos );
+    exeDir += "/";
+  }
+
+  pos = exeDir.rfind( "/./" );
+  if ( pos != std::string::npos )
+  {
+    exeDir.erase( pos, 2 );
+  }
+
+  m_programDir = exeDir;
 }
 
 std::string ProgramConfig::programName()
@@ -27,7 +48,7 @@ std::string ProgramConfig::programName()
   return m_programName;
 }
 
-fs::path ProgramConfig::programDir()
+std::string ProgramConfig::programDir()
 {
   return m_programDir;
 }
@@ -43,4 +64,5 @@ std::string ProgramConfig::build_datetime()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-}  // namespace Pol::Clib
+}
+}  // namespaces

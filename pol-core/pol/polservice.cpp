@@ -58,9 +58,8 @@ void PolService::Run()
     char buffer[1000] = "";
     rc = GetCurrentDirectory( sizeof buffer, buffer );
     LogEvent( EVENTLOG_INFORMATION_TYPE, EVMSG_DEBUG, buffer );
-    LogEvent( EVENTLOG_INFORMATION_TYPE, EVMSG_DEBUG,
-              PROG_CONFIG::programDir().generic_string().c_str() );
-    rc = SetCurrentDirectory( PROG_CONFIG::programDir().generic_string().c_str() );
+    LogEvent( EVENTLOG_INFORMATION_TYPE, EVMSG_DEBUG, PROG_CONFIG::programDir().c_str() );
+    rc = SetCurrentDirectory( PROG_CONFIG::programDir().c_str() );
 
     xmain_outer( false /*testing*/ );
   }

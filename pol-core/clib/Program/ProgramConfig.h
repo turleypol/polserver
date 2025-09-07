@@ -1,9 +1,11 @@
-#pragma once
+#ifndef CLIB_PROGRAM_CONFIG_H
+#define CLIB_PROGRAM_CONFIG_H
 
-#include <filesystem>
 #include <string>
 
-namespace Pol::Clib
+namespace Pol
+{
+namespace Clib
 {
 class ProgramConfig
 {
@@ -19,7 +21,7 @@ public:
   /**
    * @brief Returns the directory of the currently running program
    */
-  static std::filesystem::path programDir();
+  static std::string programDir();
 
   static std::string build_target();
   static std::string build_datetime();
@@ -30,8 +32,11 @@ public:
 
 private:
   static std::string m_programName;
-  static std::filesystem::path m_programDir;
+  static std::string m_programDir;
 };
-}  // namespace Pol::Clib
+}  // namespace Clib
+}  // namespace Pol
 
 #define PROG_CONFIG Pol::Clib::ProgramConfig
+
+#endif  // CLIB_PROGRAM_CONFIG_H

@@ -619,7 +619,7 @@ private:
   };
   static std::map<std::string, profile_instr> escript_profile_map_;
 };
-#define ESCRIPT_PROFILER EscriptProfiler profiler
+#define ESCRIPT_PROFILER EscriptProfiler escript_profiler
 #else
 #define ESCRIPT_PROFILER( ... )
 #endif

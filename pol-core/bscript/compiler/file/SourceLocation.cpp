@@ -185,7 +185,7 @@ std::string SourceLocation::getSourceLine() const
 fmt::format_context::iterator fmt::formatter<Pol::Bscript::Compiler::SourceLocation>::format(
     const Pol::Bscript::Compiler::SourceLocation& l, fmt::format_context& ctx ) const
 {
-  std::string tmp = l.source_file_identifier->path.generic_string();
+  std::string tmp = l.source_file_identifier->pathname;
   if ( l.range.start.line_number || l.range.start.character_column )
     fmt::format_to( std::back_inserter( tmp ), ":{}:{}", l.range.start.line_number,
                     l.range.start.character_column );

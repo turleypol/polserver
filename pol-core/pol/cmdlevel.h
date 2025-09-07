@@ -6,7 +6,6 @@
 #ifndef __CMDLEVEL_H
 #define __CMDLEVEL_H
 
-#include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
@@ -35,8 +34,8 @@ public:
   size_t estimateSize() const;
 
   bool matches( const std::string& name ) const;
-  void add_searchdir( Plib::Package* pkg, const std::filesystem::path& dir );
-  void add_searchdir_front( Plib::Package* pkg, const std::filesystem::path& dir );
+  void add_searchdir( Plib::Package* pkg, const std::string& dir );
+  void add_searchdir_front( Plib::Package* pkg, const std::string& dir );
 
   std::string name;
   unsigned char cmdlevel;
@@ -44,7 +43,7 @@ public:
   struct SearchDir
   {
     Plib::Package* pkg;
-    std::filesystem::path dir;
+    std::string dir;
   };
 
   typedef std::vector<SearchDir> SearchList;

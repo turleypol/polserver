@@ -11,8 +11,6 @@
 #include "BinaryOperatorWithStringOptimizer.h"
 #include "ShortCircuitCombiner.h"
 
-#include <memory>
-
 namespace Pol::Bscript::Compiler
 {
 BinaryOperatorOptimizer::BinaryOperatorOptimizer( BinaryOperator& op, Report& report )

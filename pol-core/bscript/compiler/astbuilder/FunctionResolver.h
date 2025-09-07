@@ -19,6 +19,7 @@ namespace Pol::Bscript::Compiler
 class AvailableSecondPassTarget;
 class ClassDeclaration;
 class ClassLink;
+class CompilerWorkspace;
 class Function;
 class FunctionLink;
 class ModuleFunctionDeclaration;
@@ -29,7 +30,7 @@ class GeneratedFunction;
 class FunctionResolver
 {
 public:
-  explicit FunctionResolver( Report& );
+  explicit FunctionResolver( CompilerWorkspace&, Report& );
   ~FunctionResolver();
 
   // Force reference to a function
@@ -37,9 +38,6 @@ public:
 
   // Force reference to a class
   void force_reference( const ScopeName& name, const SourceLocation& );
-
-  void register_available_generated_function( const SourceLocation&, const ScopableName& name,
-                                              Node* context, UserFunctionType type );
 
   void register_available_user_function( const SourceLocation&,
                                          EscriptGrammar::EscriptParser::FunctionDeclarationContext*,
@@ -68,6 +66,9 @@ public:
   static std::string function_expression_name( const SourceLocation& );
 
 private:
+  void register_available_generated_function( const SourceLocation&, const ScopableName& name,
+                                              Node* context, UserFunctionType type );
+
   void register_available_function_parse_tree( const SourceLocation&, const ScopableName& name,
                                                std::unique_ptr<AvailableSecondPassTarget> apt );
   void register_available_user_function_parse_tree( const SourceLocation&,
@@ -78,6 +79,7 @@ private:
                                                  const ScopeName& scope,
                                                  Node* top_level_statements_child_node );
 
+  CompilerWorkspace& workspace;
   Report& report;
 
   using FunctionMap = std::map<ScopableName, Function*>;
@@ -85,6 +87,8 @@ private:
 
   using FunctionReferenceMap = std::map<ScopableName, std::vector<std::shared_ptr<FunctionLink>>>;
   using ClassReferenceMap = std::map<ScopeName, std::vector<std::shared_ptr<ClassLink>>>;
+  // Maps parent -> children (direct children, not all descendants)
+  using ClassChildrenMap = std::map<std::string, std::vector<ClassDeclaration*>, Clib::ci_cmp_pred>;
 
   using AvailableParseTreeMap =
       std::map<std::string, std::unique_ptr<AvailableSecondPassTarget>, Clib::ci_cmp_pred>;
@@ -95,6 +99,7 @@ private:
   ClassDeclarationMap resolved_classes;
   FunctionReferenceMap unresolved_function_links;
   ClassReferenceMap unresolved_classes;
+  ClassChildrenMap class_children;
 
   // Returns Function if the key's `{call_scope, name}` exists in
   // `resolved_functions_by_name`, otherwise nullptr.
@@ -114,6 +119,8 @@ private:
   // the function and returns `true`; otherwise, returns `false`.
   bool resolve_if_existing( const ScopableName&, std::shared_ptr<FunctionLink>& );
   bool resolve_if_existing( const ScopeName&, std::shared_ptr<ClassLink>& );
+
+  bool super_function_created( ClassDeclaration* cd ) const;
 };
 
 }  // namespace Pol::Bscript::Compiler

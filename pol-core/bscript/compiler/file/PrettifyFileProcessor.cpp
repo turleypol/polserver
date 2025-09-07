@@ -464,6 +464,10 @@ antlrcpp::Any PrettifyFileProcessor::visitEnumList( EscriptParser::EnumListConte
 antlrcpp::Any PrettifyFileProcessor::visitEnumStatement( EscriptParser::EnumStatementContext* ctx )
 {
   addToken( "enum", ctx->ENUM(), FmtToken::SPACE );
+  if ( auto class_token = ctx->CLASS() )
+  {
+    addToken( "class", class_token, FmtToken::SPACE );
+  }
   make_identifier( ctx->IDENTIFIER() );
   linebuilder.buildLine( _currindent );
   ++_currindent;
@@ -1004,6 +1008,8 @@ antlrcpp::Any PrettifyFileProcessor::visitSwitchLabel( EscriptParser::SwitchLabe
     make_string_literal( string_literal );
   else if ( auto defaultctx = ctx->DEFAULT() )
     addToken( "default", defaultctx, FmtToken::SPACE );
+  else if ( auto scoped_ident = ctx->scopedIdentifier() )
+    visitScopedIdentifier( scoped_ident );
 
   addToken( ":", ctx->COLON(), FmtToken::SPACE | FmtToken::ATTACHED | FmtToken::BREAKPOINT );
   linebuilder.markLastTokensAsSwitchLabel();
@@ -1171,8 +1177,14 @@ antlrcpp::Any PrettifyFileProcessor::visitScopedIdentifier(
     EscriptGrammar::EscriptParser::ScopedIdentifierContext* ctx )
 {
   if ( ctx->scope )
+  {
     addToken( ctx->scope->getText(), ctx->scope, FmtToken::NONE );
-  addToken( "::", ctx->COLONCOLON(), FmtToken::ATTACHED );
+    addToken( "::", ctx->COLONCOLON(), FmtToken::ATTACHED );
+  }
+  else
+  {
+    addToken( "::", ctx->COLONCOLON(), FmtToken::NONE );
+  }
   addToken( ctx->identifier->getText(), ctx->identifier, FmtToken::SPACE );
   return {};
 }
@@ -1685,7 +1697,8 @@ void PrettifyFileProcessor::preprocess( SourceFile& sf )
 
 std::vector<std::string> PrettifyFileProcessor::load_raw_file()
 {
-  auto contents = Clib::FileContents{ source_file_identifier.path, true }.take();
+  Clib::FileContents fc( source_file_identifier.pathname.c_str(), true );
+  const auto& contents = fc.str_contents();
   std::vector<std::string> rawlines;
   std::string currline;
   for ( size_t i = 0; i < contents.size(); ++i )

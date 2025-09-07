@@ -19,6 +19,7 @@
 #include "bscript/compiler/ast/VariableBinding.h"
 #include "bscript/compiler/astbuilder/BuilderWorkspace.h"
 #include "bscript/compiler/model/CompilerWorkspace.h"
+#include "bscript/compiler/model/ScopableName.h"
 
 using EscriptGrammar::EscriptParser;
 
@@ -200,8 +201,8 @@ std::unique_ptr<ConstDeclaration> SimpleStatementBuilder::const_declaration(
   auto expression_context = variable_declaration->variableDeclarationInitializer()->expression();
   auto value = expression( expression_context );
 
-  return std::make_unique<ConstDeclaration>( location_for( *ctx ), std::move( identifier ),
-                                             std::move( value ) );
+  return std::make_unique<ConstDeclaration>(
+      location_for( *ctx ), ScopableName( ScopeName::Global, identifier ), std::move( value ) );
 }
 
 std::unique_ptr<JumpStatement> SimpleStatementBuilder::continue_statement(
@@ -219,6 +220,29 @@ std::unique_ptr<EnumDeclaration> SimpleStatementBuilder::enum_declaration(
 {
   std::vector<std::string> names;
   std::vector<std::unique_ptr<Expression>> expressions;
+  std::string enum_identifier = text( ctx->IDENTIFIER() );
+  auto enum_source_location = location_for( *ctx );
+  // std::string prefix = "";
+  ScopeName scope = ScopeName::Global;
+  if ( ctx->CLASS() )
+  {
+    scope = ScopeName( enum_identifier );
+
+    if ( auto itr = workspace.compiler_workspace.all_class_locations.find( enum_identifier );
+         itr != workspace.compiler_workspace.all_class_locations.end() )
+    {
+      auto& previous = ( *itr ).second;
+      report.error( enum_source_location,
+                    "Class '{}' defined more than once.\n"
+                    "  Previous declaration: {}",
+                    enum_identifier, previous );
+    }
+    else
+    {
+      workspace.compiler_workspace.all_class_locations.emplace( enum_identifier,
+                                                                enum_source_location );
+    }
+  }
   if ( auto enum_list = ctx->enumList() )
   {
     std::string last_identifier;
@@ -235,7 +259,8 @@ std::unique_ptr<EnumDeclaration> SimpleStatementBuilder::enum_declaration(
       {
         // The optimizer runs later, so we don't necessarily know the value of
         // the previous enum value.  The optimizer will sort it out.
-        auto lhs = std::make_unique<Identifier>( source_location, last_identifier );
+        auto lhs = std::make_unique<Identifier>( source_location,
+                                                 ScopableName( scope, last_identifier ).string() );
         auto one = std::make_unique<IntegerValue>( source_location, 1 );
         value = std::make_unique<BinaryOperator>( source_location, std::move( lhs ), "+", TOK_ADD,
                                                   std::move( one ) );
@@ -245,7 +270,8 @@ std::unique_ptr<EnumDeclaration> SimpleStatementBuilder::enum_declaration(
         value = std::make_unique<IntegerValue>( source_location, 0 );
       }
       bool allow_overwrite = true;
-      auto constant = std::make_unique<ConstDeclaration>( location_for( *entry ), identifier,
+      auto constant = std::make_unique<ConstDeclaration>( location_for( *entry ),
+                                                          ScopableName( scope, identifier ),
                                                           std::move( value ), allow_overwrite );
       workspace.compiler_workspace.const_declarations.push_back( std::move( constant ) );
 
@@ -253,9 +279,7 @@ std::unique_ptr<EnumDeclaration> SimpleStatementBuilder::enum_declaration(
     }
   }
 
-  auto source_location = location_for( *ctx );
-  std::string identifier = text( ctx->IDENTIFIER() );
-  return std::make_unique<EnumDeclaration>( source_location, std::move( identifier ),
+  return std::make_unique<EnumDeclaration>( enum_source_location, std::move( enum_identifier ),
                                             std::move( names ), std::move( expressions ) );
 }
 

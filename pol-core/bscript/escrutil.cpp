@@ -130,5 +130,14 @@ BObjectImp* bobject_from_string( const std::string& str, int radix )
   else
     return new ConstString( str );
 }
+
+
+std::string normalize_ecl_filename( const std::string& filename )
+{
+  if ( filename.find( ".ecl" ) == std::string::npos )
+    return filename + ".ecl";
+  else
+    return filename;
+}
 }  // namespace Bscript
 }  // namespace Pol

@@ -1,7 +1,6 @@
 #ifndef POLSERVER_BUILDERWORKSPACE_H
 #define POLSERVER_BUILDERWORKSPACE_H
 
-#include <filesystem>
 #include <map>
 #include <memory>
 #include <string>
@@ -33,7 +32,7 @@ public:
   Profile& profile;
   Report& report;
 
-  std::map<std::filesystem::path, std::shared_ptr<SourceFile>> source_files;
+  std::map<std::string, std::shared_ptr<SourceFile>> source_files;
   FunctionResolver function_resolver;
 };
 

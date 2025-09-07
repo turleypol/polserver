@@ -750,7 +750,8 @@ void Client::set_update_range_by_script( u8 range )
 void Client::set_update_range( u8 range )
 {
   auto old_range = update_range();
-  // first signal the client about the change before we send new pkts
+  // first signal the client about the change before we potentially send new objects otherwise the
+  // client could directly drop them
   PktHelper::PacketOut<PktOut_C8> outMsg;
   outMsg->Write<u8>( range );
   outMsg.Send( this );

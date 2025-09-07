@@ -21,9 +21,9 @@ CompiledScriptSerializer::CompiledScriptSerializer( const CompiledScript& compil
 {
 }
 
-void CompiledScriptSerializer::write( const std::filesystem::path& path ) const
+void CompiledScriptSerializer::write( const std::string& pathname ) const
 {
-  std::ofstream ofs( path, std::ofstream::binary );
+  std::ofstream ofs( pathname, std::ofstream::binary );
 
   BSCRIPT_FILE_HDR hdr{};
   hdr.magic2[0] = BSCRIPT_FILE_MAGIC0;

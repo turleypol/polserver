@@ -16,12 +16,14 @@ void SourceFileCache::configure( unsigned how_many )
 std::shared_ptr<SourceFile> SourceFileCache::load( const SourceFileIdentifier& ident,
                                                    Report& report )
 {
+  const std::string& pathname = ident.pathname;
+
   if ( keep > 0 )
   {
     const std::lock_guard<std::mutex> guard( mutex );
-    ++frequency[ident.path];
+    ++frequency[pathname];
 
-    auto itr = files.find( ident.path );
+    auto itr = files.find( pathname );
     if ( itr != files.end() )
     {
       profile.cache_hits++;
@@ -39,7 +41,7 @@ std::shared_ptr<SourceFile> SourceFileCache::load( const SourceFileIdentifier& i
   if ( keep > 0 && sf )
   {
     const std::lock_guard<std::mutex> guard( mutex );
-    auto ins = files.insert( { ident.path, sf } );
+    auto ins = files.insert( { pathname, sf } );
     if ( !ins.second )
     {
       sf = ( *ins.first ).second;
@@ -63,11 +65,11 @@ void SourceFileCache::keep_some()
 
   Pol::Tools::HighPerfTimer select_timer;
 
-  std::vector<std::pair<unsigned, const std::filesystem::path*>> pathname_frequencies;
+  std::vector<std::pair<unsigned, const std::string*>> pathname_frequencies;
   pathname_frequencies.reserve( files.size() );
   for ( auto& kv : files )
   {
-    pathname_frequencies.emplace_back( frequency[kv.first], &kv.second->path );
+    pathname_frequencies.emplace_back( frequency[kv.first], &kv.second->pathname );
   }
   size_t remove = files.size() - keep;
   std::nth_element( pathname_frequencies.begin(), pathname_frequencies.begin() + remove,
@@ -78,7 +80,7 @@ void SourceFileCache::keep_some()
   Pol::Tools::HighPerfTimer delete_timer;
   for ( auto itr = pathname_frequencies.begin(), end = itr + remove; itr != end; ++itr )
   {
-    auto& pathname = *( ( *itr ).second );
+    const std::string& pathname = *( ( *itr ).second );
     ( *itr ).second = nullptr;
     files.erase( pathname );
   }

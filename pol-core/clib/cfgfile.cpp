@@ -565,19 +565,6 @@ ConfigFile::ConfigFile( const std::string& i_filename, const char* allowed_types
 {
   init( i_filename.c_str(), allowed_types_str );
 }
-ConfigFile::ConfigFile( const std::filesystem::path& i_filename, const char* allowed_types_str )
-    : _filename( "<n/a>" ),
-      _modified( 0 ),
-#if CFGFILE_USES_IOSTREAMS
-      ifs(),
-#else
-      fp( nullptr ),
-#endif
-      _element_line_start( 0 ),
-      _cur_line( 0 )
-{
-  init( i_filename.string().c_str(), allowed_types_str );
-}
 
 void ConfigFile::init( const char* i_filename, const char* allowed_types_str )
 {

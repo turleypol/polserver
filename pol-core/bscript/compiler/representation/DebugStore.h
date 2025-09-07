@@ -1,27 +1,24 @@
 #ifndef POLSERVER_DEBUGSTORE_H
 #define POLSERVER_DEBUGSTORE_H
 
-#include <filesystem>
 #include <string>
 #include <vector>
 
 namespace Pol::Bscript::Compiler
 {
 class DebugBlock;
-class ListingWriter;
 class LocalVariableScopeInfo;
 
 class DebugStore
 {
 public:
-  explicit DebugStore( std::vector<std::filesystem::path> filenames );
+  explicit DebugStore( std::vector<std::string> filenames );
   DebugStore( DebugStore&& ) noexcept;
   ~DebugStore();
 
   unsigned add_block( unsigned parent_block_index, const LocalVariableScopeInfo& );
 
-  struct InstructionInfo
-  {
+  struct InstructionInfo {
     unsigned file_index;
     unsigned line_number;
     unsigned block_index;
@@ -41,9 +38,8 @@ public:
 
 private:
   friend class DebugStoreSerializer;
-  friend class ListingWriter;
   std::vector<DebugBlock> blocks;
-  std::vector<std::filesystem::path> filenames;
+  std::vector<std::string> filenames;
   std::vector<InstructionInfo> instructions;
   std::vector<UserFunctionInfo> user_functions;
 };

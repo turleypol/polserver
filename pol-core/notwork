@@ -1,0 +1,24 @@
+Calling item_update_range..
+81:       client1:Refreshed mobile: Mobile 0x0C graphic 0x190 color 0x00 at 1,1,1 facing 1
+81:       client1:Your color is 0 and your status is 0x0
+81:       client0:Object 0xC went out of sight
+81:       client0:Refreshed mobile: Mobile 0x0B graphic 0x190 color 0x00 at 100,100,0 facing 6
+81:       client0:Your color is 0 and your status is 0x0
+81:       from client: struct{ type = "recv", value = "{"id": 0, "type": "removed_obj", "serial": 12, "oldpos": [100, 100, 0]}" }
+81:       from client: struct{ type = "recv", value = "{"id": 0, "type": "owncreate"}" }
+81:       from client: struct{ type = "recv", value = "{"id": 1, "type": "owncreate"}" }
+81:       to client: {"arg":2,"id":0,"todo":"move"}
+81:       client0:Your color is 0 and your status is 0x0
+81:       brain0:got todo: move->2
+81:       from client: struct{ type = "recv", value = "{"id": 0, "type": "moved", "ack": true, "pos": [100, 100, 0, 2]}" }
+81:       to client: {"arg":2,"id":0,"todo":"move"}
+81:       brain0:got todo: move->2
+81:       from client: struct{ type = "recv", value = "{"id": 0, "type": "moved", "ack": true, "pos": [101, 100, 0, 2]}" }
+81:       to client: {"arg":2,"id":0,"todo":"move"}
+81:       brain0:got todo: move->2
+81:       client0:New item: 1 Item 0x40001834 graphic 0xf3f color 0x0 at 120,100,0 facing 0
+81:       from client: struct{ type = "recv", value = "{"id": 0, "type": "moved", "ack": true, "pos": [102, 100, 0, 2]}" }
+81:       to client: {"arg":2,"id":0,"todo":"move"}
+81:       brain0:got todo: move->2
+81:       from client: struct{ type = "recv", value = "{"id": 0, "type": "new_item", "serial": 1073748020, "pos": [120, 100, 0, 0], "graphic": 3903, "status": 32}" }
+81:       failed: update distance failed: 17

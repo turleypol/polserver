@@ -15,6 +15,7 @@ namespace Bscript
 class BObjectImp;
 
 BObjectImp* bobject_from_string( const std::string& str, int radix = 0 );
-}  // namespace Bscript
-}  // namespace Pol
+std::string normalize_ecl_filename( const std::string& filename );
+}
+}
 #endif

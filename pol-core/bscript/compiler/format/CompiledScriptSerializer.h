@@ -1,7 +1,7 @@
 #ifndef POLSERVER_COMPILEDSCRIPTSERIALIZER_H
 #define POLSERVER_COMPILEDSCRIPTSERIALIZER_H
 
-#include <filesystem>
+#include <string>
 
 namespace Pol::Bscript::Compiler
 {
@@ -12,7 +12,7 @@ class CompiledScriptSerializer
 public:
   explicit CompiledScriptSerializer( const CompiledScript& );
 
-  void write( const std::filesystem::path& path ) const;
+  void write( const std::string& pathname ) const;
 
 private:
   const CompiledScript& compiled_script;

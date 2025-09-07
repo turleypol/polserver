@@ -9,7 +9,6 @@
 #include "pol_global_config.h"
 #include <algorithm>
 #include <filesystem>
-#include <ranges>
 #include <stdlib.h>
 #include <system_error>
 
@@ -22,8 +21,6 @@
 #include "../clib/stlutil.h"
 #include "../clib/strutil.h"
 #include "systemstate.h"
-
-#include <fmt/std.h>
 
 namespace fs = std::filesystem;
 namespace Pol
@@ -162,8 +159,8 @@ size_t PackageList::sizeEstimate() const
   return size;
 }
 
-Package::Package( const fs::path& pkg_dir, Clib::ConfigElem& elem )
-    : dir_( pkg_dir.generic_string() ),
+Package::Package( const std::string& pkg_dir, Clib::ConfigElem& elem )
+    : dir_( Clib::normalized_dir_form( pkg_dir ) ),
       name_( elem.remove_string( "Name" ) ),
       version_( elem.remove_string( "Version", "0" ) ),
       core_required_( "" ),
@@ -192,7 +189,7 @@ Package::Package( const fs::path& pkg_dir, Clib::ConfigElem& elem )
 
 std::string Package::desc() const
 {
-  return name() + " (" + dir().string() + ")";
+  return name() + " (" + dir() + ")";
 }
 
 bool Package::check_replacements() const
@@ -270,14 +267,14 @@ void Package::check_conflicts() const
 
 size_t Package::estimateSize() const
 {
-  size_t size = dir_.native().capacity() + name_.capacity() + version_.capacity() +
+  size_t size = dir_.capacity() + name_.capacity() + version_.capacity() +
                 +core_required_.capacity() + requires_.sizeEstimate() + conflicts_.sizeEstimate() +
                 replaces_.sizeEstimate() + sizeof( bool ) /*provides_system_home_page_*/
       ;
   return size;
 }
 
-void load_package( const fs::path& pkg_dir, Clib::ConfigElem& elem, bool quiet )
+void load_package( const std::string& pkg_dir, Clib::ConfigElem& elem, bool quiet )
 {
   std::unique_ptr<Package> pkg( new Package( pkg_dir, elem ) );
   Package* existing_pkg = find_package( pkg->name() );
@@ -320,7 +317,7 @@ void load_package( const fs::path& pkg_dir, Clib::ConfigElem& elem, bool quiet )
 }
 
 
-void load_packages( const fs::path& basedir, bool quiet )
+void load_packages( const std::string& basedir, bool quiet )
 {
   std::error_code ec;
   for ( auto dir_itr = fs::recursive_directory_iterator( basedir, ec );
@@ -328,7 +325,7 @@ void load_packages( const fs::path& basedir, bool quiet )
   {
     if ( !dir_itr->is_directory() )
       continue;
-    if ( const auto& fn = dir_itr->path().filename().string();
+    if ( auto fn = dir_itr->path().filename().string();
          !fn.empty() && ( *fn.begin() == '.' || fn == "template" ) )
     {
       dir_itr.disable_recursion_pending();
@@ -338,7 +335,7 @@ void load_packages( const fs::path& basedir, bool quiet )
     const auto pkg_cfg = pkg_dir / "pkg.cfg";
     if ( !fs::exists( pkg_cfg ) )
       continue;
-    Clib::ConfigFile cf( pkg_cfg );
+    Clib::ConfigFile cf( pkg_cfg.string().c_str() );
     Clib::ConfigElem elem;
 
     cf.readraw( elem );
@@ -347,8 +344,8 @@ void load_packages( const fs::path& basedir, bool quiet )
          !fs::exists( pkg_dir / "disabled.pkg" ) )
     {
       if ( !quiet )
-        INFO_PRINTLN( "Loading package in {}", pkg_dir );
-      load_package( pkg_dir, elem, quiet );
+        INFO_PRINTLN( "Loading package in {}", pkg_dir.string() );
+      load_package( pkg_dir.string() + "/", elem, quiet );
     }
   }
 }
@@ -389,21 +386,21 @@ void load_packages( bool quiet )
 {
   test_check_version();
 
-  load_packages( "pkg", quiet );
+  load_packages( "pkg/", quiet );
 
-  if ( auto path = fs::path{ "config/pkgroots.cfg" }; fs::exists( path ) )
+  if ( Clib::FileExists( "config/pkgroots.cfg" ) )
   {
-    Clib::ConfigFile cf( path, "PackageRoot" );
+    Clib::ConfigFile cf( "config/pkgroots.cfg", "PackageRoot" );
     Clib::ConfigElem elem;
     while ( cf.read( elem ) )
     {
       std::string dir;
       while ( elem.remove_prop( "dir", &dir ) )
       {
-        auto dirpath = fs::path{ dir };
+        dir = Clib::normalized_dir_form( dir );
         if ( !quiet )
           INFO_PRINTLN( "Searching for packages under {}", dir );
-        load_packages( dirpath, quiet );
+        load_packages( dir.c_str(), quiet );
       }
     }
   }
@@ -412,8 +409,9 @@ void load_packages( bool quiet )
 
   check_package_deps();
   // sort pkg vector by name, so e.g. startup order is in a defined and maybe also expected order.
-  std::ranges::sort( systemstate.packages, []( const Package* pkg1, const Package* pkg2 )
-                     { return pkg1->name() < pkg2->name(); } );
+  std::sort( systemstate.packages.begin(), systemstate.packages.end(),
+             []( const Package* pkg1, const Package* pkg2 )
+             { return pkg1->name() < pkg2->name(); } );
 }
 
 bool pkgdef_split( const std::string& spec, const Package* inpkg, const Package** outpkg,
@@ -465,10 +463,10 @@ void load_packaged_cfgs( const char* cfgname, const char* taglist,
 {
   for ( const auto& pkg : systemstate.packages )
   {
-    auto filename = GetPackageCfgPath( pkg, cfgname );
-    if ( fs::exists( filename ) )
+    std::string filename = GetPackageCfgPath( pkg, cfgname );
+    if ( Clib::FileExists( filename.c_str() ) )
     {
-      Clib::ConfigFile cf( filename, taglist );
+      Clib::ConfigFile cf( filename.c_str(), taglist );
       Clib::ConfigElem elem;
 
       while ( cf.read( elem ) )
@@ -482,10 +480,10 @@ void load_packaged_cfgs( const char* cfgname, const char* taglist,
 void load_all_cfgs( const char* cfgname, const char* taglist,
                     void ( *loadentry )( const Package*, Clib::ConfigElem& ) )
 {
-  auto filename = fs::path{ "config" } / cfgname;
-  if ( fs::exists( filename ) )
+  std::string filename = std::string( "config/" ) + cfgname;
+  if ( Clib::FileExists( filename ) )
   {
-    Clib::ConfigFile cf( filename, taglist );
+    Clib::ConfigFile cf( filename.c_str(), taglist );
     Clib::ConfigElem elem;
 
     while ( cf.read( elem ) )
@@ -497,19 +495,24 @@ void load_all_cfgs( const char* cfgname, const char* taglist,
 }
 
 
-fs::path GetPackageCfgPath( const Package* pkg, const std::string& filename )
+std::string GetPackageCfgPath( const Package* pkg, const std::string& filename )
 {
+  std::string filepath;
   if ( pkg == nullptr )
   {  // If no package is sent, assume pol/config/file.xxx
-    return fs::path{ "config" } / filename;
+    filepath = "config/" + filename;
   }
-  // With packages, first try for /pkg/config/file.xxx
-  auto filepath = pkg->dir() / "config" / filename;
-  if ( !fs::exists( filepath ) )
-  {
-    // Lastly, assume /pkg/file.xxx
-    filepath = pkg->dir() / filename;
+  else
+  {  // ** Going to save this feature for 097 **
+    // With packages, first try for /pkg/config/file.xxx
+    filepath = pkg->dir() + "config/" + filename;
+    if ( !Clib::FileExists( filepath ) )
+    {
+      // Lastly, assume /pkg/file.xxx
+      filepath = pkg->dir() + filename;
+    }
   }
+
   return filepath;
 }
 }  // namespace Plib

@@ -132,9 +132,47 @@ int filesize( const char* fname )
   return st.st_size;
 }
 
+unsigned int GetFileTimestamp( const char* fname )
+{
+  struct stat st;
+  if ( stat( fname, &st ) )
+    return 0;
+  return (unsigned int)st.st_mtime;
+}
+
 void RemoveFile( const std::string& fname )
 {
   unlink( fname.c_str() );
+}
+
+std::string FullPath( const char* filename )
+{
+#if defined( __unix__ ) || defined( __APPLE__ )
+  char tmp[PATH_MAX];
+  if ( realpath( filename, tmp ) )
+    return tmp;
+  else
+    return "";
+#else
+  char p[1025];
+  _fullpath( p, filename, sizeof p );
+  return p;
+#endif
+}
+
+std::string GetTrueName( const char* filename )
+{
+  std::error_code ec;
+  auto canonical = std::filesystem::canonical( filename, ec );
+  if ( ec )
+    return filename;
+  else
+    return canonical.filename().string();
+}
+
+std::string GetFilePart( const char* filename )
+{
+  return std::filesystem::path( filename ).filename().string();
 }
 }  // namespace Clib
 }  // namespace Pol
