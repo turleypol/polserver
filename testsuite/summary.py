@@ -8,6 +8,7 @@ active_script=None
 active_function=None
 failed=None
 end=None
+lines=""
 for line in content:
     m=re.match(r"\[.*\] (\w+) \(testpkgs/(\w+)/\)", line)
     if m is not None:
@@ -20,13 +21,15 @@ for line in content:
     m=re.match(r"\[.*\]     Calling (\w+)\.\.", line)
     if m is not None:
         active_function = m.group(1)
-        print(f"{active_pkg}/{active_script}/{active_function}")
         continue
     m=re.match(r"\[.*\]     failed: (.*)", line)
     if m is not None:
         failed = m.group(1)
+        continue
     m=re.match(r"\[.*\]     \.\.(.*)ms", line)
     if m is not None:
         end = m.group(1)
         print(f"- {active_pkg}/{active_script} : {active_function} {failed if failed is not None else 'ok'} {end}ms")
         failed = None
+    else:
+        lines+=line.rstrip()+"\n"
