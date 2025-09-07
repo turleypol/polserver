@@ -18,7 +18,7 @@ output=""
 tests=0
 fails=0
 output+="|pkg|script|function|result|duration|output|\n"
-output+="|-|-|-|-|-|-|\n")
+output+="|-|-|-|-|-|-|\n"
 for line in content:
     m=re.match(r"\[.*\] (\w+) \(testpkgs/(\w+)/\)", line)
     if m is not None:
