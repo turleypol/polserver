@@ -15,6 +15,7 @@ active_function=None
 failed=None
 end=None
 lines=""
+print("<details><summary>Raw log</summary>")
 print("|", "pkg","|","script","|","function","|","result","|","duration","|","output","|")
 print("|", "-","|","-","|","-","|","-","|","-","|","-","|")
 for line in content:
@@ -45,3 +46,4 @@ for line in content:
         lines=""
     else:
         lines+=line.rstrip()+"  \n"
+print("</details>")
