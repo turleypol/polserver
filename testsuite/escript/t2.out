@@ -1,0 +1,40 @@
+```var i := 1;
+var j := 0;
+
+while ( i )
+  if ( ++j == 10000 )
+    break;
+  endif
+endwhile```
+```Profiling information: 
+	EObjectImp constructions: 20003
+	Remaining BObjectImps: 3
+	Instruction cycles: 80009
+	InnerExec calls: 0
+	Clocks: 9964 ( 0.009964 seconds)
+	Space used: 816
+
+	Cycles Per Second: 8029807.306302689
+	Cycles Per Minute: 481788438.3781614
+	Cycles Per Hour:   28907306302.689682```
+vs
+```var i := 1;
+var j := 0;
+
+while ( 1 )
+  if ( ++j == 10000 )
+    break;
+  endif
+endwhile```
+```Profiling information: 
+	EObjectImp constructions: 20003
+	Remaining BObjectImps: 3
+	Instruction cycles: 60009
+	InnerExec calls: 0
+	Clocks: 16204 ( 0.016204 seconds)
+	Space used: 816
+
+	Cycles Per Second: 3703344.853122686
+	Cycles Per Minute: 222200691.18736115
+	Cycles Per Hour:   13332041471.241669```
+

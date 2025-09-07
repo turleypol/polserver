@@ -1,0 +1,12 @@
+Profiling information: 
+	EObjectImp constructions: 20003
+	Remaining BObjectImps: 3
+	Instruction cycles: 80009
+	InnerExec calls: 0
+	Clocks: 9964 ( 0.009964 seconds)
+	Space used: 816
+
+	Cycles Per Second: 8029807.306302689
+	Cycles Per Minute: 481788438.3781614
+	Cycles Per Hour:   28907306302.689682
+

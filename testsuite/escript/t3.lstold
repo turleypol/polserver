@@ -1,0 +1,31 @@
+```8: global variable #1
+9: logical jump if true to 12
+10: global variable #0
+11: logical convert
+12: logical jump if true to 15
+13: global variable #0
+14: logical convert
+15: logical jump if false to 24
+16: global variable #1
+17: logical jump if true to 20
+18: global variable #0
+19: logical convert
+20: logical jump if true to 23
+21: global variable #0
+22: logical convert
+23: logical convert
+24: if false goto 29
+
+8: global variable #1
+9: logical jump if true to 13
+10: global variable #0
+11: logical jump if true to 13
+12: global variable #0
+13: logical jump if false to 20
+14: global variable #1
+15: logical jump if true to 20
+16: global variable #0
+17: logical jump if true to 20
+18: global variable #0
+19: logical convert
+20: if false goto 25```

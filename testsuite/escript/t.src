@@ -1,0 +1,5 @@
+var t:=true;
+var f:=false;
+if ((t || f || t) && (t || f || t))
+print( "or" );
+endif

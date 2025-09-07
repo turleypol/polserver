@@ -1,0 +1,6 @@
+var t := true;
+var f := false;
+
+if ( ( f || t || t ) && ( f || t || t ) )
+  print( "success" );
+endif

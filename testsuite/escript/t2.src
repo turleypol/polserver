@@ -1,0 +1,5 @@
+var t := true;
+var f := false;
+if ( ( t && ( t && f ) ) && ( t||f ) )
+  print( "or" );
+endif
