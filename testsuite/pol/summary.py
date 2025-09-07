@@ -15,20 +15,21 @@ active_function=None
 failed=None
 end=None
 lines=""
-print("<details><summary>Raw log</summary>")
-print("")
-print("|", "pkg","|","script","|","function","|","result","|","duration","|","output","|")
-print("|", "-","|","-","|","-","|","-","|","-","|","-","|")
+output=""
+tests=0
+fails=0
+output+="|pkg|script|function|result|duration|output|\n"
+output+="|-|-|-|-|-|-|\n")
 for line in content:
     m=re.match(r"\[.*\] (\w+) \(testpkgs/(\w+)/\)", line)
     if m is not None:
         active_pkg = m.group(2)
-        print("|", active_pkg,"|","|","|","|","|","|")
+        output+=f"|{active_pkg}| | | | | |\n"
         continue
     m=re.match(r"\[.*\]   Calling (\w+).ecl", line)
     if m is not None:
         active_script = m.group(1)
-        print("|", "|",active_script,"|","|","|","|","|")
+        output+=f"| |{active_script}| | | | |\n"
         continue
     m=re.match(r"\[.*\]     Calling (\w+)\.\.", line)
     if m is not None:
@@ -40,11 +41,23 @@ for line in content:
         continue
     m=re.match(r"\[.*\]     \.\.(.*)ms", line)
     if m is not None:
-        print("|", "|","|",active_function,"|", failed if failed is not None else ":white_check_mark:", "|",m.group(1)+"ms","|",lines if failed is not None else '',"|")
+        dur = m.group(1)
+        fstr = ":white_check_mark:"
+        fout = ""
+        tests+=1
+        if failed is not None:
+            fails+=1
+            fstr = failed
+            fout = lines
+        output+=f"| | |{active_function}|{fstr}|{dur}ms}|{fout}|\n"
         end = m.group(1)
-        #print(f"- {active_pkg}/{active_script} : {active_function} {failed if failed is not None else 'ok'} {end}ms")
         failed = None
         lines=""
     else:
         lines+=line.rstrip()+"  \n"
+
+
+print(f"<details><summary>{fails} tests failed out of {tests}</summary>")
+print("")
+print(output)
 print("</details>")
