@@ -186,7 +186,7 @@ jobs:
 
       - name: Create Artefact
         if: matrix.config.nopch == 0
-        un: |
+        run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target package
           cd ../bin
