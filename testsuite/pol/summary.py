@@ -55,7 +55,7 @@ for line in content:
         failed = None
         lines=""
     else:
-        lines+=line.rstrip()+"  \n"
+        lines+=line.rstrip()+"<br/>"
 
 
 print(f"<details><summary>{fails} tests failed out of {tests}</summary>")
