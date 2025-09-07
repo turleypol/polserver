@@ -175,6 +175,7 @@ jobs:
         run: |
           cd bin-build
           cd coretest
+          python summary.py
           python summary.py > $GITHUB_STEP_SUMMARY
           #cat summary.txt
       - name: Upload coretest folder
