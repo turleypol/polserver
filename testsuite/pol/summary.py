@@ -15,6 +15,8 @@ active_function=None
 failed=None
 end=None
 lines=""
+print("|", "pkg","|","script","|","function","|","result","|","duration","|","output","|")
+print("|", "-","|","-","|","-","|","-","|","-","|","-","|")
 for line in content:
     m=re.match(r"\[.*\] (\w+) \(testpkgs/(\w+)/\)", line)
     if m is not None:
@@ -36,7 +38,7 @@ for line in content:
         continue
     m=re.match(r"\[.*\]     \.\.(.*)ms", line)
     if m is not None:
-        print("|", "|","|",active_function,"|", failed if failed is not None else "ok", "|",m.group(1)+"ms","|",lines if failed is not None else '',"|")
+        print("|", "|","|",active_function,"|", failed if failed is not None else ":white_check_mark:", "|",m.group(1)+"ms","|",lines if failed is not None else '',"|")
         end = m.group(1)
         #print(f"- {active_pkg}/{active_script} : {active_function} {failed if failed is not None else 'ok'} {end}ms")
         failed = None
