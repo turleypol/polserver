@@ -172,11 +172,14 @@ jobs:
           #POLCORE_TEST_FILTER: testitems
       - name: Testsummary
         if: matrix.config.nopch == 0 && always()
+        shell: bash
         run: |
           cd bin-build
           cd coretest
-          python summary.py
-          python summary.py > $GITHUB_STEP_SUMMARY
+          {
+            python summary.py
+          } > "$GITHUB_STEP_SUMMARY"
+          #python summary.py > $GITHUB_STEP_SUMMARY
           #cat summary.txt
       - name: Upload coretest folder
         if: matrix.config.nopch == 0 && always()
