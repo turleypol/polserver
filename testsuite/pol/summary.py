@@ -33,8 +33,6 @@ for line in content:
         continue
     m=re.match(r"\[.*\]\s+Calling (\w+).ecl", line)
     if m is not None:
-        if "cleanup" == m.group(1):
-            continue
         curpkg.sub.append(Test(m.group(1)))
         curscript = curpkg.sub[-1]
         continue
@@ -71,6 +69,8 @@ for r in res:
     for s in r.sub:
         output+=f"| |{s.name}| |{s.result}|{s.dur}|{s.output}|\n"
         for f in s.sub:
+            if f.name=="cleanup":
+                continue
             output+=f"| | |{f.name}|{f.result}|{f.dur}|{f.output}|\n"
 print(f"<details><summary>{fails} tests failed out of {tests}</summary>")
 print("")
