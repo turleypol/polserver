@@ -29,23 +29,23 @@ curscript=None
 curfunc=None
 for line in content:
     line = line.rstrip()
-    m=re.match(r"\[.*\] (\w+) \(testpkgs/(\w+)/\)", line)
+    m=re.search(r"(\w+) \(testpkgs/(\w+)/\)", line)
     if m is not None:
         res.append(Test(m.group(2)))
         curpkg=res[-1]
         continue
-    m=re.match(r"\[.*\]\s+Calling (\w+).ecl", line)
+    m=re.search(r"\s+Calling (\w+).ecl", line)
     if m is not None:
         curpkg.sub.append(Test(m.group(1)))
         curscript = curpkg.sub[-1]
         continue
-    m=re.match(r"\[.*\]\s+Calling (\w+)\.\.", line)
+    m=re.search(r"\s+Calling (\w+)\.\.", line)
     if m is not None:
         curscript.sub.append(Test(m.group(1)))
         curfunc = curscript.sub[-1]
         lines=""
         continue
-    m=re.match(r"\[.*\]\s+failed: (.*)", line)
+    m=re.search(r"\s+failed: (.*)", line)
     if m is not None:
         curfunc.result = ":x:"
         curfunc.output = lines + m.group(1)
@@ -54,7 +54,7 @@ for line in content:
         curpkg.result = ":x:"
         fails+=1
     else: 
-        m=re.match(r"\[.*\]\s+\.\.(.*)ms", line)
+        m=re.search(r"\s+\.\.(.*)ms", line)
         if m is not None:
             if not curfunc.dur:
                 curfunc.dur = m.group(1)+"ms"
