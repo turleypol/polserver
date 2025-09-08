@@ -154,12 +154,9 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target unittest_pol
-      - name: pipe
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          set -o pipefail
       - name: Test (Shard)
         if: matrix.config.nopch == 0
+        shell: pwsh
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only 2>&1 | tee coretest/testlog.txt
