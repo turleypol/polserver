@@ -184,6 +184,12 @@ jobs:
         with:
           name: Testdir-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin-build/coretest/
+      - name: Upload coretest folder2
+        if: matrix.config.nopch == 0 && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Testdir2-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
+          path: bin-build/Testing/
 
       - name: Create Artefact
         if: matrix.config.nopch == 0
