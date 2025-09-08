@@ -160,7 +160,7 @@ jobs:
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          if (${{ matrix.config.os }} -ne 'ubuntu-latest') {
+          if ("${{ matrix.config.os }}" -eq "ubuntu-latest") {
             set -o pipefail
           }
           cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only 2>&1 | tee coretest/testlog.txt
