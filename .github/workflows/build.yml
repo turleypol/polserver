@@ -158,6 +158,7 @@ jobs:
           cmake --build . --config ${{ matrix.config.build-type }} --target unittest_pol
       - name: Test (Shard)
         if: matrix.config.nopch == 0
+        shell: pwsh
         run: |
           cd bin-build
           $os = "${{ matrix.config.os }}"
