@@ -127,8 +127,6 @@ jobs:
         run: |
           cd bin-build
           cmake .. -G Ninja -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
-          ls ../lib/
-          ls ../lib/kaitai-0.10.1
       - name: Build
         run: |
           cd bin-build
@@ -161,10 +159,10 @@ jobs:
         shell: pwsh
         run: |
           cd bin-build
-          $os = "${{ matrix.config.os }}"
-          if ($os -eq "ubuntu-latest") {
-            set -o pipefail
-          }
+          #$os = "${{ matrix.config.os }}"
+          #if ($os -eq "ubuntu-latest") {
+          #  set -o pipefail
+          #}
           cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only 2>&1 | tee coretest/testlog.txt
           #env:
           #POLCORE_TEST_FILTER: testitems
