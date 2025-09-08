@@ -160,7 +160,7 @@ jobs:
         if: matrix.config.nopch == 0
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
+          cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only 2>&1 | tee testlog.txt
           #env:
           #POLCORE_TEST_FILTER: testitems
       - name: Test (Ecompile Watch)
