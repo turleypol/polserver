@@ -2,10 +2,13 @@ import re
 import os
 import sys
 
-if not os.path.exists("log/pol.log"):
+path="log/pol.log"
+if (len(sys.argv)>1):
+    path=sys.argv[1]
+if not os.path.exists(path):
     print("no testrun")
     sys.exit(0)
-with open("log/pol.log", "r") as file:
+with open(path, "r") as file:
     content = file.readlines()
 lines=""
 tests=0
