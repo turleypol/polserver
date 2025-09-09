@@ -138,9 +138,9 @@ exported function target_nonlocal_checklos()
       return ev;
     endif
 
-//    if ( !ev.msg )
+    if ( !ev.msg )
       return ret_error( "No msg property on EVT_SPEECH event" );
-//    endif
+    endif
 
     if ( ev.msg == expected )
       return 1;
