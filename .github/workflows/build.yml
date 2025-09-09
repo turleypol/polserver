@@ -156,13 +156,22 @@ jobs:
           cmake --build . --config ${{ matrix.config.build-type }} --target unittest_pol
       - name: Test (Shard)
         if: matrix.config.nopch == 0
-        shell: pwsh
+        #        shell: pwsh
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only 2>&1 | tee coretest/testlog.txt
-          $LASTEXITCODE
+          cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
+          #2>&1 | tee coretest/testlog.txt
+          #$LASTEXITCODE
           #env:
           #POLCORE_TEST_FILTER: testitems
+      - name: Testsummary
+        if: matrix.config.nopch == 0 && always()
+        shell: bash
+        run: |
+          cd bin-build
+          {
+            python summary.py Testing/Temporary/LastTest.log
+          } > "$GITHUB_STEP_SUMMARY"
       - name: Upload coretest folder2
         if: matrix.config.nopch == 0 && always()
         uses: actions/upload-artifact@v4
@@ -176,15 +185,6 @@ jobs:
           cmake --build . --config ${{ matrix.config.build-type }} --target test_ecompile_watch
           #env:
           #POLCORE_TEST_FILTER: testitems
-      - name: Testsummary
-        if: matrix.config.nopch == 0 && always()
-        shell: bash
-        run: |
-          cd bin-build
-          cd coretest
-          {
-            python summary.py testlog.txt
-          } > "$GITHUB_STEP_SUMMARY"
       - name: Upload coretest folder
         if: matrix.config.nopch == 0 && always()
         uses: actions/upload-artifact@v4
