@@ -8,7 +8,14 @@ namespace Pol::Bscript
 template <typename Callback>
 struct CallbackData
 {
-  CallbackData( Callback callback ) : callback( callback ) {}
+  CallbackData( Callback callback ) : callback( std::move(callback) ) {}
+
+  CallbackData(const Callback& data)=delete;
+  CallbackData& operator=(const Callback& data)=delete;
+  CallbackData(Callback&& data)=default;
+  CallbackData&& operator=(Callback&& data)=delete;
+  ~CallbackData()=default;
+
 
   static BObjectImp* call( Executor& exec, BContinuation* continuation, void* data,
                            BObjectRef result )
@@ -50,12 +57,12 @@ BObjectImp* Executor::makeContinuation( BObjectRef funcref, Callback callback, B
   if ( !func->variadic() )
     args.resize( func->numParams() );
 
-  CallbackData<Callback>* details = new CallbackData<Callback>( callback );
+  CallbackData<Callback>* details = new CallbackData<Callback>( std::move(callback) );
 
   return new BContinuation(
       std::move( funcref ), std::move( args ),
       { CallbackData<Callback>::call, CallbackData<Callback>::free, CallbackData<Callback>::size },
-      details );
+      std::move(details) );
 }
 }  // namespace Pol::Bscript
 
