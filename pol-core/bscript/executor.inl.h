@@ -10,10 +10,10 @@ struct CallbackData
 {
   CallbackData( Callback callback ) : callback( std::move(callback) ) {}
 
-  CallbackData(const Callback& data)=delete;
-  CallbackData& operator=(const Callback& data)=delete;
-  CallbackData(Callback&& data)=default;
-  CallbackData&& operator=(Callback&& data)=delete;
+  CallbackData(const CallbackData& data)=delete;
+  CallbackData& operator=(const CallbackData& data)=delete;
+  CallbackData(CallbackData&& data)=default;
+  CallbackData&& operator=(CallbackData&& data)=delete;
   ~CallbackData()=default;
 
 
