@@ -58,7 +58,7 @@ BObjectImp* Executor::makeContinuation( BObjectRef funcref, Callback&& callback,
   if ( !func->variadic() )
     args.resize( func->numParams() );
 
-  CallbackData<Callback>* details = new CallbackData<Callback>( std::forward( callback ) );
+  CallbackData<Callback>* details = new CallbackData<Callback>( std::move( callback ) );
 
   return new BContinuation(
       std::move( funcref ), std::move( args ),
