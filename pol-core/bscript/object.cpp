@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <istream>
 #include <limits>
+#include <memory>
 #include <stddef.h>
 #include <string>
 
@@ -1711,9 +1712,10 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
       //   `ex.withContinuation`.
       // - Return something else (in this case, the filtered array) to provide
       //   that value back to the script.
+      auto b=std::make_unique<int>(0);
       auto callback = [elementRef = args[0], processed = 1, thisArray = args[2],
                        filteredRef = BObjectRef( new ObjArray ),
-                       initialSize = static_cast<int>( ref_arr.size() )](
+                       initialSize = static_cast<int>( ref_arr.size() ),u=std::move(b)](
                           Executor& ex, BContinuation* continuation,
                           BObjectRef result ) mutable -> BObjectImp*
       {
