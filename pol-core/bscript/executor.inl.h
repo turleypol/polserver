@@ -8,7 +8,7 @@ namespace Pol::Bscript
 template <typename Callback>
 struct CallbackData
 {
-  CallbackData( Callback&& callback ) : callback( std::forward( callback ) ) {}
+  CallbackData( Callback&& callback ) : callback( std::move( callback ) ) {}
 
   CallbackData( const CallbackData& data ) = delete;
   CallbackData& operator=( const CallbackData& data ) = delete;
