@@ -8,13 +8,13 @@ namespace Pol::Bscript
 template <typename Callback>
 struct CallbackData
 {
-  CallbackData( Callback callback ) : callback( std::move(callback) ) {}
+  CallbackData( Callback&& callback ) : callback( std::forward( callback ) ) {}
 
-  CallbackData(const CallbackData& data)=delete;
-  CallbackData& operator=(const CallbackData& data)=delete;
-  CallbackData(CallbackData&& data)=default;
-  CallbackData&& operator=(CallbackData&& data)=delete;
-  ~CallbackData()=default;
+  CallbackData( const CallbackData& data ) = delete;
+  CallbackData& operator=( const CallbackData& data ) = delete;
+  CallbackData( CallbackData&& data ) = default;
+  CallbackData&& operator=( CallbackData&& data ) = delete;
+  ~CallbackData() = default;
 
 
   static BObjectImp* call( Executor& exec, BContinuation* continuation, void* data,
@@ -40,7 +40,8 @@ private:
 
 // returns BError* or BContinuation*
 template <typename Callback>
-BObjectImp* Executor::makeContinuation( BObjectRef funcref, Callback callback, BObjectRefVec args )
+BObjectImp* Executor::makeContinuation( BObjectRef funcref, Callback&& callback,
+                                        BObjectRefVec args )
 {
   auto* func = funcref->impptr_if<BFunctionRef>();
   if ( !func )
@@ -57,17 +58,17 @@ BObjectImp* Executor::makeContinuation( BObjectRef funcref, Callback callback, B
   if ( !func->variadic() )
     args.resize( func->numParams() );
 
-  CallbackData<Callback>* details = new CallbackData<Callback>( std::move(callback) );
+  CallbackData<Callback>* details = new CallbackData<Callback>( std::forward( callback ) );
 
   return new BContinuation(
       std::move( funcref ), std::move( args ),
       { CallbackData<Callback>::call, CallbackData<Callback>::free, CallbackData<Callback>::size },
-      std::move(details) );
+      std::move( details ) );
 }
 }  // namespace Pol::Bscript
 
 template <typename Callback>
-inline void Pol::Bscript::Executor::walkCallStack( Callback callback )
+inline void Pol::Bscript::Executor::walkCallStack( Callback&& callback )
 {
   callback( PC );
 
