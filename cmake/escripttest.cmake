@@ -35,8 +35,8 @@ function (readfile file content content_len)
   FILE(READ ${file} contents)
   #keep original ;
   STRING(REGEX REPLACE ";" "\\\\;" contents "${contents}")
-  STRING(REGEX REPLACE "[" "\\\\[" contents "${contents}")
-  STRING(REGEX REPLACE "]" "\\\\]" contents "${contents}")
+  STRING(REGEX REPLACE "\[" "\\\\[" contents "${contents}")
+  STRING(REGEX REPLACE "\]" "\\\\]" contents "${contents}")
   #remove last newline
   STRING(REGEX REPLACE "\n$" "" contents "${contents}")
   #cmake does not really support entries add _
