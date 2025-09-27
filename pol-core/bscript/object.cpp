@@ -1712,12 +1712,12 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
       //   `ex.withContinuation`.
       // - Return something else (in this case, the filtered array) to provide
       //   that value back to the script.
-      auto b=std::make_unique<int>(0);
+      auto b = std::make_unique<int>( 0 );
       auto callback = [elementRef = args[0], processed = 1, thisArray = args[2],
                        filteredRef = BObjectRef( new ObjArray ),
-                       initialSize = static_cast<int>( ref_arr.size() ),u=std::move(b)](
-                          Executor& ex, BContinuation* continuation,
-                          BObjectRef result ) mutable -> BObjectImp*
+                       initialSize = static_cast<int>( ref_arr.size() ),
+                       u = std::move( b )]( Executor& ex, BContinuation* continuation,
+                                            BObjectRef result ) mutable -> BObjectImp*
       {
         auto filtered = filteredRef->impptr<ObjArray>();
 
@@ -1761,7 +1761,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
       };
 
       // Create a new continuation for a user function call.
-      return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move(callback),
+      return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move( callback ),
                                   std::move( args ) );
     }
     break;
@@ -1824,7 +1824,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
         }
       };
 
-      return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move(callback),
+      return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), callback,
                                   std::move( args ) );
     }
     break;
@@ -1906,7 +1906,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
         }
       };
 
-      return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move(callback),
+      return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move( callback ),
                                   std::move( args ) );
     }
     break;
@@ -1968,7 +1968,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
         }
       };
 
-      return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move(callback),
+      return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move( callback ),
                                   std::move( args ) );
     }
     break;
@@ -2027,7 +2027,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
         }
       };
 
-      return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move(callback),
+      return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move( callback ),
                                   std::move( args ) );
     }
     break;
