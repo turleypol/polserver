@@ -29,18 +29,18 @@ public:
     STRUCT = 65, ARRAY = 66, STACK = 67, TOK_IN = 68, UNINIT = 69, BOOL_TRUE = 70, 
     BOOL_FALSE = 71, IS = 72, DECIMAL_LITERAL = 73, HEX_LITERAL = 74, OCT_LITERAL = 75, 
     BINARY_LITERAL = 76, FLOAT_LITERAL = 77, HEX_FLOAT_LITERAL = 78, STRING_LITERAL = 79, 
-    INTERPOLATED_STRING_START = 80, LPAREN = 81, RPAREN = 82, LBRACK = 83, 
-    RBRACK = 84, LBRACE = 85, RBRACE = 86, DOT = 87, ARROW = 88, MUL = 89, 
-    DIV = 90, MOD = 91, ADD = 92, SUB = 93, ADD_ASSIGN = 94, SUB_ASSIGN = 95, 
-    MUL_ASSIGN = 96, DIV_ASSIGN = 97, MOD_ASSIGN = 98, LE = 99, LT = 100, 
-    GE = 101, GT = 102, RSHIFT = 103, LSHIFT = 104, BITAND = 105, CARET = 106, 
-    BITOR = 107, NOTEQUAL_A = 108, NOTEQUAL_B = 109, EQUAL_DEPRECATED = 110, 
-    EQUAL = 111, ASSIGN = 112, ADDMEMBER = 113, DELMEMBER = 114, CHKMEMBER = 115, 
-    SEMI = 116, COMMA = 117, TILDE = 118, AT = 119, COLONCOLON = 120, COLON = 121, 
-    INC = 122, DEC = 123, ELVIS = 124, QUESTION = 125, WS = 126, COMMENT = 127, 
-    LINE_COMMENT = 128, IDENTIFIER = 129, DOUBLE_LBRACE_INSIDE = 130, LBRACE_INSIDE = 131, 
-    REGULAR_CHAR_INSIDE = 132, DOUBLE_QUOTE_INSIDE = 133, DOUBLE_RBRACE = 134, 
-    STRING_LITERAL_INSIDE = 135, CLOSE_RBRACE_INSIDE = 136, FORMAT_STRING = 137
+    REGEXP_LITERAL = 80, INTERPOLATED_STRING_START = 81, LPAREN = 82, RPAREN = 83, 
+    LBRACK = 84, RBRACK = 85, LBRACE = 86, RBRACE = 87, DOT = 88, ARROW = 89, 
+    MUL = 90, DIV = 91, MOD = 92, ADD = 93, SUB = 94, ADD_ASSIGN = 95, SUB_ASSIGN = 96, 
+    MUL_ASSIGN = 97, DIV_ASSIGN = 98, MOD_ASSIGN = 99, LE = 100, LT = 101, 
+    GE = 102, GT = 103, RSHIFT = 104, LSHIFT = 105, BITAND = 106, CARET = 107, 
+    BITOR = 108, NOTEQUAL_A = 109, NOTEQUAL_B = 110, EQUAL_DEPRECATED = 111, 
+    EQUAL = 112, ASSIGN = 113, ADDMEMBER = 114, DELMEMBER = 115, CHKMEMBER = 116, 
+    SEMI = 117, COMMA = 118, TILDE = 119, AT = 120, COLONCOLON = 121, COLON = 122, 
+    INC = 123, DEC = 124, ELVIS = 125, QUESTION = 126, WS = 127, COMMENT = 128, 
+    LINE_COMMENT = 129, IDENTIFIER = 130, DOUBLE_LBRACE_INSIDE = 131, LBRACE_INSIDE = 132, 
+    REGULAR_CHAR_INSIDE = 133, DOUBLE_QUOTE_INSIDE = 134, DOUBLE_RBRACE = 135, 
+    STRING_LITERAL_INSIDE = 136, CLOSE_RBRACE_INSIDE = 137, FORMAT_STRING = 138
   };
 
   enum {
@@ -48,35 +48,36 @@ public:
     RuleModuleFunctionDeclaration = 4, RuleModuleFunctionParameterList = 5, 
     RuleModuleFunctionParameter = 6, RuleTopLevelDeclaration = 7, RuleClassDeclaration = 8, 
     RuleClassParameters = 9, RuleClassParameterList = 10, RuleClassBody = 11, 
-    RuleClassStatement = 12, RuleFunctionDeclaration = 13, RuleStringIdentifier = 14, 
-    RuleUseDeclaration = 15, RuleIncludeDeclaration = 16, RuleProgramDeclaration = 17, 
-    RuleStatement = 18, RuleStatementLabel = 19, RuleIfStatement = 20, RuleGotoStatement = 21, 
-    RuleReturnStatement = 22, RuleConstStatement = 23, RuleVarStatement = 24, 
-    RuleDoStatement = 25, RuleWhileStatement = 26, RuleExitStatement = 27, 
-    RuleBreakStatement = 28, RuleContinueStatement = 29, RuleForStatement = 30, 
-    RuleForeachIterableExpression = 31, RuleForeachStatement = 32, RuleRepeatStatement = 33, 
-    RuleCaseStatement = 34, RuleEnumStatement = 35, RuleBlock = 36, RuleVariableDeclarationInitializer = 37, 
-    RuleEnumList = 38, RuleEnumListEntry = 39, RuleSwitchBlockStatementGroup = 40, 
-    RuleSwitchLabel = 41, RuleForGroup = 42, RuleBasicForStatement = 43, 
-    RuleCstyleForStatement = 44, RuleIdentifierList = 45, RuleVariableDeclarationList = 46, 
-    RuleConstantDeclaration = 47, RuleVariableDeclaration = 48, RuleBindingDeclaration = 49, 
-    RuleIndexBindingList = 50, RuleSequenceBindingList = 51, RuleSequenceBinding = 52, 
-    RuleIndexBinding = 53, RuleBinding = 54, RuleBindingDeclarationInitializer = 55, 
-    RuleProgramParameters = 56, RuleProgramParameterList = 57, RuleProgramParameter = 58, 
-    RuleFunctionParameters = 59, RuleFunctionParameterList = 60, RuleFunctionParameter = 61, 
-    RuleScopedFunctionCall = 62, RuleFunctionReference = 63, RuleExpression = 64, 
-    RulePrimary = 65, RuleScopedIdentifier = 66, RuleFunctionExpression = 67, 
-    RuleExplicitArrayInitializer = 68, RuleExplicitStructInitializer = 69, 
-    RuleExplicitDictInitializer = 70, RuleExplicitErrorInitializer = 71, 
-    RuleBareArrayInitializer = 72, RuleParExpression = 73, RuleExpressionList = 74, 
-    RuleExpressionListEntry = 75, RuleExpressionSuffix = 76, RuleIndexingSuffix = 77, 
-    RuleIndexList = 78, RuleNavigationSuffix = 79, RuleMethodCallSuffix = 80, 
-    RuleFunctionCallSuffix = 81, RuleFunctionCall = 82, RuleStructInitializerExpression = 83, 
-    RuleStructInitializerExpressionList = 84, RuleStructInitializer = 85, 
-    RuleDictInitializerExpression = 86, RuleDictInitializerExpressionList = 87, 
-    RuleDictInitializer = 88, RuleArrayInitializer = 89, RuleLiteral = 90, 
-    RuleInterpolatedString = 91, RuleInterpolatedStringPart = 92, RuleIntegerLiteral = 93, 
-    RuleFloatLiteral = 94, RuleBoolLiteral = 95
+    RuleClassStatement = 12, RuleUninitFunctionDeclaration = 13, RuleFunctionDeclaration = 14, 
+    RuleStringIdentifier = 15, RuleUseDeclaration = 16, RuleIncludeDeclaration = 17, 
+    RuleProgramDeclaration = 18, RuleStatement = 19, RuleStatementLabel = 20, 
+    RuleIfStatement = 21, RuleGotoStatement = 22, RuleReturnStatement = 23, 
+    RuleConstStatement = 24, RuleVarStatement = 25, RuleDoStatement = 26, 
+    RuleWhileStatement = 27, RuleExitStatement = 28, RuleBreakStatement = 29, 
+    RuleContinueStatement = 30, RuleForStatement = 31, RuleForeachIterableExpression = 32, 
+    RuleForeachStatement = 33, RuleRepeatStatement = 34, RuleCaseStatement = 35, 
+    RuleEnumStatement = 36, RuleBlock = 37, RuleVariableDeclarationInitializer = 38, 
+    RuleEnumList = 39, RuleEnumListEntry = 40, RuleSwitchBlockStatementGroup = 41, 
+    RuleSwitchLabel = 42, RuleForGroup = 43, RuleBasicForStatement = 44, 
+    RuleCstyleForStatement = 45, RuleIdentifierList = 46, RuleVariableDeclarationList = 47, 
+    RuleConstantDeclaration = 48, RuleVariableDeclaration = 49, RuleBindingDeclaration = 50, 
+    RuleIndexBindingList = 51, RuleSequenceBindingList = 52, RuleSequenceBinding = 53, 
+    RuleIndexBinding = 54, RuleBinding = 55, RuleBindingDeclarationInitializer = 56, 
+    RuleProgramParameters = 57, RuleProgramParameterList = 58, RuleProgramParameter = 59, 
+    RuleFunctionParameters = 60, RuleFunctionParameterList = 61, RuleFunctionParameter = 62, 
+    RuleScopedFunctionCall = 63, RuleFunctionReference = 64, RuleExpression = 65, 
+    RulePrimary = 66, RuleScopedIdentifier = 67, RuleFunctionExpression = 68, 
+    RuleExplicitArrayInitializer = 69, RuleExplicitStructInitializer = 70, 
+    RuleExplicitDictInitializer = 71, RuleExplicitErrorInitializer = 72, 
+    RuleBareArrayInitializer = 73, RuleParExpression = 74, RuleExpressionList = 75, 
+    RuleExpressionListEntry = 76, RuleExpressionSuffix = 77, RuleIndexingSuffix = 78, 
+    RuleIndexList = 79, RuleNavigationSuffix = 80, RuleMethodCallSuffix = 81, 
+    RuleFunctionCallSuffix = 82, RuleFunctionCall = 83, RuleStructInitializerExpression = 84, 
+    RuleStructInitializerExpressionList = 85, RuleStructInitializer = 86, 
+    RuleDictInitializerExpression = 87, RuleDictInitializerExpressionList = 88, 
+    RuleDictInitializer = 89, RuleArrayInitializer = 90, RuleLiteral = 91, 
+    RuleInterpolatedString = 92, RuleInterpolatedStringPart = 93, RuleIntegerLiteral = 94, 
+    RuleFloatLiteral = 95, RuleBoolLiteral = 96
   };
 
   explicit EscriptParser(antlr4::TokenStream *input);
@@ -96,6 +97,7 @@ public:
   antlr4::atn::SerializedATNView getSerializedATN() const override;
 
 
+      bool inUninitFunction = false;
 
 
   class CompilationUnitContext;
@@ -111,6 +113,7 @@ public:
   class ClassParameterListContext;
   class ClassBodyContext;
   class ClassStatementContext;
+  class UninitFunctionDeclarationContext;
   class FunctionDeclarationContext;
   class StringIdentifierContext;
   class UseDeclarationContext;
@@ -411,6 +414,7 @@ public:
     virtual size_t getRuleIndex() const override;
     FunctionDeclarationContext *functionDeclaration();
     VarStatementContext *varStatement();
+    UninitFunctionDeclarationContext *uninitFunctionDeclaration();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -420,6 +424,25 @@ public:
   };
 
   ClassStatementContext* classStatement();
+
+  class  UninitFunctionDeclarationContext : public antlr4::ParserRuleContext {
+  public:
+    UninitFunctionDeclarationContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *UNINIT();
+    antlr4::tree::TerminalNode *FUNCTION();
+    antlr4::tree::TerminalNode *IDENTIFIER();
+    FunctionParametersContext *functionParameters();
+    antlr4::tree::TerminalNode *SEMI();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  UninitFunctionDeclarationContext* uninitFunctionDeclaration();
 
   class  FunctionDeclarationContext : public antlr4::ParserRuleContext {
   public:
@@ -1316,6 +1339,7 @@ public:
     antlr4::tree::TerminalNode *IDENTIFIER();
     antlr4::tree::TerminalNode *BYREF();
     antlr4::tree::TerminalNode *UNUSED();
+    antlr4::tree::TerminalNode *DEFAULT();
     antlr4::tree::TerminalNode *ELLIPSIS();
     antlr4::tree::TerminalNode *ASSIGN();
     ExpressionContext *expression();
@@ -1890,6 +1914,7 @@ public:
     BoolLiteralContext *boolLiteral();
     antlr4::tree::TerminalNode *STRING_LITERAL();
     antlr4::tree::TerminalNode *UNINIT();
+    antlr4::tree::TerminalNode *REGEXP_LITERAL();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

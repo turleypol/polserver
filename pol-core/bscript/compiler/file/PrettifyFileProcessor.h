@@ -163,6 +163,8 @@ public:
   antlrcpp::Any visitSwitchBlockStatementGroup(
       EscriptGrammar::EscriptParser::SwitchBlockStatementGroupContext* ctx ) override;
   antlrcpp::Any visitSwitchLabel( EscriptGrammar::EscriptParser::SwitchLabelContext* ctx ) override;
+  antlrcpp::Any visitUninitFunctionDeclaration(
+      EscriptGrammar::EscriptParser::UninitFunctionDeclarationContext* ctx ) override;
   antlrcpp::Any visitUseDeclaration(
       EscriptGrammar::EscriptParser::UseDeclarationContext* ctx ) override;
   antlrcpp::Any visitVariableDeclaration(
@@ -202,6 +204,7 @@ private:
   antlrcpp::Any make_statement_label( EscriptGrammar::EscriptParser::StatementLabelContext* );
   antlrcpp::Any make_identifier( antlr4::tree::TerminalNode* );
   antlrcpp::Any make_string_literal( antlr4::tree::TerminalNode* );
+  antlrcpp::Any make_regular_expression_literal( antlr4::tree::TerminalNode* );
   antlrcpp::Any make_bool_literal( antlr4::tree::TerminalNode* );
   antlrcpp::Any make_integer_literal( antlr4::tree::TerminalNode* );
   antlrcpp::Any make_float_literal( antlr4::tree::TerminalNode* );

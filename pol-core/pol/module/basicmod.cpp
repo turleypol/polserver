@@ -21,6 +21,7 @@
 #include "../../bscript/dict.h"
 #include "../../bscript/executor.h"
 #include "../../bscript/impstr.h"
+#include "../../bscript/regexp.h"
 #include "../../clib/stlutil.h"
 
 #include <module_defs/basic.h>
@@ -759,5 +760,16 @@ Bscript::BObjectImp* BasicExecutorModule::mf_DecodeBase64()
 
   return new String( ret );
 }
+
+Bscript::BObjectImp* BasicExecutorModule::mf_RegExp()
+{
+  const String* expr;
+  const String* flags;
+  if ( !getStringParam( 0, expr ) || !getStringParam( 1, flags ) )
+    return new BError( "Invalid parameter type" );
+
+  return BRegExp::create( expr->getStringRep(), flags->getStringRep() );
+}
+
 }  // namespace Module
 }  // namespace Pol

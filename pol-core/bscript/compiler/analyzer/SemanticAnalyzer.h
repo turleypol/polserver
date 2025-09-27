@@ -5,6 +5,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <stack>
 
 #include "bscript/compiler/analyzer/FlowControlScopes.h"
@@ -53,6 +54,7 @@ public:
   void visit_return_statement( ReturnStatement& ) override;
   void visit_sequence_binding( SequenceBinding& ) override;
   void visit_user_function( UserFunction& ) override;
+  void visit_uninitialized_function_declaration( UninitializedFunctionDeclaration& ) override;
   void visit_var_statement( VarStatement& ) override;
   void visit_variable_assignment_statement( VariableAssignmentStatement& ) override;
   void visit_variable_binding( VariableBinding& ) override;
@@ -68,6 +70,8 @@ private:
                                              const SourceLocation&,
                                              const std::string& scoped_function_name,
                                              const std::string& element_description );
+
+  void analyze_class( ClassDeclaration* );
 
   CompilerWorkspace& workspace;
   Report& report;
@@ -89,6 +93,10 @@ private:
 
   // Needed to handle super() calls
   std::stack<UserFunction*> user_functions;
+
+  // To prevent checking the same class multiple times (which would lead to
+  // duplicate error messages or wasted processing time).
+  std::set<ClassDeclaration*> analyzed_classes;
 };
 
 }  // namespace Pol::Bscript::Compiler

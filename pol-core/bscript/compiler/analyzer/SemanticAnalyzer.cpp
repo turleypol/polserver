@@ -1,5 +1,7 @@
 #include "SemanticAnalyzer.h"
 
+#include <algorithm>
+#include <iterator>
 #include <list>
 #include <ranges>
 #include <set>
@@ -48,6 +50,7 @@
 #include "bscript/compiler/ast/SequenceBinding.h"
 #include "bscript/compiler/ast/StringValue.h"
 #include "bscript/compiler/ast/TopLevelStatements.h"
+#include "bscript/compiler/ast/UninitializedFunctionDeclaration.h"
 #include "bscript/compiler/ast/UserFunction.h"
 #include "bscript/compiler/ast/VarStatement.h"
 #include "bscript/compiler/ast/VariableAssignmentStatement.h"
@@ -253,12 +256,266 @@ void SemanticAnalyzer::visit_class_declaration( ClassDeclaration& node )
       {
         to_visit.push_back( base_cd );
       }
-      else
-      {
-        cd->internal_error( "no class linked for base class" );
-      }
+      // Do not error, as the the (middle) parent class which referenced the
+      // (top) parent class would have already errored in the previous for-loop.
     }
   }
+
+  for ( const auto& uninit_function_ref : node.uninit_functions() )
+  {
+    const auto& uninit_function = uninit_function_ref.get();
+    if ( auto exiting_method_itr = node.methods.find( uninit_function.name );
+         exiting_method_itr != node.methods.end() )
+    {
+      report.error( uninit_function.source_location,
+                    "In uninitialized function declaration: A method named '{}' is already "
+                    "defined in class '{}'.\n"
+                    "  See also: {}",
+                    uninit_function.name, class_name, exiting_method_itr->second->source_location );
+    }
+    else if ( uninit_function.type == UserFunctionType::Constructor && node.constructor_link )
+    {
+      report.error(
+          uninit_function.source_location,
+          "In uninitialized function declaration: A constructor is already defined in class '{}'.\n"
+          "  See also: {}",
+          class_name, node.constructor_link->source_location );
+    }
+  }
+
+  // To visit UninitializedFunctionDeclarations
+  visit_children( node );
+}
+
+void SemanticAnalyzer::visit_uninitialized_function_declaration(
+    UninitializedFunctionDeclaration& node )
+{
+  if ( Clib::caseInsensitiveEqual( node.name, Compiler::SUPER ) )
+  {
+    report.error( node, "An uninitialized function cannot be named 'super'." );
+  }
+  else if ( node.type == UserFunctionType::Static )
+  {
+    report.error( node.source_location,
+                  "In uninitialized function declaration: Static functions cannot be "
+                  "marked as uninitialized." );
+  }
+  else
+  {
+    // Cannot use visit_children to visit the parameters, since the the
+    // SemanticAnalyzer would attempt to make variables for the function inside
+    // visit_function_parameter_list.
+
+    bool can_have_rest_parameter = true;
+    bool can_have_defaults = true;
+
+    auto params = node.parameters();
+
+    // Rest params must be last, and defaulted params must come after
+    // non-defaulted params (excluding rest param).
+    for ( auto& param_ref : std::views::reverse( params ) )
+    {
+      auto& param = param_ref.get();
+
+      if ( param.rest )
+      {
+        if ( !can_have_rest_parameter )
+        {
+          report.error( param,
+                        "In uninitialized function declaration: Rest parameter must be the last "
+                        "parameter in the list." );
+        }
+        else if ( param.uninit_default )
+        {
+          report.error( param.source_location,
+                        "In uninitialized function declaration: Rest parameter cannot have a "
+                        "default value." );
+        }
+      }
+      else if ( param.uninit_default )
+      {
+        if ( !can_have_defaults )
+        {
+          report.error( param,
+                        "In uninitialized function declaration: Parameters with default values "
+                        "must come after all parameters without default values." );
+        }
+      }
+      else
+      {
+        can_have_defaults = false;
+      }
+
+      can_have_rest_parameter = false;
+    }
+  }
+}
+
+void SemanticAnalyzer::analyze_class( ClassDeclaration* class_decl )
+{
+  if ( analyzed_classes.contains( class_decl ) )
+    return;
+
+  // Since only non-static classes (ie. those with constructors) can have uninitialized
+  // functions, skip analysis if the class does not have a (possibly inherited) constructor.
+  //
+  // The check for `user_function()` is just a safety check to prevent null pointer dereference:
+  // other checks would report on this not being linked.
+  if ( !class_decl->constructor_link || !class_decl->constructor_link->user_function() )
+  {
+    analyzed_classes.insert( class_decl );
+    return;
+  }
+
+  std::vector<std::reference_wrapper<UninitializedFunctionDeclaration>> all_uninit_functions;
+  std::list<ClassDeclaration*> to_visit{ class_decl };
+  std::set<ClassDeclaration*> visited;
+  std::map<std::string, UserFunction*, Clib::ci_cmp_pred> all_methods;
+
+  for ( auto* cd : to_visit )
+  {
+    if ( visited.contains( cd ) )
+    {
+      continue;
+    }
+
+    visited.insert( cd );
+
+    auto cd_uninit_functions = cd->uninit_functions();
+    std::ranges::move( cd_uninit_functions, std::back_inserter( all_uninit_functions ) );
+
+    for ( const auto& [method_name, method_link] : cd->methods )
+    {
+      if ( auto uf = method_link->user_function() )
+      {
+        // Only add the method if it doesn't already exist: a base class' method
+        // should not overwrite a child class' method.
+        if ( !all_methods.contains( method_name ) )
+        {
+          all_methods[method_name] = uf;
+        }
+      }
+      else
+      {
+        // Should never happen, as a method function link is only created if
+        // there was a FunctionDeclarationContext to visit inside
+        // UserFunctionBuilder, and the function link is immediately registered
+        // with the FunctionResolver, guaranteeing it will be visited/built.
+        cd->internal_error( fmt::format( "no user function linked for method {}::{}",
+                                         class_decl->name, method_name ) );
+      }
+    }
+
+    for ( const auto& base_class_link : cd->base_class_links )
+    {
+      if ( auto base_cd = base_class_link->class_declaration() )
+      {
+        to_visit.push_back( base_cd );
+      }
+      // Do not error if no ClassDeclaration found, as it will be reported in
+      // visit_class_declaration.
+    }
+  }
+
+  auto report_error_if_not_same =
+      [&]( UserFunction* defined_func, UninitializedFunctionDeclaration* uninit_func )
+  {
+    auto defined_params = defined_func->parameters();
+    auto uninit_params = uninit_func->parameters();
+    auto is_defined_variadic = !defined_params.empty() && defined_params.back().get().rest;
+    auto is_uninit_variadic = !uninit_params.empty() && uninit_params.back().get().rest;
+    FunctionParameterDeclaration* bad_param = nullptr;
+    std::string details;
+
+    if ( is_defined_variadic != is_uninit_variadic ||
+         defined_params.size() != uninit_params.size() || defined_func->type != uninit_func->type )
+    {
+      details =
+          fmt::format( "Expecting {} with {}{} parameters, got {} with {}{} parameters.",
+                       uninit_func->type, uninit_params.size(), is_uninit_variadic ? "+" : "",
+                       defined_func->type, defined_params.size(), is_defined_variadic ? "+" : "" );
+    }
+    else
+    {
+      // Size has already been checked for equivalence but keeping both checks for clarity.
+      for ( size_t i = 0; i < defined_params.size() && i < uninit_params.size(); ++i )
+      {
+        auto& defined_param = defined_params[i].get();
+        auto& uninit_param = uninit_params[i].get();
+
+        if ( defined_param.byref != uninit_param.byref )
+        {
+          details = fmt::format(
+              "Parameter {} ('{}') is passed {} in uninitialized function but {} in defined "
+              "function.",
+              i + 1, defined_param.name.string(), uninit_param.byref ? "by reference" : "by value",
+              defined_param.byref ? "by reference" : "by value" );
+          bad_param = &defined_param;
+
+          break;  // Stop on first error
+        }
+        else if ( uninit_param.uninit_default && defined_param.default_value() == nullptr )
+        {
+          details = fmt::format( "Parameter {} ('{}') must have a default value.", i + 1,
+                                 defined_param.name.string() );
+          bad_param = &defined_param;
+
+          break;  // Stop on first error
+        }
+      }
+    }
+    if ( !details.empty() )
+    {
+      report.error( bad_param ? bad_param->source_location : defined_func->source_location,
+                    "Class method '{}' does not correctly implement uninitialized function '{}':\n"
+                    "  {}\n"
+                    "  See also: {}",
+                    defined_func->scoped_name(), uninit_func->scoped_name(), details,
+                    uninit_func->source_location );
+    }
+  };
+
+  for ( const auto& uninit_fun_ref : all_uninit_functions )
+  {
+    auto& uninit_func = uninit_fun_ref.get();
+    report.debug( uninit_func, "Class '{}' inherits uninitialized function '{}::{}'",
+                  class_decl->name, uninit_func.scope, uninit_func.name );
+
+    if ( uninit_func.type == UserFunctionType::Constructor )
+    {
+      report_error_if_not_same( class_decl->constructor_link->user_function(), &uninit_func );
+    }
+    else if ( auto method_itr = all_methods.find( uninit_func.name );
+              method_itr != all_methods.end() )
+    {
+      report_error_if_not_same( method_itr->second, &uninit_func );
+    }
+    else if ( auto nonmethod_func = std::ranges::find_if(
+                  workspace.user_functions,
+                  [&]( const auto& uf )
+                  {
+                    return Clib::caseInsensitiveEqual( uf->name, uninit_func.name ) &&
+                           uf->scope == class_decl->name;
+                  } );
+              nonmethod_func != workspace.user_functions.end() )
+    {
+      // This will _always_ error, reporting the defined function as static, and the uninit function
+      // as method.
+      report_error_if_not_same( nonmethod_func->get(), &uninit_func );
+    }
+    else
+    {
+      // A "not implemented" error will happen if the function is static and unreferenced (ie. does
+      // not exist in workspace.user_functions but exists in
+      // function_resolver.available_user_function_parse_trees).
+      report.error( class_decl->source_location,
+                    "Class '{}' does not implement uninitialized function '{}'\n"
+                    "  See also: {}",
+                    class_decl->name, uninit_func.scoped_name(), uninit_func.source_location );
+    }
+  }
+
+  analyzed_classes.insert( class_decl );
 }
 
 class CaseDispatchDuplicateSelectorAnalyzer : public NodeVisitor
@@ -603,6 +860,9 @@ void SemanticAnalyzer::visit_function_call( FunctionCall& fc )
 
         report.debug( fc, "using ClassInstance is_super_call={} in_super_func={} uf->name={}",
                       is_super_call, in_super_func, uf->name );
+
+        // Check class for uninit functions defined.
+        analyze_class( uf->class_link->class_declaration() );
       }
       // Since a `this` argument is generated for constructor functions, disallow passing an
       // argument named `this`.
@@ -610,11 +870,6 @@ void SemanticAnalyzer::visit_function_call( FunctionCall& fc )
     }
     else if ( uf->type == UserFunctionType::Super )
     {
-      if ( uf->body().children.empty() )
-      {
-        report.error( fc, "In call to '{}': No base class defines a constructor.", uf->name );
-        return;
-      }
       // Super will use "this" argument
       arguments.insert( arguments.begin(),
                         std::make_unique<Argument>(
@@ -965,6 +1220,18 @@ void SemanticAnalyzer::visit_function_reference( FunctionReference& node )
     if ( function->type == UserFunctionType::Super )
     {
       report.error( node, "Cannot reference super() function." );
+    }
+    else if ( function->type == UserFunctionType::Constructor )
+    {
+      if ( auto class_decl = function->class_link->class_declaration() )
+        analyze_class( class_decl );
+      else
+      {
+        // Should never happen, since a constructor function would always have a
+        // link to its class.
+        function->internal_error( fmt::format(
+            "no class declaration found for class constructor '{}'", function->name ) );
+      }
     }
   }
   else

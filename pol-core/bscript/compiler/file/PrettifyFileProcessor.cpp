@@ -951,6 +951,8 @@ antlrcpp::Any PrettifyFileProcessor::visitFunctionParameter(
     addToken( "byref", byref, FmtToken::SPACE );
   if ( auto unused = ctx->UNUSED() )
     addToken( "unused", unused, FmtToken::SPACE );
+  if ( auto default_keyword = ctx->DEFAULT() )
+    addToken( "default", default_keyword, FmtToken::SPACE );
   make_identifier( ctx->IDENTIFIER() );
 
   if ( ctx->ELLIPSIS() )
@@ -991,6 +993,20 @@ antlrcpp::Any PrettifyFileProcessor::visitSwitchBlockStatementGroup(
     linebuilder.markPackableLineEnd();
   if ( ctx->switchLabel().size() == 1 )
     linebuilder.buildLine( _currindent );
+  return {};
+}
+
+antlrcpp::Any PrettifyFileProcessor::visitUninitFunctionDeclaration(
+    EscriptParser::UninitFunctionDeclarationContext* ctx )
+{
+  addToken( "uninit", ctx->UNINIT(), FmtToken::SPACE );
+  addToken( "function", ctx->FUNCTION(), FmtToken::SPACE );
+  make_identifier( ctx->IDENTIFIER() );
+  _suppressnewline = true;
+  visitFunctionParameters( ctx->functionParameters() );
+  _suppressnewline = false;
+  addToken( ";", ctx->SEMI(), linebuilder.terminatorStyle() );
+  linebuilder.buildLine( _currindent );
   return {};
 }
 
@@ -1368,6 +1384,8 @@ antlrcpp::Any PrettifyFileProcessor::visitLiteral( EscriptParser::LiteralContext
     addToken( "uninit", uninit, FmtToken::SPACE );
   else if ( auto bool_literal = ctx->boolLiteral() )
     return visitBoolLiteral( bool_literal );
+  else if ( auto regular_expression_literal = ctx->REGEXP_LITERAL() )
+    return make_regular_expression_literal( regular_expression_literal );
   return visitChildren( ctx );
 }
 
@@ -1626,6 +1644,13 @@ antlrcpp::Any PrettifyFileProcessor::make_float_literal( antlr4::tree::TerminalN
 }
 
 antlrcpp::Any PrettifyFileProcessor::make_bool_literal( antlr4::tree::TerminalNode* terminal )
+{
+  addToken( terminal->getText(), terminal, FmtToken::SPACE );
+  return {};
+}
+
+antlrcpp::Any PrettifyFileProcessor::make_regular_expression_literal(
+    antlr4::tree::TerminalNode* terminal )
 {
   addToken( terminal->getText(), terminal, FmtToken::SPACE );
   return {};

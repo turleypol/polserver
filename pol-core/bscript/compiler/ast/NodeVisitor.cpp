@@ -58,6 +58,7 @@
 #include "bscript/compiler/ast/Program.h"
 #include "bscript/compiler/ast/ProgramParameterDeclaration.h"
 #include "bscript/compiler/ast/ProgramParameterList.h"
+#include "bscript/compiler/ast/RegularExpressionValue.h"
 #include "bscript/compiler/ast/RepeatUntilLoop.h"
 #include "bscript/compiler/ast/ReturnStatement.h"
 #include "bscript/compiler/ast/SequenceBinding.h"
@@ -67,6 +68,7 @@
 #include "bscript/compiler/ast/StructMemberInitializer.h"
 #include "bscript/compiler/ast/TopLevelStatements.h"
 #include "bscript/compiler/ast/UnaryOperator.h"
+#include "bscript/compiler/ast/UninitializedFunctionDeclaration.h"
 #include "bscript/compiler/ast/UserFunction.h"
 #include "bscript/compiler/ast/ValueConsumer.h"
 #include "bscript/compiler/ast/VarStatement.h"
@@ -335,6 +337,11 @@ void NodeVisitor::visit_program_parameter_list( ProgramParameterList& node )
   visit_children( node );
 }
 
+void NodeVisitor::visit_regular_expression_value( RegularExpressionValue& node )
+{
+  visit_children( node );
+}
+
 void NodeVisitor::visit_repeat_until_loop( RepeatUntilLoop& node )
 {
   visit_children( node );
@@ -383,6 +390,11 @@ void NodeVisitor::visit_top_level_statements( TopLevelStatements& node )
 }
 
 void NodeVisitor::visit_unary_operator( UnaryOperator& node )
+{
+  visit_children( node );
+}
+
+void NodeVisitor::visit_uninitialized_function_declaration( UninitializedFunctionDeclaration& node )
 {
   visit_children( node );
 }
