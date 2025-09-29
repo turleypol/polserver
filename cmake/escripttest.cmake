@@ -37,24 +37,17 @@ function (compareresult scriptname result optimized)
   endif()
 
   execute_process(
-    COMMAND ${CMAKE_COMMAND} -E compare_files ${outname} "${scriptname}.tst"
-    RESULT_VARIABLE test_not_successful
-    OUTPUT_QUIET
+    COMMAND ${git} diff --no-index --ignore-space-at-eol ${outname} "${scriptname}.tst"
     ERROR_QUIET
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    COMMAND_ECHO STDERR
+    RESULT_VARIABLE test_not_successful
   )
   if (NOT ${test_not_successful})
     set(${result} 1 PARENT_SCOPE)
     return()
   endif()
   set(${result} 0 PARENT_SCOPE)
-  if (DEFINED git)
-    execute_process(
-      COMMAND ${git} diff --no-index --ignore-space-at-eol ${outname} "${scriptname}.tst"
-      ERROR_QUIET
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      COMMAND_ECHO STDERR
-    )
-  endif()
   message(SEND_ERROR "${scriptname}.src failed")
   cleanup(${scriptname})
 endfunction()
