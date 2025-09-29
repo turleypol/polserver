@@ -43,7 +43,6 @@ function (compareresult scriptname result optimized)
     COMMAND ${git} diff --no-index --ignore-space-at-eol ${outname} "${scriptname}.tst"
     ERROR_QUIET
     OUTPUT_STRIP_TRAILING_WHITESPACE
-    COMMAND_ECHO STDERR
     RESULT_VARIABLE test_not_successful
   )
   if (NOT ${test_not_successful})
