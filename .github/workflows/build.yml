@@ -207,46 +207,6 @@ jobs:
           name: Nightly-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin/release
 
-  release:
-    needs: build
-    runs-on: "ubuntu-latest"
-    if: github.ref == 'refs/heads/master'
-    steps:
-      - name: Download artefacts
-        uses: actions/download-artifact@v4
-        with:
-          name: Nightly-Linux-g++
-          path: Nightly-Linux-g++
-      - name: Download artefacts
-        uses: actions/download-artifact@v4
-        with:
-          name: Nightly-Linux-clang++
-          path: Nightly-Linux-clang++
-      - name: Download artefacts
-        uses: actions/download-artifact@v4
-        with:
-          name: Nightly-Windows-cl
-          path: Nightly-Windows-cl
-
-      - name: Create Release zip
-        run: |
-          zip -j Nightly-Windows.zip Nightly-Windows-cl/*
-          zip -j Nightly-Linux-gcc.zip Nightly-Linux-g++/*
-          zip -j Nightly-Linux-clang.zip Nightly-Linux-clang++/*
-
-      - name: Create Release
-        uses: "turleypol/release_action_dist@master"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "NightlyRelease"
-          reference_release_tag: "v100.1.0"
-          prerelease: true
-          title: "Nightly Release"
-          files: |
-            Nightly-Windows.zip
-            Nightly-Linux-gcc.zip
-            Nightly-Linux-clang.zip
-
   notify_on_failure:
     needs: build
     runs-on: "ubuntu-latest"
