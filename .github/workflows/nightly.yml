@@ -28,6 +28,8 @@ jobs:
         with:
           name: Nightly-Linux-g++
           path: Nightly-Linux-g++
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Wait for Linux build clang to succeed
         uses: lewagon/wait-on-check-action@v1.4.1
@@ -41,6 +43,8 @@ jobs:
         with:
           name: Nightly-Linux-clang++
           path: Nightly-Linux-clang++
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Wait for macOS build to succeed
         uses: lewagon/wait-on-check-action@v1.4.1
@@ -54,6 +58,8 @@ jobs:
         with:
           name: Nightly-macOS-clang++
           path: Nightly-macOS-clang++
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Wait for Windows build to succeed
         uses: lewagon/wait-on-check-action@v1.4.1
@@ -67,6 +73,8 @@ jobs:
         with:
           name: Nightly-Windows-cl
           path: Nightly-Windows-cl
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Create Release zip
         run: |
