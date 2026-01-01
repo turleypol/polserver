@@ -19,6 +19,7 @@ jobs:
             compiler-version: default
             build-type: Release
             cmake-cfg: ""
+            tests: 1
             name: Windows CL
 
           - os: "ubuntu-latest"
@@ -27,6 +28,7 @@ jobs:
             compiler-version: 12
             build-type: RelWithDebInfo
             cmake-cfg: ""
+            tests: 1
             name: Linux GCC
 
           - os: "ubuntu-latest"
@@ -35,6 +37,7 @@ jobs:
             compiler-version: 16
             build-type: RelWithDebInfo
             cmake-cfg: ""
+            tests: 1
             name: Linux Clang
           
           - os: "macos-14"
@@ -43,6 +46,7 @@ jobs:
             compiler-version: default
             build-type: Release
             cmake-cfg: "-DREUSE_PCH=1 -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64'"
+            tests: 1
             name: MacOS Clang
 
           - os: "ubuntu-latest"
@@ -51,6 +55,7 @@ jobs:
             compiler-version: 16
             build-type: Release
             cmake-cfg: "-DNO_PCH=1"
+            tests: 0
             name: Linux Clang noPCH
 
     runs-on: ${{ matrix.config.os }}
@@ -160,36 +165,36 @@ jobs:
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 4
 
       - name: Start MySQL
-        if: matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'ubuntu-latest' && matrix.config.tests
         shell: pwsh
         run: |
           sudo /etc/init.d/mysql start
           mysql -e "CREATE DATABASE IF NOT EXISTS poltest;" -uroot -proot
           echo "POLCORE_TESTSQL=1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Test (EScript)
-        if: matrix.config.nopch == 0
+        if: matrix.config.tests
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
       - name: Test (Shard Fixtures)
-        if: matrix.config.nopch == 0
+        if: matrix.config.tests
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_fixture
       - name: Test (UnitTests)
-        if: matrix.config.nopch == 0
+        if: matrix.config.tests
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target unittest_pol
       - name: Test (Shard)
-        if: matrix.config.nopch == 0
+        if: matrix.config.tests
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
           #env:
           #POLCORE_TEST_FILTER: testitems
       - name: Testsummary
-        if: matrix.config.nopch == 0 && always()
+        if: matrix.config.tests && always()
         shell: bash
         run: |
           cd bin-build
@@ -197,21 +202,21 @@ jobs:
             python coretest/ci_summary.py Testing/Temporary/LastTest.log
           } > "$GITHUB_STEP_SUMMARY"
       - name: Test (Ecompile Watch)
-        if: matrix.config.nopch == 0
+        if: matrix.config.tests
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target test_ecompile_watch
           #env:
           #POLCORE_TEST_FILTER: testitems
       - name: Upload coretest folder
-        if: matrix.config.nopch == 0 && always()
+        if: matrix.config.tests && always()
         uses: actions/upload-artifact@v4
         with:
           name: Testdir-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin-build/coretest/
 
       - name: Create Artefact
-        if: matrix.config.nopch == 0
+        if: matrix.config.tests
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target package
@@ -219,7 +224,7 @@ jobs:
           mkdir release
           mv *.zip release
       - name: Create Artefact (dbg)
-        if: matrix.config.os == 'ubuntu-latest' && matrix.config.nopch == 0
+        if: matrix.config.os == 'ubuntu-latest' && matrix.config.tests
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target create_dbg_zip
@@ -227,7 +232,7 @@ jobs:
           mv *.zip release
 
       - name: Upload Artefact
-        if: matrix.config.nopch == 0
+        if: matrix.config.tests
         uses: actions/upload-artifact@v4
         with:
           name: Nightly-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
