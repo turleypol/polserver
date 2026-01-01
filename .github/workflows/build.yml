@@ -18,7 +18,7 @@ jobs:
             c-compiler: cl
             compiler-version: default
             build-type: Release
-            nopch: 0
+            cmake-cfg: ""
             name: Windows CL
 
           - os: "ubuntu-latest"
@@ -26,7 +26,7 @@ jobs:
             c-compiler: gcc
             compiler-version: 12
             build-type: RelWithDebInfo
-            nopch: 0
+            cmake-cfg: ""
             name: Linux GCC
 
           - os: "ubuntu-latest"
@@ -34,15 +34,23 @@ jobs:
             c-compiler: clang
             compiler-version: 16
             build-type: RelWithDebInfo
-            nopch: 0
+            cmake-cfg: ""
             name: Linux Clang
+          
+          - os: "macos-14"
+            cxx-compiler: clang++
+            c-compiler: clang
+            compiler-version: default
+            build-type: Release
+            cmake-cfg: "-DREUSE_PCH=1 -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64'"
+            name: MacOS Clang
 
           - os: "ubuntu-latest"
             cxx-compiler: clang++
             c-compiler: clang
             compiler-version: 16
             build-type: Release
-            nopch: 1
+            cmake-cfg: "-DNO_PCH=1"
             name: Linux Clang noPCH
 
     runs-on: ${{ matrix.config.os }}
@@ -73,7 +81,8 @@ jobs:
         with:
           path: lib/cppdap-82beeea
           key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-cppdap-82beeea-2
-      - name: Install Compiler and Dependencies
+
+      - name: Install Compiler and Dependencies (Linux)
         if: matrix.config.os == 'ubuntu-latest'
         shell: pwsh
         run: |
@@ -108,6 +117,22 @@ jobs:
         shell: pwsh
         run: |
           pip install aiosmtpd
+      
+      - name: Install Dependencies (macOS)
+        if: startsWith( matrix.config.os, 'macos' )
+        shell: bash
+        run: |
+          set -e
+          /opt/homebrew/bin/pip3.13 install --break-system-packages aiosmtpd
+          brew bundle --file=bin-build/Brewfile
+          # Update the Homebrew-installed shared library binaries with the other architecture (amd64) via `brew-universalize`.
+          ./bin-build/brew-universalize mysql-client mysql-connector-c++ openssl@3 libssh2
+          OPENSSL_VERSION_INSTALLED=$(brew info --json openssl@3 | jq -r '.[0].installed[0].version')
+          MYSQL_CLIENT_VERSION_INSTALLED=$(brew info --json mysql-client | jq -r '.[0].installed[0].version')
+          echo "PKG_CONFIG_PATH=/opt/homebrew/Cellar/openssl@3/$OPENSSL_VERSION_INSTALLED/lib/pkgconfig:/opt/homebrew/Cellar/mysql-client/$MYSQL_CLIENT_VERSION_INSTALLED/lib/pkgconfig:$Env:PKG_CONFIG_PATH" >> $GITHUB_ENV
+          #env:
+          #HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: '1'
+
 
       - name: Set CXX and CC
         shell: pwsh
@@ -124,10 +149,11 @@ jobs:
           echo "CC=$c_compiler" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Register problem matcher
         run: echo "::add-matcher::.github/problem-matchers/${{ matrix.config.c-compiler }}.json"
+
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DNO_PCH=${{ matrix.config.nopch }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
+          cmake .. -G Ninja ${{ matrix.config.cmake-cfg }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
       - name: Build
         run: |
           cd bin-build
@@ -206,6 +232,53 @@ jobs:
         with:
           name: Nightly-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin/release
+
+  release:
+    needs: build
+    runs-on: "ubuntu-latest"
+#    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Download artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Nightly-Linux-g++
+          path: Nightly-Linux-g++
+      - name: Download artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Nightly-Linux-clang++
+          path: Nightly-Linux-clang++
+      - name: Download artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Nightly-Windows-cl
+          path: Nightly-Windows-cl
+      - name: Download artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Nightly-macOS-clang++
+          path: Nightly-macOS-clang++
+
+      - name: Create Release zip
+        run: |
+          zip -j Nightly-Windows.zip Nightly-Windows-cl/*
+          zip -j Nightly-Linux-gcc.zip Nightly-Linux-g++/*
+          zip -j Nightly-Linux-clang.zip Nightly-Linux-clang++/*
+          zip -j Nightly-MacOS-clang.zip Nightly-macOS-clang++/*
+
+      - name: Create Release
+        uses: "turleypol/release_action_dist@master"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "NightlyRelease"
+          reference_release_tag: "v100.1.0"
+          prerelease: true
+          title: "Nightly Release"
+          files: |
+            Nightly-Windows.zip
+            Nightly-Linux-gcc.zip
+            Nightly-Linux-clang.zip
+            Nightly-MacOS-clang.zip
 
   notify_on_failure:
     needs: build
