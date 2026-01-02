@@ -19,7 +19,7 @@ jobs:
             compiler-version: default
             build-type: Release
             cmake-cfg: ""
-            tests: 1
+            tests: true
             name: Windows CL
 
           - os: "ubuntu-latest"
@@ -28,7 +28,7 @@ jobs:
             compiler-version: 12
             build-type: RelWithDebInfo
             cmake-cfg: ""
-            tests: 1
+            tests: true
             name: Linux GCC
 
           - os: "ubuntu-latest"
@@ -37,7 +37,7 @@ jobs:
             compiler-version: 16
             build-type: RelWithDebInfo
             cmake-cfg: ""
-            tests: 1
+            tests: true
             name: Linux Clang
           
           - os: "macos-14"
@@ -46,7 +46,7 @@ jobs:
             compiler-version: default
             build-type: Release
             cmake-cfg: "-DREUSE_PCH=1 -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64'"
-            tests: 1
+            tests: true
             name: MacOS Clang
 
           - os: "ubuntu-latest"
@@ -55,7 +55,7 @@ jobs:
             compiler-version: 16
             build-type: Release
             cmake-cfg: "-DNO_PCH=1"
-            tests: 0
+            tests: false
             name: Linux Clang noPCH
 
     runs-on: ${{ matrix.config.os }}
@@ -241,7 +241,7 @@ jobs:
   release:
     needs: build
     runs-on: "ubuntu-latest"
-#    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Download artefacts
         uses: actions/download-artifact@v4
