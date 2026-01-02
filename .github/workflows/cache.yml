@@ -1,0 +1,30 @@
+name: '3rdPartyCache'
+description: 'cache 3rd parry'
+inputs:
+  key:
+    description: 'os'
+    required: true
+    default: 'win'
+runs:
+  using: 'composite'
+  steps:
+    - name: Cache curl
+        uses: actions/cache@v4
+        with:
+          path: lib/curl-8_14_1
+          key: ${{ key }}-curl-8.14.1-2
+      - name: Cache antlr
+        uses: actions/cache@v4
+        with:
+          path: lib/antlr-cb85012
+          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-antlr-cb85012-2
+      - name: Cache boost
+        uses: actions/cache@v4
+        with:
+          path: lib/boost_1_89_0
+          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-boost-1.89.0-1
+      - name: Cache cppdap
+        uses: actions/cache@v4
+        with:
+          path: lib/cppdap-82beeea
+          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-cppdap-82beeea-2
