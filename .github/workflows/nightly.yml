@@ -104,7 +104,7 @@ jobs:
       - name: Build
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} -- -j 4
+          cmake --build . --config ${{ matrix.config.build-type }} -- -j 1
       - name: Format
         run: |
           cd bin-build
