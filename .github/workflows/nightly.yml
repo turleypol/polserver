@@ -1,6 +1,8 @@
 name: BuildTest
 
-on: [push, pull_request]
+on: [push]
+permissions:
+  contents: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -108,7 +110,13 @@ jobs:
         run: |
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} --target clang_format
-
+      
+      - name: Commit
+        run: |
+          git config --global user.name 'Clang Tidy'
+          git config --global user.email 'clang-tidy@users.noreply.github.com'
+          git commit -am "Automated clang-tidy change"
+          git push
       - name: Upload coretest folder
         uses: actions/upload-artifact@v4
         with:
