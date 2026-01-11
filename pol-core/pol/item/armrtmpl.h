@@ -7,8 +7,8 @@
 #ifndef ARMRTMPL_H
 #define ARMRTMPL_H
 
-#include <string>
 #include <set>
+#include <string>
 
 #include "../equipdsc.h"
 namespace Pol
@@ -23,17 +23,17 @@ class ArmorDesc : public Core::EquipDesc
 {
 public:
   // ArmorTemplate();
-  typedef EquipDesc base;
+  using base = EquipDesc;
   ArmorDesc( u32 objtype, Clib::ConfigElem& elem, const Plib::Package* pkg,
              bool forceShield = false );
-  virtual ~ArmorDesc(){};
-  virtual void PopulateStruct( Bscript::BStruct* descriptor ) const override;
-  virtual size_t estimatedSize() const override;
+  ~ArmorDesc() override = default;
+  void PopulateStruct( Bscript::BStruct* descriptor ) const override;
+  size_t estimatedSize() const override;
 
   unsigned short ar;
   std::set<unsigned short> zones;
   Core::ScriptDef on_hit_script;
 };
-}
-}
+}  // namespace Items
+}  // namespace Pol
 #endif

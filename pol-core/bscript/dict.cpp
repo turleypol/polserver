@@ -18,9 +18,8 @@
 #include "impstr.h"
 #include "objmethods.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 BDictionary::BDictionary() : BObjectImp( OTDictionary ), contents_() {}
 
@@ -64,7 +63,7 @@ class BDictionaryIterator final : public ContIterator
 {
 public:
   BDictionaryIterator( BDictionary* pDict, BObject* pIterVal );
-  virtual BObject* step() override;
+  BObject* step() override;
 
 private:
   BObject m_DictObj;
@@ -99,22 +98,20 @@ BObject* BDictionaryIterator::step()
     BObjectRef& oref = ( *itr ).second;
     return oref.get();
   }
-  else
-  {
-    auto itr = m_pDict->contents_.find( m_Key );
-    if ( itr == m_pDict->contents_.end() )
-      return nullptr;
-    ++itr;
-    if ( itr == m_pDict->contents_.end() )
-      return nullptr;
 
-    const BObject& okey = ( *itr ).first;
-    m_Key.setimp( okey.impptr()->copy() );
-    m_IterVal->setimp( m_Key.impptr() );
+  auto itr = m_pDict->contents_.find( m_Key );
+  if ( itr == m_pDict->contents_.end() )
+    return nullptr;
+  ++itr;
+  if ( itr == m_pDict->contents_.end() )
+    return nullptr;
 
-    BObjectRef& oref = ( *itr ).second;
-    return oref.get();
-  }
+  const BObject& okey = ( *itr ).first;
+  m_Key.setimp( okey.impptr()->copy() );
+  m_IterVal->setimp( m_Key.impptr() );
+
+  BObjectRef& oref = ( *itr ).second;
+  return oref.get();
 }
 
 ContIterator* BDictionary::createIterator( BObject* pIterVal )
@@ -150,12 +147,10 @@ BObjectRef BDictionary::set_member( const char* membername, BObjectImp* value, b
     oref->setimp( target );
     return oref;
   }
-  else
-  {
-    BObjectRef ref( new BObject( target ) );
-    contents_[key] = ref;
-    return ref;
-  }
+
+  BObjectRef ref( new BObject( target ) );
+  contents_[key] = ref;
+  return ref;
 }
 
 BObjectRef BDictionary::get_member( const char* membername )
@@ -167,10 +162,8 @@ BObjectRef BDictionary::get_member( const char* membername )
   {
     return ( *itr ).second;
   }
-  else
-  {
-    return BObjectRef( UninitObject::create() );
-  }
+
+  return BObjectRef( UninitObject::create() );
 }
 
 
@@ -185,10 +178,8 @@ BObjectRef BDictionary::OperSubscript( const BObject& obj )
       BObjectRef& oref = ( *itr ).second;
       return oref;
     }
-    else
-    {
-      return BObjectRef( UninitObject::create() );
-    }
+
+    return BObjectRef( UninitObject::create() );
   }
   else
   {
@@ -211,11 +202,9 @@ BObjectImp* BDictionary::array_assign( BObjectImp* idx, BObjectImp* target, bool
       oref->setimp( new_target );
       return new_target;
     }
-    else
-    {
-      contents_[BObject( obj->copy() )].set( new BObject( new_target ) );
-      return new_target;
-    }
+
+    contents_[BObject( obj->copy() )].set( new BObject( new_target ) );
+    return new_target;
   }
   else
   {
@@ -322,8 +311,7 @@ BObjectImp* BDictionary::call_method( const char* methodname, Executor& ex )
   ObjMethod* objmethod = getKnownObjMethod( methodname );
   if ( objmethod != nullptr )
     return this->call_method_id( objmethod->id, ex );
-  else
-    return nullptr;
+  return nullptr;
 }
 
 char BDictionary::packtype() const
@@ -420,15 +408,12 @@ BObjectRef BDictionary::operDotPlus( const char* name )
     contents_[key] = BObjectRef( pnewobj );
     return BObjectRef( pnewobj );
   }
-  else
-  {
-    return BObjectRef( new BError( "Member already exists" ) );
-  }
+
+  return BObjectRef( new BError( "Member already exists" ) );
 }
 
 const BDictionary::Contents& BDictionary::contents() const
 {
   return contents_;
 }
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript

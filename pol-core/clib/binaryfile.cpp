@@ -14,18 +14,17 @@
 #include "passert.h"
 #include "strutil.h"
 
-namespace Pol
+
+namespace Pol::Clib
 {
-namespace Clib
-{
-BinaryFile::BinaryFile() {}
+BinaryFile::BinaryFile() = default;
 
 BinaryFile::BinaryFile( const std::string& filename, std::ios::openmode mode ) : _filename( "" )
 {
   Open( filename, mode );
 }
 
-BinaryFile::~BinaryFile() {}
+BinaryFile::~BinaryFile() = default;
 
 void BinaryFile::Open( const std::string& filename, std::ios::openmode mode )
 {
@@ -103,5 +102,4 @@ size_t BinaryFile::sizeEstimate() const
   size_t size = sizeof( *this ) + _filename.capacity();
   return size;
 }
-}
-}
+}  // namespace Pol::Clib

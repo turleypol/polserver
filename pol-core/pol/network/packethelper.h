@@ -6,11 +6,8 @@
 #include "clienttransmit.h"
 #include "packets.h"
 
-namespace Pol
-{
-namespace Network
-{
-namespace PktHelper
+
+namespace Pol::Network::PktHelper
 {
 using namespace PacketWriterDefs;
 // creates new packets
@@ -38,7 +35,7 @@ public:
   ~PacketOut();
   void Release();
   void Send( Client* client, int len = -1 ) const;
-  T* operator->(void)const;
+  T* operator->() const;
   T* Get();
 };
 
@@ -73,7 +70,7 @@ void PacketOut<T>::Send( Client* client, int len ) const
 }
 
 template <class T>
-T* PacketOut<T>::operator->(void)const
+T* PacketOut<T>::operator->() const
 {
   return pkt;
 }
@@ -83,7 +80,7 @@ T* PacketOut<T>::Get()
 {
   return pkt;
 }
-}
-}
-}
+}  // namespace Pol::Network::PktHelper
+
+
 #endif

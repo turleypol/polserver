@@ -23,9 +23,8 @@
 
 #include <fmt/format.h>
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 enum MethodID
 {
@@ -205,18 +204,18 @@ inline auto format_as( MethodID id )
 }
 
 
-typedef struct
+using ObjMethod = struct
 {
   MethodID id;
   char code[30];
   bool overridden;
-} ObjMethod;
+};
 
 extern ObjMethod object_methods[];
 extern int n_objmethods;
 
 ObjMethod* getKnownObjMethod( const char* token );
 ObjMethod* getObjMethod( int id );
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript
+
 #endif

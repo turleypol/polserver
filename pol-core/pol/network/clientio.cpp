@@ -32,9 +32,8 @@
 #include "packets.h"
 #include <fmt/chrono.h>
 
-namespace Pol
-{
-namespace Network
+
+namespace Pol::Network
 {
 PacketLog Client::start_log()
 {
@@ -64,10 +63,8 @@ PacketLog ThreadedClient::start_log( std::string filename )
   {
     return PacketLog::Success;
   }
-  else
-  {
-    return PacketLog::Error;
-  }
+
+  return PacketLog::Error;
 }
 
 PacketLog ThreadedClient::stop_log()
@@ -81,10 +78,8 @@ PacketLog ThreadedClient::stop_log()
     fpLog.clear();
     return PacketLog::Success;
   }
-  else
-  {
-    return PacketLog::Unchanged;
-  }
+
+  return PacketLog::Unchanged;
 }
 
 
@@ -323,5 +318,4 @@ void Client::Disconnect()
     Core::networkManager.clientTransmit->QueueDisconnection( this );
   }
 }
-}  // namespace Network
-}  // namespace Pol
+}  // namespace Pol::Network

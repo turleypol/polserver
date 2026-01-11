@@ -27,9 +27,8 @@ using namespace Bscript;
 using namespace EscriptGrammar;
 using namespace Compiler;
 
-namespace Network
-{
-namespace DAP
+
+namespace Network::DAP
 {
 namespace fs = std::filesystem;
 
@@ -187,7 +186,7 @@ dap::ResponseOrError<dap::LaunchResponse> DebugClientThread::handle_launch(
 
   Module::UOExecutorModule* new_uoemod;
 
-  if ( request.arg.has_value() && request.arg->length() > 0 )
+  if ( request.arg.has_value() && !request.arg->empty() )
   {
     new_uoemod = Core::start_script( sd, BObjectImp::unpack( request.arg->c_str() ) );
   }
@@ -950,6 +949,6 @@ void DebugClientThread::run()
 
   POLLOG_INFOLN( "Debugger#{} client thread closing.", _instance );
 }
-}  // namespace DAP
-}  // namespace Network
+}  // namespace Network::DAP
+
 }  // namespace Pol

@@ -39,9 +39,8 @@
 #include "globals/uvars.h"
 #include "network/pktdef.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 void ServSpecOpt::read_servspecopt()
 {
@@ -222,7 +221,7 @@ void ServSpecOpt::ssopt_parse_totalstats( Clib::ConfigElem& elem )
     }
     else
       snprintf( tmp, Clib::arsize( tmp ), "%lu", static_cast<unsigned long>( statmin ) );
-    settingsManager.ssopt.total_stats_at_creation.push_back( tmp );
+    settingsManager.ssopt.total_stats_at_creation.emplace_back( tmp );
     valok = true;
     token = strtok( nullptr, "," );
   }
@@ -230,8 +229,8 @@ void ServSpecOpt::ssopt_parse_totalstats( Clib::ConfigElem& elem )
   if ( !valok || settingsManager.ssopt.total_stats_at_creation.empty() )
   {
     settingsManager.ssopt.total_stats_at_creation.clear();
-    settingsManager.ssopt.total_stats_at_creation.push_back( "65" );
-    settingsManager.ssopt.total_stats_at_creation.push_back( "80" );
+    settingsManager.ssopt.total_stats_at_creation.emplace_back( "65" );
+    settingsManager.ssopt.total_stats_at_creation.emplace_back( "80" );
     POLLOG_ERRORLN( "Invalid TotalStatsAtCreation value '{}', using '65,80'", total_stats );
   }
   /*
@@ -241,5 +240,4 @@ void ServSpecOpt::ssopt_parse_totalstats( Clib::ConfigElem& elem )
       cout << "* Stats-at-creation entry: " << *itr << endl;
       */
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

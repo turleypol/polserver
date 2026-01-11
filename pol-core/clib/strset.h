@@ -11,9 +11,8 @@
 #include <set>
 #include <string>
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 class StringSet
 {
@@ -26,11 +25,11 @@ public:
   void readfrom( const std::string& str );
   std::string extract() const;
 
-  typedef std::set<std::string>::iterator iterator;
+  using iterator = std::set<std::string>::iterator;
   iterator begin();
   iterator end();
 
-  typedef std::set<std::string>::const_iterator const_iterator;
+  using const_iterator = std::set<std::string>::const_iterator;
   const_iterator begin() const;
   const_iterator end() const;
 
@@ -39,6 +38,6 @@ public:
 private:
   std::set<std::string> strings_;
 };
-}
-}
+}  // namespace Pol::Clib
+
 #endif  // CLIB_STRSET_H

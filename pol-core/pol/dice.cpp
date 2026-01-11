@@ -18,9 +18,8 @@
 #include "../clib/rawtypes.h"
 #include "../clib/stlutil.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 Dice::Dice() : die_count( 0 ), die_type( 0 ), plus_damage( 0 ) {}
 
@@ -186,8 +185,7 @@ unsigned short Dice::min_value() const
 
   if ( total < 0 )
     return 0;
-  else
-    return static_cast<u16>( total );
+  return static_cast<u16>( total );
 }
 
 unsigned short Dice::max_value() const
@@ -196,8 +194,6 @@ unsigned short Dice::max_value() const
 
   if ( total < 0 )
     return 0;
-  else
-    return static_cast<u16>( total );
+  return static_cast<u16>( total );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

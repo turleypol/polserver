@@ -31,7 +31,7 @@ void read_justice_zones();
 
 class JusticeRegion : public Region
 {
-  typedef Region base;
+  using base = Region;
 
 public:
   JusticeRegion( Clib::ConfigElem& elem, RegionId id );
@@ -46,7 +46,7 @@ public:
   bool RunLeaveScript( Mobile::Character* chr );
   static bool RunNoCombatCheck( Network::Client* client );
 
-  virtual size_t estimateSize() const override;
+  size_t estimateSize() const override;
 
 private:
   bool guarded_;

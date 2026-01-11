@@ -27,16 +27,14 @@
 #include "../clib/rawtypes.h"
 #include "polobject.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 class Executor;
-}  // namespace Bscript
-}  // namespace Pol
-namespace Pol
-{
-namespace Core
+}  // namespace Pol::Bscript
+
+
+namespace Pol::Core
 {
 class BSQLResultSet;
 
@@ -52,7 +50,7 @@ public:
 private:
   MYSQL_RES* _result;
 };
-typedef std::shared_ptr<ResultWrapper> RES_WRAPPER;
+using RES_WRAPPER = std::shared_ptr<ResultWrapper>;
 
 class BSQLRow final : public Core::PolObjectImp
 {
@@ -61,21 +59,21 @@ public:
   BSQLRow( BSQLResultSet* resultset );
   // BSQLRow(MYSQL_RES *_result, MYSQL_ROW _row);
   BSQLRow( RES_WRAPPER _result, MYSQL_ROW _row, MYSQL_FIELD* _fields );
-  ~BSQLRow();
+  ~BSQLRow() override;
 
   // virtual BObjectRef get_member( const char* membername );
   // virtual BObjectRef get_member_id( const int id ); //id test
   // virtual Bscript::BObjectImp* call_method( const char* methodname, Executor& ex );
   // virtual Bscript::BObjectImp* call_method_id( const int id, Executor& ex, bool
   // forcebuiltin=false );
-  virtual Bscript::BObjectImp* copy() const override;
-  virtual std::string getStringRep() const override { return "SQLRow"; }
-  virtual size_t sizeEstimate() const override { return sizeof( *this ) + sizeof( MYSQL_FIELD ); }
-  virtual const char* typeOf() const override { return "SQLRow"; }
-  virtual u8 typeOfInt() const override { return OTSQLRow; }
-  virtual bool isTrue() const override { return _row != 0; };
-  virtual Bscript::BObjectRef OperSubscript( const Bscript::BObject& obj ) override;
-  virtual Bscript::ContIterator* createIterator( Bscript::BObject* pIterVal ) override;
+  Bscript::BObjectImp* copy() const override;
+  std::string getStringRep() const override { return "SQLRow"; }
+  size_t sizeEstimate() const override { return sizeof( *this ) + sizeof( MYSQL_FIELD ); }
+  const char* typeOf() const override { return "SQLRow"; }
+  u8 typeOfInt() const override { return OTSQLRow; }
+  bool isTrue() const override { return _row != 0; };
+  Bscript::BObjectRef OperSubscript( const Bscript::BObject& obj ) override;
+  Bscript::ContIterator* createIterator( Bscript::BObject* pIterVal ) override;
   friend class SQLRowIterator;
 
 private:
@@ -90,19 +88,19 @@ public:
   BSQLResultSet( RES_WRAPPER result );
   BSQLResultSet( RES_WRAPPER result, MYSQL_FIELD* fields );
   BSQLResultSet( int affected_rows );
-  ~BSQLResultSet();
+  ~BSQLResultSet() override;
   int num_fields() const;
   int affected_rows() const;
   const char* field_name( unsigned int index ) const;
   int num_rows() const;
   bool has_result() const;
-  virtual Bscript::BObjectImp* copy() const override;
-  virtual std::string getStringRep() const override;
-  virtual size_t sizeEstimate() const override { return sizeof( *this ) + sizeof( MYSQL_FIELD ); }
-  virtual const char* typeOf() const override { return "SQLResultSet"; }
-  virtual u8 typeOfInt() const override { return OTSQLResultSet; }
-  virtual bool isTrue() const override;
-  virtual Bscript::ContIterator* createIterator( Bscript::BObject* pIterVal ) override;
+  Bscript::BObjectImp* copy() const override;
+  std::string getStringRep() const override;
+  size_t sizeEstimate() const override { return sizeof( *this ) + sizeof( MYSQL_FIELD ); }
+  const char* typeOf() const override { return "SQLResultSet"; }
+  u8 typeOfInt() const override { return OTSQLResultSet; }
+  bool isTrue() const override;
+  Bscript::ContIterator* createIterator( Bscript::BObject* pIterVal ) override;
 
   friend class BSQLRow;
   friend class SQLResultSetIterator;
@@ -114,8 +112,8 @@ private:
 };
 class SQLService;
 
-typedef std::vector<std::string> QueryParam;
-typedef std::shared_ptr<QueryParam> QueryParams;
+using QueryParam = std::vector<std::string>;
+using QueryParams = std::shared_ptr<QueryParam>;
 
 class BSQLConnection final : public Core::PolObjectImp
 {
@@ -124,7 +122,7 @@ class BSQLConnection final : public Core::PolObjectImp
 public:
   BSQLConnection();
   BSQLConnection( std::shared_ptr<ConnectionWrapper> conn );
-  ~BSQLConnection();
+  ~BSQLConnection() override;
   bool connect( const char* host, const char* user, const char* passwd, int port = 0 );
   bool query( const std::string query );
   bool query( const std::string query, const QueryParams params );
@@ -138,17 +136,17 @@ public:
   int getLastErrNo() const;
   std::shared_ptr<ConnectionWrapper> getConnection() const;
 
-  virtual Bscript::BObjectRef get_member( const char* membername ) override;
-  virtual Bscript::BObjectRef get_member_id( const int id ) override;  // id test
-  virtual Bscript::BObjectImp* call_polmethod( const char* methodname, UOExecutor& ex ) override;
-  virtual Bscript::BObjectImp* call_polmethod_id( const int id, UOExecutor& ex,
-                                                  bool forcebuiltin = false ) override;
-  virtual Bscript::BObjectImp* copy() const override;
-  virtual std::string getStringRep() const override;
-  virtual size_t sizeEstimate() const override { return sizeof( *this ) + _error.capacity(); }
-  virtual const char* typeOf() const override { return "SQLConnection"; }
-  virtual u8 typeOfInt() const override { return OTSQLConnection; }
-  virtual bool isTrue() const override;
+  Bscript::BObjectRef get_member( const char* membername ) override;
+  Bscript::BObjectRef get_member_id( const int id ) override;  // id test
+  Bscript::BObjectImp* call_polmethod( const char* methodname, UOExecutor& ex ) override;
+  Bscript::BObjectImp* call_polmethod_id( const int id, UOExecutor& ex,
+                                          bool forcebuiltin = false ) override;
+  Bscript::BObjectImp* copy() const override;
+  std::string getStringRep() const override;
+  size_t sizeEstimate() const override { return sizeof( *this ) + _error.capacity(); }
+  const char* typeOf() const override { return "SQLConnection"; }
+  u8 typeOfInt() const override { return OTSQLConnection; }
+  bool isTrue() const override;
   // virtual BObjectRef OperSubscript( const BObject& obj );
 
 private:
@@ -172,8 +170,8 @@ private:
 class SQLService
 {
 public:
-  typedef std::function<void()> msg;
-  typedef Clib::message_queue<msg> msg_queue;
+  using msg = std::function<void()>;
+  using msg_queue = Clib::message_queue<msg>;
   SQLService();
   ~SQLService();
   void start();
@@ -184,8 +182,8 @@ private:
   msg_queue _msgs;
 };
 void start_sql_service();
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core
+
 
 #endif
 

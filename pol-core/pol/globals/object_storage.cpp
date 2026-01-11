@@ -7,9 +7,8 @@
 #include "../reftypes.h"
 #include "../uobject.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 ObjectStorageManager objStorageManager;
 
@@ -23,7 +22,7 @@ ObjectStorageManager::ObjectStorageManager()
 {
 }
 
-ObjectStorageManager::~ObjectStorageManager() {}
+ObjectStorageManager::~ObjectStorageManager() = default;
 
 
 void ObjectStorageManager::deinitialize()
@@ -90,5 +89,4 @@ ObjectStorageManager::MemoryUsage ObjectStorageManager::estimateSize() const
 
   return usage;
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

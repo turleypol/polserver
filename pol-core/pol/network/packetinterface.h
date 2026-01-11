@@ -5,9 +5,8 @@
 #include <map>
 #include <queue>
 
-namespace Pol
-{
-namespace Network
+
+namespace Pol::Network
 {
 // interface for packets
 class PacketInterface
@@ -16,7 +15,7 @@ public:
   PacketInterface() : offset( 0 ){};
   virtual ~PacketInterface() = default;
   u16 offset;
-  virtual void ReSetBuffer(){};
+  virtual void ReSetBuffer() {};
   virtual char* getBuffer() { return nullptr; };
   virtual inline u8 getID() const { return 0; };
   virtual inline u16 getSize() const { return 0; };
@@ -24,9 +23,9 @@ public:
   virtual size_t estimateSize() const { return 0; }
 };
 
-typedef std::queue<PacketInterface*> PacketInterfaceQueue;
-typedef std::map<u16, PacketInterfaceQueue> PacketInterfaceQueueMap;
-typedef std::pair<u16, PacketInterfaceQueue> PacketInterfaceQueuePair;
+using PacketInterfaceQueue = std::queue<PacketInterface*>;
+using PacketInterfaceQueueMap = std::map<u16, PacketInterfaceQueue>;
+using PacketInterfaceQueuePair = std::pair<u16, PacketInterfaceQueue>;
 
 // interface for the two different types of packetqueues ("normal" packets
 // and packets with subs)
@@ -52,8 +51,8 @@ public:
 };
 
 
-typedef std::pair<u8, PacketQueue*> PacketQueuePair;
-typedef std::map<u8, PacketQueue*> PacketQueueMap;
+using PacketQueuePair = std::pair<u8, PacketQueue*>;
+using PacketQueueMap = std::map<u8, PacketQueue*>;
 
 // singleton "holder" of packets !EntryPoint!
 class PacketsSingleton
@@ -74,6 +73,6 @@ public:
   PacketQueueMap* getPackets() { return &packets; };
   size_t estimateSize() const;
 };
-}  // namespace Network
-}  // namespace Pol
+}  // namespace Pol::Network
+
 #endif

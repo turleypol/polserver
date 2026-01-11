@@ -26,9 +26,8 @@
 #include "polsig.h"
 #include "realms/realm.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 /// Resource Management
 ResourceRegion::ResourceRegion( Clib::ConfigElem& elem, RegionId id )
@@ -316,10 +315,8 @@ ResourceDef* find_resource_def( const std::string& rname )
   {
     return nullptr;
   }
-  else
-  {
-    return ( *itr ).second;
-  }
+
+  return ( *itr ).second;
 }
 
 
@@ -480,5 +477,4 @@ void clean_resources()
   }
   gamestate.resourcedefs.clear();
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

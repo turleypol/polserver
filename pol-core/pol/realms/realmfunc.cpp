@@ -47,9 +47,8 @@
 #include "uworld.h"
 
 #define HULL_HEIGHT_BUFFER 2
-namespace Pol
-{
-namespace Realms
+
+namespace Pol::Realms
 {
 bool Realm::lowest_standheight( const Core::Pos2d& pos, short* z ) const
 {
@@ -206,8 +205,7 @@ Plib::MapShapeList Realm::get_standheights( Plib::MOVEMODE movemode, Plib::MapSh
   // this way a wall that lays at Z0 and has a height of 20 will be sorted above a floor tile at
   // Z5. This makes it easy to determine if there's something blocking standing on a given tile.
   // Plib::MapShapeList is implemented as a standard vector, so we can sort it like one.
-  std::sort( shapes.begin(), shapes.end(),
-             []( Plib::MapShape& a, Plib::MapShape& b )
+  std::sort( shapes.begin(), shapes.end(), []( Plib::MapShape& a, Plib::MapShape& b )
              { return ( a.z + a.height ) < ( b.z + b.height ); } );
 
   // Iterate up until (and including) the second to last shape -- because we know the top shape
@@ -714,7 +712,7 @@ bool Realm::dropheight( Plib::MapShapeList& shapes, short dropz, short chrz, sho
           result = false;
           break;
         }
-        else if ( z < ztop && ztop <= dropz )
+        if ( z < ztop && ztop <= dropz )
         {
           // a blocking item somewhere between where they _tried_ to drop it,
           // and where we decided to place it.
@@ -868,16 +866,14 @@ bool Realm::findstatic( const Core::Pos2d& pos, unsigned short objtype ) const
 {
   if ( is_shadowrealm )
     return baserealm->_staticserver->findstatic( pos.x(), pos.y(), objtype );
-  else
-    return _staticserver->findstatic( pos.x(), pos.y(), objtype );
+  return _staticserver->findstatic( pos.x(), pos.y(), objtype );
 }
 
 void Realm::getstatics( Plib::StaticEntryList& statics, const Core::Pos2d& pos ) const
 {
   if ( is_shadowrealm )
     return baserealm->_staticserver->getstatics( statics, pos.x(), pos.y() );
-  else
-    _staticserver->getstatics( statics, pos.x(), pos.y() );
+  _staticserver->getstatics( statics, pos.x(), pos.y() );
 }
 
 bool Realm::groundheight( const Core::Pos2d& pos, short* z ) const
@@ -896,8 +892,7 @@ Plib::MAPTILE_CELL Realm::getmaptile( const Core::Pos2d& pos ) const
 {
   if ( is_shadowrealm )
     return baserealm->_maptileserver->GetMapTile( pos.x(), pos.y() );
-  else
-    return _maptileserver->GetMapTile( pos.x(), pos.y() );
+  return _maptileserver->GetMapTile( pos.x(), pos.y() );
 }
 
 void Realm::getmapshapes( Plib::MapShapeList& shapes, const Core::Pos2d& pos,
@@ -908,5 +903,4 @@ void Realm::getmapshapes( Plib::MapShapeList& shapes, const Core::Pos2d& pos,
   else
     _mapserver->GetMapShapes( shapes, pos.x(), pos.y(), anyflags );
 }
-}  // namespace Realms
-}  // namespace Pol
+}  // namespace Pol::Realms

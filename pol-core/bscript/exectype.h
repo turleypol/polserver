@@ -14,11 +14,10 @@
 
 #include <vector>
 
-namespace Pol
+
+namespace Pol::Bscript
 {
-namespace Bscript
-{
-typedef std::vector<BObjectRef> BObjectRefVec;
+using BObjectRefVec = std::vector<BObjectRef>;
 }
-}
+
 #endif

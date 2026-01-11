@@ -13,9 +13,8 @@
 
 #include "polclock.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 class ScheduledTask;
 class SchComparer : public std::less<ScheduledTask*>
@@ -49,7 +48,7 @@ public:
   polclock_t next_run_clock() const;
   virtual void execute( polclock_t now ) = 0;
 
-  virtual void cancel( void );
+  virtual void cancel();
 
 protected:
   bool cancelled;
@@ -69,14 +68,13 @@ void check_scheduled_tasks( polclock_t* clocksleft, bool* pactivity );
 class PeriodicTask final : public ScheduledTask
 {
 public:
-  PeriodicTask( void ( *f )( void ), int n_secs, const char* name );
-  PeriodicTask( void ( *f )( void ), int initial_wait_seconds, int periodic_seconds,
-                const char* name );
-  virtual ~PeriodicTask() = default;
+  PeriodicTask( void ( *f )(), int n_secs, const char* name );
+  PeriodicTask( void ( *f )(), int initial_wait_seconds, int periodic_seconds, const char* name );
+  ~PeriodicTask() override = default;
 
   void set_secs( int n_secs );
 
-  virtual void execute( polclock_t now ) override;
+  void execute( polclock_t now ) override;
   void start();
 
   std::string name() const { return name_; }
@@ -84,7 +82,7 @@ public:
 private:
   polclock_t n_initial_clocks;
   polclock_t n_clocks;
-  void ( *f )( void );
+  void ( *f )();
   const char* name_;
 };
 
@@ -92,12 +90,12 @@ class OneShotTask : public ScheduledTask
 {
 public:
   OneShotTask( OneShotTask** handle, polclock_t run_when );
-  virtual void cancel( void ) override;
+  void cancel() override;
 
 protected:
   // oneshots can't be deleted, only cancelled.
-  virtual ~OneShotTask();
-  virtual void execute( polclock_t now ) override;
+  ~OneShotTask() override;
+  void execute( polclock_t now ) override;
 
   virtual void on_run() = 0;
 
@@ -114,9 +112,9 @@ public:
       : OneShotTask( handle, run_when ), data_( data ), f_( f )
   {
   }
-  virtual ~OneShotTaskInst() = default;
+  ~OneShotTaskInst() override = default;
 
-  virtual void on_run() override;
+  void on_run() override;
 
 private:
   T data_;
@@ -128,6 +126,6 @@ void OneShotTaskInst<T>::on_run()
 {
   ( *f_ )( data_ );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core
+
 #endif

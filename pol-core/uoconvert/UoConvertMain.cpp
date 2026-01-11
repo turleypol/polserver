@@ -35,9 +35,7 @@
 #include "pol/landtile.h"
 
 
-namespace Pol
-{
-namespace UoConvert
+namespace Pol::UoConvert
 {
 using namespace std;
 using namespace Pol::Core;
@@ -52,7 +50,7 @@ UoConvertMain::UoConvertMain()
     : Pol::Clib::ProgramMain(), cfg_use_no_shoot( false ), cfg_LOS_through_windows( false )
 {
 }
-UoConvertMain::~UoConvertMain() {}
+UoConvertMain::~UoConvertMain() = default;
 ///////////////////////////////////////////////////////////////////////////////
 
 void UoConvertMain::showHelp()
@@ -419,8 +417,7 @@ short get_lowestadjacentz( unsigned short x, unsigned short y, short z )
 
   if ( cave_override )
     return z;
-  else
-    return lowest_z;
+  return lowest_z;
 }
 
 void UoConvertMain::ProcessSolidBlock( unsigned short x_base, unsigned short y_base,
@@ -523,8 +520,7 @@ void UoConvertMain::ProcessSolidBlock( unsigned short x_base, unsigned short y_b
         // Look for water tiles. If there are any, discard the map (which is usually at -15 anyway)
         if ( z + lt_height <= srec.z &&
              // only where the map is below or same Z as the static
-             ( ( srec.z - ( z + lt_height ) ) <= 10 ) &&
-            DiscardedWaterTypes.count( srec.graphic ) )
+             ( ( srec.z - ( z + lt_height ) ) <= 10 ) && DiscardedWaterTypes.count( srec.graphic ) )
         {
           // arr, there be water here
           addMap = false;
@@ -549,8 +545,8 @@ void UoConvertMain::ProcessSolidBlock( unsigned short x_base, unsigned short y_b
         addMap = false;
 
       if ( addMap )
-        statics.push_back( StaticRec( 0, static_cast<signed char>( z ), lt_flags,
-                                      static_cast<char>( lt_height ) ) );
+        statics.emplace_back( 0, static_cast<signed char>( z ), lt_flags,
+                              static_cast<char>( lt_height ) );
 
       sort( statics.begin(), statics.end(), StaticsByZ() );
       reverse( statics.begin(), statics.end() );
@@ -768,8 +764,7 @@ std::string UoConvertMain::resolve_type_from_id( unsigned id ) const
 {
   if ( BoatTypes.count( id ) )
     return "Boat";
-  else
-    return "Multi";
+  return "Multi";
 }
 
 void UoConvertMain::write_multi_element( FILE* multis_cfg, const USTRUCT_MULTI_ELEMENT& elem,
@@ -1382,7 +1377,9 @@ void UoConvertMain::load_uoconvert_cfg()
         {
           parse_graphics_properties( elem, "DiscardedWaterTiles", DiscardedWaterTypes );
         }
-        else for ( int i = 0x1796; i <= 0x17B2; ++i ) DiscardedWaterTypes.insert( i );
+        else
+          for ( int i = 0x1796; i <= 0x17B2; ++i )
+            DiscardedWaterTypes.insert( i );
 
         if ( elem.has_prop( "ShowIllegalGraphicWarning" ) )
           UoConvert::cfg_show_illegal_graphic_warning =
@@ -1401,8 +1398,8 @@ void UoConvertMain::load_uoconvert_cfg()
     }
   }
 }
-}  // namespace UoConvert
-}  // namespace Pol
+}  // namespace Pol::UoConvert
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

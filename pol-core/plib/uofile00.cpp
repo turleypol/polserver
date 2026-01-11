@@ -25,9 +25,7 @@
 #include "systemstate.h"
 
 
-namespace Pol
-{
-namespace Plib
+namespace Pol::Plib
 {
 FILE* mapfile = nullptr;
 FILE* sidxfile = nullptr;
@@ -344,7 +342,7 @@ unsigned short uo_map_width = 0;
 unsigned short uo_map_height = 0;
 size_t uo_map_size = 0;
 
-void open_tiledata( void )
+void open_tiledata()
 {
   size_t tiledata_size;
 
@@ -375,7 +373,7 @@ void open_tiledata( void )
       Plib::cfg_use_new_hsa_format, Plib::systemstate.config.max_tile_id );
 }
 
-void open_map( void )
+void open_map()
 {
   size_t map_size;
   // First tries to load the new UOP files. Otherwise fall back to map[N].mul files.
@@ -389,7 +387,7 @@ void open_map( void )
   uo_map_size = map_size;
 }
 
-void open_uo_data_files( void )
+void open_uo_data_files()
 {
   open_map();
 
@@ -427,5 +425,4 @@ void open_uo_data_files( void )
     }
   }
 }
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib

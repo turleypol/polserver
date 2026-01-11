@@ -20,37 +20,33 @@
 
 #include <memory>
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 class Executor;
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 class UOExecutor;
 
 extern Bscript::BApplicObjType scriptexobjimp_type;
-typedef weak_ptr<UOExecutor> ScriptExPtr;
+using ScriptExPtr = weak_ptr<UOExecutor>;
 class ScriptExObjImp final : public PolApplicObj<ScriptExPtr>
 {
-  typedef PolApplicObj<ScriptExPtr> base;
+  using base = PolApplicObj<ScriptExPtr>;
 
 public:
   explicit ScriptExObjImp( UOExecutor* uoexec );
-  virtual const char* typeOf() const override;
-  virtual u8 typeOfInt() const override;
-  virtual Bscript::BObjectImp* copy() const override;
-  virtual Bscript::BObjectImp* call_polmethod( const char* methodname,
-                                               Core::UOExecutor& ex ) override;
-  virtual Bscript::BObjectImp* call_polmethod_id( const int id, Core::UOExecutor& ex,
-                                                  bool forcebuiltin = false ) override;
-  virtual Bscript::BObjectRef get_member( const char* membername ) override;
-  virtual Bscript::BObjectRef get_member_id( const int id ) override;
+  const char* typeOf() const override;
+  u8 typeOfInt() const override;
+  Bscript::BObjectImp* copy() const override;
+  Bscript::BObjectImp* call_polmethod( const char* methodname, Core::UOExecutor& ex ) override;
+  Bscript::BObjectImp* call_polmethod_id( const int id, Core::UOExecutor& ex,
+                                          bool forcebuiltin = false ) override;
+  Bscript::BObjectRef get_member( const char* membername ) override;
+  Bscript::BObjectRef get_member_id( const int id ) override;
 };
 
 struct ScriptWrapper
@@ -65,23 +61,22 @@ public:
   explicit ExportScriptObjImp( UOExecutor* exec );
   explicit ExportScriptObjImp( std::shared_ptr<ScriptWrapper> pid, bool delayed );
 
-  virtual const char* typeOf() const override;
-  virtual u8 typeOfInt() const override;
-  virtual Bscript::BObjectImp* copy() const override;
-  virtual Bscript::BObjectImp* call_polmethod( const char* methodname,
-                                               Core::UOExecutor& ex ) override;
-  virtual Bscript::BObjectImp* call_polmethod_id( const int id, Core::UOExecutor& ex,
-                                                  bool forcebuiltin = false ) override;
-  virtual Bscript::BObjectRef get_member( const char* membername ) override;
-  virtual Bscript::BObjectRef get_member_id( const int id ) override;
+  const char* typeOf() const override;
+  u8 typeOfInt() const override;
+  Bscript::BObjectImp* copy() const override;
+  Bscript::BObjectImp* call_polmethod( const char* methodname, Core::UOExecutor& ex ) override;
+  Bscript::BObjectImp* call_polmethod_id( const int id, Core::UOExecutor& ex,
+                                          bool forcebuiltin = false ) override;
+  Bscript::BObjectRef get_member( const char* membername ) override;
+  Bscript::BObjectRef get_member_id( const int id ) override;
 
-  virtual std::string getStringRep() const override;
-  virtual size_t sizeEstimate() const override;
+  std::string getStringRep() const override;
+  size_t sizeEstimate() const override;
 
 private:
   std::shared_ptr<ScriptWrapper> _ex;
   bool _delayed;
 };
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core
+
 #endif

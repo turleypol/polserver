@@ -19,9 +19,8 @@
 #include "../clib/clib_endian.h"
 #include "../clib/rawtypes.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 BBinaryfile::BBinaryfile()
     : Bscript::BObjectImp( OTBinaryFile ),
@@ -74,8 +73,7 @@ Bscript::BObjectRef BBinaryfile::get_member( const char* membername )
   Bscript::ObjMember* objmember = Bscript::getKnownObjMember( membername );
   if ( objmember != nullptr )
     return this->get_member_id( objmember->id );
-  else
-    return Bscript::BObjectRef( Bscript::UninitObject::create() );
+  return Bscript::BObjectRef( Bscript::UninitObject::create() );
 }
 
 Bscript::BObjectImp* BBinaryfile::call_method( const char* methodname, Bscript::Executor& ex )
@@ -83,8 +81,7 @@ Bscript::BObjectImp* BBinaryfile::call_method( const char* methodname, Bscript::
   Bscript::ObjMethod* objmethod = Bscript::getKnownObjMethod( methodname );
   if ( objmethod != nullptr )
     return this->call_method_id( objmethod->id, ex );
-  else
-    return nullptr;
+  return nullptr;
 }
 
 Bscript::BObjectImp* BBinaryfile::call_method_id( const int id, Bscript::Executor& ex,
@@ -311,7 +308,7 @@ std::string BBinaryfile::getStringRep() const
 
 bool BBinaryfile::isTrue() const
 {
-  if ( _filename == "" )
+  if ( _filename.empty() )
     return false;
   return file.IsOpen();
 }
@@ -444,5 +441,4 @@ void BinFile::Flush()
   if ( _file.is_open() )
     _file.flush();
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

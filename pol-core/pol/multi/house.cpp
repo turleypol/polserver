@@ -55,9 +55,7 @@
 #include "multidef.h"
 
 
-namespace Pol
-{
-namespace Multi
+namespace Pol::Multi
 {
 Core::Range3d UHouse::current_box() const
 {
@@ -309,8 +307,7 @@ Bscript::BObjectImp* UHouse::get_script_member( const char* membername ) const
   Bscript::ObjMember* objmember = Bscript::getKnownObjMember( membername );
   if ( objmember != nullptr )
     return this->get_script_member_id( objmember->id );
-  else
-    return nullptr;
+  return nullptr;
 }
 
 Bscript::BObjectImp* UHouse::script_method_id( const int id, Core::UOExecutor& ex )
@@ -348,8 +345,7 @@ Bscript::BObjectImp* UHouse::script_method_id( const int id, Core::UOExecutor& e
 
         if ( iref->house() )
           return new BError( "Item is already an house component" );
-        else
-          return new BError( "Couldn't add component" );
+        return new BError( "Couldn't add component" );
       }
     }
     break;
@@ -382,7 +378,7 @@ Bscript::BObjectImp* UHouse::script_method_id( const int id, Core::UOExecutor& e
   {
     if ( !IsCustom() )
       return new BError( "House is not custom" );
-    else if ( IsEditing() )
+    if ( IsEditing() )
       return new BError( "House is currently been edited" );
     else if ( !ex.hasParams( 4 ) )
       return new BError( "Not enough parameters" );
@@ -414,7 +410,7 @@ Bscript::BObjectImp* UHouse::script_method_id( const int id, Core::UOExecutor& e
   {
     if ( !IsCustom() )
       return new BError( "House is not custom" );
-    else if ( IsEditing() )
+    if ( IsEditing() )
       return new BError( "House is currently been edited" );
     else if ( !ex.hasParams( 4 ) )
       return new BError( "Not enough parameters" );
@@ -445,7 +441,7 @@ Bscript::BObjectImp* UHouse::script_method_id( const int id, Core::UOExecutor& e
       return new BError( "House is not custom" );
     // else if (!IsEditing())
     //  return new BError( "House is currently not been edited" );
-    else if ( !IsWaitingForAccept() )
+    if ( !IsWaitingForAccept() )
       return new BError( "House is currently not waiting for a commit" );
     else if ( !ex.hasParams( 2 ) )
       return new BError( "Not enough parameters" );
@@ -462,7 +458,7 @@ Bscript::BObjectImp* UHouse::script_method_id( const int id, Core::UOExecutor& e
   {
     if ( !IsCustom() )
       return new BError( "House is not custom" );
-    else if ( !IsEditing() )
+    if ( !IsEditing() )
       return new BError( "House is currently not been edited" );
     else if ( !ex.hasParams( 2 ) )
       return new BError( "Not enough parameters" );
@@ -482,7 +478,7 @@ Bscript::BObjectImp* UHouse::script_method_id( const int id, Core::UOExecutor& e
   {
     if ( IsEditing() )
       return new BError( "House is currently been edited" );
-    else if ( !ex.hasParams( 2 ) )
+    if ( !ex.hasParams( 2 ) )
       return new BError( "Not enough parameters" );
 
     u16 multiid;
@@ -542,8 +538,7 @@ Bscript::BObjectImp* UHouse::script_method( const char* methodname, Core::UOExec
   Bscript::ObjMethod* objmethod = Bscript::getKnownObjMethod( methodname );
   if ( objmethod != nullptr )
     return this->script_method_id( objmethod->id, ex );
-  else
-    return nullptr;
+  return nullptr;
 }
 
 void UHouse::readProperties( Clib::ConfigElem& elem )
@@ -1020,8 +1015,7 @@ void move_to_ground( Items::Item* item )
         move_item( item, oldpos );
         return;
       }
-      else
-        item->setposition( oldpos );
+      item->setposition( oldpos );
     }
   }
   short newz;
@@ -1085,7 +1079,7 @@ void UHouse::register_object( UObject* obj )
   if ( find( squatters_.begin(), squatters_.end(), obj ) == squatters_.end() )
   {
     set_dirty();
-    squatters_.push_back( Squatter( obj ) );
+    squatters_.emplace_back( obj );
   }
 }
 
@@ -1143,5 +1137,4 @@ bool UHouse::get_method_hook( const char* methodname, Bscript::Executor* ex,
     return true;
   return base::get_method_hook( methodname, ex, hook, PC );
 }
-}  // namespace Multi
-}  // namespace Pol
+}  // namespace Pol::Multi

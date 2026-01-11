@@ -8,9 +8,8 @@
 #include "../bscript/executor.h"
 #include "uoexec.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 class UOExecutor;
 class PolObjectImp : public Bscript::BObjectImp
@@ -18,10 +17,9 @@ class PolObjectImp : public Bscript::BObjectImp
 public:
   explicit PolObjectImp( Bscript::BObjectImp::BObjectType type ) : Bscript::BObjectImp( type ) {}
 
-  virtual Bscript::BObjectImp* call_method( const char* methodname,
-                                            Bscript::Executor& ex ) override;
-  virtual Bscript::BObjectImp* call_method_id( const int id, Bscript::Executor& ex,
-                                               bool forcebuiltin = false ) override;
+  Bscript::BObjectImp* call_method( const char* methodname, Bscript::Executor& ex ) override;
+  Bscript::BObjectImp* call_method_id( const int id, Bscript::Executor& ex,
+                                       bool forcebuiltin = false ) override;
 
   virtual Bscript::BObjectImp* call_polmethod( const char* methodname, Core::UOExecutor& uoex );
   virtual Bscript::BObjectImp* call_polmethod_id( const int id, Core::UOExecutor& uoex,
@@ -41,10 +39,9 @@ public:
   {
   }
 
-  virtual Bscript::BObjectImp* call_method( const char* methodname,
-                                            Bscript::Executor& ex ) override;
-  virtual Bscript::BObjectImp* call_method_id( const int id, Bscript::Executor& ex,
-                                               bool forcebuiltin = false ) override;
+  Bscript::BObjectImp* call_method( const char* methodname, Bscript::Executor& ex ) override;
+  Bscript::BObjectImp* call_method_id( const int id, Bscript::Executor& ex,
+                                       bool forcebuiltin = false ) override;
 
   virtual Bscript::BObjectImp* call_polmethod( const char* methodname, Core::UOExecutor& ex );
   virtual Bscript::BObjectImp* call_polmethod_id( const int id, Core::UOExecutor& ex,
@@ -82,6 +79,6 @@ Bscript::BObjectImp* PolApplicObj<T>::call_polmethod_id( const int id, Core::UOE
 {
   return Bscript::BObjectImp::call_method_id( id, uoex, forcebuiltin );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core
+
 #endif

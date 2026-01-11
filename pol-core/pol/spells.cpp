@@ -43,9 +43,7 @@
 #include "vital.h"
 
 
-namespace Pol
-{
-namespace Core
+namespace Pol::Core
 {
 static bool nocast_here( Mobile::Character* chr )
 {
@@ -54,10 +52,8 @@ static bool nocast_here( Mobile::Character* chr )
   {
     return false;
   }
-  else
-  {
-    return rgn->nocast();
-  }
+
+  return rgn->nocast();
 }
 
 bool knows_spell( Mobile::Character* chr, u16 spellid )
@@ -512,5 +508,4 @@ void clean_spells()
   }
   gamestate.spells.clear();
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

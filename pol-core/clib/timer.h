@@ -4,9 +4,8 @@
 #include <chrono>
 #include <string>
 
-namespace Pol
-{
-namespace Tools  // global ns is enough polluted
+
+namespace Pol::Tools  // global ns is enough polluted
 {
 // automatically print into the console
 struct DebugT
@@ -28,8 +27,8 @@ struct SilentT
 template <class printer = SilentT>
 class Timer : protected printer
 {
-  typedef std::chrono::high_resolution_clock Clock;
-  typedef std::chrono::milliseconds ms;
+  using Clock = std::chrono::high_resolution_clock;
+  using ms = std::chrono::milliseconds;
 
 public:
   Timer( std::string name );
@@ -51,8 +50,8 @@ private:
 class HighPerfTimer
 {
 public:
-  typedef std::chrono::high_resolution_clock Clock;
-  typedef std::chrono::microseconds time_mu;
+  using Clock = std::chrono::high_resolution_clock;
+  using time_mu = std::chrono::microseconds;
 
   HighPerfTimer();
   time_mu ellapsed() const;
@@ -60,7 +59,7 @@ public:
 private:
   Clock::time_point _start;
 };
-}
-}
+}  // namespace Pol::Tools
+
 
 #endif  // CLIB_TIMER_H

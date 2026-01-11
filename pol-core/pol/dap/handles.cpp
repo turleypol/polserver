@@ -2,11 +2,9 @@
 
 #include "../../bscript/eprog.h"
 #include "../uoexec.h"
-namespace Pol
-{
-namespace Network
-{
-namespace DAP
+
+
+namespace Pol::Network::DAP
 {
 using namespace Bscript;
 
@@ -48,7 +46,7 @@ BObjectRef Handles::set_index_or_member( const BObjectRef& objref, const std::st
       bstruct->addMember( key.c_str(), value );
       return value;
     }
-    else if ( impptr->isa( BObjectImp::OTDictionary ) )
+    if ( impptr->isa( BObjectImp::OTDictionary ) )
     {
       BDictionary* dict = static_cast<BDictionary*>( impptr );
       dict->addMember( key.c_str(), value );
@@ -202,6 +200,4 @@ GlobalReference::GlobalReference( Core::UOExecutor* uoexec, Bscript::EScriptProg
     }
   }
 }
-}  // namespace DAP
-}  // namespace Network
-}  // namespace Pol
+}  // namespace Pol::Network::DAP

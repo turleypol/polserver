@@ -22,9 +22,8 @@
 #include "uoexec.h"
 #include "uoscrobj.h"
 
-namespace Pol
-{
-namespace Module
+
+namespace Pol::Module
 {
 using namespace Bscript;
 
@@ -66,8 +65,7 @@ bool EPartyRefObjImp::operator==( const BObjectImp& objimp ) const
 
       return ( partyref_imp->obj_->leader() == obj_->leader() );
     }
-    else
-      return false;
+    return false;
   }
   else if ( objimp.isa( Bscript::BObjectImp::OTBoolean ) )
     return isTrue() == static_cast<const Bscript::BBoolean&>( objimp ).isTrue();
@@ -81,8 +79,7 @@ BObjectRef EPartyRefObjImp::get_member( const char* membername )
   ObjMember* objmember = getKnownObjMember( membername );
   if ( objmember != nullptr )
     return this->get_member_id( objmember->id );
-  else
-    return BObjectRef( UninitObject::create() );
+  return BObjectRef( UninitObject::create() );
 }
 
 BObjectRef EPartyRefObjImp::get_member_id( const int id )  // id test
@@ -112,8 +109,7 @@ BObjectRef EPartyRefObjImp::get_member_id( const int id )  // id test
     Mobile::Character* chr = Core::system_find_mobile( obj_->_leaderserial );
     if ( chr != nullptr )
       return BObjectRef( new EOfflineCharacterRefObjImp( chr ) );
-    else
-      return BObjectRef( new BLong( 0 ) );
+    return BObjectRef( new BLong( 0 ) );
   }
 
   case MBR_CANDIDATES:
@@ -267,7 +263,7 @@ BObjectImp* EPartyRefObjImp::call_polmethod_id( const int id, Core::UOExecutor& 
       return new BError( "Invalid parameter type" );
     if ( chr->has_party() )
       return new BError( "Character is already in a party" );
-    else if ( chr->has_candidate_of() )
+    if ( chr->has_candidate_of() )
       return new BError( "Character is already candidate of a party" );
     else if ( chr->has_offline_mem_of() )
       return new BError( "Character is already offline member of a party" );
@@ -331,5 +327,4 @@ BObjectImp* EPartyRefObjImp::call_polmethod_id( const int id, Core::UOExecutor& 
   }
 }
 
-}  // namespace Module
-}  // namespace Pol
+}  // namespace Pol::Module

@@ -59,7 +59,7 @@ public:
       bool lastToken = false;
       size_t lastTokenType = 0;
 
-      virtual std::unique_ptr<antlr4::Token> nextToken() override
+      std::unique_ptr<antlr4::Token> nextToken() override
       {
           auto next = Lexer::nextToken();
 
@@ -73,7 +73,7 @@ public:
           return next;
       }
 
-      virtual void reset() override
+      void reset() override
       {
           lastToken = false;
           lastTokenType = 0;

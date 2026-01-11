@@ -53,9 +53,8 @@
        the client just beeps, and does not release the object.
 
 */
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 void GottenItem::handle( Network::Client* client, PKTIN_07* msg )
 {
@@ -88,7 +87,7 @@ void GottenItem::handle( Network::Client* client, PKTIN_07* msg )
       send_item_move_failure( client, MOVE_ITEM_FAILURE_CANNOT_PICK_THAT_UP );
       return;
     }
-    else if ( !client->chr->can_clothe( owner ) )
+    if ( !client->chr->can_clothe( owner ) )
     {
       send_item_move_failure( client, MOVE_ITEM_FAILURE_BELONGS_TO_OTHER );
       return;
@@ -452,5 +451,4 @@ void GottenItem::undo( Mobile::Character* chr )
     send_remove_object( chr->client, _item );
   }
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

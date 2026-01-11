@@ -24,9 +24,8 @@
 #include "network/pktin.h"
 #include "uworld.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 MobileTranslate::OldAnimDef::OldAnimDef()
     : valid( false ),
@@ -65,10 +64,8 @@ UACTION str_to_action( Clib::ConfigElem& elem, const std::string& str )
   {
     return static_cast<UACTION>( tmp );
   }
-  else
-  {
-    elem.throw_error( "Animation value of " + str + " is out of range" );
-  }
+
+  elem.throw_error( "Animation value of " + str + " is out of range" );
 }
 
 void load_anim_xlate_cfg( bool /*reload*/ )
@@ -264,5 +261,4 @@ void handle_action( Network::Client* client, PKTIN_12* cmd )
   else if ( stricmp( (const char*)cmd->data, "salute" ) == 0 )
     send_action_to_inrange( client->chr, ACTION_SALUTE );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

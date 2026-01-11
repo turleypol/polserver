@@ -15,9 +15,8 @@
 #include "network/pktdef.h"
 #include "network/pktin.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 bool send_tip( Network::Client* client, const char* tipname, unsigned short tipnum )
 {
@@ -35,15 +34,13 @@ bool send_tip( Network::Client* client, const char* tipname, unsigned short tipn
     msg.Send( client );
     return true;
   }
-  else
-  {
-    return false;
-  }
+
+  return false;
 }
 
 void send_tip( Network::Client* client, const std::string& tiptext )
 {
-  std::string convertedText = Clib::strUtf8ToCp1252(tiptext);
+  std::string convertedText = Clib::strUtf8ToCp1252( tiptext );
   size_t textlen = convertedText.size() + 1;
   if ( textlen >= 10000 )
     textlen = 9999;
@@ -79,5 +76,4 @@ void handle_get_tip( Network::Client* client, PKTIN_A7* msg )
     send_tip( client, gamestate.tipfilenames[tipnum].c_str(), tipnum );
   }
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

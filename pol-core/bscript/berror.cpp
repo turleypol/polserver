@@ -9,9 +9,8 @@
 #include "contiter.h"
 #include "impstr.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 unsigned int BError::creations_ = 0;
 unsigned int BError::creations()
@@ -47,7 +46,7 @@ BError::BError( const std::string& err ) : BStruct( OTError )
 }
 
 
-BObjectImp* BError::copy( void ) const
+BObjectImp* BError::copy() const
 {
   return new BError( *this );
 }
@@ -127,5 +126,4 @@ BObjectImp* BError::array_assign( BObjectImp* /*idx*/, BObjectImp* /*target*/, b
 {
   return this;
 }
-}
-}
+}  // namespace Pol::Bscript

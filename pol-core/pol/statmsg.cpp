@@ -23,9 +23,7 @@
 #include "uoclient.h"
 
 
-namespace Pol
-{
-namespace Core
+namespace Pol::Core
 {
 using namespace Network::PktHelper;
 
@@ -335,5 +333,4 @@ void send_update_hits_to_inrange( Mobile::Character* chr )
   // Exclude self... otherwise their status-window shows 1000 hp!! >_<
   transmit_to_others_inrange( chr, &msg->buffer, msg->offset );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

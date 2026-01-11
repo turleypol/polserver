@@ -22,9 +22,8 @@
 
 #include <zlib.h>
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 using namespace std;
 
@@ -108,8 +107,7 @@ int PolToolMain::mapdump()
 
       for ( unsigned i = 1; i < mlist.size(); ++i )
       {
-        ofs << "<br>"
-            << "solid.z=" << int( mlist[i].z ) << "<br>"
+        ofs << "<br>" << "solid.z=" << int( mlist[i].z ) << "<br>"
             << "solid.height=" << int( mlist[i].height ) << "<br>"
             << "solid.flags=" << Plib::flagstr( mlist[i].flags );
       }
@@ -148,7 +146,7 @@ int PolToolMain::unpackCompressedGump()
       {
         break;
       }
-      else if ( per_line == 16 )  // both razor and pol have 16 bytes per line
+      if ( per_line == 16 )  // both razor and pol have 16 bytes per line
       {
         if ( c == '\n' )
           per_line = 0;
@@ -271,7 +269,7 @@ int PolToolMain::main()
   {
     return mapdump();
   }
-  else if ( binArgs[1] == "uncompressgump" )
+  if ( binArgs[1] == "uncompressgump" )
   {
     return unpackCompressedGump();
   }
@@ -318,8 +316,8 @@ int PolToolMain::main()
     return 1;  // return "error"
   }
 }
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

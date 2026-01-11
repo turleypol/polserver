@@ -22,9 +22,8 @@
 #include "token.h"
 #include "tokens.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 /**
  * Opens and ECL file containing bytecode and reads it
@@ -396,7 +395,7 @@ int EScriptProgram::read_globalvarnames( FILE* fp )
       res = -1;
       break;
     }
-    globalvarnames.push_back( std::string( buffer ) );
+    globalvarnames.emplace_back( buffer );
   }
   delete[] buffer;
   buffer = nullptr;
@@ -722,5 +721,4 @@ int EScriptProgram::read_dbg_file( bool quiet )
   debug_loaded = true;
   return res;
 }
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript

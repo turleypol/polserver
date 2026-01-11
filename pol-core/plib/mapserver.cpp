@@ -20,9 +20,8 @@
 #include "mapshape.h"
 #include "mapsolid.h"
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 MapServer::MapServer( const RealmDescriptor& descriptor ) : _descriptor( descriptor )
 {
@@ -153,7 +152,7 @@ MapServer* MapServer::Create( const RealmDescriptor& descriptor )
   {
     return new InMemoryMapServer( descriptor );
   }
-  else if ( descriptor.mapserver_type == "file" )
+  if ( descriptor.mapserver_type == "file" )
   {
     return new FileMapServer( descriptor );
   }
@@ -168,5 +167,4 @@ size_t MapServer::sizeEstimate() const
   return sizeof( *this ) + _descriptor.sizeEstimate() + Clib::memsize( _index1 ) +
          Clib::memsize( _index2 ) + Clib::memsize( _shapedata );
 }
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib

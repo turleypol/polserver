@@ -20,9 +20,7 @@
 #include "vital.h"
 
 
-namespace Pol
-{
-namespace Core
+namespace Pol::Core
 {
 UoClientProtocol::UoClientProtocol() : EnableFlowControlPackets( false ) {}
 size_t UoClientProtocol::estimateSize() const
@@ -54,7 +52,7 @@ UoClientListener::UoClientListener( Clib::ConfigElem& elem )
     else
     {
       auto ip = boost::asio::ip::make_address_v4( iptext );
-      allowed_proxies.push_back( boost::asio::ip::network_v4( ip, 32 ) );
+      allowed_proxies.emplace_back( ip, 32 );
     }
   }
 }
@@ -186,5 +184,4 @@ void UoClientGeneral::deinitialize()
     method_script = nullptr;
   }
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

@@ -10,12 +10,11 @@
 #include "../../plib/poltype.h"
 #include "../objecthash.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 // if index is UINT_MAX, has been deleted
-typedef std::multimap<pol_serial_t, UObject*> DeferList;
+using DeferList = std::multimap<pol_serial_t, UObject*>;
 
 class ObjectStorageManager
 {
@@ -63,6 +62,6 @@ public:
 };
 
 extern ObjectStorageManager objStorageManager;
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core
+
 #endif

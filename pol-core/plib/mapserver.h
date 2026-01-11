@@ -12,9 +12,8 @@
 #include "mapsolid.h"
 #include "realmdescriptor.h"
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 class MapShapeList;
 struct MAPCELL;
@@ -47,9 +46,9 @@ private:
   void LoadFirstLevelIndex();
 
   // not implemented:
-  MapServer& operator=( const MapServer& );
-  MapServer( const MapServer& );
+  MapServer& operator=( const MapServer& ) = delete;
+  MapServer( const MapServer& ) = delete;
 };
-}
-}
+}  // namespace Pol::Plib
+
 #endif

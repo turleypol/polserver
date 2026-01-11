@@ -23,9 +23,7 @@
 #include "npctmpl.h"
 
 
-namespace Pol
-{
-namespace Core
+namespace Pol::Core
 {
 NpcTemplateConfigSource::NpcTemplateConfigSource( const Clib::ConfigFile& cf )
     : _filename( cf.filename() ), _fileline( cf.element_line_start() ){};
@@ -61,7 +59,7 @@ void NpcTemplateConfigSource::display_error( const std::string& msg, bool /*show
 }
 
 
-NpcTemplateElem::NpcTemplateElem() {}
+NpcTemplateElem::NpcTemplateElem() = default;
 NpcTemplateElem::NpcTemplateElem( const Clib::ConfigFile& cf, const Clib::ConfigElem& elem )
     : _source( cf ), _elem( elem )
 {
@@ -89,10 +87,8 @@ bool FindNpcTemplate( const char* template_name, Clib::ConfigElem& elem )
     tm.copyto( elem );
     return true;
   }
-  else
-  {
-    return false;
-  }
+
+  return false;
 }
 
 // FIXME inefficient.  Templates should be read in once, and reused.
@@ -142,7 +138,7 @@ bool FindNpcTemplate( const char* template_name, Clib::ConfigFile& cf, Clib::Con
   catch ( std::string& str )
   {
     ERROR_PRINTLN( "NPC Creation ({}) Failed: {}", template_name, str );
-  }                                 // egcs has some trouble realizing 'exception' should catch
+  }  // egcs has some trouble realizing 'exception' should catch
   catch ( std::runtime_error& re )  // runtime_errors, so...
   {
     ERROR_PRINTLN( "NPC Creation ({}) Failed: {}", template_name, re.what() );
@@ -205,5 +201,4 @@ void read_npc_templates()
     read_npc_templates( pkg );
   }
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

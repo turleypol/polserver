@@ -9,9 +9,8 @@
 #include "uofile.h"
 #include "ustruct.h"
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 extern bool static_debug_on;
 
@@ -37,15 +36,15 @@ void readstatics( StaticList& vec, unsigned short x, unsigned short y )
       if ( static_debug_on )
       {
         INFO_PRINTLN( "static: {} {} {} {}", int( srec->x_offset ), int( srec->y_offset ),
-                     int( srec->z ), srec->graphic );
+                      int( srec->z ), srec->graphic );
       }
 #endif
 
       if ( ( srec->x_offset == x_offset ) && ( srec->y_offset == y_offset ) &&
            ( tile_uoflags_read( srec->graphic ) & USTRUCT_TILE::FLAG_WALKBLOCK ) )
       {
-        vec.push_back( StaticRec( srec->graphic, srec->z, tile_uoflags_read( srec->graphic ),
-                                  tileheight_read( srec->graphic ) ) );
+        vec.emplace_back( srec->graphic, srec->z, tile_uoflags_read( srec->graphic ),
+                          tileheight_read( srec->graphic ) );
       }
     }
   }
@@ -70,15 +69,15 @@ void readstatics( StaticList& vec, unsigned short x, unsigned short y, unsigned 
       if ( static_debug_on )
       {
         INFO_PRINTLN( "static: {} {} {} {:#x}", int( srec->x_offset ), int( srec->y_offset ),
-                     int( srec->z ), srec->graphic );
+                      int( srec->z ), srec->graphic );
       }
 #endif
 
       if ( ( srec->x_offset == x_offset ) && ( srec->y_offset == y_offset ) &&
            ( tile_uoflags_read( srec->graphic ) & flags ) )
       {
-        vec.push_back( StaticRec( srec->graphic, srec->z, tile_uoflags_read( srec->graphic ),
-                                  tileheight_read( srec->graphic ) ) );
+        vec.emplace_back( srec->graphic, srec->z, tile_uoflags_read( srec->graphic ),
+                          tileheight_read( srec->graphic ) );
       }
     }
   }
@@ -103,17 +102,16 @@ void readallstatics( StaticList& vec, unsigned short x, unsigned short y )
       if ( static_debug_on )
       {
         INFO_PRINTLN( "static: {} {} {} {:#x}", int( srec->x_offset ), int( srec->y_offset ),
-                     int( srec->z ), srec->graphic );
+                      int( srec->z ), srec->graphic );
       }
 #endif
 
       if ( ( srec->x_offset == x_offset ) && ( srec->y_offset == y_offset ) )
       {
-        vec.push_back( StaticRec( srec->graphic, srec->z, tile_uoflags_read( srec->graphic ),
-                                  tileheight_read( srec->graphic ) ) );
+        vec.emplace_back( srec->graphic, srec->z, tile_uoflags_read( srec->graphic ),
+                          tileheight_read( srec->graphic ) );
       }
     }
   }
 }
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib

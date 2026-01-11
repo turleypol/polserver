@@ -1,9 +1,8 @@
 #include "continueimp.h"
 #include "executor.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 BContinuation::BContinuation( BObjectRef funcref, BObjectRefVec args,
                               ContinuationCallbackWrapper wrapper, void* wrapperData )
@@ -30,7 +29,7 @@ BFunctionRef* BContinuation::func()
   return funcref_->impptr<BFunctionRef>();
 }
 
-BObjectImp* BContinuation::copy( void ) const
+BObjectImp* BContinuation::copy() const
 {
   return nullptr;
 }
@@ -44,5 +43,4 @@ std::string BContinuation::getStringRep() const
 {
   return "<continuation>";
 }
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript

@@ -14,17 +14,14 @@
 #include "bobject.h"
 #include "bstruct.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 class ContIterator;
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 class BError final : public BStruct
 {
@@ -41,24 +38,24 @@ protected:
   BError( const BError& i );
   BError( std::istream& is, unsigned size );
 
-  virtual BObjectImp* copy() const override;
-  virtual BObjectRef OperSubscript( const BObject& obj ) override;
-  virtual BObjectImp* array_assign( BObjectImp* idx, BObjectImp* target, bool copy ) override;
+  BObjectImp* copy() const override;
+  BObjectRef OperSubscript( const BObject& obj ) override;
+  BObjectImp* array_assign( BObjectImp* idx, BObjectImp* target, bool copy ) override;
 
-  virtual char packtype() const override;
-  virtual const char* typetag() const override;
-  virtual const char* typeOf() const override;
-  virtual u8 typeOfInt() const override;
+  char packtype() const override;
+  const char* typetag() const override;
+  const char* typeOf() const override;
+  u8 typeOfInt() const override;
 
-  virtual bool operator==( const BObjectImp& objimp ) const override;
-  virtual bool operator<( const BObjectImp& objimp ) const override;
-  virtual bool isTrue() const override;
+  bool operator==( const BObjectImp& objimp ) const override;
+  bool operator<( const BObjectImp& objimp ) const override;
+  bool isTrue() const override;
 
-  virtual ContIterator* createIterator( BObject* pIterVal ) override;
+  ContIterator* createIterator( BObject* pIterVal ) override;
 
 private:
   static unsigned int creations_;
 };
-}
-}
+}  // namespace Pol::Bscript
+
 #endif

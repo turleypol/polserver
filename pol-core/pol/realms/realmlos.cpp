@@ -15,9 +15,7 @@
 #include "uworld.h"
 
 
-namespace Pol
-{
-namespace Realms
+namespace Pol::Realms
 {
 const int los_range = 20;
 // const int z_los_range = 60; // unused as yet
@@ -90,7 +88,7 @@ bool Realm::static_item_blocks_los( const Core::Pos3d& pos, LosCache& cache ) co
     short ob_z = shape.z;
 #if ENABLE_POLTEST_OUTPUT
     INFO_PRINTLN( "static type {:#x} (flags {:#x}, ht={}) at z-coord {}", itr->graphic,
-                 tile_flags( itr->graphic ), ob_ht, (int)itr->z );
+                  tile_flags( itr->graphic ), ob_ht, (int)itr->z );
 #endif
 
     if ( ob_ht == 0 )  // treat a 0-height object as a 1-height object at position z-1
@@ -343,8 +341,7 @@ bool Realm::has_los( const Core::ULWObject& att, const Core::ULWObject& tgt ) co
     }
   }
 }
-}  // namespace Realms
-}  // namespace Pol
+}  // namespace Pol::Realms
 
 
 /****************************************************************************/

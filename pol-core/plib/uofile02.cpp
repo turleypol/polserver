@@ -18,9 +18,7 @@
 #include "ustruct.h"
 
 
-namespace Pol
-{
-namespace Plib
+namespace Pol::Plib
 {
 unsigned int num_static_patches = 0;
 bool static_debug_on = false;
@@ -36,7 +34,7 @@ int cfg_max_statics_per_block = 1000;
 int cfg_warning_statics_per_block = 1000;
 bool cfg_use_new_hsa_format = false;
 
-typedef std::map<unsigned int, unsigned int> StaticDifBlockIndex;
+using StaticDifBlockIndex = std::map<unsigned int, unsigned int>;
 StaticDifBlockIndex stadifl;
 
 struct USTRUCT_STATIC_BUFFER
@@ -186,5 +184,4 @@ void rawstaticfullread()
   }
   rawstatic_init = true;
 }
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib

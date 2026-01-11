@@ -85,7 +85,7 @@ protected:
 
   std::vector<Region*> regions_;
 
-  typedef std::map<Realms::Realm*, RegionId**> RegionRealms;
+  using RegionRealms = std::map<Realms::Realm*, RegionId**>;
   RegionRealms regionrealms;  // y first
 
 private:
@@ -94,7 +94,7 @@ private:
   RegionId getregionid( const Pos4d& pos );
   void paint_zones( Clib::ConfigElem& elem, RegionId ridx );
   std::string name_;
-  typedef std::map<std::string, Region*> RegionsByName;
+  using RegionsByName = std::map<std::string, Region*>;
   RegionsByName regions_byname_;
 };
 
@@ -113,7 +113,7 @@ public:
   virtual T* getregion( const std::string& regionname );
 
 protected:
-  virtual Region* create_region( Clib::ConfigElem& elem, RegionId id ) const override;
+  Region* create_region( Clib::ConfigElem& elem, RegionId id ) const override;
 };
 
 template <class T>

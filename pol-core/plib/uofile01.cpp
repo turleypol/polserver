@@ -16,9 +16,8 @@
 #include "uofilei.h"
 #include "ustruct.h"
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 #define VERFILE_TILEDATA 0x1E
 #define TILEDATA_TILES 0x68800
@@ -44,7 +43,7 @@ unsigned int landtile_uoflags_read( unsigned short landtile )
 
 struct VerdataIndexes
 {
-  typedef std::map<unsigned int, USTRUCT_VERSION> VRecList;
+  using VRecList = std::map<unsigned int, USTRUCT_VERSION>;
   VRecList vrecs;  // key is the block
 
   void insert( const USTRUCT_VERSION& vrec );
@@ -81,10 +80,8 @@ static bool seekto_newer_version( unsigned int file, unsigned int block )
     fseek( verfile, vrec->filepos, SEEK_SET );
     return true;
   }
-  else
-  {
-    return false;
-  }
+
+  return false;
 }
 
 void readtile( unsigned short tilenum, USTRUCT_TILE* tile )
@@ -270,8 +267,7 @@ char tileheight_read( unsigned short tilenum )
 
   if ( flags & USTRUCT_TILE::FLAG_HALF_HEIGHT )
     return ( height / 2 );
-  else
-    return height;
+  return height;
 }
 
 unsigned char tilelayer_read( unsigned short tilenum )
@@ -280,22 +276,20 @@ unsigned char tilelayer_read( unsigned short tilenum )
   {
     return tiledata[tilenum].layer;
   }
+
+  if ( cfg_use_new_hsa_format )
+  {
+    USTRUCT_TILE_HSA tile;
+    tile.layer = 0;
+    readtile( tilenum, &tile );
+    return tile.layer;
+  }
   else
   {
-    if ( cfg_use_new_hsa_format )
-    {
-      USTRUCT_TILE_HSA tile;
-      tile.layer = 0;
-      readtile( tilenum, &tile );
-      return tile.layer;
-    }
-    else
-    {
-      USTRUCT_TILE tile;
-      tile.layer = 0;
-      readtile( tilenum, &tile );
-      return tile.layer;
-    }
+    USTRUCT_TILE tile;
+    tile.layer = 0;
+    readtile( tilenum, &tile );
+    return tile.layer;
   }
 }
 
@@ -308,13 +302,11 @@ u16 tileweight_read( unsigned short tilenum )
     readtile( tilenum, &tile );
     return tile.weight;
   }
-  else
-  {
-    USTRUCT_TILE tile;
-    tile.weight = 1;
-    readtile( tilenum, &tile );
-    return tile.weight;
-  }
+
+  USTRUCT_TILE tile;
+  tile.weight = 1;
+  readtile( tilenum, &tile );
+  return tile.weight;
 }
 
 u32 tile_uoflags_read( unsigned short tilenum )
@@ -323,22 +315,20 @@ u32 tile_uoflags_read( unsigned short tilenum )
   {
     return tiledata[tilenum].flags;
   }
+
+  if ( cfg_use_new_hsa_format )
+  {
+    USTRUCT_TILE_HSA tile;
+    tile.flags = 0;
+    readtile( tilenum, &tile );
+    return tile.flags;
+  }
   else
   {
-    if ( cfg_use_new_hsa_format )
-    {
-      USTRUCT_TILE_HSA tile;
-      tile.flags = 0;
-      readtile( tilenum, &tile );
-      return tile.flags;
-    }
-    else
-    {
-      USTRUCT_TILE tile;
-      tile.flags = 0;
-      readtile( tilenum, &tile );
-      return tile.flags;
-    }
+    USTRUCT_TILE tile;
+    tile.flags = 0;
+    readtile( tilenum, &tile );
+    return tile.flags;
   }
 }
 
@@ -424,7 +414,7 @@ static void read_landtiledata()
     }
   }
 }
-void read_uo_data( void )
+void read_uo_data()
 {
   read_veridx();
   read_tiledata();
@@ -432,5 +422,4 @@ void read_uo_data( void )
   read_static_diffs();
   read_map_difs();
 }
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib

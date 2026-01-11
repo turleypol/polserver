@@ -36,7 +36,7 @@ protected:
   explicit TargetCursor( bool inform_on_cancel );
 
 public:
-  virtual ~TargetCursor(){};
+  virtual ~TargetCursor() = default;
 
   bool send_object_cursor( Network::Client* client,
                            PKTBI_6C::CURSOR_TYPE crstype = PKTBI_6C::CURSOR_TYPE_NEUTRAL );
@@ -60,9 +60,9 @@ protected:
   FullMsgTargetCursor( void ( *func )( Mobile::Character*, PKTBI_6C* ) );
 
 public:
-  virtual ~FullMsgTargetCursor(){};
+  ~FullMsgTargetCursor() override = default;
 
-  virtual void on_target_cursor( Mobile::Character* targetter, PKTBI_6C* msg ) override;
+  void on_target_cursor( Mobile::Character* targetter, PKTBI_6C* msg ) override;
 
 private:
   void ( *func )( Mobile::Character* targetter, PKTBI_6C* msg );
@@ -79,9 +79,9 @@ protected:
                           bool inform_on_cancel = false, bool allow_nonlocal = false );
 
 public:
-  virtual ~LosCheckedTargetCursor(){};
+  ~LosCheckedTargetCursor() override = default;
 
-  virtual void on_target_cursor( Mobile::Character*, PKTBI_6C* msg ) override;
+  void on_target_cursor( Mobile::Character*, PKTBI_6C* msg ) override;
 
 private:
   bool allow_nonlocal_;
@@ -100,9 +100,9 @@ protected:
                             bool inform_on_cancel = false, bool allow_nonlocal = false );
 
 public:
-  virtual ~NoLosCheckedTargetCursor(){};
+  ~NoLosCheckedTargetCursor() override = default;
 
-  virtual void on_target_cursor( Mobile::Character*, PKTBI_6C* msg ) override;
+  void on_target_cursor( Mobile::Character*, PKTBI_6C* msg ) override;
 
 private:
   bool allow_nonlocal_;
@@ -121,10 +121,10 @@ protected:
                          bool inform_on_cancel = false );
 
 public:
-  virtual ~LosCheckedCoordCursor(){};
+  ~LosCheckedCoordCursor() override = default;
 
   bool send_coord_cursor( Network::Client* client );
-  virtual void on_target_cursor( Mobile::Character*, PKTBI_6C* msg ) override;
+  void on_target_cursor( Mobile::Character*, PKTBI_6C* msg ) override;
 
 private:
   void ( *func_ )( Mobile::Character*, PKTBI_6C* );
@@ -141,11 +141,11 @@ protected:
   MultiPlacementCursor( void ( *func )( Mobile::Character*, PKTBI_6C* msg ) );
 
 public:
-  virtual ~MultiPlacementCursor(){};
+  ~MultiPlacementCursor() override = default;
 
   void send_placemulti( Network::Client* client, unsigned int objtype, int flags, s16 xoffset,
                         s16 yoffset, u32 hue );
-  virtual void on_target_cursor( Mobile::Character*, PKTBI_6C* msg ) override;
+  void on_target_cursor( Mobile::Character*, PKTBI_6C* msg ) override;
 
 private:
   void ( *func_ )( Mobile::Character*, PKTBI_6C* );
@@ -164,8 +164,8 @@ protected:
                                         Mobile::Character* targetted ) );
 
 public:
-  virtual ~NoLosCharacterCursor(){};
-  virtual void on_target_cursor( Mobile::Character*, PKTBI_6C* msg ) override;
+  ~NoLosCharacterCursor() override = default;
+  void on_target_cursor( Mobile::Character*, PKTBI_6C* msg ) override;
 
 private:
   void ( *func )( Mobile::Character* targetter, Mobile::Character* targetted );
@@ -183,8 +183,8 @@ protected:
                       bool inform_on_cancel = false );
 
 public:
-  virtual ~NoLosUObjectCursor(){};
-  virtual void on_target_cursor( Mobile::Character* chr, PKTBI_6C* msg ) override;
+  ~NoLosUObjectCursor() override = default;
+  void on_target_cursor( Mobile::Character* chr, PKTBI_6C* msg ) override;
 
 private:
   void ( *func )( Mobile::Character*, UObject* obj );

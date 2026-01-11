@@ -32,9 +32,8 @@
 #include "uoscrobj.h"
 #include "vital.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 UOExecutor::UOExecutor()
     : Executor(),
@@ -101,7 +100,7 @@ std::string UOExecutor::state()
 {
   if ( halt() )
     return "Debugging";
-  else if ( os_module->blocked() )
+  if ( os_module->blocked() )
     return "Sleeping";
   else
     return "Running";
@@ -229,7 +228,7 @@ bool UOExecutor::getCharacterOrClientParam( unsigned param, Mobile::Character*& 
     setFunctionResult( new BError( "Missing parameter " + Clib::tostring( param ) ) );
     return false;
   }
-  else if ( imp->isa( BObjectImp::OTApplicObj ) )
+  if ( imp->isa( BObjectImp::OTApplicObj ) )
   {
     BApplicObjBase* aob = Clib::explicit_cast<BApplicObjBase*, BObjectImp*>( imp );
 
@@ -325,7 +324,7 @@ bool UOExecutor::getCharacterParam( unsigned param, Mobile::Character*& chrptr )
     setFunctionResult( new BError( "Missing parameter " + Clib::tostring( param ) ) );
     return false;
   }
-  else if ( imp->isa( BObjectImp::OTApplicObj ) )
+  if ( imp->isa( BObjectImp::OTApplicObj ) )
   {
     BApplicObjBase* aob = Clib::explicit_cast<BApplicObjBase*, BObjectImp*>( imp );
 
@@ -403,7 +402,7 @@ bool UOExecutor::getItemParam( unsigned param, Items::Item*& itemptr )
   {
     return false;
   }
-  else if ( imp->isa( BObjectImp::OTApplicObj ) )
+  if ( imp->isa( BObjectImp::OTApplicObj ) )
   {
     BApplicObjBase* aob = Clib::explicit_cast<BApplicObjBase*, BObjectImp*>( imp );
 
@@ -446,7 +445,7 @@ bool UOExecutor::getUBoatParam( unsigned param, Multi::UBoat*& boatptr )
   {
     return false;
   }
-  else if ( imp->isa( BObjectImp::OTApplicObj ) )
+  if ( imp->isa( BObjectImp::OTApplicObj ) )
   {
     BApplicObjBase* aob = Clib::explicit_cast<BApplicObjBase*, BObjectImp*>( imp );
 
@@ -507,7 +506,7 @@ bool UOExecutor::getMultiParam( unsigned param, Multi::UMulti*& multiptr )
   {
     return false;
   }
-  else if ( imp->isa( BObjectImp::OTApplicObj ) )
+  if ( imp->isa( BObjectImp::OTApplicObj ) )
   {
     BApplicObjBase* aob = Clib::explicit_cast<BApplicObjBase*, BObjectImp*>( imp );
 
@@ -561,7 +560,7 @@ bool UOExecutor::getUObjectParam( unsigned param, UObject*& objptr )
     objptr = chr;
     return true;
   }
-  else if ( getItemParam( param, item ) )
+  if ( getItemParam( param, item ) )
   {
     objptr = item;
     return true;
@@ -603,12 +602,10 @@ bool UOExecutor::getObjtypeParam( unsigned param, unsigned int& objtype )
       {
         return true;
       }
-      else
-      {
-        setFunctionResult( new BError( std::string( "Objtype not defined: " ) + pstring->data() ) );
 
-        return false;
-      }
+      setFunctionResult( new BError( std::string( "Objtype not defined: " ) + pstring->data() ) );
+
+      return false;
     }
     else
     {
@@ -635,12 +632,10 @@ bool UOExecutor::getObjtypeParam( unsigned param, unsigned int& objtype )
     {
       return true;
     }
-    else
-    {
-      setFunctionResult(
-          new BError( "Objtype " + Clib::hexint( objtype_long ) + " is not defined." ) );
-      return false;
-    }
+
+    setFunctionResult(
+        new BError( "Objtype " + Clib::hexint( objtype_long ) + " is not defined." ) );
+    return false;
   }
   else if ( objtype_long <= Plib::systemstate.config.max_tile_id )
   {
@@ -687,12 +682,10 @@ bool UOExecutor::getObjtypeParam( unsigned param, const Items::ItemDesc*& itemde
         itemdesc_out = &Items::find_itemdesc( objtype );
         return true;
       }
-      else
-      {
-        setFunctionResult( new BError( std::string( "Objtype not defined: " ) + pstring->data() ) );
 
-        return false;
-      }
+      setFunctionResult( new BError( std::string( "Objtype not defined: " ) + pstring->data() ) );
+
+      return false;
     }
     else
     {
@@ -738,12 +731,10 @@ bool UOExecutor::getObjtypeParam( unsigned param, const Items::ItemDesc*& itemde
       itemdesc_out = itemdesc;
       return true;
     }
-    else
-    {
-      setFunctionResult(
-          new BError( "Objtype " + Clib::hexint( objtype_long ) + " is not defined." ) );
-      return false;
-    }
+
+    setFunctionResult(
+        new BError( "Objtype " + Clib::hexint( objtype_long ) + " is not defined." ) );
+    return false;
   }
   else if ( objtype_long <= Plib::systemstate.config.max_tile_id )
   {
@@ -782,7 +773,7 @@ bool UOExecutor::getSkillIdParam( unsigned param, USKILLID& skillid )
     setFunctionResult( new BError( "Missing parameter " + Clib::tostring( param ) ) );
     return false;
   }
-  else if ( imp->isa( BObjectImp::OTLong ) )
+  if ( imp->isa( BObjectImp::OTLong ) )
   {
     BLong* plong = Clib::explicit_cast<BLong*, BObjectImp*>( imp );
     int value = plong->value();
@@ -974,5 +965,4 @@ bool UOExecutor::getPos4dParam( unsigned xparam, unsigned yparam, unsigned zpara
   }
   return false;
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

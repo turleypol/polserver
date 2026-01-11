@@ -38,9 +38,8 @@
 #include "uoexec.h"
 #include "uworld.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 using namespace Bscript;
 
@@ -73,7 +72,7 @@ BPacket::BPacket( const unsigned char* data, unsigned short length, bool variabl
 {
   is_variable_length = variable_len;
 }
-BPacket::~BPacket() {}
+BPacket::~BPacket() = default;
 
 BObjectRef BPacket::get_member_id( const int /*id*/ )  // id test
 {
@@ -84,8 +83,7 @@ BObjectRef BPacket::get_member( const char* membername )
   ObjMember* objmember = getKnownObjMember( membername );
   if ( objmember != nullptr )
     return this->get_member_id( objmember->id );
-  else
-    return BObjectRef( UninitObject::create() );
+  return BObjectRef( UninitObject::create() );
 }
 
 BObjectImp* BPacket::call_polmethod_id( const int id, UOExecutor& ex, bool /*forcebuiltin*/ )
@@ -117,8 +115,7 @@ BObjectImp* BPacket::call_polmethod_id( const int id, UOExecutor& ex, bool /*for
                                                            static_cast<int>( buffer.size() ) );
           return new BLong( 1 );
         }
-        else
-          return new BLong( 0 );
+        return new BLong( 0 );
       }
     }
     break;
@@ -569,8 +566,7 @@ BObjectImp* BPacket::call_polmethod( const char* methodname, UOExecutor& ex )
   ObjMethod* objmethod = getKnownObjMethod( methodname );
   if ( objmethod != nullptr )
     return this->call_polmethod_id( objmethod->id, ex );
-  else
-    return nullptr;
+  return nullptr;
 }
 BObjectImp* BPacket::copy() const
 {
@@ -589,7 +585,7 @@ bool BPacket::SetSize( u16 newsize )
 {
   if ( !is_variable_length )
     return false;
-  newsize = std::max(newsize, 3_u16);
+  newsize = std::max( newsize, 3_u16 );
   buffer.resize( newsize );
   u16* sizeptr = reinterpret_cast<u16*>( &buffer[1] );
   *sizeptr = ctBEu16( newsize );
@@ -606,5 +602,4 @@ BObjectImp* BPacket::SetSize( u16 newsize, bool /*giveReturn*/ )
   *sizeptr = ctBEu16( newsize );
   return new BLong( oldsize );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

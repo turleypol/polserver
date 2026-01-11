@@ -11,9 +11,8 @@
 #include <map>
 #include <vector>
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 class ConfigProperty
 {
@@ -32,7 +31,7 @@ class ConfigSource;
 class ConfigElemBase
 {
 public:
-  virtual ~ConfigElemBase(){};
+  virtual ~ConfigElemBase() = default;
   bool type_is( const char* name ) const;
   const char* type() const;
   const char* rest() const;
@@ -52,8 +51,8 @@ class ConfigElem : public ConfigElemBase
 {
 public:
   ConfigElem();
-  virtual ~ConfigElem();
-  virtual size_t estimateSize() const override;
+  ~ConfigElem() override;
+  size_t estimateSize() const override;
   friend class ConfigFile;
 
   bool has_prop( const char* propname ) const;
@@ -112,10 +111,10 @@ public:
 
 protected:
   [[noreturn]] void prop_not_found( const char* propname ) const;
-  typedef std::multimap<std::string, std::string, ci_cmp_pred> Props;
+  using Props = std::multimap<std::string, std::string, ci_cmp_pred>;
   Props properties;
 };
 
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib
+
 #endif

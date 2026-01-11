@@ -61,9 +61,7 @@
 #include <zlib.h>
 
 
-namespace Pol
-{
-namespace Multi
+namespace Pol::Multi
 {
 // bytes per tile - currently only mode 0 works, meaning we send u16 graphic, s8 x,y,z offsets
 #define BYTES_PER_TILE 5
@@ -80,7 +78,7 @@ char CustomHouseDesign::z_to_custom_house_table( char z )
   {
     if ( z == custom_house_z_xlate_table[i] )
       return i;
-    else if ( z < custom_house_z_xlate_table[i] )
+    if ( z < custom_house_z_xlate_table[i] )
       return i - 1;
   }
   return -1;
@@ -99,7 +97,7 @@ CustomHouseDesign::CustomHouseDesign( u32 _height, u32 _width, s32 xoffset, s32 
   InitDesign( _height, _width, xoffset, yoffset );
 }
 
-CustomHouseDesign::~CustomHouseDesign() {}
+CustomHouseDesign::~CustomHouseDesign() = default;
 
 size_t CustomHouseDesign::estimatedSize() const
 {
@@ -336,14 +334,12 @@ unsigned char* CustomHouseDesign::Compress( int floor, u32* uncompr_length, u32*
     *compr_length = cbuflen;
     return compressed;
   }
-  else
-  {
-    *uncompr_length = 0;
-    *compr_length = 0;
-    delete[] compressed;
-    delete[] uncompressed;
-    return nullptr;
-  }
+
+  *uncompr_length = 0;
+  *compr_length = 0;
+  delete[] compressed;
+  delete[] uncompressed;
+  return nullptr;
 }
 
 bool CustomHouseDesign::IsEmpty() const
@@ -1198,5 +1194,4 @@ void UHouse::CustomHousesQuit( Mobile::Character* chr, bool drop_changes, bool s
     }
   }
 }
-}  // namespace Multi
-}  // namespace Pol
+}  // namespace Pol::Multi

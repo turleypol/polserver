@@ -20,18 +20,17 @@
 #include "message_queue.h"
 #include "spinlock.h"
 
-namespace Pol
-{
-namespace threadhelp
+
+namespace Pol::threadhelp
 {
 extern std::atomic<unsigned int> child_threads;
 
 void init_threadhelp();
-void run_thread( void ( *threadf )( void ) );
+void run_thread( void ( *threadf )() );
 void run_thread( void ( *threadf )( void* ), void* arg );
 
 void start_thread( void ( *entry )( void* ), const char* thread_name, void* arg );
-void start_thread( void ( *entry )( void ), const char* thread_name );
+void start_thread( void ( *entry )(), const char* thread_name );
 
 void thread_sleep_ms( unsigned milliseconds );
 size_t thread_pid();
@@ -39,7 +38,7 @@ size_t thread_pid();
 class ThreadMap
 {
 public:
-  typedef std::map<size_t, std::string> Contents;
+  using Contents = std::map<size_t, std::string>;
 #ifdef _WIN32
   typedef std::map<size_t, HANDLE> HANDLES;
   HANDLE getThreadHandle( size_t pid ) const;
@@ -72,8 +71,8 @@ public:
 
 class TaskThreadPool
 {
-  typedef std::function<void()> msg;
-  typedef Clib::message_queue<msg> msg_queue;
+  using msg = std::function<void()>;
+  using msg_queue = Clib::message_queue<msg>;
 
 public:
   TaskThreadPool();
@@ -101,8 +100,8 @@ class DynTaskThreadPool
   class PoolWorker;
 
   friend class PoolWorker;
-  typedef std::function<void()> msg;
-  typedef Clib::message_queue<msg> msg_queue;
+  using msg = std::function<void()>;
+  using msg_queue = Clib::message_queue<msg>;
 
 public:
   DynTaskThreadPool( const std::string& name );
@@ -125,6 +124,6 @@ private:
 };
 
 
-}  // namespace threadhelp
-}  // namespace Pol
+}  // namespace Pol::threadhelp
+
 #endif  // CLIB_THREADHELP_H

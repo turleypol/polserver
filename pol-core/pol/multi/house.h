@@ -54,22 +54,21 @@ class Realm;
 }  // namespace Realms
 }  // namespace Pol
 
-namespace Pol
+
+namespace Pol::Multi
 {
-namespace Multi
-{
-typedef std::list<Items::Item*> ItemList;
-typedef std::list<Mobile::Character*> MobileList;
+using ItemList = std::list<Items::Item*>;
+using MobileList = std::list<Mobile::Character*>;
 class MultiDef;
 
 class UHouse final : public UMulti
 {
-  typedef UMulti base;
+  using base = UMulti;
 
   // Components are not removed from the list when destroyed by the core,
   // so you should always check if the component is an orphan.
-  typedef Core::ItemRef Component;
-  typedef std::vector<Component> Components;
+  using Component = Core::ItemRef;
+  using Components = std::vector<Component>;
 
 public:
   static Bscript::BObjectImp* scripted_create( const Items::ItemDesc& descriptor,
@@ -98,10 +97,10 @@ public:
   int editing_floor_num;
   u32 revision;
 
-  virtual void register_object( Core::UObject* obj ) override;
-  virtual void unregister_object( Core::UObject* obj ) override;
+  void register_object( Core::UObject* obj ) override;
+  void unregister_object( Core::UObject* obj ) override;
 
-  virtual Core::Range3d current_box() const override;
+  Core::Range3d current_box() const override;
 
   void ClearSquatters();
   bool add_component( Items::Item* item, s32 xoff, s32 yoff, s16 zoff );
@@ -111,28 +110,26 @@ public:
   void AcceptHouseCommit( Mobile::Character* chr, bool accept );
   void CustomHousesQuit( Mobile::Character* chr, bool drop_changes, bool send_pkts = true );
 
-  virtual ~UHouse() = default;
-  virtual size_t estimatedSize() const override;
-  virtual bool get_method_hook( const char* methodname, Bscript::Executor* ex,
-                                Core::ExportScript** hook, unsigned int* PC ) const override;
+  ~UHouse() override = default;
+  size_t estimatedSize() const override;
+  bool get_method_hook( const char* methodname, Bscript::Executor* ex, Core::ExportScript** hook,
+                        unsigned int* PC ) const override;
 
-  virtual void readProperties( Clib::ConfigElem& elem ) override;
-  virtual void printProperties( Clib::StreamWriter& sw ) const override;
+  void readProperties( Clib::ConfigElem& elem ) override;
+  void printProperties( Clib::StreamWriter& sw ) const override;
 
 protected:
   explicit UHouse( const Items::ItemDesc& itemdesc );
   void create_components();
 
-  virtual Bscript::BObjectImp* script_method( const char* membername,
-                                              Core::UOExecutor& ex ) override;
-  virtual Bscript::BObjectImp* script_method_id( const int id, Core::UOExecutor& ex ) override;
-  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
-  virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
-  virtual bool script_isa( unsigned isatype ) const override;
-  virtual class UHouse* as_house() override;
-  virtual bool readshapes( Plib::MapShapeList& vec, short shape_x, short shape_y,
-                           short zbase ) override;
-  virtual bool readobjects( Plib::StaticList& vec, short obj_x, short obj_y, short zbase ) override;
+  Bscript::BObjectImp* script_method( const char* membername, Core::UOExecutor& ex ) override;
+  Bscript::BObjectImp* script_method_id( const int id, Core::UOExecutor& ex ) override;
+  Bscript::BObjectImp* get_script_member( const char* membername ) const override;
+  Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
+  bool script_isa( unsigned isatype ) const override;
+  class UHouse* as_house() override;
+  bool readshapes( Plib::MapShapeList& vec, short shape_x, short shape_y, short zbase ) override;
+  bool readobjects( Plib::StaticList& vec, short obj_x, short obj_y, short zbase ) override;
   Bscript::ObjArray* component_list() const;
   Bscript::ObjArray* items_list() const;
   Bscript::ObjArray* mobiles_list() const;
@@ -144,8 +141,8 @@ protected:
   bool custom;
 
 private:
-  typedef Core::UObjectRef Squatter;
-  typedef std::vector<Squatter> Squatters;
+  using Squatter = Core::UObjectRef;
+  using Squatters = std::vector<Squatter>;
   Squatters squatters_;
 
   /**
@@ -176,6 +173,6 @@ private:
 
 
 Bscript::BObjectImp* destroy_house( UHouse* house );
-}  // namespace Multi
-}  // namespace Pol
+}  // namespace Pol::Multi
+
 #endif

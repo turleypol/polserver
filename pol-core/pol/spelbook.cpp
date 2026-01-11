@@ -31,9 +31,8 @@
 #include "ufunc.h"
 #include "uobject.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 Spellbook::Spellbook( const Items::SpellbookDesc& descriptor )
     : UContainer( descriptor ), spell_school( 0 )
@@ -60,7 +59,7 @@ Spellbook::Spellbook( const Items::SpellbookDesc& descriptor )
     bitwise_contents[i] = 0;
 }
 
-Spellbook::~Spellbook() {}
+Spellbook::~Spellbook() = default;
 
 size_t Spellbook::estimatedSize() const
 {
@@ -358,10 +357,8 @@ u16 USpellScroll::get_senditem_amount() const
     Spellbook* book = static_cast<Spellbook*>( container );
     return convert_objtype_to_spellnum( objtype_, book->spell_school );
   }
-  else  // not contained, or not in a spellbook
-  {
-    return amount_;
-  }
+  // not contained, or not in a spellbook
+  return amount_;
 }
 size_t USpellScroll::estimatedSize() const
 {
@@ -428,5 +425,4 @@ void send_spellbook_contents( Network::Client* client, Spellbook& spellbook )
   msg->WriteFlipped<u16>( count );
   msg.Send( client, len );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

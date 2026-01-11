@@ -5,24 +5,23 @@
 
 #include "../clib/Program/ProgramMain.h"
 
-namespace Pol
-{
-namespace UoTool
+
+namespace Pol::UoTool
 {
 class UoToolMain final : public Pol::Clib::ProgramMain
 {
 public:
   UoToolMain();
-  virtual ~UoToolMain();
+  ~UoToolMain() override;
 
 protected:
-  virtual int main();
+  int main() override;
 
 private:
-  virtual void showHelp();
+  void showHelp() override;
   int uotool();
 };
-}
-}  // namespaces
+}  // namespace Pol::UoTool
+   // namespaces
 
 #endif  // UO_TOOL_MAIN_H

@@ -37,9 +37,8 @@
 
 #include <module_defs/npc.h>
 
-namespace Pol
-{
-namespace Module
+
+namespace Pol::Module
 {
 using namespace Bscript;
 NPCExecutorModule::NPCExecutorModule( Executor& ex, Mobile::NPC& npc )
@@ -66,9 +65,9 @@ public:
       : PolApplicObj<Mobile::BoundingBox>( &bounding_box_type, b )
   {
   }
-  virtual const char* typeOf() const override { return "BoundingBox"; }
-  virtual u8 typeOfInt() const override { return OTBoundingBox; }
-  virtual BObjectImp* copy() const override { return new BoundingBoxObjImp( value() ); }
+  const char* typeOf() const override { return "BoundingBox"; }
+  u8 typeOfInt() const override { return OTBoundingBox; }
+  BObjectImp* copy() const override { return new BoundingBoxObjImp( value() ); }
 };
 
 /* IsLegalMove: parameters (move, bounding box)*/
@@ -119,7 +118,7 @@ BObjectImp* NPCExecutorModule::mf_CanMove()
 
       return new BLong( npc.could_move( facing ) ? 1 : 0 );
     }
-    else if ( auto* l = impptrIf<BLong>( param0 ) )
+    if ( auto* l = impptrIf<BLong>( param0 ) )
     {
       Core::UFACING facing = static_cast<Core::UFACING>( l->value() & PKTIN_02_FACING_MASK );
       return new BLong( npc.could_move( facing ) ? 1 : 0 );
@@ -157,11 +156,9 @@ BObjectImp* NPCExecutorModule::mf_SetAnchor()
       npc.anchor.psub = static_cast<unsigned short>( psub );
       return new BLong( 1 );
     }
-    else
-    {
-      npc.anchor.enabled = false;
-      return new BLong( 1 );
-    }
+
+    npc.anchor.enabled = false;
+    return new BLong( 1 );
   }
   else
   {
@@ -331,7 +328,7 @@ BObjectImp* NPCExecutorModule::mf_Move()
 
     return move_self( facing, false );
   }
-  else if ( auto* l = impptrIf<BLong>( param0 ) )
+  if ( auto* l = impptrIf<BLong>( param0 ) )
   {
     Core::UFACING facing = static_cast<Core::UFACING>( l->value() & PKTIN_02_FACING_MASK );
     return move_self( facing, false );
@@ -395,10 +392,8 @@ BObjectImp* NPCExecutorModule::mf_WalkToward()
     Core::UFACING fac = npc.direction_toward( obj );
     return move_self( fac, false, true );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 
@@ -415,10 +410,8 @@ BObjectImp* NPCExecutorModule::mf_RunToward()
     }
     return move_self( npc.direction_toward( obj ), true, true );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* NPCExecutorModule::mf_WalkAwayFrom()
@@ -436,10 +429,8 @@ BObjectImp* NPCExecutorModule::mf_WalkAwayFrom()
 
                       false, true );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* NPCExecutorModule::mf_RunAwayFrom()
@@ -457,10 +448,8 @@ BObjectImp* NPCExecutorModule::mf_RunAwayFrom()
 
                       true, true );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* NPCExecutorModule::mf_TurnToward()
@@ -611,7 +600,7 @@ BObjectImp* NPCExecutorModule::mf_Say()
 {
   if ( npc.squelched() )
     return new BError( "NPC is squelched" );
-  else if ( npc.hidden() )
+  if ( npc.hidden() )
     npc.unhide();
 
   const char* text = exec.paramAsString( 0 );
@@ -708,7 +697,7 @@ BObjectImp* NPCExecutorModule::mf_SayUC()
 {
   if ( npc.squelched() )
     return new BError( "NPC is squelched" );
-  else if ( npc.hidden() )
+  if ( npc.hidden() )
     npc.unhide();
 
   const String* text;
@@ -816,10 +805,8 @@ BObjectImp* NPCExecutorModule::mf_GetProperty()
     {
       return BObjectImp::unpack( val.c_str() );
     }
-    else
-    {
-      return new BError( "Property not found" );
-    }
+
+    return new BError( "Property not found" );
   }
   else
   {
@@ -836,10 +823,8 @@ BObjectImp* NPCExecutorModule::mf_SetProperty()
     npc.setprop( propname_str->value(), propval->pack() );
     return new BLong( 1 );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* NPCExecutorModule::mf_CreateBackpack()
@@ -924,11 +909,9 @@ BObjectImp* NPCExecutorModule::mf_SetOpponent()
     npc.set_opponent( chr );
     return new BLong( 1 );
   }
-  else
-  {
-    npc.set_opponent( nullptr );
-    return new BLong( 0 );
-  }
+
+  npc.set_opponent( nullptr );
+  return new BLong( 0 );
 }
 
 BObjectImp* NPCExecutorModule::mf_SetWarMode()
@@ -939,15 +922,12 @@ BObjectImp* NPCExecutorModule::mf_SetWarMode()
     npc.set_warmode( warmode != 0 );
     return new BLong( 1 );
   }
-  else
-  {
-    return new BLong( 0 );
-  }
+
+  return new BLong( 0 );
 }
 
 size_t NPCExecutorModule::sizeEstimate() const
 {
   return sizeof( *this );
 }
-}  // namespace Module
-}  // namespace Pol
+}  // namespace Pol::Module

@@ -11,9 +11,8 @@
 
 #include <typeinfo>
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 class ContIterator : public BObjectImp
 {
@@ -22,12 +21,12 @@ public:
 
   virtual BObject* step();
 
-  BObjectImp* copy( void ) const;
-  size_t sizeEstimate() const;
-  std::string getStringRep() const;
+  BObjectImp* copy() const override;
+  size_t sizeEstimate() const override;
+  std::string getStringRep() const override;
 
   bool is_default() const { return typeid( *this ) == typeid( ContIterator ); }
 };
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript
+
 #endif

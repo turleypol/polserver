@@ -3,9 +3,8 @@
 #include "bobject.h"
 #include "exectype.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 class Executor;
 class BContinuation;
@@ -23,12 +22,12 @@ class BContinuation : public BObjectImp
 public:
   BContinuation( BObjectRef funcref, BObjectRefVec args, ContinuationCallbackWrapper wrapper,
                  void* wrapperData );
-  ~BContinuation();
+  ~BContinuation() override;
 
   BObjectImp* continueWith( Executor& exec, BObjectRef result );
   BFunctionRef* func();
 
-  BObjectImp* copy( void ) const override;
+  BObjectImp* copy() const override;
   size_t sizeEstimate() const override;
   std::string getStringRep() const override;
 
@@ -40,5 +39,4 @@ private:
 public:
   BObjectRefVec args;
 };
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript

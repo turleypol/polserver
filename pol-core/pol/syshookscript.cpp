@@ -18,9 +18,8 @@
 #include "../clib/logfacility.h"
 #include "scrsched.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 using namespace Bscript;
 ExportScript::ExportScript( const Plib::Package* pkg, std::string scriptname )
@@ -505,12 +504,11 @@ BObjectImp* ExportScript::expect_imp()
 {
   if ( uoexec.error() )
     return new BError( "Error during execution" );
-  else if ( uoexec.ValueStack.empty() )
+  if ( uoexec.ValueStack.empty() )
     return new BError( "There was no return value??" );
 
   auto ret = uoexec.ValueStack.back()->impptr()->copy();
   uoexec.ValueStack.pop_back();
   return ret;
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

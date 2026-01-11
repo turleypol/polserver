@@ -111,10 +111,10 @@ enum ClientTypeFlag
   CLIENTTYPE_70331 = 0x1000  // 7.0.33.1 new mobile incoming
 };
 
-typedef struct
+using PacketThrottler = struct
 {
   unsigned char pktbuffer[PKTIN_02_SIZE];
-} PacketThrottler;
+};
 
 
 class Client;
@@ -238,7 +238,7 @@ public:
           std::vector<boost::asio::ip::network_v4>& allowed_proxies );
   Client( const Client& ) = delete;
   Client& operator=( const Client& ) = delete;
-  ~Client();
+  ~Client() override;
   size_t estimatedSize() const;
 
   // later these will return a member "session" instead of casting

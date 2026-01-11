@@ -14,23 +14,22 @@
 #include "twofish.h"
 
 // NOCRYPT
-namespace Pol
-{
-namespace Crypt
+
+namespace Pol::Crypt
 {
 class CCryptNoCrypt final : public CCryptBase
 {
   // Constructor / Destructor
 public:
-  typedef CCryptBase base;
+  using base = CCryptBase;
 
   CCryptNoCrypt();
-  virtual ~CCryptNoCrypt() = default;
+  ~CCryptNoCrypt() override = default;
 
   // Member Functions
 public:
-  virtual int Receive( void* buffer, int max_expected, SOCKET socket ) override;
-  virtual void Init( void* pvSeed, int type = CCryptBase::typeAuto ) override;
+  int Receive( void* buffer, int max_expected, SOCKET socket ) override;
+  void Init( void* pvSeed, int type = CCryptBase::typeAuto ) override;
 };
 
 // BLOWFISH
@@ -39,21 +38,21 @@ class CCryptBlowfish : public CCryptBaseCrypt
 {
   // Constructor / Destructor
 public:
-  typedef CCryptBaseCrypt base;
+  using base = CCryptBaseCrypt;
 
   CCryptBlowfish();
   CCryptBlowfish( unsigned int masterKey1, unsigned int masterKey2 );
-  virtual ~CCryptBlowfish() = default;
+  ~CCryptBlowfish() override = default;
 
   BlowFish bfish;
 
   // Member Functions
 public:
-  virtual int Receive( void* buffer, int max_expected, SOCKET socket ) override;
-  virtual void Init( void* pvSeed, int type = CCryptBase::typeAuto ) override;
+  int Receive( void* buffer, int max_expected, SOCKET socket ) override;
+  void Init( void* pvSeed, int type = CCryptBase::typeAuto ) override;
 
 protected:
-  virtual void Decrypt( void* pvIn, void* pvOut, int len ) override;
+  void Decrypt( void* pvIn, void* pvOut, int len ) override;
 };
 
 // BLOWFISH OLD
@@ -64,10 +63,10 @@ class CCryptBlowfishOld final : public CCryptBlowfish
 public:
   CCryptBlowfishOld();
   CCryptBlowfishOld( unsigned int masterKey1, unsigned int masterKey2 );
-  virtual ~CCryptBlowfishOld() = default;
+  ~CCryptBlowfishOld() override = default;
 
 protected:
-  virtual void Decrypt( void* pvIn, void* pvOut, int len ) override;
+  void Decrypt( void* pvIn, void* pvOut, int len ) override;
 };
 
 // BLOWFISH 1.25.36
@@ -78,10 +77,10 @@ class CCrypt12536 final : public CCryptBlowfish
 public:
   CCrypt12536();
   CCrypt12536( unsigned int masterKey1, unsigned int masterKey2 );
-  virtual ~CCrypt12536() = default;
+  ~CCrypt12536() override = default;
 
 protected:
-  virtual void Decrypt( void* pvIn, void* pvOut, int len ) override;
+  void Decrypt( void* pvIn, void* pvOut, int len ) override;
 };
 
 // BLOWFISH + TWOFISH
@@ -91,17 +90,17 @@ class CCryptBlowfishTwofish final : public CCryptBaseCrypt
 public:
   CCryptBlowfishTwofish();
   CCryptBlowfishTwofish( unsigned int masterKey1, unsigned int masterKey2 );
-  virtual ~CCryptBlowfishTwofish() = default;
+  ~CCryptBlowfishTwofish() override = default;
 
   BlowFish bfish;
   TwoFish tfish;
 
 public:
-  virtual int Receive( void* buffer, int max_expected, SOCKET socket ) override;
-  virtual void Init( void* pvSeed, int type = CCryptBase::typeAuto ) override;
+  int Receive( void* buffer, int max_expected, SOCKET socket ) override;
+  void Init( void* pvSeed, int type = CCryptBase::typeAuto ) override;
 
 protected:
-  virtual void Decrypt( void* pvIn, void* pvOut, int len ) override;
+  void Decrypt( void* pvIn, void* pvOut, int len ) override;
 };
 
 // TWOFISH
@@ -111,20 +110,20 @@ class CCryptTwofish final : public CCryptBaseCrypt
 public:
   CCryptTwofish();
   CCryptTwofish( unsigned int masterKey1, unsigned int masterKey2 );
-  virtual ~CCryptTwofish() = default;
+  ~CCryptTwofish() override = default;
 
   TwoFish tfish;
   MD5Crypt md5;
 
 public:
-  virtual int Receive( void* buffer, int max_expected, SOCKET socket ) override;
-  virtual void Init( void* pvSeed, int type = CCryptBase::typeAuto ) override;
-  virtual void Encrypt( void* pvIn, void* pvOut, int len ) override;
+  int Receive( void* buffer, int max_expected, SOCKET socket ) override;
+  void Init( void* pvSeed, int type = CCryptBase::typeAuto ) override;
+  void Encrypt( void* pvIn, void* pvOut, int len ) override;
 
 protected:
-  virtual void Decrypt( void* pvIn, void* pvOut, int len ) override;
+  void Decrypt( void* pvIn, void* pvOut, int len ) override;
 };
-}  // namespace Crypt
-}  // namespace Pol
+}  // namespace Pol::Crypt
+
 
 #endif  //__CRYPT_H__

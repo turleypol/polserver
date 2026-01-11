@@ -41,9 +41,8 @@
     disable : 4127 )  // conditional expression is constant (needed because of TICK_PROFILEVAR)
 #endif
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 void regen_stats()
 {
@@ -171,7 +170,7 @@ void setup_update_rpm()
   stateManager.profilevars.last_cpu_total = tot;
 }
 
-void update_rpm( void )
+void update_rpm()
 {
   THREAD_CHECKPOINT( tasks, 300 );
   auto& pvars = stateManager.profilevars;
@@ -328,5 +327,4 @@ void start_tasks()
 // script starts
 // combat operations
 // skill checks
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

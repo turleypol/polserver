@@ -54,7 +54,7 @@ private:
   std::string _name;
 
   // TODO: ref_ptr<Item> ?
-  typedef std::map<std::string, Items::Item*, Clib::ci_cmp_pred> Cont;
+  using Cont = std::map<std::string, Items::Item*, Clib::ci_cmp_pred>;
   Cont _items;  // owns its items.
 
   friend class StorageAreaImp;
@@ -69,13 +69,13 @@ public:
       : Bscript::BObjectImp( BObjectImp::OTStorageArea ), _area( area )
   {
   }
-  virtual BObjectImp* copy() const override { return new StorageAreaImp( _area ); }
-  virtual std::string getStringRep() const override { return _area->_name; }
-  virtual size_t sizeEstimate() const override { return sizeof( *this ); }
+  BObjectImp* copy() const override { return new StorageAreaImp( _area ); }
+  std::string getStringRep() const override { return _area->_name; }
+  size_t sizeEstimate() const override { return sizeof( *this ); }
   Bscript::ContIterator* createIterator( Bscript::BObject* pIterVal ) override;
   Bscript::BObjectRef get_member( const char* membername ) override;
-  virtual const char* typeOf() const override { return "StorageArea"; }
-  virtual u8 typeOfInt() const override { return OTStorageArea; }
+  const char* typeOf() const override { return "StorageArea"; }
+  u8 typeOfInt() const override { return OTStorageArea; }
   StorageArea* area() const { return _area; }
 
 private:
@@ -98,7 +98,7 @@ public:
 private:
   // TODO: investigate if this could store objects. Does find()
   // return object copies, or references?
-  typedef std::map<std::string, StorageArea*> AreaCont;
+  using AreaCont = std::map<std::string, StorageArea*>;
   AreaCont areas;
 
   friend class StorageAreasImp;

@@ -22,9 +22,8 @@
 
 #include <module_defs/vitals.h>
 
-namespace Pol
-{
-namespace Module
+
+namespace Pol::Module
 {
 using namespace Bscript;
 
@@ -48,8 +47,7 @@ BObjectImp* VitalExecutorModule::mf_ApplyRawDamage()
                                       userepsys > 0 ? true : false, send_dmg );
     return new BLong( 1 );
   }
-  else
-    return new BLong( 0 );
+  return new BLong( 0 );
 }
 
 BObjectImp* VitalExecutorModule::mf_ApplyDamage()
@@ -70,8 +68,7 @@ BObjectImp* VitalExecutorModule::mf_ApplyDamage()
                                   userepsys > 0 ? true : false, send_dmg );
       return new BLong( static_cast<int>( damage ) );
     }
-    else
-      return new BError( "Damage is out of range" );
+    return new BError( "Damage is out of range" );
   }
   else
     return new BError( "Invalid parameter type" );
@@ -90,10 +87,8 @@ BObjectImp* VitalExecutorModule::mf_HealDamage()
     chr->heal_damage_hundredths( static_cast<unsigned short>( amount ) * 100L );
     return new BLong( 1 );
   }
-  else
-  {
-    return new BError( "Invalid parameter" );
-  }
+
+  return new BError( "Invalid parameter" );
 }
 
 BObjectImp* VitalExecutorModule::mf_ConsumeMana()
@@ -108,7 +103,7 @@ BObjectImp* VitalExecutorModule::mf_ConsumeMana()
     Core::USpell* spell = Core::gamestate.spells[spellid];
     if ( spell == nullptr )
       return new BError( "No such spell" );
-    else if ( spell->check_mana( chr ) == false )
+    if ( spell->check_mana( chr ) == false )
       return new BLong( 0 );
 
     spell->consume_mana( chr );
@@ -117,10 +112,8 @@ BObjectImp* VitalExecutorModule::mf_ConsumeMana()
 
     return new BLong( 1 );
   }
-  else
-  {
-    return new BError( "Invalid parameter" );
-  }
+
+  return new BError( "Invalid parameter" );
 }
 
 BObjectImp* VitalExecutorModule::mf_GetVitalName( /* alias_name */ )
@@ -145,8 +138,7 @@ BObjectImp* VitalExecutorModule::mf_GetVital( /* mob, vitalid */ )
     const Mobile::VitalValue& vv = chr->vital( vital->vitalid );
     return new BLong( vv.current() );
   }
-  else
-    return new BError( "Invalid parameter type" );
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* VitalExecutorModule::mf_GetVitalMaximumValue( /* mob, vitalid */ )
@@ -159,8 +151,7 @@ BObjectImp* VitalExecutorModule::mf_GetVitalMaximumValue( /* mob, vitalid */ )
     const Mobile::VitalValue& vv = chr->vital( vital->vitalid );
     return new BLong( vv.maximum() );
   }
-  else
-    return new BError( "Invalid parameter type" );
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* VitalExecutorModule::mf_GetVitalRegenRate( /* mob, vitalid */ )
@@ -173,8 +164,7 @@ BObjectImp* VitalExecutorModule::mf_GetVitalRegenRate( /* mob, vitalid */ )
     const Mobile::VitalValue& vv = chr->vital( vital->vitalid );
     return new BLong( vv.regenrate() );
   }
-  else
-    return new BError( "Invalid parameter type" );
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* VitalExecutorModule::mf_SetVital( /* mob, vitalid, hundredths */ )
@@ -190,8 +180,7 @@ BObjectImp* VitalExecutorModule::mf_SetVital( /* mob, vitalid, hundredths */ )
     chr->set_current( vital, vv, value, Mobile::Character::VitalDepletedReason::SCRIPT );
     return new BLong( 1 );
   }
-  else
-    return new BError( "Invalid parameter type" );
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* VitalExecutorModule::mf_ConsumeVital( /* mob, vital, hundredths */ )
@@ -208,8 +197,7 @@ BObjectImp* VitalExecutorModule::mf_ConsumeVital( /* mob, vital, hundredths */ )
         chr->consume( vital, vv, hundredths, Mobile::Character::VitalDepletedReason::SCRIPT );
     return new BLong( res ? 1 : 0 );
   }
-  else
-    return new BError( "Invalid parameter type" );
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* VitalExecutorModule::mf_RecalcVitals( /* mob, attributes, vitals */ )
@@ -252,11 +240,9 @@ BObjectImp* VitalExecutorModule::mf_RecalcVitals( /* mob, attributes, vitals */ 
       chr->calc_vital_stuff( calc_attr, calc_vital );
       return new BLong( 1 );
     }
-    else
-      return new BError( "Mobile must be online." );
+    return new BError( "Mobile must be online." );
   }
   else
     return new BError( "Invalid parameter type" );
 }
-}  // namespace Module
-}  // namespace Pol
+}  // namespace Pol::Module

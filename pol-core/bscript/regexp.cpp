@@ -105,20 +105,18 @@ BObjectImp* do_match( const RegexT& re, const String* value, boost::match_flag_t
     return UninitObject::create();
   }
   // Global regex: Return array of all struct{ matched, groups, offset }
-  else
+
+  iterator_type current_match( input.cbegin(), input.cend(), re, flags );
+  iterator_type last_match;
+  std::unique_ptr<ObjArray> all_matches( new ObjArray );
+
+  while ( current_match != last_match )
   {
-    iterator_type current_match( input.cbegin(), input.cend(), re, flags );
-    iterator_type last_match;
-    std::unique_ptr<ObjArray> all_matches( new ObjArray );
-
-    while ( current_match != last_match )
-    {
-      all_matches->addElement( add_match( *current_match ) );
-      ++current_match;
-    }
-
-    return all_matches.release();
+    all_matches->addElement( add_match( *current_match ) );
+    ++current_match;
   }
+
+  return all_matches.release();
 }
 
 template <typename RegexT>
@@ -168,7 +166,7 @@ BObjectImp* do_replace( const RegexT& re, Executor& ex, BRegExp* bregexp, const 
         groups->addElement( UninitObject::create() );
       }
     }
-    args.push_back( BObjectRef( groups.release() ) );
+    args.emplace_back( groups.release() );
 
     // Add offset and original string as arguments
     args.push_back( BObjectRef( new BLong( Clib::clamp_convert<int>( match.position() + 1 ) ) ) );
@@ -385,8 +383,7 @@ BObjectImp* BRegExp::replace( Executor& ex, const String* str, BFunctionRef* rep
   {
     return std::visit(
         [&]( auto&& re )
-        { return do_replace( re, ex, this, str, replacement_callback, match_flags_ ); },
-        regex_ );
+        { return do_replace( re, ex, this, str, replacement_callback, match_flags_ ); }, regex_ );
   }
   catch ( ... )
   {

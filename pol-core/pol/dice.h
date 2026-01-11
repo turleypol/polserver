@@ -9,26 +9,25 @@
 #define DICE_H
 
 #include <string>
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 class Dice
 {
 public:
   Dice();
   bool load( const char* dice, std::string* errormsg );
-  unsigned short roll( void ) const;
+  unsigned short roll() const;
   int roll_with_negatives() const;
   void die_string( std::string& str ) const;
-  unsigned short min_value( void ) const;
-  unsigned short max_value( void ) const;
+  unsigned short min_value() const;
+  unsigned short max_value() const;
 
 private:
   unsigned die_count;
   unsigned die_type;
   int plus_damage;
 };
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core
+
 #endif

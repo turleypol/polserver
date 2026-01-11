@@ -21,9 +21,8 @@
 #include "pkg.h"
 #include "systemstate.h"
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 
 Tile read_tile( Clib::ConfigElem& elem )
@@ -53,7 +52,7 @@ constexpr u16 expected_max_tile_id( u16 max_graphic )
 {
   if ( max_graphic > UOBJ_SA_MAX )
     return UOBJ_HSA_MAX;
-  else if ( max_graphic > UOBJ_DEFAULT_MAX )
+  if ( max_graphic > UOBJ_DEFAULT_MAX )
     return UOBJ_SA_MAX;
   else
     return UOBJ_DEFAULT_MAX;
@@ -96,5 +95,4 @@ void load_tiles_cfg()
   systemstate.config.max_tile_id = new_max;
   systemstate.tile.resize( systemstate.config.max_tile_id + 1 );
 }
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib

@@ -7,15 +7,14 @@
 #ifndef WINDOWS
 #include <sys/socket.h>
 
-typedef int SOCKET;
+using SOCKET = int;
 #ifndef INVALID_SOCKET
 #define INVALID_SOCKET ( SOCKET )( -1 )
 #endif
 #endif
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 class Socket
 {
@@ -139,6 +138,6 @@ public:
   bool try_read( std::string& out, bool* timed_out = nullptr ) override;
 };
 
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib
+
 #endif  // CLIB_WNSCKT_H

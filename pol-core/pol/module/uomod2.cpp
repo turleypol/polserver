@@ -1012,8 +1012,7 @@ BObjectImp* UOExecutorModule::mf_SendDialogGump()
        ( ( !( flags & SENDDIALOGMENU_FORCE_OLD ) ) &&
          ( chr->client->compareVersion( CLIENT_VER_5000 ) ) ) )
     return internal_SendCompressedGumpMenu( chr, layout_arr, data_arr, x, y, gumpid );
-  else
-    return internal_SendUnCompressedGumpMenu( chr, layout_arr, data_arr, x, y, gumpid );
+  return internal_SendUnCompressedGumpMenu( chr, layout_arr, data_arr, x, y, gumpid );
 }
 
 
@@ -1256,18 +1255,18 @@ public:
   BIntHash();
   BIntHash( const BIntHash& );
   void add( int key, BObjectImp* value );
-  virtual BObjectRef get_member( const char* membername ) override;
-  virtual BObjectRef OperSubscript( const BObject& obj ) override;
-  virtual BObjectImp* copy() const override;
-  virtual std::string getStringRep() const override;
-  virtual size_t sizeEstimate() const override;
+  BObjectRef get_member( const char* membername ) override;
+  BObjectRef OperSubscript( const BObject& obj ) override;
+  BObjectImp* copy() const override;
+  std::string getStringRep() const override;
+  size_t sizeEstimate() const override;
 
 private:
-  typedef std::map<int, BObjectRef> Contents;
+  using Contents = std::map<int, BObjectRef>;
   Contents contents_;
 
   // not implemented:
-  BIntHash& operator=( const BIntHash& );
+  BIntHash& operator=( const BIntHash& ) = delete;
 };
 
 BIntHash::BIntHash() : BObjectImp( OTUnknown ), contents_() {}
@@ -1312,10 +1311,8 @@ BObjectRef BIntHash::get_member( const char* membername )
 
     return BObjectRef( obj.impptr() );
   }
-  else
-  {
-    return BObjectRef( new BError( "member not found" ) );
-  }
+
+  return BObjectRef( new BError( "member not found" ) );
 }
 
 BObjectRef BIntHash::OperSubscript( const BObject& obj )
@@ -1330,10 +1327,8 @@ BObjectRef BIntHash::OperSubscript( const BObject& obj )
       BObjectRef& oref = ( *itr ).second;
       return BObjectRef( oref.get()->impptr() );
     }
-    else
-    {
-      return BObjectRef( new BError( "Key not found in inthash" ) );
-    }
+
+    return BObjectRef( new BError( "Key not found in inthash" ) );
   }
   else
   {
@@ -1658,17 +1653,17 @@ class PolCore final : public PolObjectImp
 {
 public:
   PolCore();
-  virtual BObjectRef get_member( const char* membername ) override;
-  virtual BObjectImp* call_polmethod( const char* methodname, UOExecutor& ex ) override;
-  virtual BObjectImp* copy() const override;
-  virtual std::string getStringRep() const override;
-  virtual size_t sizeEstimate() const override { return sizeof( PolCore ); }
-  virtual const char* typeOf() const override;
-  virtual u8 typeOfInt() const override;
+  BObjectRef get_member( const char* membername ) override;
+  BObjectImp* call_polmethod( const char* methodname, UOExecutor& ex ) override;
+  BObjectImp* copy() const override;
+  std::string getStringRep() const override;
+  size_t sizeEstimate() const override { return sizeof( PolCore ); }
+  const char* typeOf() const override;
+  u8 typeOfInt() const override;
 
 private:
   // not implemented:
-  PolCore& operator=( const PolCore& );
+  PolCore& operator=( const PolCore& ) = delete;
 };
 
 PolCore::PolCore() : PolObjectImp( OTPolCoreRef ) {}
@@ -1950,10 +1945,8 @@ BObjectImp* PolCore::call_polmethod( const char* methodname, UOExecutor& ex )
       scriptScheduler.priority_divide = div;
       return new BLong( 1 );
     }
-    else
-    {
-      return nullptr;
-    }
+
+    return nullptr;
   }
   else if ( stricmp( methodname, "clear_script_profile_counters" ) == 0 )
   {
@@ -2018,8 +2011,7 @@ BObjectImp* PolCore::call_polmethod( const char* methodname, UOExecutor& ex )
       }
       return new BLong( 1 );
     }
-    else
-      return new BError( "polcore.internal(value) requires 1 parameter." );
+    return new BError( "polcore.internal(value) requires 1 parameter." );
   }
   return nullptr;
 }
@@ -2065,10 +2057,8 @@ BObjectImp* UOExecutorModule::mf_CreateAccount()
 
     return new Accounts::AccountObjImp( Accounts::AccountPtrHolder( AccountRef( acct ) ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* UOExecutorModule::mf_FindAccount()
@@ -2081,10 +2071,8 @@ BObjectImp* UOExecutorModule::mf_FindAccount()
     {
       return new Accounts::AccountObjImp( Accounts::AccountPtrHolder( AccountRef( acct ) ) );
     }
-    else
-    {
-      return new BError( "Account not found." );
-    }
+
+    return new BError( "Account not found." );
   }
   else
   {
@@ -2255,8 +2243,7 @@ BObjectImp* UOExecutorModule::mf_SendOpenBook()
     {
       if ( contents_ob.isa( BObjectImp::OTError ) )
         return contents_ob->copy();
-      else
-        return new BError( "book.GetContents() must return an array" );
+      return new BError( "book.GetContents() must return an array" );
     }
   }
 
@@ -2442,8 +2429,7 @@ char strip_ctrl_chars( char c )
 {
   if ( c < 0x20 )
     return 0x20;
-  else
-    return c;
+  return c;
 }
 
 void open_book_handler( Client* client, PKTBI_93* msg )
@@ -2574,8 +2560,7 @@ BObjectImp* UOExecutorModule::mf_SendCharacterRaceChanger( /* Character */ )
     msg.Send( chr->client );
     return new BLong( 1 );
   }
-  else
-    return new BError( "Invalid parameter" );
+  return new BError( "Invalid parameter" );
 }
 
 
@@ -2671,7 +2656,7 @@ BObjectImp* UOExecutorModule::mf_SendPopUpMenu()
   }
   if ( !chr->has_active_client() )
     return new BError( "No client attached" );
-  if ( !menu_arr->ref_arr.size() )
+  if ( menu_arr->ref_arr.empty() )
     return new BError( "Can't send empty menu" );
   if ( menu_arr->ref_arr.size() > 0xfffe )
     return new BError( "Too many entries in menu" );
@@ -2888,8 +2873,7 @@ BObjectImp* UOExecutorModule::mf_ListStaticsNearLocationOfType(
 
     return newarr.release();
   }
-  else
-    return new BError( "Invalid parameter" );
+  return new BError( "Invalid parameter" );
 }
 
 
@@ -2956,8 +2940,7 @@ BObjectImp* UOExecutorModule::mf_ListStaticsNearLocationWithFlag(
 
     return newarr.release();
   }
-  else
-    return new BError( "Invalid parameter" );
+  return new BError( "Invalid parameter" );
 }
 }  // namespace Module
 }  // namespace Pol

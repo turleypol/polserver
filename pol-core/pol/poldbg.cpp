@@ -38,9 +38,8 @@
 #include "scrsched.h"
 #include "uoexec.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 using namespace Bscript;
 
@@ -211,10 +210,10 @@ class DebugContext : public ref_counted
 {
 public:
   DebugContext();
-  ~DebugContext();
+  ~DebugContext() override;
 
   std::string prompt() const;
-  typedef std::vector<std::string> Results;
+  using Results = std::vector<std::string>;
   bool process( const std::string& cmd, Results& results );
   bool done() const { return _done; }
 
@@ -267,21 +266,21 @@ private:
   ref_ptr<EScriptProgram> _script;
 
   // not implemented:
-  DebugContext( const DebugContext& );
-  DebugContext& operator=( const DebugContext& );
+  DebugContext( const DebugContext& ) = delete;
+  DebugContext& operator=( const DebugContext& ) = delete;
 };
 
 BApplicObjType debugcontextobjimp_type;
-typedef PolApplicObj<ref_ptr<DebugContext>> DebugContextObjImpBase;
+using DebugContextObjImpBase = PolApplicObj<ref_ptr<DebugContext>>;
 class DebugContextObjImp : public DebugContextObjImpBase
 {
 public:
   explicit DebugContextObjImp( ref_ptr<DebugContext> rcdctx );
-  virtual const char* typeOf() const override;
-  virtual u8 typeOfInt() const override;
-  virtual BObjectImp* copy() const override;
-  virtual BObjectImp* call_polmethod( const char* methodname, UOExecutor& ex ) override;
-  virtual BObjectRef get_member( const char* membername ) override;
+  const char* typeOf() const override;
+  u8 typeOfInt() const override;
+  BObjectImp* copy() const override;
+  BObjectImp* call_polmethod( const char* methodname, UOExecutor& ex ) override;
+  BObjectRef get_member( const char* membername ) override;
 };
 DebugContextObjImp::DebugContextObjImp( ref_ptr<DebugContext> rcdctx )
     : DebugContextObjImpBase( &debugcontextobjimp_type, rcdctx )
@@ -317,10 +316,8 @@ BObjectImp* DebugContextObjImp::call_polmethod( const char* methodname, UOExecut
       }
       return arr.release();
     }
-    else
-    {
-      return new BError( "Invalid parameter type" );
-    }
+
+    return new BError( "Invalid parameter type" );
   }
   return new BError( "undefined" );
 }
@@ -328,8 +325,7 @@ BObjectRef DebugContextObjImp::get_member( const char* membername )
 {
   if ( stricmp( membername, "prompt" ) == 0 )
     return BObjectRef( new String( value()->prompt() ) );
-  else
-    return BObjectRef( new BError( "Undefined member" ) );
+  return BObjectRef( new BError( "Undefined member" ) );
 }
 
 BObjectImp* create_debug_context()
@@ -356,8 +352,7 @@ std::string DebugContext::prompt() const
 {
   if ( !_authorized )
     return "Authorization required.";
-  else
-    return "Ready.";
+  return "Ready.";
 }
 
 /// [1] Debugger Commands:
@@ -592,10 +587,8 @@ std::string DebugContext::cmd_attach( unsigned pid )
     _script.set( prog );
     return "Attached to PID " + Clib::tostring( pid ) + ".";
   }
-  else
-  {
-    return "PID not found.";
-  }
+
+  return "PID not found.";
 }
 
 std::string DebugContext::cmd_loadsym( unsigned pid )
@@ -606,8 +599,7 @@ std::string DebugContext::cmd_loadsym( unsigned pid )
     int res = const_cast<EScriptProgram*>( uoexec->prog() )->read_dbg_file();
     if ( res )
       return "Failed to load symbols.";
-    else
-      return "Loaded debug symbols.";
+    return "Loaded debug symbols.";
   }
   else
   {
@@ -623,10 +615,8 @@ std::string DebugContext::cmd_kill( unsigned pid )
     uoexec->seterror( true );
     return "Marked PID " + Clib::tostring( pid ) + " with an error.";
   }
-  else
-  {
-    return "PID not found.";
-  }
+
+  return "PID not found.";
 }
 
 std::string DebugContext::cmd_detach()
@@ -734,7 +724,7 @@ std::string DebugContext::cmd_scriptlist( const std::string& /*rest*/, Results& 
     const char* nm = ( ( *citr ).first ).c_str();
     EScriptProgram* eprog = ( ( *citr ).second ).get();
     std::string scriptname = eprog->name;
-    results.push_back( nm );
+    results.emplace_back( nm );
   }
   return "";
 }
@@ -877,8 +867,7 @@ std::string get_fileline( EScriptProgram* prog, int filenum, int linenum )
   }
   if ( getline( ifs, tmp ) )
     return tmp;
-  else
-    return "";
+  return "";
 }
 
 std::string DebugContext::cmd_scriptsrc( const std::string& rest, Results& results )
@@ -903,7 +892,7 @@ std::string DebugContext::cmd_scriptsrc( const std::string& rest, Results& resul
       continue;
 
     std::string result = get_fileline( eprog, filenum, linenum );
-    if ( result != "" )
+    if ( !result.empty() )
       results.push_back( Clib::tostring( ins ) + " " + result );
 
     last_filenum = filenum;
@@ -1155,9 +1144,9 @@ std::string DebugContext::cmd_globalvars( Results& results )
   for ( unsigned idx = 0; itr != end; ++itr, ++idx )
   {
     if ( prog->globalvarnames.size() > idx )
-      results.push_back( prog->globalvarnames[idx].c_str() );
+      results.emplace_back( prog->globalvarnames[idx].c_str() );
     else
-      results.push_back( Clib::tostring( idx ).c_str() );
+      results.emplace_back( Clib::tostring( idx ).c_str() );
   }
   return "";
 }
@@ -1354,7 +1343,7 @@ class DebugClientThread : public Clib::SocketClientThread
 {
 public:
   DebugClientThread( Clib::Socket&& sock ) : Clib::SocketClientThread( std::move( sock ) ) {}
-  virtual void run() override;
+  void run() override;
 };
 
 void DebugClientThread::run()
@@ -1391,7 +1380,7 @@ void DebugClientThread::run()
   }
 }
 
-void debug_listen_thread( void )
+void debug_listen_thread()
 {
   if ( Plib::systemstate.config.debug_port )
   {
@@ -1407,5 +1396,4 @@ void debug_listen_thread( void )
     }
   }
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

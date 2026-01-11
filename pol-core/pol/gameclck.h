@@ -7,11 +7,10 @@
 #ifndef GAMECLCK_H
 #define GAMECLCK_H
 
-namespace Pol
+
+namespace Pol::Core
 {
-namespace Core
-{
-typedef unsigned int gameclock_t;
+using gameclock_t = unsigned int;
 
 /// The functions below deal with reading and updating the gameclock.
 /// The state is protected by a mutex.
@@ -27,6 +26,6 @@ void update_gameclock();
 
 /// Reads the current value of the game clock.
 gameclock_t read_gameclock();
-}
-}
+}  // namespace Pol::Core
+
 #endif

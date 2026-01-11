@@ -19,9 +19,8 @@
 
 #include <module_defs/boat.h>
 
-namespace Pol
-{
-namespace Module
+
+namespace Pol::Module
 {
 UBoatExecutorModule::UBoatExecutorModule( Bscript::Executor& exec )
     : Bscript::TmplExecutorModule<UBoatExecutorModule, Core::PolModule>( exec )
@@ -59,10 +58,8 @@ Bscript::BObjectImp* UBoatExecutorModule::mf_TurnBoat()
     return new Bscript::BLong(
         boat->turn( static_cast<Multi::UBoat::RELATIVE_DIR>( relative_dir ) ) );
   }
-  else
-  {
-    return new Bscript::BError( "Invalid Parameter type" );
-  }
+
+  return new Bscript::BError( "Invalid Parameter type" );
 }
 
 Bscript::BObjectImp* UBoatExecutorModule::mf_MoveBoatRelative()
@@ -96,10 +93,8 @@ Bscript::BObjectImp* UBoatExecutorModule::mf_SystemFindBoatBySerial()
   {
     return boat->make_ref();
   }
-  else
-  {
-    return new Bscript::BError( "Boat not found." );
-  }
+
+  return new Bscript::BError( "Boat not found." );
 }
 
 Bscript::BObjectImp* UBoatExecutorModule::mf_BoatFromItem()
@@ -113,8 +108,7 @@ Bscript::BObjectImp* UBoatExecutorModule::mf_BoatFromItem()
       Multi::UBoat* boat = multi->as_boat();
       if ( boat != nullptr )
         return boat->make_ref();
-      else
-        return new Bscript::BError( "Multi wasn't a boat" );
+      return new Bscript::BError( "Multi wasn't a boat" );
     }
     else
     {
@@ -126,5 +120,4 @@ Bscript::BObjectImp* UBoatExecutorModule::mf_BoatFromItem()
     return new Bscript::BError( "Invalid parameter type." );
   }
 }
-}  // namespace Module
-}  // namespace Pol
+}  // namespace Pol::Module

@@ -21,9 +21,8 @@
 #include <curl/curl.h>
 #include <type_traits>
 
-namespace Pol
-{
-namespace Testing
+
+namespace Pol::Testing
 {
 void dummy() {}
 
@@ -374,5 +373,4 @@ void test_curlfeatures()
   else
     UnitTest::inc_successes();
 }
-}  // namespace Testing
-}  // namespace Pol
+}  // namespace Pol::Testing

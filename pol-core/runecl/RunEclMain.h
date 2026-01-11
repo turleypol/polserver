@@ -5,21 +5,20 @@
 
 #include <string>
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 class RunEclMain final : public ProgramMain
 {
 public:
   RunEclMain();
-  virtual ~RunEclMain();
+  ~RunEclMain() override;
 
 protected:
-  virtual int main();
+  int main() override;
 
 private:
-  virtual void showHelp();
+  void showHelp() override;
   void dumpScript( std::string fileName );
   int runeclScript( std::string fileName );
   int runecl();
@@ -28,7 +27,7 @@ private:
   bool m_debug;
   bool m_profile;
 };
-}
-}  // namespaces
+}  // namespace Pol::Clib
+   // namespaces
 
 #endif  // RUN_ECL_MAIN_H

@@ -20,25 +20,22 @@
 #include "../clib/maputil.h"
 #include "executor.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 class Executor;
 #ifdef ESCRIPT_PROFILE
 class EscriptProfiler;
 #endif
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 class ExecutorModule;
 class String;
 
-typedef BObject* ( ExecutorModule::*ExecutorModuleFn )();
+using ExecutorModuleFn = BObject* (ExecutorModule::*)();
 
 class ExecutorModule
 {
@@ -129,9 +126,9 @@ private:
   static bool _func_map_init;
 
 protected:
-  virtual int functionIndex( const std::string& funcname ) override;
-  virtual BObjectImp* execFunc( unsigned idx ) override;
-  virtual std::string functionName( unsigned idx ) override;
+  int functionIndex( const std::string& funcname ) override;
+  BObjectImp* execFunc( unsigned idx ) override;
+  std::string functionName( unsigned idx ) override;
 };
 
 template <class T, class T2>
@@ -175,7 +172,7 @@ inline std::string TmplExecutorModule<T, T2>::functionName( unsigned idx )
 {
   return function_table[idx].funcname;
 }
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript
+
 
 #endif

@@ -15,11 +15,10 @@
 
 #include <vector>
 
-namespace Pol
-{
+
 #define MAX_STATICS_PER_BLOCK 10000
 
-namespace Plib
+namespace Pol::Plib
 {
 extern void safe_getmapinfo( unsigned short x, unsigned short y, short* z, USTRUCT_MAPINFO* mi );
 void rawmapfullread();
@@ -37,8 +36,8 @@ void read_objinfo( u16 graphic, struct USTRUCT_TILE_HSA& objinfo );
 void readlandtile( unsigned short tilenum, USTRUCT_LAND_TILE* landtile );
 void readlandtile( unsigned short tilenum, USTRUCT_LAND_TILE_HSA* landtile );
 
-void open_uo_data_files( void );
-void read_uo_data( void );
+void open_uo_data_files();
+void read_uo_data();
 void readwater();
 
 void staticsmax();
@@ -56,6 +55,6 @@ extern int cfg_warning_statics_per_block;
 extern bool cfg_show_illegal_graphic_warning;
 extern bool cfg_show_roof_and_platform_warning;
 extern bool cfg_use_new_hsa_format;
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib
+
 #endif

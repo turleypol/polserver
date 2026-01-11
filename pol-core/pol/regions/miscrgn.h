@@ -12,13 +12,12 @@
 #include "regions/region.h"
 #include "zone.h"
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 class ConfigElem;
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib
+
 
 namespace Pol
 {
@@ -30,11 +29,11 @@ namespace Core
 {
 class NoCastRegion final : public Region
 {
-  typedef Region base;
+  using base = Region;
 
 public:
   NoCastRegion( Clib::ConfigElem& elem, RegionId id );
-  virtual size_t estimateSize() const override;
+  size_t estimateSize() const override;
   bool nocast() const;
 
 private:
@@ -49,22 +48,22 @@ inline bool NoCastRegion::nocast() const
 
 class LightRegion final : public Region
 {
-  typedef Region base;
+  using base = Region;
 
 public:
   LightRegion( Clib::ConfigElem& elem, RegionId id );
-  virtual size_t estimateSize() const override;
+  size_t estimateSize() const override;
   unsigned lightlevel;
 };
 
 
 class WeatherRegion final : public Region
 {
-  typedef Region base;
+  using base = Region;
 
 public:
   WeatherRegion( Clib::ConfigElem& elem, RegionId id );
-  virtual size_t estimateSize() const override;
+  size_t estimateSize() const override;
   void setweather( unsigned char weathertype, unsigned char severity, unsigned char aux );
   unsigned char weathertype;
   unsigned char severity;
@@ -76,9 +75,9 @@ class WeatherDef final : public RegionGroup<WeatherRegion>
 {
 public:
   WeatherDef( const char* name );
-  virtual ~WeatherDef();
+  ~WeatherDef() override;
   void copy_default_regions();
-  virtual size_t estimateSize() const override;
+  size_t estimateSize() const override;
 
   bool assign_zones_to_region( const char* regionname, const Range2d& area, Realms::Realm* realm );
 

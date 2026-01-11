@@ -3,16 +3,15 @@
 #include "../clib/Program/ProgramMain.h"
 #include "pol.h"
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
 PolMain::PolMain() : ProgramMain() {}
-PolMain::~PolMain() {}
+PolMain::~PolMain() = default;
 ///////////////////////////////////////////////////////////////////////////////
 void PolMain::showHelp()
 {
@@ -24,8 +23,8 @@ int PolMain::main()
   // TODO: merge the following with all the other xmain* functions
   return Pol::xmain_outer( programArgsFind( "test" ) );
 }
-}
-}  // namespaces
+}  // namespace Pol::Clib
+   // namespaces
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

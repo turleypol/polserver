@@ -19,17 +19,16 @@
 
 #include <chrono>
 
-namespace Pol
-{
-namespace Core
-{
-typedef std::chrono::milliseconds polclock_t_unit;  // in 10ms
-typedef polclock_t_unit::rep polclock_t;            // in 10ms
 
-typedef std::chrono::seconds poltime_t_unit;
-typedef poltime_t_unit::rep poltime_t;
+namespace Pol::Core
+{
+using polclock_t_unit = std::chrono::milliseconds;  // in 10ms
+using polclock_t = polclock_t_unit::rep;            // in 10ms
 
-typedef std::chrono::steady_clock PolClock;
+using poltime_t_unit = std::chrono::seconds;
+using poltime_t = poltime_t_unit::rep;
+
+using PolClock = std::chrono::steady_clock;
 
 const polclock_t POLCLOCKS_PER_SEC = 100;
 
@@ -51,8 +50,7 @@ inline polclock_t earliest_timer( polclock_t timer1_until, polclock_t timer2_unt
   auto diff = timer1_until - timer2_until;
   if ( diff < 0 )
     return timer1_until;
-  else
-    return timer2_until;
+  return timer2_until;
 }
 
 polclock_t polclock();  // unit 10ms
@@ -73,6 +71,6 @@ public:
 };
 
 void polclock_checkin();
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core
+
 #endif

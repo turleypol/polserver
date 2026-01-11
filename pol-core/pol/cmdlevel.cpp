@@ -25,9 +25,8 @@
 #include "../plib/systemstate.h"
 #include "bscript/dict.h"
 #include "globals/uvars.h"
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 namespace fs = std::filesystem;
 CmdLevel::CmdLevel( Clib::ConfigElem& elem, int cmdlevelnum )
@@ -112,8 +111,7 @@ std::unique_ptr<Bscript::BDictionary> ListAllCommandsInPackage( Plib::Package* m
     auto script_list = Core::ListCommandsInPackageAtCmdlevel( m_pkg, num );
     if ( script_list->ref_arr.empty() )
       continue;
-    else
-      cmd_lvl_list->addMember( new Bscript::BLong( num ), script_list.release() );
+    cmd_lvl_list->addMember( new Bscript::BLong( num ), script_list.release() );
   }
   return cmd_lvl_list;
 }
@@ -251,5 +249,4 @@ void load_package_cmdlevels()
     }
   }
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

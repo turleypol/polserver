@@ -36,9 +36,8 @@
 #include "../plib/systemstate.h"
 #include "globals/ucfg.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 StoredConfigElem::StoredConfigElem( Clib::ConfigElem& elem )
 {
@@ -73,8 +72,7 @@ Bscript::BObjectImp* StoredConfigElem::getimp( const std::string& propname ) con
   PropImpList::const_iterator itr = propimps_.find( boost_utils::cfg_key_flystring( propname ) );
   if ( itr == propimps_.end() )
     return nullptr;
-  else
-    return ( *itr ).second.get();
+  return ( *itr ).second.get();
 }
 
 Bscript::BObjectImp* StoredConfigElem::listprops() const
@@ -151,8 +149,7 @@ StoredConfigFile::ElemRef StoredConfigFile::findelem( int key )
   ElementsByNum::const_iterator itr = elements_bynum_.find( key );
   if ( itr == elements_bynum_.end() )
     return ElemRef( nullptr );
-  else
-    return ( *itr ).second;
+  return ( *itr ).second;
 }
 
 StoredConfigFile::ElemRef StoredConfigFile::findelem( const std::string& key )
@@ -160,8 +157,7 @@ StoredConfigFile::ElemRef StoredConfigFile::findelem( const std::string& key )
   ElementsByName::const_iterator itr = elements_byname_.find( key );
   if ( itr == elements_byname_.end() )
     return ElemRef( nullptr );
-  else
-    return ( *itr ).second;
+  return ( *itr ).second;
 }
 
 int StoredConfigFile::maxintkey() const
@@ -170,12 +166,10 @@ int StoredConfigFile::maxintkey() const
   {
     return 0;
   }
-  else
-  {
-    ElementsByNum::const_iterator itr = elements_bynum_.end();
-    --itr;
-    return ( *itr ).first;
-  }
+
+  ElementsByNum::const_iterator itr = elements_bynum_.end();
+  --itr;
+  return ( *itr ).first;
 }
 
 time_t StoredConfigFile::modified() const
@@ -220,7 +214,7 @@ void StoredConfigFile::load_tus_scp( const std::string& filename )
     std::string propname, propvalue;
     Clib::splitnamevalue( strbuf, propname, propvalue );
 
-    if ( propname == "" || propname.substr( 0, 2 ) == "//" )
+    if ( propname.empty() || propname.substr( 0, 2 ) == "//" )
       continue;
 
     Bscript::BObjectImp* newimp = Bscript::bobject_from_string( propvalue, 16 );
@@ -299,24 +293,22 @@ ConfigFileRef FindConfigFile( const std::string& filename, const std::string& al
       Core::configurationbuffer.cfgfiles.insert( CfgFiles::value_type( filename, scfg ) );
       return scfg;
     }
-    else
+
+    if ( !Clib::FileExists( filename.c_str() ) )
     {
-      if ( !Clib::FileExists( filename.c_str() ) )
+      if ( Plib::systemstate.config.report_missing_configs )
       {
-        if ( Plib::systemstate.config.report_missing_configs )
-        {
-          DEBUGLOGLN( "Config File {} does not exist.", filename );
-        }
-        return ConfigFileRef( nullptr );
+        DEBUGLOGLN( "Config File {} does not exist.", filename );
       }
-
-      Clib::ConfigFile cf( filename.c_str() );
-
-      ref_ptr<StoredConfigFile> scfg( new StoredConfigFile() );
-      scfg->load( cf );
-      Core::configurationbuffer.cfgfiles.insert( CfgFiles::value_type( filename, scfg ) );
-      return scfg;
+      return ConfigFileRef( nullptr );
     }
+
+    Clib::ConfigFile cf( filename.c_str() );
+
+    ref_ptr<StoredConfigFile> scfg( new StoredConfigFile() );
+    scfg->load( cf );
+    Core::configurationbuffer.cfgfiles.insert( CfgFiles::value_type( filename, scfg ) );
+    return scfg;
   }
   catch ( std::exception& ex )
   {
@@ -353,10 +345,8 @@ int UnloadConfigFile( const std::string& filename )
 
     return ( *itr ).second->count() - 1;
   }
-  else
-  {
-    return -1;
-  }
+
+  return -1;
 }
 
 #ifdef MEMORYLEAK
@@ -370,5 +360,4 @@ void ConfigFiles_log_stuff()
            Core::configurationbuffer.oldcfgfiles.size() );
 }
 #endif
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

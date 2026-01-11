@@ -21,13 +21,11 @@
 #include "ufunc.h"
 
 
-namespace Pol
-{
-namespace Core
+namespace Pol::Core
 {
 ObjectHash::ObjectHash() : hash(), reap_iterator( hash.end() ){};
 
-ObjectHash::~ObjectHash(){};
+ObjectHash::~ObjectHash() = default;
 
 bool ObjectHash::Insert( UObject* obj )
 {
@@ -56,8 +54,7 @@ UObject* ObjectHash::Find( u32 serial )
   OH_iterator itr = hash.find( serial );
   if ( itr != hash.end() )
     return ( itr->second ).get();
-  else
-    return nullptr;
+  return nullptr;
 }
 
 u32 ObjectHash::GetNextUnusedItemSerial()
@@ -77,7 +74,7 @@ u32 ObjectHash::GetNextUnusedItemSerial()
       tempserial++;
       continue;
     }
-    else if ( dirty_deleted.count( tempserial ) )
+    if ( dirty_deleted.count( tempserial ) )
     {
       tempserial++;
       continue;
@@ -112,7 +109,7 @@ u32 ObjectHash::GetNextUnusedCharSerial()
       tempserial++;
       continue;
     }
-    else if ( dirty_deleted.find( tempserial ) != dirty_deleted.end() )
+    if ( dirty_deleted.find( tempserial ) != dirty_deleted.end() )
     {
       tempserial++;
       continue;
@@ -280,5 +277,4 @@ size_t ObjectHash::estimateSize() const
   size += Clib::memsize( hash );
   return size;
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

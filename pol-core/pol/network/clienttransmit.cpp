@@ -1,18 +1,19 @@
 #include "clienttransmit.h"
 
+#include <memory>
+
 #include "../../clib/esignal.h"
 #include "../../clib/rawtypes.h"
 #include "../globals/network.h"
 #include "../polsem.h"
 #include "client.h"
 
-namespace Pol
-{
-namespace Network
+
+namespace Pol::Network
 {
 ClientTransmit::ClientTransmit() : _transmitqueue() {}
 
-ClientTransmit::~ClientTransmit() {}
+ClientTransmit::~ClientTransmit() = default;
 
 void ClientTransmit::Cancel()
 {
@@ -21,7 +22,7 @@ void ClientTransmit::Cancel()
 void ClientTransmit::AddToQueue( Client* client, const void* data, int len )
 {
   const u8* message = static_cast<const u8*>( data );
-  auto transmitdata = TransmitDataSPtr( new TransmitData );
+  auto transmitdata = std::make_unique<TransmitData>();
   transmitdata->client = client->getWeakPtr();
   transmitdata->len = len;
   transmitdata->data.assign( message, message + len );
@@ -31,7 +32,7 @@ void ClientTransmit::AddToQueue( Client* client, const void* data, int len )
 
 void ClientTransmit::QueueDisconnection( Client* client )
 {
-  auto transmitdata = TransmitDataSPtr( new TransmitData );
+  auto transmitdata = std::make_unique<TransmitData>();
   transmitdata->disconnects = true;
   transmitdata->client = client->getWeakPtr();
   _transmitqueue.push_move( std::move( transmitdata ) );
@@ -39,7 +40,7 @@ void ClientTransmit::QueueDisconnection( Client* client )
 
 void ClientTransmit::QueueDelete( Client* client )
 {
-  auto transmitdata = TransmitDataSPtr( new TransmitData );
+  auto transmitdata = std::make_unique<TransmitData>();
   transmitdata->remove = true;
   transmitdata->client = client->getWeakPtr();
   _transmitqueue.push_move( std::move( transmitdata ) );
@@ -83,5 +84,4 @@ void ClientTransmitThread()
     }
   }
 }
-}  // namespace Network
-}  // namespace Pol
+}  // namespace Pol::Network

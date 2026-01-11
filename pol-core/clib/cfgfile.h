@@ -24,9 +24,8 @@
 
 #include "maputil.h"
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 class ConfigElem;
 class ConfigElemBase;
@@ -34,7 +33,7 @@ class ConfigElemBase;
 class ConfigSource
 {
 public:
-  virtual ~ConfigSource() {}
+  virtual ~ConfigSource() = default;
   virtual void display_error( const std::string& msg, bool show_curline = true,
                               const ConfigElemBase* elem = nullptr, bool error = true ) const = 0;
 };
@@ -44,7 +43,7 @@ class ConfigFile : public ConfigSource
 public:
   explicit ConfigFile( const char* filename = nullptr, const char* allowed_types = nullptr );
   explicit ConfigFile( const std::string& filename, const char* allowed_types = nullptr );
-  virtual ~ConfigFile();
+  ~ConfigFile() override;
 
   void open( const char* i_filename );
 
@@ -63,9 +62,8 @@ protected:
   bool readline( std::string& strbuf );
   bool read_properties( ConfigElem& elem );
   bool _read( ConfigElem& elem );
-  virtual void display_error( const std::string& msg, bool show_curline = true,
-                              const ConfigElemBase* elem = nullptr,
-                              bool error = true ) const override;
+  void display_error( const std::string& msg, bool show_curline = true,
+                      const ConfigElemBase* elem = nullptr, bool error = true ) const override;
   [[noreturn]] void display_and_rethrow_exception();
   void register_allowed_type( const char* allowed_type );
 
@@ -81,16 +79,16 @@ private:
   int _element_line_start;  // what line in the file did this elem start on?
   int _cur_line;
 
-  typedef std::set<std::string, ci_cmp_pred> AllowedTypesCont;
+  using AllowedTypesCont = std::set<std::string, ci_cmp_pred>;
   AllowedTypesCont allowed_types_;
 };
 
 class StubConfigSource : public ConfigSource
 {
 public:
-  virtual void display_error( const std::string& msg, bool show_curline, const ConfigElemBase* elem,
-                              bool error ) const override;
+  void display_error( const std::string& msg, bool show_curline, const ConfigElemBase* elem,
+                      bool error ) const override;
 };
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib
+
 #endif

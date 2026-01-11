@@ -30,9 +30,8 @@
 // Uses std new and delete instead if you turn it off
 #define USE_FSA_MEMORY 1
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 // The AStar search class. UserState is the users state space type
 template <class UserState>
@@ -69,8 +68,8 @@ public:
   };
 
 
-  typedef std::vector<Node*> NodeVector;
-  typedef typename NodeVector::iterator NodeVectorIterator;
+  using NodeVector = std::vector<Node*>;
+  using NodeVectorIterator = typename NodeVector::iterator;
   // For sorting the heap the STL needs compare function that lets us compare
   // the f value of two nodes
   class HeapCompare_f
@@ -444,10 +443,8 @@ public:  // methods
     {
       return &m_Start->m_UserState;
     }
-    else
-    {
-      return nullptr;
-    }
+
+    return nullptr;
   }
 
   // Get next node
@@ -474,10 +471,8 @@ public:  // methods
     {
       return &m_Goal->m_UserState;
     }
-    else
-    {
-      return nullptr;
-    }
+
+    return nullptr;
   }
 
   // Step solution iterator backwards
@@ -723,7 +718,7 @@ private:  // data
 
   bool m_CancelRequest;
 };
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib
+
 
 #endif  // defined STLASTAR_H

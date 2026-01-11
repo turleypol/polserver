@@ -34,9 +34,8 @@
 #include "uobject.h"
 #include "uoexec.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 Map::Map( const Items::MapDesc& mapdesc )
     : Item( mapdesc, UOBJ_CLASS::CLASS_ITEM ),
@@ -108,8 +107,7 @@ void Map::readProperties( Clib::ConfigElem& elem )
     pinval = elem.remove_string( search_string.c_str() );
     sscanf( pinval.c_str(), "%i,%i", &px, &py );
 
-    pin_points.push_back(
-        Pos2d( static_cast<unsigned short>( px ), static_cast<unsigned short>( py ) ) );
+    pin_points.emplace_back( static_cast<unsigned short>( px ), static_cast<unsigned short>( py ) );
   }
 }
 
@@ -211,10 +209,8 @@ Bscript::BObjectImp* Map::script_method_id( const int id, UOExecutor& ex )
 
       return new BLong( 1 );
     }
-    else
-    {
-      return new BError( "Invalid parameter type" );
-    }
+
+    return new BError( "Invalid parameter type" );
   }
 
   case MTH_APPENDPIN:
@@ -226,10 +222,8 @@ Bscript::BObjectImp* Map::script_method_id( const int id, UOExecutor& ex )
       pin_points.push_back( pin );
       return new BLong( 1 );
     }
-    else
-    {
-      return new BError( "Invalid parameter type" );
-    }
+
+    return new BError( "Invalid parameter type" );
   }
 
   case MTH_ERASEPIN:
@@ -244,10 +238,8 @@ Bscript::BObjectImp* Map::script_method_id( const int id, UOExecutor& ex )
       pin_points.erase( itr );
       return new BLong( 1 );
     }
-    else
-    {
-      return new BError( "Index Out of Range" );
-    }
+
+    return new BError( "Index Out of Range" );
   }
 
   default:
@@ -265,8 +257,7 @@ Bscript::BObjectImp* Map::script_method( const char* methodname, UOExecutor& ex 
   Bscript::ObjMethod* objmethod = Bscript::getKnownObjMethod( methodname );
   if ( objmethod != nullptr )
     return this->script_method_id( objmethod->id, ex );
-  else
-    return nullptr;
+  return nullptr;
 }
 
 Range2d Map::getrange() const
@@ -428,5 +419,4 @@ void handle_map_pin( Network::Client* client, PKTBI_56* msg )
     break;
   }
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

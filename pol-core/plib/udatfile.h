@@ -11,9 +11,8 @@
 
 #include "clidata.h"
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 struct StaticRec
 {
@@ -36,7 +35,7 @@ struct StaticRec
   }
 };
 
-typedef std::vector<StaticRec> StaticList;
+using StaticList = std::vector<StaticRec>;
 
 // TODO: the functions below are only used for uotool or uoconvert. Consider moving to a separate
 // include.
@@ -44,6 +43,6 @@ void readstatics( StaticList& vec, unsigned short x, unsigned short y );
 void readstatics( StaticList& vec, unsigned short x, unsigned short y, unsigned int flags );
 void readallstatics( StaticList& vec, unsigned short x, unsigned short y );
 bool findstatic( unsigned short x, unsigned short y, unsigned short graphic );
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib
+
 #endif

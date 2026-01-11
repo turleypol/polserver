@@ -21,9 +21,8 @@
 #include "impstr.h"
 #include "objmethods.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 BStruct::BStruct() : BObjectImp( OTStruct ), contents_() {}
 
@@ -118,7 +117,7 @@ class BStructIterator final : public ContIterator
 {
 public:
   BStructIterator( BStruct* pDict, BObject* pIterVal );
-  virtual BObject* step() override;
+  BObject* step() override;
 
 private:
   BObject m_StructObj;
@@ -151,21 +150,19 @@ BObject* BStructIterator::step()
     BObjectRef& oref = ( *itr ).second;
     return oref.get();
   }
-  else
-  {
-    auto itr = m_pStruct->contents_.find( key );
-    if ( itr == m_pStruct->contents_.end() )
-      return nullptr;
-    ++itr;
-    if ( itr == m_pStruct->contents_.end() )
-      return nullptr;
 
-    key = ( *itr ).first;
-    m_IterVal->setimp( new String( key ) );
+  auto itr = m_pStruct->contents_.find( key );
+  if ( itr == m_pStruct->contents_.end() )
+    return nullptr;
+  ++itr;
+  if ( itr == m_pStruct->contents_.end() )
+    return nullptr;
 
-    BObjectRef& oref = ( *itr ).second;
-    return oref.get();
-  }
+  key = ( *itr ).first;
+  m_IterVal->setimp( new String( key ) );
+
+  BObjectRef& oref = ( *itr ).second;
+  return oref.get();
 }
 
 ContIterator* BStruct::createIterator( BObject* pIterVal )
@@ -196,12 +193,10 @@ BObjectRef BStruct::set_member( const char* membername, BObjectImp* value, bool 
     oref->setimp( target );
     return oref;
   }
-  else
-  {
-    BObjectRef ref( new BObject( target ) );
-    contents_[key] = ref;
-    return ref;
-  }
+
+  BObjectRef ref( new BObject( target ) );
+  contents_[key] = ref;
+  return ref;
 }
 
 // used programmatically
@@ -214,10 +209,8 @@ const BObjectImp* BStruct::FindMember( const char* name )
   {
     return ( *itr ).second->impptr();
   }
-  else
-  {
-    return nullptr;
-  }
+
+  return nullptr;
 }
 
 BObjectRef BStruct::get_member( const char* membername )
@@ -229,10 +222,8 @@ BObjectRef BStruct::get_member( const char* membername )
   {
     return ( *itr ).second;
   }
-  else
-  {
-    return BObjectRef( UninitObject::create() );
-  }
+
+  return BObjectRef( UninitObject::create() );
 }
 
 BObjectRef BStruct::OperSubscript( const BObject& obj )
@@ -247,10 +238,8 @@ BObjectRef BStruct::OperSubscript( const BObject& obj )
       BObjectRef& oref = ( *itr ).second;
       return oref;
     }
-    else
-    {
-      return BObjectRef( UninitObject::create() );
-    }
+
+    return BObjectRef( UninitObject::create() );
   }
   else if ( obj->isa( OTLong ) )
   {
@@ -275,11 +264,9 @@ BObjectImp* BStruct::array_assign( BObjectImp* idx, BObjectImp* target, bool cop
       oref->setimp( new_target );
       return new_target;
     }
-    else
-    {
-      contents_[key->value()].set( new BObject( new_target ) );
-      return new_target;
-    }
+
+    contents_[key->value()].set( new BObject( new_target ) );
+    return new_target;
   }
   else if ( idx->isa( OTLong ) )
   {
@@ -382,8 +369,7 @@ BObjectImp* BStruct::call_method( const char* methodname, Executor& ex )
   ObjMethod* objmethod = getKnownObjMethod( methodname );
   if ( objmethod != nullptr )
     return this->call_method_id( objmethod->id, ex );
-  else
-    return nullptr;
+  return nullptr;
 }
 
 void BStruct::packonto( std::ostream& os ) const
@@ -433,10 +419,8 @@ BObjectRef BStruct::operDotPlus( const char* name )
     contents_[key] = BObjectRef( pnewobj );
     return BObjectRef( pnewobj );
   }
-  else
-  {
-    return BObjectRef( new BError( "Member already exists" ) );
-  }
+
+  return BObjectRef( new BError( "Member already exists" ) );
 }
 
 BObjectRef BStruct::operDotMinus( const char* name )
@@ -457,5 +441,4 @@ const BStruct::Contents& BStruct::contents() const
 {
   return contents_;
 }
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript

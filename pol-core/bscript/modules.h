@@ -6,11 +6,10 @@
 
 #ifndef __MODULES_H
 #define __MODULES_H
-namespace Pol
+
+namespace Pol::Bscript
 {
-namespace Bscript
-{
-typedef enum { Mod_Basic } ModuleID;
+using ModuleID = enum { Mod_Basic };
 }
-}
+
 #endif

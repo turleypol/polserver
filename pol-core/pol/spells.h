@@ -68,8 +68,8 @@ public:
 
 private:
   // not implemented:
-  SpellCircle( const SpellCircle& );
-  SpellCircle& operator=( const SpellCircle& );
+  SpellCircle( const SpellCircle& ) = delete;
+  SpellCircle& operator=( const SpellCircle& ) = delete;
 };
 
 
@@ -102,7 +102,7 @@ protected:
   std::string power_words_;
   UACTION action_;
 
-  typedef std::vector<unsigned int> RegList;
+  using RegList = std::vector<unsigned int>;
   RegList reglist_;
   USpellParams params_;
 
@@ -154,12 +154,12 @@ class SpellTask : public OneShotTask
 public:
   SpellTask( OneShotTask** handle, polclock_t run_when, Mobile::Character* caster, USpell* spell,
              bool dummy );
-  virtual void on_run() override;
+  void on_run() override;
 
 private:
   CharacterRef caster_;
   USpell* spell_;
 };
-}
-}
+}  // namespace Core
+}  // namespace Pol
 #endif

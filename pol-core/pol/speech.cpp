@@ -13,6 +13,7 @@
 #include <cctype>
 #include <cstddef>
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "../bscript/bobject.h"
@@ -41,9 +42,8 @@
 #include "ufuncstd.h"
 #include "uworld.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 void handle_processed_speech( Network::Client* client, const std::string& text, u8 type, u16 color,
                               u16 font )
@@ -423,7 +423,7 @@ void UnicodeSpeechHandler( Network::Client* client, PKTIN_AD* msgin )
 
   if ( msgin->type & 0xc0 )
   {
-    speechtokens.reset( new Bscript::ObjArray() );
+    speechtokens = std::make_unique<Bscript::ObjArray>();
     for ( u16 j = 0; j < numtokens; j++ )
     {
       speechtokens->addElement(
@@ -440,5 +440,4 @@ void UnicodeSpeechHandler( Network::Client* client, PKTIN_AD* msgin )
 
   SendUnicodeSpeech( client, msgin, text, std::move( speechtokens ) );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

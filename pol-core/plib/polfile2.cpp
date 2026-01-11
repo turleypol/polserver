@@ -15,9 +15,8 @@
 #include "systemstate.h"
 #include "tiles.h"
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 unsigned char tilelayer( unsigned short tilenum )
 {
@@ -25,10 +24,8 @@ unsigned char tilelayer( unsigned short tilenum )
   {
     return systemstate.tile[tilenum].layer;
   }
-  else
-  {
-    return 0;
-  }
+
+  return 0;
 }
 
 char tileheight( unsigned short tilenum )
@@ -40,10 +37,8 @@ char tileheight( unsigned short tilenum )
       height /= 2;
     return height;
   }
-  else
-  {
-    return 0;
-  }
+
+  return 0;
 }
 
 u32 tile_flags( unsigned short tilenum )
@@ -52,10 +47,8 @@ u32 tile_flags( unsigned short tilenum )
   {
     return systemstate.tile[tilenum].flags;
   }
-  else
-  {
-    return 0;
-  }
+
+  return 0;
 }
 
 u32 tile_uoflags( unsigned short tilenum )
@@ -64,10 +57,8 @@ u32 tile_uoflags( unsigned short tilenum )
   {
     return systemstate.tile[tilenum].uoflags;
   }
-  else
-  {
-    return 0;
-  }
+
+  return 0;
 }
 
 std::string tile_desc( unsigned short tilenum )
@@ -76,10 +67,8 @@ std::string tile_desc( unsigned short tilenum )
   {
     return systemstate.tile[tilenum].desc;
   }
-  else  // a multi, probably
-  {
-    return "multi";
-  }
+  // a multi, probably
+  return "multi";
 }
 
 unsigned short tileweight( unsigned short tilenum )
@@ -88,10 +77,7 @@ unsigned short tileweight( unsigned short tilenum )
   {
     return systemstate.tile[tilenum].weight;
   }
-  else
-  {
-    return 0;
-  }
+
+  return 0;
 }
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib

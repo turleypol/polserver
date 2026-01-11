@@ -27,9 +27,10 @@
 #include "../uoscrobj.h"
 #include <module_defs/guilds.h>
 
-namespace Pol
-{
-namespace Module
+#include <memory>
+
+
+namespace Pol::Module
 {
 using namespace Bscript;
 using UOExecutor = Core::UOExecutor;
@@ -95,7 +96,7 @@ BObjectRef EGuildRefObjImp::get_member_id( const int id )  // id test
   case MBR_MEMBERS:
   {
     std::unique_ptr<ObjArray> arr;
-    arr.reset( new ObjArray );
+    arr = std::make_unique<ObjArray>();
     for ( Core::SerialSet::iterator itr = obj_->_member_serials.begin();
           itr != obj_->_member_serials.end();
           /* do this earlier */ )
@@ -120,7 +121,7 @@ BObjectRef EGuildRefObjImp::get_member_id( const int id )  // id test
   case MBR_ALLYGUILDS:
   {
     std::unique_ptr<ObjArray> arr;
-    arr.reset( new ObjArray );
+    arr = std::make_unique<ObjArray>();
     for ( Core::SerialSet::iterator itr = obj_->_allyguild_serials.begin();
           itr != obj_->_allyguild_serials.end();
           /* do this earlier */ )
@@ -146,7 +147,7 @@ BObjectRef EGuildRefObjImp::get_member_id( const int id )  // id test
   case MBR_ENEMYGUILDS:
   {
     std::unique_ptr<ObjArray> arr;
-    arr.reset( new ObjArray );
+    arr = std::make_unique<ObjArray>();
     for ( Core::SerialSet::iterator itr = obj_->_enemyguild_serials.begin();
           itr != obj_->_enemyguild_serials.end();
           /* do this earlier */ )
@@ -183,8 +184,7 @@ BObjectRef EGuildRefObjImp::get_member( const char* membername )
   ObjMember* objmember = getKnownObjMember( membername );
   if ( objmember != nullptr )
     return this->get_member_id( objmember->id );
-  else
-    return BObjectRef( UninitObject::create() );
+  return BObjectRef( UninitObject::create() );
 }
 
 BObjectImp* EGuildRefObjImp::call_polmethod_id( const int id, UOExecutor& ex, bool forcebuiltin )
@@ -221,8 +221,7 @@ BObjectImp* EGuildRefObjImp::call_polmethod_id( const int id, UOExecutor& ex, bo
     if ( getGuildParam( ex, 0, allyguild, err ) )
       return new BLong(
           static_cast<int>( obj_->_allyguild_serials.count( allyguild->guildid() ) ) );
-    else
-      return err;
+    return err;
   }
 
   case MTH_ISENEMYGUILD:
@@ -234,8 +233,7 @@ BObjectImp* EGuildRefObjImp::call_polmethod_id( const int id, UOExecutor& ex, bo
     if ( getGuildParam( ex, 0, enemyguild, err ) )
       return new BLong(
           static_cast<int>( obj_->_enemyguild_serials.count( enemyguild->guildid() ) ) );
-    else
-      return err;
+    return err;
   }
 
   case MTH_ADDMEMBER:
@@ -279,8 +277,7 @@ BObjectImp* EGuildRefObjImp::call_polmethod_id( const int id, UOExecutor& ex, bo
 
       return new BLong( 1 );
     }
-    else
-      return err;
+    return err;
   }
 
   case MTH_ADDENEMYGUILD:
@@ -305,8 +302,7 @@ BObjectImp* EGuildRefObjImp::call_polmethod_id( const int id, UOExecutor& ex, bo
 
       return new BLong( 1 );
     }
-    else
-      return err;
+    return err;
   }
 
   case MTH_REMOVEMEMBER:
@@ -348,8 +344,7 @@ BObjectImp* EGuildRefObjImp::call_polmethod_id( const int id, UOExecutor& ex, bo
 
       return new BLong( 1 );
     }
-    else
-      return err;
+    return err;
   }
 
   case MTH_REMOVEENEMYGUILD:
@@ -372,8 +367,7 @@ BObjectImp* EGuildRefObjImp::call_polmethod_id( const int id, UOExecutor& ex, bo
 
       return new BLong( 1 );
     }
-    else
-      return err;
+    return err;
   }
   default:
   {
@@ -387,7 +381,7 @@ BObjectImp* EGuildRefObjImp::call_polmethod( const char* methodname, UOExecutor&
 {
   if ( obj_->_disbanded )
     return new BError( "Guild has disbanded" );
-  bool forcebuiltin{Executor::builtinMethodForced( methodname )};
+  bool forcebuiltin{ Executor::builtinMethodForced( methodname ) };
   Bscript::ObjMethod* objmethod = Bscript::getKnownObjMethod( methodname );
   if ( objmethod != nullptr )
     return call_polmethod_id( objmethod->id, ex, forcebuiltin );
@@ -446,10 +440,8 @@ BObjectImp* GuildExecutorModule::mf_DestroyGuild()
     Core::gamestate.guilds.erase( guild->guildid() );
     return new BLong( 1 );
   }
-  else
-  {
-    return err;
-  }
+
+  return err;
 }
 
 ///  FindGuild( guildid );
@@ -461,13 +453,11 @@ BObjectImp* GuildExecutorModule::mf_FindGuild()
     Core::Guilds::iterator itr = Core::gamestate.guilds.find( guildid );
     if ( itr != Core::gamestate.guilds.end() )
       return new EGuildRefObjImp( ref_ptr<Core::Guild>( ( *itr ).second.get() ) );
-    else
-      return new BError( "Guild not found" );
+    return new BError( "Guild not found" );
   }
   else
   {
     return new BError( "Invalid parameter type" );
   }
 }
-}  // namespace Module
-}  // namespace Pol
+}  // namespace Pol::Module

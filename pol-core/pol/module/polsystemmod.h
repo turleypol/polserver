@@ -10,14 +10,13 @@
 
 #include "../polmodl.h"
 #include "../polobject.h"
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 class BObjectImp;
 class Executor;
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript
+
 
 namespace Pol
 {
@@ -39,19 +38,18 @@ private:
 };
 
 // typedef BApplicObj< ref_ptr<Package> > PackageObjImpBase;
-typedef Core::PolApplicObj<PackagePtrHolder> PackageObjImpBase;
+using PackageObjImpBase = Core::PolApplicObj<PackagePtrHolder>;
 class PackageObjImp final : public PackageObjImpBase
 {
-  typedef PackageObjImpBase base;
+  using base = PackageObjImpBase;
 
 public:
   explicit PackageObjImp( const PackagePtrHolder& other );
-  virtual const char* typeOf() const override;
-  virtual u8 typeOfInt() const override;
-  virtual Bscript::BObjectImp* copy() const override;
-  virtual Bscript::BObjectImp* call_polmethod( const char* methodname,
-                                               Core::UOExecutor& ex ) override;
-  virtual Bscript::BObjectRef get_member( const char* membername ) override;
+  const char* typeOf() const override;
+  u8 typeOfInt() const override;
+  Bscript::BObjectImp* copy() const override;
+  Bscript::BObjectImp* call_polmethod( const char* methodname, Core::UOExecutor& ex ) override;
+  Bscript::BObjectRef get_member( const char* membername ) override;
 };
 
 class PolSystemExecutorModule

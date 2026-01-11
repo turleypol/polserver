@@ -16,9 +16,8 @@
 
 #include <module_defs/cliloc.h>
 
-namespace Pol
-{
-namespace Module
+
+namespace Pol::Module
 {
 using namespace Bscript;
 
@@ -49,10 +48,8 @@ BObjectImp* ClilocExecutorModule::mf_SendSysMessageCL()
     Core::send_sysmessage_cl( chr->client, cliloc_num, text->value(), font, color );
     return new BLong( 1 );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* ClilocExecutorModule::mf_PrintTextAboveCL()
@@ -74,10 +71,8 @@ BObjectImp* ClilocExecutorModule::mf_PrintTextAboveCL()
     say_above_cl( obj, cliloc_num, text->value(), font, color );
     return new BLong( 1 );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* ClilocExecutorModule::mf_PrintTextAbovePrivateCL()
@@ -106,10 +101,7 @@ BObjectImp* ClilocExecutorModule::mf_PrintTextAbovePrivateCL()
     private_say_above_cl( chr, obj, cliloc_num, text->value(), font, color );
     return new BLong( 1 );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
-}  // namespace Module
-}  // namespace Pol
+}  // namespace Pol::Module

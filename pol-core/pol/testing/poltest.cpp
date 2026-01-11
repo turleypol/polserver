@@ -13,9 +13,8 @@
 #include <benchmark/benchmark.h>
 #endif
 
-namespace Pol
-{
-namespace Testing
+
+namespace Pol::Testing
 {
 #define RUNTEST( t )               \
   INFO_PRINTLN( " - {}", ( #t ) ); \
@@ -61,5 +60,4 @@ bool run_pol_tests()
   return UnitTest::result();
 }
 
-}  // namespace Testing
-}  // namespace Pol
+}  // namespace Pol::Testing

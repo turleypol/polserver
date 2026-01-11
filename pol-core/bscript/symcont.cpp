@@ -15,9 +15,8 @@
 #include "../clib/logfacility.h"
 #include "../clib/strutil.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 SymbolContainer::SymbolContainer( int PgrowBy )
 {
@@ -200,13 +199,13 @@ void StoredTokenContainer::atGet1( unsigned position, StoredToken& sToken ) cons
   sToken = *st;
 }
 
-void StoredTokenContainer::pack( void )
+void StoredTokenContainer::pack()
 {
   SymbolContainer::pack();
   ST = (StoredToken*)s;
 }
 
-void* StoredTokenContainer::detach( void )
+void* StoredTokenContainer::detach()
 {
   void* d = SymbolContainer::detach();
   ST = nullptr;
@@ -219,5 +218,4 @@ void StoredTokenContainer::resize( unsigned lengthToAdd )
   ST = (StoredToken*)s;
 }
 
-}
-}
+}  // namespace Pol::Bscript

@@ -22,9 +22,8 @@
 #include "../sqlscrobj.h"
 #include "../uoclient.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 NetworkManager networkManager;
 
@@ -70,7 +69,7 @@ NetworkManager::NetworkManager()
   curl_global_init( CURL_GLOBAL_DEFAULT );
 }
 
-NetworkManager::~NetworkManager() {}
+NetworkManager::~NetworkManager() = default;
 void NetworkManager::kill_disconnected_clients()
 {
   Clients::iterator itr = clients.begin();
@@ -197,5 +196,4 @@ NetworkManager::Memory NetworkManager::estimateSize() const
   usage.misc += Clib::memsize( banned_ips );
   return usage;
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

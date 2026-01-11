@@ -86,9 +86,8 @@
 #include "uoclient.h"
 #include "uworld.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 using namespace Network;
 using namespace Mobile;
@@ -107,19 +106,19 @@ void SetCurrentCharSerialNumber( u32 serial )
 }
 
 // Dave added 3/8/3
-u32 GetCurrentItemSerialNumber( void )
+u32 GetCurrentItemSerialNumber()
 {
   return stateManager.itemserialnumber;
 }
 
 // Dave added 3/8/3
-u32 GetCurrentCharSerialNumber( void )
+u32 GetCurrentCharSerialNumber()
 {
   return stateManager.charserialnumber;
 }
 
 // Dave changed 3/8/3 to use objecthash
-u32 GetNextSerialNumber( void )
+u32 GetNextSerialNumber()
 {
   u32 nextserial = objStorageManager.objecthash.GetNextUnusedCharSerial();
   stateManager.charserialnumber = nextserial;
@@ -142,7 +141,7 @@ u32 UseItemSerialNumber( u32 serial )
 }
 
 // Dave changed 3/8/3 to use objecthash
-u32 GetNewItemSerialNumber( void )
+u32 GetNewItemSerialNumber()
 {
   u32 nextserial = objStorageManager.objecthash.GetNextUnusedItemSerial();
   stateManager.itemserialnumber = nextserial;
@@ -908,8 +907,7 @@ UContainer* find_legal_container( const Character* chr, u32 serial )
       chr->search_remote_containers( serial, nullptr /* don't care if it's a remote container */ );
   if ( item != nullptr && item->isa( UOBJ_CLASS::CLASS_CONTAINER ) )
     return static_cast<UContainer*>( item );
-  else
-    return nullptr;
+  return nullptr;
 }
 
 Item* find_snoopable_item( u32 serial, Character** pchr )
@@ -1628,11 +1626,10 @@ void subtract_amount_from_item( Item* item, unsigned short amount )
     destroy_item( item );
     return;  // destroy_item will update character weight if item is carried.
   }
-  else
-  {
-    item->subamount( amount );
-    update_item_to_inrange( item );
-  }
+
+  item->subamount( amount );
+  update_item_to_inrange( item );
+
   // DAVE added this 11/17: if in a Character's pack, update weight.
   UpdateCharacterWeight( item );
 }
@@ -1929,11 +1926,11 @@ void send_move_mobile_to_nearby_cansee( const Character* chr, bool send_health_b
   std::unique_ptr<HealthBarStatusUpdate> msgpoisoned;
   std::unique_ptr<HealthBarStatusUpdate> msginvul;
   if ( chr->poisoned() || send_health_bar_status_update )
-    msgpoisoned.reset( new HealthBarStatusUpdate(
-        chr->serial_ext, HealthBarStatusUpdate::Color::GREEN, chr->poisoned() ) );
+    msgpoisoned = std::make_unique<HealthBarStatusUpdate>(
+        chr->serial_ext, HealthBarStatusUpdate::Color::GREEN, chr->poisoned() );
   if ( chr->invul() || send_health_bar_status_update )
-    msginvul.reset( new HealthBarStatusUpdate(
-        chr->serial_ext, HealthBarStatusUpdate::Color::YELLOW, chr->invul() ) );
+    msginvul = std::make_unique<HealthBarStatusUpdate>(
+        chr->serial_ext, HealthBarStatusUpdate::Color::YELLOW, chr->invul() );
   WorldIterator<OnlinePlayerFilter>::InMaxVisualRange(
       chr,
       [&]( Character* zonechr )
@@ -2184,5 +2181,4 @@ void send_buff_message( Character* chr, u16 icon, bool show, u16 duration, u32 c
 
   msg.Send( chr->client, len );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

@@ -11,9 +11,8 @@
 
 #include <stdexcept>
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 ConfigSection::ConfigSection( ConfigFile& cf, const std::string& sectname, unsigned flags )
     : _cf( cf ), _sectname( sectname ), _found( false ), _flags( flags )
@@ -42,10 +41,7 @@ bool ConfigSection::matches( const ConfigElem& elem )
     _found = true;
     return true;
   }
-  else
-  {
-    return false;
-  }
+
+  return false;
 }
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib

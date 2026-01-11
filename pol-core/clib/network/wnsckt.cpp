@@ -42,9 +42,8 @@ typedef int socklen_t;
 #ifndef SCK_WATCH
 #define SCK_WATCH 0
 #endif
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 Socket::Socket() : _sck( INVALID_SOCKET ), _options( none )
 {
@@ -112,8 +111,7 @@ std::string Socket::getpeername() const
     struct sockaddr_in* in_addr = (struct sockaddr_in*)&client_addr;
     if ( client_addr.sa_family == AF_INET )
       return inet_ntoa( in_addr->sin_addr );
-    else
-      return "(display error)";
+    return "(display error)";
   }
   else
     return "Error retrieving peer name";
@@ -163,16 +161,14 @@ bool Socket::open( const char* ipaddr, unsigned short port )
   {
     return true;
   }
-  else
-  {
+
 #ifdef _WIN32
-    closesocket( _sck );
+  closesocket( _sck );
 #else
-    ::close( _sck );
+  ::close( _sck );
 #endif
-    _sck = INVALID_SOCKET;
-    return false;
-  }
+  _sck = INVALID_SOCKET;
+  return false;
 }
 
 void Socket::disable_nagle()
@@ -307,11 +303,9 @@ bool Socket::accept( SOCKET* s, unsigned int /*mstimeout*/ )
     apply_socket_options( *s );
     return true;
   }
-  else
-  {
-    *s = INVALID_SOCKET;
-    return false;
-  }
+
+  *s = INVALID_SOCKET;
+  return false;
 }
 
 bool Socket::accept( Socket* newsocket )
@@ -413,7 +407,7 @@ bool Socket::recvbyte( unsigned char* ch, unsigned int waitms )
 #endif
     return true;
   }
-  else if ( res == 0 )
+  if ( res == 0 )
   {
 #if SCK_WATCH
     INFO_PRINTLN( "{CLOSE}" );
@@ -563,7 +557,7 @@ unsigned Socket::peek( void* vdest, unsigned len, unsigned int wait_sec )
   {
     return res;
   }
-  else if ( res == 0 )
+  if ( res == 0 )
   {
 #if SCK_WATCH
     INFO_PRINTLN( "{CLOSE}" );
@@ -594,12 +588,10 @@ void Socket::send( const void* vdata, unsigned datalen )
         // FIXME sleep
         continue;
       }
-      else
-      {
-        INFO_PRINTLN( "Socket::send() error: {}", sckerr );
-        HandleError();
-        return;
-      }
+
+      INFO_PRINTLN( "Socket::send() error: {}", sckerr );
+      HandleError();
+      return;
     }
     else
     {
@@ -626,12 +618,10 @@ bool Socket::send_nowait( const void* vdata, unsigned datalen, unsigned* nsent )
         // FIXME sleep
         return false;
       }
-      else
-      {
-        INFO_PRINTLN( "Socket::send_nowait() error: {}", sckerr );
-        HandleError();
-        return true;
-      }
+
+      INFO_PRINTLN( "Socket::send_nowait() error: {}", sckerr );
+      HandleError();
+      return true;
     }
     else
     {
@@ -815,5 +805,4 @@ bool SocketReader::read( std::string& out, bool* timed_out )
 }
 
 
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib

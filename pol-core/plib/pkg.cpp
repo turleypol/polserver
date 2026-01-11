@@ -23,9 +23,8 @@
 #include "systemstate.h"
 
 namespace fs = std::filesystem;
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 bool Package::provides_system_home_page() const
 {
@@ -40,10 +39,8 @@ Package* find_package( const std::string& pkgname )
   {
     return ( *itr ).second;
   }
-  else
-  {
-    return nullptr;
-  }
+
+  return nullptr;
 }
 
 void remove_package( Package* pkg )
@@ -84,7 +81,7 @@ void compare_versions( const std::string& verleft, const std::string& verright, 
       isgreater = true;
       return;
     }
-    else if ( vhavepart < vneedpart )
+    if ( vhavepart < vneedpart )
     {
       return;
     }
@@ -234,17 +231,15 @@ void Package::check_dependencies() const
           name_, dir_, elem.pkgname );
       throw std::runtime_error( "Package dependency error" );
     }
-    else
+
+    if ( !version_greater_or_equal( found->version_, elem.version ) )
     {
-      if ( !version_greater_or_equal( found->version_, elem.version ) )
-      {
-        ERROR_PRINTLN(
-            "Error in package '{}' ({}):\n"
-            "  Package '{}' version {} is required, but version {} "
-            "was found",
-            name_, dir_, elem.pkgname, elem.version, found->version_ );
-        throw std::runtime_error( "Package dependency error" );
-      }
+      ERROR_PRINTLN(
+          "Error in package '{}' ({}):\n"
+          "  Package '{}' version {} is required, but version {} "
+          "was found",
+          name_, dir_, elem.pkgname, elem.version, found->version_ );
+      throw std::runtime_error( "Package dependency error" );
     }
   }
 }
@@ -515,5 +510,4 @@ std::string GetPackageCfgPath( const Package* pkg, const std::string& filename )
 
   return filepath;
 }
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib

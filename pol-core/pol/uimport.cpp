@@ -179,8 +179,7 @@ Items::Item* read_item( Clib::ConfigElem& elem )
     ERROR_PRINTLN( "Unable to create item: objtype={:#x}, serial={:#x}", objtype, serial );
     if ( !Plib::systemstate.config.ignore_load_errors )
       throw std::runtime_error( "Item::create failed!" );
-    else
-      return nullptr;
+    return nullptr;
   }
   item->setposition( Pos4d( item->pos().xyz(), find_realm( "britannia" ) ) );
 
@@ -193,7 +192,7 @@ Items::Item* read_item( Clib::ConfigElem& elem )
 
 #define USE_PARENT_CONTS 1
 
-typedef std::stack<UContainer*> ContStack;
+using ContStack = std::stack<UContainer*>;
 static ContStack parent_conts;
 
 void read_global_item( Clib::ConfigElem& elem, int /*sysfind_flags*/ )
@@ -243,10 +242,8 @@ void read_global_item( Clib::ConfigElem& elem, int /*sysfind_flags*/ )
         cont_item = cont;
         break;
       }
-      else
-      {
-        parent_conts.pop();
-      }
+
+      parent_conts.pop();
     }
 
     if ( cont_item == nullptr )
@@ -720,7 +717,7 @@ void read_starting_locations()
         throw std::runtime_error( "Configuration file error in startloc.cfg." );
       }
     }
-    if ( loc->coords.size() == 0 )
+    if ( loc->coords.empty() )
     {
       ERROR_PRINTLN( "STARTLOC.CFG: StartingLocation ({},{}) has no Coordinate properties.",
                      loc->city, loc->desc );
@@ -773,7 +770,7 @@ void read_gameservers()
     if ( iptext == "--ip--" )
     {
       iptext = networkManager.ipaddr_str;
-      if ( iptext == "" )
+      if ( iptext.empty() )
       {
         INFO_PRINTLN( "Skipping server {} because there is no Internet IP address.", svr->name );
         continue;
@@ -782,7 +779,7 @@ void read_gameservers()
     else if ( iptext == "--lan--" )
     {
       iptext = networkManager.lanaddr_str;
-      if ( iptext == "" )
+      if ( iptext.empty() )
       {
         INFO_PRINTLN( "Skipping server {} because there is no LAN IP address.", svr->name );
         continue;

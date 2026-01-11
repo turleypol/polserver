@@ -36,9 +36,8 @@
 #include <stdexcept>
 #include <string>
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 bool ConsoleCommand::console_locked = true;
 char ConsoleCommand::unlock_char;
@@ -64,7 +63,7 @@ ConsoleCommand::ConsoleCommand( Clib::ConfigElem& elem, const std::string& cmd )
     elem.throw_error( "Ill-formed console command char: " + charspec );
   }
   getline( is, description );
-  while ( description.size() > 0 && isspace( description[0] ) )
+  while ( !description.empty() && isspace( description[0] ) )
   {
     description.erase( 0, 1 );
   }
@@ -88,13 +87,11 @@ std::string getcmdstr( char ch )
     s[2] = '\0';
     return s;
   }
-  else
-  {
-    char s[2];
-    s[0] = ch;
-    s[1] = '\0';
-    return s;
-  }
+
+  char s[2];
+  s[0] = ch;
+  s[1] = '\0';
+  return s;
 }
 
 ConsoleCommand* ConsoleCommand::find_console_command( char ch )
@@ -216,7 +213,7 @@ void ConsoleCommand::exec_console_cmd( char ch )
   catch ( std::string& str )
   {
     ERROR_PRINTLN( "Command aborted due to: {}", str );
-  }                                 // egcs has some trouble realizing 'exception' should catch
+  }  // egcs has some trouble realizing 'exception' should catch
   catch ( std::runtime_error& re )  // runtime_errors, so...
   {
     ERROR_PRINTLN( "Command aborted due to: {}", re.what() );
@@ -248,5 +245,4 @@ void ConsoleCommand::check_console_commands( Clib::KeyboardHook* kb )
   }
 }
 #endif
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

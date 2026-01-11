@@ -22,9 +22,8 @@
 #include <cstdlib>
 #endif
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 bool passert_dump_stack = false;
 bool passert_shutdown = false;
@@ -65,7 +64,7 @@ void passert_failed( const char* expr, const char* file, unsigned line )
 
 void passert_failed( const char* expr, const std::string& reason, const char* file, unsigned line )
 {
-  if ( reason != "" )
+  if ( !reason.empty() )
     POLLOG_ERRORLN( "Assertion Failed: {} ({}), {}, line {}", expr, reason, file, line );
   else
     POLLOG_ERRORLN( "Assertion Failed: {}, {}, line {}", expr, file, line );
@@ -111,17 +110,14 @@ void passert_failed( const char* expr, const std::string& reason, const char* fi
     abort();
   }
 
-  if ( reason != "" )
+  if ( !reason.empty() )
   {
     throw std::runtime_error( "Assertion Failed: " + std::string( expr ) + " (" +
                               std::string( reason ) + "), " + std::string( file ) + ", line " +
                               tostring( line ) );
   }
-  else
-  {
-    throw std::runtime_error( "Assertion Failed: " + std::string( expr ) + ", " +
-                              std::string( file ) + ", line " + tostring( line ) );
-  }
+
+  throw std::runtime_error( "Assertion Failed: " + std::string( expr ) + ", " +
+                            std::string( file ) + ", line " + tostring( line ) );
 }
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib

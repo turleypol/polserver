@@ -33,9 +33,8 @@
 #include "mkscrobj.h"
 #include "ufunc.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 using namespace Bscript;
 
@@ -127,8 +126,7 @@ StorageArea* Storage::find_area( const std::string& name )
   AreaCont::iterator itr = areas.find( name );
   if ( itr == areas.end() )
     return nullptr;
-  else
-    return ( *itr ).second;
+  return ( *itr ).second;
 }
 
 StorageArea* Storage::create_area( const std::string& name )
@@ -140,10 +138,8 @@ StorageArea* Storage::create_area( const std::string& name )
     areas[name] = area;
     return area;
   }
-  else
-  {
-    return ( *itr ).second;
-  }
+
+  return ( *itr ).second;
 }
 
 StorageArea* Storage::create_area( Clib::ConfigElem& elem )
@@ -153,11 +149,9 @@ StorageArea* Storage::create_area( Clib::ConfigElem& elem )
   {
     return create_area( rest );
   }
-  else
-  {
-    std::string name = elem.remove_string( "NAME" );
-    return create_area( name );
-  }
+
+  std::string name = elem.remove_string( "NAME" );
+  return create_area( name );
 }
 
 
@@ -286,7 +280,7 @@ class StorageAreaIterator final : public ContIterator
 {
 public:
   StorageAreaIterator( StorageArea* area, BObject* pIter );
-  virtual BObject* step() override;
+  BObject* step() override;
 
 private:
   BObject* m_pIterVal;
@@ -327,7 +321,7 @@ BObjectRef StorageAreaImp::get_member( const char* membername )
   {
     return BObjectRef( new BLong( static_cast<int>( _area->_items.size() ) ) );
   }
-  else if ( stricmp( membername, "totalcount" ) == 0 )
+  if ( stricmp( membername, "totalcount" ) == 0 )
   {
     unsigned int total = 0;
     for ( StorageArea::Cont::iterator itr = _area->_items.begin(); itr != _area->_items.end();
@@ -346,7 +340,7 @@ class StorageAreasIterator final : public ContIterator
 {
 public:
   StorageAreasIterator( BObject* pIter );
-  virtual BObject* step() override;
+  BObject* step() override;
 
 private:
   BObject* m_pIterVal;
@@ -379,9 +373,9 @@ class StorageAreasImp final : public BObjectImp
 {
 public:
   StorageAreasImp() : BObjectImp( BObjectImp::OTUnknown ) {}
-  virtual BObjectImp* copy() const override { return new StorageAreasImp(); }
-  virtual std::string getStringRep() const override { return "<StorageAreas>"; }
-  virtual size_t sizeEstimate() const override { return sizeof( *this ); }
+  BObjectImp* copy() const override { return new StorageAreasImp(); }
+  std::string getStringRep() const override { return "<StorageAreas>"; }
+  size_t sizeEstimate() const override { return sizeof( *this ); }
   ContIterator* createIterator( BObject* pIterVal ) override
   {
     return new StorageAreasIterator( pIterVal );
@@ -417,12 +411,9 @@ BObjectRef StorageAreasImp::OperSubscript( const BObject& obj )
     {
       return BObjectRef( new BObject( new StorageAreaImp( ( *itr ).second ) ) );
     }
-    else
-    {
-      return BObjectRef( new BObject( new BError( "Storage Area not found" ) ) );
-    }
+
+    return BObjectRef( new BObject( new BError( "Storage Area not found" ) ) );
   }
   return BObjectRef( new BObject( new BError( "Invalid parameter type" ) ) );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

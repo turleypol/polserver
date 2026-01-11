@@ -11,9 +11,8 @@
 #include "../uoexec.h"
 #include "state.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 ScriptScheduler scriptScheduler;
 
@@ -36,7 +35,7 @@ ScriptScheduler::ScriptScheduler()
 {
 }
 
-ScriptScheduler::~ScriptScheduler() {}
+ScriptScheduler::~ScriptScheduler() = default;
 
 // Note, when the program exits, each executor in these queues
 // will be deleted by cleanup_scripts()
@@ -288,7 +287,7 @@ void ScriptScheduler::run_ready()
         }
         continue;
       }
-      else if ( !ex->blocked() )
+      if ( !ex->blocked() )
       {
         THREAD_CHECKPOINT( scripts, 115 );
 
@@ -366,11 +365,9 @@ bool ScriptScheduler::find_exec( unsigned int pid, UOExecutor** exec )
     *exec = ( *itr ).second;
     return true;
   }
-  else
-  {
-    *exec = nullptr;
-    return false;
-  }
+
+  *exec = nullptr;
+  return false;
 }
 
 bool ScriptScheduler::logScriptVariables( const std::string& name ) const
@@ -479,5 +476,4 @@ void ScriptScheduler::free_pid( unsigned int pid )
 {
   pidlist.erase( pid );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

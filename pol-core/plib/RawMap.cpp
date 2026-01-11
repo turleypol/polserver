@@ -10,9 +10,8 @@
 #include <cstring>
 #include <map>
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 USTRUCT_MAPINFO RawMap::get_cell( unsigned int blockidx, unsigned int x_offset,
                                   unsigned int y_offset )
@@ -69,7 +68,7 @@ unsigned int RawMap::load_full_map( FILE* mapfile, FILE* mapdif_file )
   if ( mapfile == nullptr )
     throw std::runtime_error( "load_full_map: mapfile is not open" );
 
-  if ( mapdifl.size() > 0 && mapdif_file == nullptr )
+  if ( !mapdifl.empty() && mapdif_file == nullptr )
     throw std::runtime_error( "load_full_map: mapdifl is loaded but mapdif is not" );
 
   unsigned int block = 0;
@@ -189,5 +188,4 @@ RawMap::RawMap() : is_init( false ), m_mapinfo_vec(), mapdifl(), m_mapwidth( 0 )
 {
 }
 
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib

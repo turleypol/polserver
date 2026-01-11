@@ -64,9 +64,8 @@
 #include "utype.h"
 #include "uworld.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 bool wordicmp::operator()( const std::string& lhs, const std::string& rhs ) const
 {
@@ -590,11 +589,9 @@ bool start_textcmd_script( Network::Client* client, const std::string& text,
           schedule_executor( ex.release() );
           return true;
         }
-        else
-        {
-          ERROR_PRINTLN( "script {}: setProgram failed", scriptname );
-          // TODO: it seems to keep looking until it finds one it can use..guess this is okay?
-        }
+
+        ERROR_PRINTLN( "script {}: setProgram failed", scriptname );
+        // TODO: it seems to keep looking until it finds one it can use..guess this is okay?
       }
     }
   }
@@ -656,5 +653,4 @@ bool process_command( Network::Client* client, const std::string& text,
 
   return false;
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

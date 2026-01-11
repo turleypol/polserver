@@ -19,24 +19,26 @@
 #include <string>
 #include <type_traits>
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 template <typename T>
-typename std::enable_if<std::is_integral<T>::value, std::string>::type hexint( T integer )
+std::string hexint( T integer )
+  requires std::is_integral<T>::value
 {
   using namespace fmt::literals;
   return fmt::format( "{:#x}"_cf, integer );
 }
 template <typename T>
-typename std::enable_if<std::is_enum<T>::value, std::string>::type hexint( T integer )
+std::string hexint( T integer )
+  requires std::is_enum<T>::value
 {
   using namespace fmt::literals;
   return fmt::format( "{:#x}"_cf, fmt::underlying( integer ) );
 }
 template <typename T>
-typename std::enable_if<std::is_integral<T>::value, std::string_view>::type hexintv( T integer )
+std::string_view hexintv( T integer )
+  requires std::is_integral<T>::value
 {
   using namespace fmt::literals;
   static thread_local fmt::memory_buffer buffer;
@@ -45,7 +47,8 @@ typename std::enable_if<std::is_integral<T>::value, std::string_view>::type hexi
   return std::string_view{ buffer.data(), buffer.size() };
 }
 template <typename T>
-typename std::enable_if<std::is_enum<T>::value, std::string_view>::type hexintv( T integer )
+std::string_view hexintv( T integer )
+  requires std::is_enum<T>::value
 {
   using namespace fmt::literals;
   static thread_local fmt::memory_buffer buffer;
@@ -55,12 +58,14 @@ typename std::enable_if<std::is_enum<T>::value, std::string_view>::type hexintv(
 }
 
 template <typename T>
-typename std::enable_if<!std::is_enum<T>::value, std::string>::type tostring( const T& value )
+std::string tostring( const T& value )
+  requires( !std::is_enum<T>::value )
 {
   return fmt::to_string( value );
 }
 template <typename T>
-typename std::enable_if<std::is_enum<T>::value, std::string>::type tostring( const T& value )
+std::string tostring( const T& value )
+  requires std::is_enum<T>::value
 {
   return fmt::to_string( fmt::underlying( value ) );
 }
@@ -105,6 +110,6 @@ std::string strCp1252ToUtf8( const std::string& cp1252string );
 bool caseInsensitiveEqual( const std::string& input, const std::string& test );
 
 std::wstring to_wstring( const std::string& value );
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib
+
 #endif  // CLIB_STRUTIL_H

@@ -9,9 +9,8 @@
 #include "../../clib/rawtypes.h"
 #include "../../clib/weakptr.h"
 
-namespace Pol
-{
-namespace Network
+
+namespace Pol::Network
 {
 class Client;
 
@@ -27,8 +26,8 @@ struct TransmitData
   TransmitData() : client( 0 ), len( 0 ), disconnects( false ), remove( false ){};
 };
 
-typedef std::unique_ptr<TransmitData> TransmitDataSPtr;
-typedef Clib::message_queue<TransmitDataSPtr> ClientTransmitQueue;
+using TransmitDataSPtr = std::unique_ptr<TransmitData>;
+using ClientTransmitQueue = Clib::message_queue<TransmitDataSPtr>;
 
 class ClientTransmit
 {
@@ -52,6 +51,6 @@ private:
 };
 
 void ClientTransmitThread();
-}  // namespace Network
-}  // namespace Pol
+}  // namespace Pol::Network
+
 #endif

@@ -30,9 +30,8 @@
 #include <stdexcept>
 #include <string>
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 using namespace std;
 
@@ -52,8 +51,8 @@ void terminate_handler()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ProgramMain::ProgramMain() {}
-ProgramMain::~ProgramMain() {}
+ProgramMain::ProgramMain() = default;
+ProgramMain::~ProgramMain() = default;
 ///////////////////////////////////////////////////////////////////////////////
 
 void ProgramMain::start( int argc, char* argv[] )
@@ -86,7 +85,7 @@ void ProgramMain::start( int argc, char* argv[] )
     m_programArguments.clear();
     for ( int i = 0; i < argc; i++ )
     {
-      m_programArguments.push_back( std::string( argv[i] ) );
+      m_programArguments.emplace_back( argv[i] );
     }
 
     /**********************************************
@@ -118,7 +117,7 @@ void ProgramMain::start( int argc, char* argv[] )
   {
     ERROR_PRINTLN( "Execution aborted due to: {}", str );
     exitcode = 1;
-  }                                 // egcs has some trouble realizing 'exception' should catch
+  }  // egcs has some trouble realizing 'exception' should catch
   catch ( std::runtime_error& re )  // runtime_errors, so...
   {
     ERROR_PRINTLN( "Execution aborted due to: {}", re.what() );
@@ -198,5 +197,4 @@ int ProgramMain::programArgsFindEquals( const std::string& filter, int defaultVa
     return defaultVal;
   return strtoul( val.c_str(), nullptr, hexVal ? 16 : 10 );
 }
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib

@@ -35,9 +35,8 @@
 
 #include <module_defs/file.h>
 
-namespace Pol
-{
-namespace Module
+
+namespace Pol::Module
 {
 using namespace Bscript;
 namespace fs = std::filesystem;
@@ -128,7 +127,7 @@ FileAccess::FileAccess( Clib::ConfigElem& elem )
         const Plib::Package* cfgpkg;
         std::string cfgpath;
         if ( pkgdef_split( tmp, nullptr, &cfgpkg, &cfgpath ) )
-          Directories.push_back( std::make_pair( cfgpkg, cfgpath ) );
+          Directories.emplace_back( cfgpkg, cfgpath );
         else
           ERROR_PRINTLN( "Invalid fileaccess Directory entry: {}", tmp );
       }
@@ -535,8 +534,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_LogToFile()
 
     return new BLong( 1 );
   }
-  else
-    return new BError( "Invalid parameter type" );
+  return new BError( "Invalid parameter type" );
 }
 
 Bscript::BObjectImp* FileAccessExecutorModule::mf_OpenBinaryFile()
@@ -625,7 +623,7 @@ Bscript::BObjectImp* FileAccessExecutorModule::mf_ListDirectory()
   std::string ext_s = extension->value();
   if ( ext_s.find( '*', 0 ) != std::string::npos )
     asterisk = true;
-  else if ( ext_s.length() == 0 )
+  else if ( ext_s.empty() )
     nofiles = true;
   else if ( *ext_s.begin() != '.' )
     ext_s.insert( 0, "." );
@@ -708,5 +706,4 @@ void load_fileaccess_cfg()
     Core::configurationbuffer.file_access_rules.push_back( fa );
   }
 }
-}  // namespace Module
-}  // namespace Pol
+}  // namespace Pol::Module

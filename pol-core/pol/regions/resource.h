@@ -66,7 +66,7 @@ class ResourceRegion : public Region
 {
 public:
   explicit ResourceRegion( Clib::ConfigElem& elem, RegionId id );
-  virtual size_t estimateSize() const override;
+  size_t estimateSize() const override;
 
   void read_data( Clib::ConfigElem& elem );
 
@@ -85,7 +85,7 @@ private:
   //
   const unsigned int units_per_area_;
   const unsigned int seconds_per_regrow_;
-  typedef std::map<unsigned int, unsigned short> Depletions;
+  using Depletions = std::map<unsigned int, unsigned short>;
   Depletions depletions_;
   time_t last_regen_;
 
@@ -104,7 +104,7 @@ public:
   explicit ResourceDef( const char* name );
   void read_config( Clib::ConfigElem& elem );
   void read_data( Clib::ConfigElem& elem );
-  virtual size_t estimateSize() const override;
+  size_t estimateSize() const override;
   // void read_region( ConfigElem& elem );
 
   bool findmarker( const Pos4d& pos, unsigned int objtype );

@@ -273,13 +273,13 @@ enum class MOB_FLAGS : u16
 class Character : public Core::UObject
 {
   // types:
-  typedef UObject base;
-  typedef std::set<Character*> CharacterSet;
+  using base = UObject;
+  using CharacterSet = std::set<Character*>;
 
 public:
   explicit Character( u32 objtype,
                       Core::UOBJ_CLASS uobj_class = Core::UOBJ_CLASS::CLASS_CHARACTER );
-  virtual ~Character();
+  ~Character() override;
 
 private:
   // non-implemented functions:
@@ -288,46 +288,45 @@ private:
 
   // UOBJECT INTERFACE
 public:
-  virtual size_t estimatedSize() const override;
+  size_t estimatedSize() const override;
 
-  virtual void destroy() override;
-  virtual unsigned int weight() const override;
+  void destroy() override;
+  unsigned int weight() const override;
 
-  virtual bool setgraphic( u16 newobjtype ) override;
-  virtual void on_color_changed() override;
-  virtual void setfacing( u8 newfacing ) override;
-  virtual void on_facing_changed() override;
+  bool setgraphic( u16 newobjtype ) override;
+  void on_color_changed() override;
+  void setfacing( u8 newfacing ) override;
+  void on_facing_changed() override;
 
-  virtual void readProperties( Clib::ConfigElem& elem ) override;
+  void readProperties( Clib::ConfigElem& elem ) override;
 
-  virtual Bscript::BObjectImp* make_ref() override;
+  Bscript::BObjectImp* make_ref() override;
 
-  virtual Bscript::BObjectImp* get_script_member( const char* membername ) const override;
-  virtual Bscript::BObjectImp* get_script_member_id( const int id ) const override;  // id test
-  virtual Bscript::BObjectImp* set_script_member( const char* membername,
-                                                  const std::string& value ) override;
-  virtual Bscript::BObjectImp* set_script_member( const char* membername, int value ) override;
-  virtual Bscript::BObjectImp* set_script_member_id(
-      const int id, const std::string& value ) override;  // id test
-  virtual Bscript::BObjectImp* set_script_member_id( const int id,
-                                                     int value ) override;  // id test
-  virtual Bscript::BObjectImp* set_script_member_id_double( const int id, double value ) override;
-  virtual Bscript::BObjectImp* script_method( const char* methodname,
-                                              Core::UOExecutor& ex ) override;
-  virtual Bscript::BObjectImp* script_method_id( const int id, Core::UOExecutor& ex ) override;
-  virtual Bscript::BObjectImp* custom_script_method( const char* methodname,
-                                                     Core::UOExecutor& ex ) override;
-  virtual bool script_isa( unsigned isatype ) const override;
-  virtual const char* target_tag() const override;
-  virtual bool get_method_hook( const char* methodname, Bscript::Executor* ex,
-                                Core::ExportScript** hook, unsigned int* PC ) const override;
+  Bscript::BObjectImp* get_script_member( const char* membername ) const override;
+  Bscript::BObjectImp* get_script_member_id( const int id ) const override;  // id test
+  Bscript::BObjectImp* set_script_member( const char* membername,
+                                          const std::string& value ) override;
+  Bscript::BObjectImp* set_script_member( const char* membername, int value ) override;
+  Bscript::BObjectImp* set_script_member_id( const int id,
+                                             const std::string& value ) override;  // id test
+  Bscript::BObjectImp* set_script_member_id( const int id,
+                                             int value ) override;  // id test
+  Bscript::BObjectImp* set_script_member_id_double( const int id, double value ) override;
+  Bscript::BObjectImp* script_method( const char* methodname, Core::UOExecutor& ex ) override;
+  Bscript::BObjectImp* script_method_id( const int id, Core::UOExecutor& ex ) override;
+  Bscript::BObjectImp* custom_script_method( const char* methodname,
+                                             Core::UOExecutor& ex ) override;
+  bool script_isa( unsigned isatype ) const override;
+  const char* target_tag() const override;
+  bool get_method_hook( const char* methodname, Bscript::Executor* ex, Core::ExportScript** hook,
+                        unsigned int* PC ) const override;
 
 protected:
-  virtual const char* classname() const override;
-  virtual void printOn( Clib::StreamWriter& sw ) const override;
-  virtual void printSelfOn( Clib::StreamWriter& sw ) const override;
-  virtual void printProperties( Clib::StreamWriter& sw ) const override;
-  virtual void printDebugProperties( Clib::StreamWriter& sw ) const override;
+  const char* classname() const override;
+  void printOn( Clib::StreamWriter& sw ) const override;
+  void printSelfOn( Clib::StreamWriter& sw ) const override;
+  void printProperties( Clib::StreamWriter& sw ) const override;
+  void printDebugProperties( Clib::StreamWriter& sw ) const override;
 
 public:
   Bscript::BObjectImp* make_offline_ref();
@@ -405,7 +404,7 @@ public:
   bool face( Core::UFACING i_facing, int flags = 0 );
   bool move( unsigned char dir );
   bool CustomHousingMove( unsigned char i_dir );
-  void tellmove( void );
+  void tellmove();
   void check_region_changes();
   void check_weather_region_change( bool force = false );
   void check_light_region_change();
@@ -415,7 +414,7 @@ public:
 
   bool CheckPushthrough();
   // KLUDGE - a more foolproof way is needed to keep this in sync.
-  void position_changed( void );
+  void position_changed();
 
   void update_objects_on_range_change( u8 newrange );
 
@@ -789,9 +788,9 @@ public:
   std::vector<VitalValue> vitals;
   // REPUTATION
 private:
-  typedef std::map<Core::CharacterRef, Core::polclock_t> MobileCont;
-  typedef std::set<reportable_t> ReportableList;
-  typedef std::set<USERIAL> ToBeReportableList;
+  using MobileCont = std::map<Core::CharacterRef, Core::polclock_t>;
+  using ReportableList = std::set<reportable_t>;
+  using ToBeReportableList = std::set<USERIAL>;
 
   mutable MobileCont aggressor_to_;
   mutable MobileCont lawfully_damaged_;

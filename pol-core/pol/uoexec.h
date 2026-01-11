@@ -67,7 +67,7 @@ class Party;
 
 class UOExecutor final : public Bscript::Executor
 {
-  typedef Bscript::Executor base;
+  using base = Bscript::Executor;
 
 private:
   Module::OSExecutorModule* os_module;
@@ -75,8 +75,8 @@ private:
 
 public:
   UOExecutor();
-  virtual ~UOExecutor();
-  virtual size_t sizeEstimate() const override;
+  ~UOExecutor() override;
+  size_t sizeEstimate() const override;
 
   bool suspend();
   bool revive();
@@ -90,7 +90,7 @@ public:
   u64 warn_runaway_on_cycle;
   u64 runaway_cycles;
 
-  virtual Bscript::ExecutorType type() override { return Bscript::ExecutorType::POL; }
+  Bscript::ExecutorType type() override { return Bscript::ExecutorType::POL; }
 
   bool listens_to( unsigned int eventflag ) const;
   bool signal_event( Bscript::BObjectImp* eventimp );

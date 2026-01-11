@@ -26,9 +26,7 @@ struct utsname my_utsname;
 #include "globals/network.h"
 
 
-namespace Pol
-{
-namespace Network
+namespace Pol::Network
 {
 void set_ip_address( const char* ip )
 {
@@ -85,7 +83,7 @@ void search_name( const char* hostname )
 WSADATA wsa_data;
 #endif
 
-int init_sockets_library( void )
+int init_sockets_library()
 {
 #ifdef _WIN32
   int res;
@@ -113,7 +111,7 @@ int init_sockets_library( void )
 }
 
 
-int deinit_sockets_library( void )
+int deinit_sockets_library()
 {
 #ifdef _WIN32
   int res;
@@ -227,5 +225,4 @@ std::string AddressToString( const sockaddr* addr )
   return address;
 }
 
-}  // namespace Network
-}  // namespace Pol
+}  // namespace Pol::Network

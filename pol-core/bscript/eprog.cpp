@@ -12,9 +12,8 @@
 #include "escriptv.h"
 #include "fmodule.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 EScriptProgram::EScriptProgram()
     : ref_counted(),
@@ -101,13 +100,11 @@ void EScriptProgram::dump( std::ostream& os )
     {
       return;
     }
-    else
+
+    os << PC << ": " << token << std::endl;
+    if ( token.id == INS_CASEJMP )
     {
-      os << PC << ": " << token << std::endl;
-      if ( token.id == INS_CASEJMP )
-      {
-        dump_casejmp( os, token );
-      }
+      dump_casejmp( os, token );
     }
   }
 }
@@ -141,5 +138,4 @@ void EScriptProgram::dump_casejmp( std::ostream& os, const Token& token )
     }
   }
 }
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript

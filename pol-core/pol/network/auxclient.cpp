@@ -34,9 +34,8 @@
 #include "../scrsched.h"
 #include "../uoexec.h"
 
-namespace Pol
-{
-namespace Network
+
+namespace Pol::Network
 {
 Bscript::BObjectImp* AuxConnection::copy() const
 {
@@ -149,10 +148,8 @@ bool AuxClientThread::init()
     }
     return true;
   }
-  else
-  {
-    return false;
-  }
+
+  return false;
 }
 
 bool AuxClientThread::ipAllowed( sockaddr MyPeer )
@@ -357,5 +354,4 @@ void load_aux_services()
 {
   load_packaged_cfgs( "auxsvc.cfg", "AuxService", load_auxservice_entry );
 }
-}  // namespace Network
-}  // namespace Pol
+}  // namespace Pol::Network

@@ -33,9 +33,8 @@
 #define MAX_STACK_TRACE_DEPTH 200
 #define MAX_STACK_TRACE_STEP_LENGTH 512
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 using namespace std;
 
@@ -329,7 +328,7 @@ void ExceptionParser::reportProgramAbort( const string& stackTrace, const string
   string host = "polserver.com";
   string url = "/pol/report_program_abort.php";
   if ( ( m_programAbortReportingServer.c_str() != nullptr ) &&
-       ( m_programAbortReportingServer != "" ) )
+       ( !m_programAbortReportingServer.empty() ) )
   {
     host = m_programAbortReportingServer;
     if ( m_programAbortReportingUrl.c_str() != nullptr )
@@ -439,7 +438,7 @@ void ExceptionParser::handleExceptionSignal( int signal )
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ExceptionParser::ExceptionParser() {}
+ExceptionParser::ExceptionParser() = default;
 
 ExceptionParser::~ExceptionParser() {}
 
@@ -584,5 +583,4 @@ bool ExceptionParser::programAbortReporting()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib

@@ -36,14 +36,13 @@
 #include "polmodl.h"
 #include "reftypes.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 class BObjectImp;
 class ObjArray;
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript
+
 
 namespace Pol
 {
@@ -329,9 +328,9 @@ public:
   bool registered_for_speech_events;
 
   explicit UOExecutorModule( Core::UOExecutor& exec );
-  ~UOExecutorModule();
+  ~UOExecutorModule() override;
 
-  virtual size_t sizeEstimate() const override;
+  size_t sizeEstimate() const override;
 
 protected:
   // bool getStaticMenuParam( unsigned param, Menu*& menu );

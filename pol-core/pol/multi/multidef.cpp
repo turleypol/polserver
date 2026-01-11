@@ -19,9 +19,8 @@
 #include "../../clib/strutil.h"
 #include "../globals/multidefs.h"
 
-namespace Pol
-{
-namespace Multi
+
+namespace Pol::Multi
 {
 bool BoatShapeExists( u16 graphic );
 
@@ -87,12 +86,10 @@ bool MultiDef::findcomponents( Components::const_iterator& beg, Components::cons
   {
     return false;
   }
-  else
-  {
-    beg = pr.first;
-    end = pr.second;
-    return true;
-  }
+
+  beg = pr.first;
+  end = pr.second;
+  return true;
 }
 
 bool MultiDef::body_contains( const Core::Vec2d& rxy ) const
@@ -103,8 +100,7 @@ const MULTI_ELEM* MultiDef::find_component( const Core::Vec2d& rxy ) const
 {
   if ( body_contains( rxy ) )
     return ( *components.find( getkey( rxy ) ) ).second;
-  else
-    return nullptr;
+  return nullptr;
 }
 
 void MultiDef::add_to_hull( const MULTI_ELEM* elem )
@@ -256,8 +252,7 @@ const MultiDef* MultiDefByMultiID( u16 multiid )
   MultiDefs::const_iterator citr = multidef_buffer.multidefs_by_multiid.find( multiid );
   if ( citr != multidef_buffer.multidefs_by_multiid.end() )
     return ( *citr ).second;
-  else
-    return nullptr;
+  return nullptr;
 }
 
 
@@ -276,5 +271,4 @@ void read_multidefs()
     multidef_buffer.multidefs_by_multiid[mdef->multiid] = mdef;
   }
 }
-}  // namespace Multi
-}  // namespace Pol
+}  // namespace Pol::Multi

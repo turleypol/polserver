@@ -20,9 +20,10 @@
 
 #include <module_defs/sql.h>
 
-namespace Pol
-{
-namespace Module
+#include <memory>
+
+
+namespace Pol::Module
 {
 using namespace Bscript;
 
@@ -48,7 +49,7 @@ BObjectImp* SQLExecutorModule::background_connect( weak_ptr<Core::UOExecutor> uo
     std::unique_ptr<Core::BSQLConnection> sql;
     {
       Core::PolLock lck;
-      sql = std::unique_ptr<Core::BSQLConnection>( new Core::BSQLConnection() );
+      sql = std::make_unique<Core::BSQLConnection>();
     }
     if ( sql->getLastErrNo() )
     {
@@ -342,7 +343,7 @@ Bscript::BObjectImp* SQLExecutorModule::mf_mysql_fetch_row()
   {
     return new BError( "Invalid parameters" );
   }
-  else if ( !result->has_result() )
+  if ( !result->has_result() )
   {
     return new BError( "Query returned no result" );
   }
@@ -381,5 +382,4 @@ MF_NO_MYSQL( mf_mysql_close )
 MF_NO_MYSQL( mf_mysql_fetch_row )
 MF_NO_MYSQL( mf_mysql_escape_string )
 #endif
-}  // namespace Module
-}  // namespace Pol
+}  // namespace Pol::Module

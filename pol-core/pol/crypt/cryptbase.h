@@ -68,15 +68,14 @@
   LL ^= P;                                                          \
   LL ^= ( ( S[( R >> 24 )] + S[0x0100 + ( ( R >> 16 ) & 0xff )] ) ^ \
           S[0x0200 + ( ( R >> 8 ) & 0xff )] ) +                     \
-        S[0x0300 + ( (R)&0xff )]
+        S[0x0300 + ( ( R ) & 0xff )]
 
 
 #include "../../clib/network/sockets.h"
 #include "../../plib/uconst.h"
 #include "logincrypt.h"
-namespace Pol
-{
-namespace Crypt
+
+namespace Pol::Crypt
 {
 // basic class only used directly by NoCrypt
 class CCryptBase
@@ -113,7 +112,7 @@ class CCryptBaseCrypt : public CCryptBase
   // Constructor / Destructor
 public:
   CCryptBaseCrypt();
-  virtual ~CCryptBaseCrypt() = default;
+  ~CCryptBaseCrypt() override = default;
 
   LoginCrypt lcrypt;
 
@@ -128,6 +127,6 @@ protected:
   void SetMasterKeys( unsigned int masterKey1, unsigned int masterKey2 );
   virtual void Decrypt( void* pvIn, void* pvOut, int len ) = 0;
 };
-}  // namespace Crypt
-}  // namespace Pol
+}  // namespace Pol::Crypt
+
 #endif  //__CRYPTBASE_H__

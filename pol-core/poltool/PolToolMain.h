@@ -3,25 +3,24 @@
 
 #include "../clib/Program/ProgramMain.h"
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 class PolToolMain final : public ProgramMain
 {
 public:
   PolToolMain();
-  virtual ~PolToolMain() = default;
+  ~PolToolMain() override = default;
 
 protected:
-  virtual int main();
+  int main() override;
 
 private:
-  virtual void showHelp();
+  void showHelp() override;
   int mapdump();
   int unpackCompressedGump();
 };
-}
-}  // namespaces
+}  // namespace Pol::Clib
+   // namespaces
 
 #endif  // POL_TOOL_MAIN_H

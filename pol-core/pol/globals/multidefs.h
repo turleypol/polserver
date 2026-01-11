@@ -12,14 +12,13 @@
 
 #include "../../clib/rawtypes.h"
 
-namespace Pol
-{
-namespace Multi
+
+namespace Pol::Multi
 {
 class MultiDef;
 
 
-typedef std::map<u16, MultiDef*> MultiDefs;
+using MultiDefs = std::map<u16, MultiDef*>;
 
 // used for POL and uotool
 class MultiDefBuffer
@@ -39,6 +38,6 @@ private:
 };
 
 extern MultiDefBuffer multidef_buffer;
-}  // namespace Multi
-}  // namespace Pol
+}  // namespace Pol::Multi
+
 #endif

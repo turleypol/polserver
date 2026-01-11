@@ -62,9 +62,7 @@
 #include "multidef.h"
 
 
-namespace Pol
-{
-namespace Multi
+namespace Pol::Multi
 {
 // #define DEBUG_BOATS
 
@@ -118,38 +116,38 @@ BoatShape::BoatShape( Clib::ConfigElem& elem )
   std::string tmp_str;
 
   while ( elem.remove_prop( "Tillerman", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape( tmp_str, COMPONENT_TILLERMAN ) );
+    Componentshapes.emplace_back( tmp_str, COMPONENT_TILLERMAN );
   while ( elem.remove_prop( "PortGangplankRetracted", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape(
-        tmp_str, elem.remove_string( "PortGangplankExtended" ), COMPONENT_PORT_PLANK ) );
+    Componentshapes.emplace_back( tmp_str, elem.remove_string( "PortGangplankExtended" ),
+                                  COMPONENT_PORT_PLANK );
   while ( elem.remove_prop( "StarboardGangplankRetracted", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape(
-        tmp_str, elem.remove_string( "StarboardGangplankExtended" ), COMPONENT_STARBOARD_PLANK ) );
+    Componentshapes.emplace_back( tmp_str, elem.remove_string( "StarboardGangplankExtended" ),
+                                  COMPONENT_STARBOARD_PLANK );
   while ( elem.remove_prop( "Hold", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape( tmp_str, COMPONENT_HOLD ) );
+    Componentshapes.emplace_back( tmp_str, COMPONENT_HOLD );
   while ( elem.remove_prop( "Rope", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape( tmp_str, COMPONENT_ROPE ) );
+    Componentshapes.emplace_back( tmp_str, COMPONENT_ROPE );
   while ( elem.remove_prop( "Wheel", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape( tmp_str, COMPONENT_WHEEL ) );
+    Componentshapes.emplace_back( tmp_str, COMPONENT_WHEEL );
   while ( elem.remove_prop( "Hull", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape( tmp_str, COMPONENT_HULL ) );
+    Componentshapes.emplace_back( tmp_str, COMPONENT_HULL );
   while ( elem.remove_prop( "Tiller", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape( tmp_str, COMPONENT_TILLER ) );
+    Componentshapes.emplace_back( tmp_str, COMPONENT_TILLER );
   while ( elem.remove_prop( "Rudder", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape( tmp_str, COMPONENT_RUDDER ) );
+    Componentshapes.emplace_back( tmp_str, COMPONENT_RUDDER );
   while ( elem.remove_prop( "Sails", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape( tmp_str, COMPONENT_SAILS ) );
+    Componentshapes.emplace_back( tmp_str, COMPONENT_SAILS );
   while ( elem.remove_prop( "Storage", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape( tmp_str, COMPONENT_STORAGE ) );
+    Componentshapes.emplace_back( tmp_str, COMPONENT_STORAGE );
   while ( elem.remove_prop( "Weaponslot", &tmp_str ) )
-    Componentshapes.push_back( ComponentShape( tmp_str, COMPONENT_WEAPONSLOT ) );
+    Componentshapes.emplace_back( tmp_str, COMPONENT_WEAPONSLOT );
 }
 
 bool BoatShape::objtype_is_component( unsigned int objtype )
 {
   if ( objtype == Core::settingsManager.extobj.tillerman )
     return true;
-  else if ( objtype == Core::settingsManager.extobj.port_plank )
+  if ( objtype == Core::settingsManager.extobj.port_plank )
     return true;
   else if ( objtype == Core::settingsManager.extobj.starboard_plank )
     return true;
@@ -213,7 +211,7 @@ unsigned int get_component_objtype( unsigned char type )
   }
 }
 
-void read_boat_cfg( void )
+void read_boat_cfg()
 {
   Clib::ConfigFile cf( "config/boats.cfg", "Boat" );
   Clib::ConfigElem elem;
@@ -1274,7 +1272,7 @@ void UBoat::register_object( UObject* obj )
   if ( find( travellers_.begin(), travellers_.end(), obj ) == travellers_.end() )
   {
     set_dirty();
-    travellers_.push_back( Traveller( obj ) );
+    travellers_.emplace_back( obj );
   }
 }
 
@@ -1352,11 +1350,11 @@ void UBoat::readProperties( Clib::ConfigElem& elem )
       {
         if ( BoatShape::objtype_is_component( item->objtype_ ) )
         {
-          Components.push_back( Component( item ) );
+          Components.emplace_back( item );
         }
         else if ( on_ship( bc, item ) )
         {
-          travellers_.push_back( Traveller( item ) );
+          travellers_.emplace_back( item );
         }
       }
     }
@@ -1367,7 +1365,7 @@ void UBoat::readProperties( Clib::ConfigElem& elem )
       if ( chr != nullptr )
       {
         if ( on_ship( bc, chr ) )
-          travellers_.push_back( Traveller( chr ) );
+          travellers_.emplace_back( chr );
       }
     }
   }
@@ -1378,7 +1376,7 @@ void UBoat::readProperties( Clib::ConfigElem& elem )
     {
       if ( BoatShape::objtype_is_component( item->objtype_ ) )
       {
-        Components.push_back( Component( item ) );
+        Components.emplace_back( item );
       }
     }
   }
@@ -1552,7 +1550,7 @@ void UBoat::create_components()
     component->movable( false );
     add_item_to_world( component );
     update_item_to_inrange( component );
-    Components.push_back( Component( component ) );
+    Components.emplace_back( component );
   }
 }
 
@@ -1685,61 +1683,59 @@ Bscript::BObjectImp* UBoat::set_pilot( Mobile::Character* chr )
     clear_pilot();
     return new Bscript::BLong( 1 );
   }
-  else
+
+  if ( mountpiece != nullptr && !mountpiece->orphan() )
   {
-    if ( mountpiece != nullptr && !mountpiece->orphan() )
-    {
-      return new Bscript::BError( "The boat is already being piloted." );
-    }
-
-    if ( !has_process() )
-    {
-      return new Bscript::BError( "The boat does not have a running process." );
-    }
-
-    if ( !chr->client )
-    {
-      return new Bscript::BError( "That character is not connected." );
-    }
-
-    if ( !( chr->client->ClientType & Network::CLIENTTYPE_7090 ) )
-    {
-      return new Bscript::BError(
-          "The client for that character does not support High Seas Adventure." );
-    }
-
-    BoatContext bc( *this );
-    bool pilot_on_ship = false;
-    for ( const auto& travellerRef : travellers_ )
-    {
-      UObject* obj = travellerRef.get();
-      if ( !obj->orphan() && on_ship( bc, obj ) && obj == chr )
-      {
-        pilot_on_ship = true;
-        break;
-      }
-    }
-
-    if ( !pilot_on_ship )
-    {
-      return new Bscript::BError( "The boat does not have that character on it." );
-    }
-
-    Items::Item* item = Items::Item::create( Core::settingsManager.extobj.boatmount );
-    if ( !chr->equippable( item ) )
-    {
-      item->destroy();
-      return new Bscript::BError( "The boat mount piece is not equippable by that character." );
-    }
-    chr->equip( item );
-    send_wornitem_to_inrange( chr, item );
-    mountpiece = Core::ItemRef( item );
-
-    // Mark the item as 'in-use' to prevent moving by client or scripts.
-    item->inuse( true );
-
-    return new Bscript::BLong( 1 );
+    return new Bscript::BError( "The boat is already being piloted." );
   }
+
+  if ( !has_process() )
+  {
+    return new Bscript::BError( "The boat does not have a running process." );
+  }
+
+  if ( !chr->client )
+  {
+    return new Bscript::BError( "That character is not connected." );
+  }
+
+  if ( !( chr->client->ClientType & Network::CLIENTTYPE_7090 ) )
+  {
+    return new Bscript::BError(
+        "The client for that character does not support High Seas Adventure." );
+  }
+
+  BoatContext bc( *this );
+  bool pilot_on_ship = false;
+  for ( const auto& travellerRef : travellers_ )
+  {
+    UObject* obj = travellerRef.get();
+    if ( !obj->orphan() && on_ship( bc, obj ) && obj == chr )
+    {
+      pilot_on_ship = true;
+      break;
+    }
+  }
+
+  if ( !pilot_on_ship )
+  {
+    return new Bscript::BError( "The boat does not have that character on it." );
+  }
+
+  Items::Item* item = Items::Item::create( Core::settingsManager.extobj.boatmount );
+  if ( !chr->equippable( item ) )
+  {
+    item->destroy();
+    return new Bscript::BError( "The boat mount piece is not equippable by that character." );
+  }
+  chr->equip( item );
+  send_wornitem_to_inrange( chr, item );
+  mountpiece = Core::ItemRef( item );
+
+  // Mark the item as 'in-use' to prevent moving by client or scripts.
+  item->inuse( true );
+
+  return new Bscript::BLong( 1 );
 }
 
 void UBoat::clear_pilot()
@@ -1753,5 +1749,4 @@ void UBoat::clear_pilot()
     mountpiece.clear();
   }
 }
-}  // namespace Multi
-}  // namespace Pol
+}  // namespace Pol::Multi

@@ -10,18 +10,17 @@
 #include "../polclock.h"
 #include "../reftypes.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 class UOExecutor;
 
-typedef std::deque<UOExecutor*> ExecList;
-typedef std::set<UOExecutor*> NoTimeoutHoldList;
-typedef std::multimap<Core::polclock_t, Core::UOExecutor*> HoldList;
-typedef std::map<std::string, ref_ptr<Bscript::EScriptProgram>, Clib::ci_cmp_pred> ScriptStorage;
-typedef std::map<unsigned int, UOExecutor*> PidList;
-typedef HoldList::iterator TimeoutHandle;
+using ExecList = std::deque<UOExecutor*>;
+using NoTimeoutHoldList = std::set<UOExecutor*>;
+using HoldList = std::multimap<Core::polclock_t, Core::UOExecutor*>;
+using ScriptStorage = std::map<std::string, ref_ptr<Bscript::EScriptProgram>, Clib::ci_cmp_pred>;
+using PidList = std::map<unsigned int, UOExecutor*>;
+using TimeoutHandle = HoldList::iterator;
 
 
 enum HoldListType
@@ -137,6 +136,6 @@ const inline PidList& ScriptScheduler::getPidlist()
 }
 
 extern ScriptScheduler scriptScheduler;
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core
+
 #endif

@@ -18,9 +18,8 @@
 #include "logfacility.h"
 #include "stlutil.h"
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 void splitnamevalue( const std::string& istr, std::string& propname, std::string& propvalue )
 {
@@ -243,7 +242,7 @@ uint8_t unicodeToCp1252( uint32_t codepoint )
 {
   if ( codepoint >= 0x80 && codepoint <= 0x9f )
     return '?';
-  else if ( codepoint <= 0xff )
+  if ( codepoint <= 0xff )
     return (char)codepoint;
   else
   {
@@ -417,5 +416,4 @@ std::wstring to_wstring( const std::string& value )
 
   return result;
 }
-}  // namespace Clib
-}  // namespace Pol
+}  // namespace Pol::Clib

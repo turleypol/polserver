@@ -52,17 +52,14 @@
 #include "wepntmpl.h"
 
 
-namespace Pol
-{
-namespace Items
+namespace Pol::Items
 {
 unsigned int get_objtype_byname( const char* str )
 {
   auto itr = Core::gamestate.objtype_byname.find( str );
   if ( itr == Core::gamestate.objtype_byname.end() )
     return 0;
-  else
-    return ( *itr ).second;
+  return ( *itr ).second;
 }
 
 unsigned int get_objtype_from_string( const std::string& str )
@@ -240,7 +237,7 @@ ItemDesc::ItemDesc( u32 objtype, Clib::ConfigElem& elem, Type type, const Plib::
       props( Core::CPropProfiler::Type::ITEM ),
       method_script( nullptr ),
       save_on_exit( elem.remove_bool( "SaveOnExit", true ) )
-      // NOTE: do not forget the other constructor!
+// NOTE: do not forget the other constructor!
 
 {
   if ( type == BOATDESC || type == HOUSEDESC )
@@ -341,7 +338,7 @@ ItemDesc::ItemDesc( u32 objtype, Clib::ConfigElem& elem, Type type, const Plib::
     unsigned amount;
     if ( is >> rname >> amount )
     {
-      resources.push_back( ResourceComponent( rname, amount ) );
+      resources.emplace_back( rname, amount );
     }
     else
     {
@@ -929,8 +926,7 @@ bool ItemDesc::default_movable() const
 {
   if ( movable == DEFAULT )
     return ( ( Plib::tile_flags( graphic ) & Plib::FLAG::MOVABLE ) != 0 );
-  else
-    return movable ? true : false;
+  return movable ? true : false;
 }
 
 size_t ItemDesc::estimatedSize() const
@@ -1157,7 +1153,7 @@ unsigned short getgraphic( u32 objtype )
   {
     return id.graphic;
   }
-  else if ( objtype <= Plib::systemstate.config.max_tile_id )
+  if ( objtype <= Plib::systemstate.config.max_tile_id )
   {
     return static_cast<u16>( objtype );
   }
@@ -1177,8 +1173,7 @@ const ItemDesc& find_itemdesc( unsigned int objtype )
   const auto& obj = Core::gamestate.desctable.find( objtype );
   if ( obj != Core::gamestate.desctable.end() )
     return *( obj->second );
-  else
-    return *( Core::gamestate.empty_itemdesc.get() );
+  return *( Core::gamestate.empty_itemdesc.get() );
 }
 
 const ContainerDesc& find_container_desc( u32 objtype )
@@ -1484,5 +1479,4 @@ void return_resources( u32 objtype, u16 /*amount*/ )
     }
   }
 }
-}  // namespace Items
-}  // namespace Pol
+}  // namespace Pol::Items

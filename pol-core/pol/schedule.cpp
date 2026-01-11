@@ -16,16 +16,14 @@
 #include "polsig.h"
 #include "profile.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 bool SchComparer::operator()( const ScheduledTask* x, const ScheduledTask* y ) const
 {
   if ( x->next_run_clock_ == y->next_run_clock_ )
     return x > y;
-  else
-    return x->next_run_clock_ > y->next_run_clock_;
+  return x->next_run_clock_ > y->next_run_clock_;
 }
 
 bool TaskScheduler::dirty_ = false;
@@ -64,7 +62,7 @@ polclock_t ScheduledTask::clocksleft( polclock_t now_clock )
   return next_run_clock_ - now_clock;
 }
 
-PeriodicTask::PeriodicTask( void ( *i_f )( void ), int initial_wait_seconds, const char* name )
+PeriodicTask::PeriodicTask( void ( *i_f )(), int initial_wait_seconds, const char* name )
     : ScheduledTask( 0 ),
       n_initial_clocks( initial_wait_seconds * POLCLOCKS_PER_SEC ),
       n_clocks( initial_wait_seconds * POLCLOCKS_PER_SEC ),
@@ -73,7 +71,7 @@ PeriodicTask::PeriodicTask( void ( *i_f )( void ), int initial_wait_seconds, con
 {
 }
 
-PeriodicTask::PeriodicTask( void ( *i_f )( void ), int initial_wait_seconds, int periodic_seconds,
+PeriodicTask::PeriodicTask( void ( *i_f )(), int initial_wait_seconds, int periodic_seconds,
                             const char* name )
     : ScheduledTask( 0 ),
       n_initial_clocks( initial_wait_seconds * POLCLOCKS_PER_SEC ),
@@ -197,5 +195,4 @@ void check_scheduled_tasks( polclock_t* clocksleft, bool* pactivity )
   }
 }
 
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

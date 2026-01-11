@@ -45,9 +45,7 @@
 #include "wepntmpl.h"
 
 
-namespace Pol
-{
-namespace Items
+namespace Pol::Items
 {
 Item* Item::create( u32 objtype, u32 serial )
 {
@@ -56,7 +54,7 @@ Item* Item::create( u32 objtype, u32 serial )
   {
     return create( id, serial );
   }
-  else if ( objtype <= Plib::systemstate.config.max_tile_id )
+  if ( objtype <= Plib::systemstate.config.max_tile_id )
   {
     Core::gamestate.temp_itemdesc->objtype = objtype;
     Core::gamestate.temp_itemdesc->graphic = static_cast<u16>( objtype );
@@ -235,8 +233,7 @@ Item* Item::create( const ItemDesc& id, u32 serial )
   item->physical_resist_cap( item->physical_resist_cap().setAsValue( id.resist_physical_cap ) );
   item->poison_resist_cap( item->poison_resist_cap().setAsValue( id.resist_poison_cap ) );
   item->luck( item->luck().setAsValue( id.luck ) );
-  item->swing_speed_increase(
-      item->swing_speed_increase().setAsValue( id.swing_speed_increase ) );
+  item->swing_speed_increase( item->swing_speed_increase().setAsValue( id.swing_speed_increase ) );
   item->min_attack_range_increase(
       item->min_attack_range_increase().setAsValue( id.min_attack_range_increase ) );
   item->max_attack_range_increase(
@@ -274,5 +271,4 @@ Item* Item::create( const ItemDesc& id, u32 serial )
 
   return item;
 }
-}  // namespace Items
-}  // namespace Pol
+}  // namespace Pol::Items

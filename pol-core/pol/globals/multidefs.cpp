@@ -13,14 +13,13 @@
 #include "../../clib/stlutil.h"
 #include "../multi/multidef.h"
 
-namespace Pol
-{
-namespace Multi
+
+namespace Pol::Multi
 {
 MultiDefBuffer multidef_buffer;
 
 MultiDefBuffer::MultiDefBuffer() : multidefs_by_multiid() {}
-MultiDefBuffer::~MultiDefBuffer() {}
+MultiDefBuffer::~MultiDefBuffer() = default;
 
 void MultiDefBuffer::deinitialize()
 {
@@ -45,5 +44,4 @@ size_t MultiDefBuffer::estimateSize() const
   }
   return size;
 }
-}  // namespace Multi
-}  // namespace Pol
+}  // namespace Pol::Multi

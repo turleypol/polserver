@@ -18,9 +18,8 @@
 
 #include <module_defs/math.h>
 
-namespace Pol
-{
-namespace Module
+
+namespace Pol::Module
 {
 using namespace Bscript;
 
@@ -51,10 +50,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_Sin()
   {
     return new Double( sin( x ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 Bscript::BObjectImp* MathExecutorModule::mf_Cos()
 {
@@ -63,10 +60,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_Cos()
   {
     return new Double( cos( x ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 Bscript::BObjectImp* MathExecutorModule::mf_Tan()
 {
@@ -75,10 +70,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_Tan()
   {
     return new Double( tan( x ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 Bscript::BObjectImp* MathExecutorModule::mf_ASin()
 {
@@ -87,10 +80,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_ASin()
   {
     return new Double( asin( x ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 Bscript::BObjectImp* MathExecutorModule::mf_ACos()
 {
@@ -99,10 +90,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_ACos()
   {
     return new Double( acos( x ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 Bscript::BObjectImp* MathExecutorModule::mf_ATan()
 {
@@ -111,10 +100,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_ATan()
   {
     return new Double( atan( x ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 /*
@@ -132,10 +119,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_Pow()
   {
     return new Double( pow( x, y ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 /*
@@ -149,10 +134,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_Sqrt()
   {
     return new Double( sqrt( x ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 /*
@@ -166,10 +149,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_Root()
   {
     return new Double( pow( x, 1.0 / y ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 Bscript::BObjectImp* MathExecutorModule::mf_Min()
@@ -181,10 +162,9 @@ Bscript::BObjectImp* MathExecutorModule::mf_Min()
   {
     if ( *impX < *impY )
       return impX->copy();
-    else
-      return impY->copy();
+    return impY->copy();
   }
-  else if ( auto* value = impptrIf<ObjArray>( impX ) )
+  if ( auto* value = impptrIf<ObjArray>( impX ) )
   {
     if ( value->ref_arr.empty() )
       return new BError( "Array empty" );
@@ -210,8 +190,7 @@ Bscript::BObjectImp* MathExecutorModule::mf_Min()
     }
     if ( compare != nullptr )
       return ( compare->copy() );
-    else
-      return new BError( "No Integer/Double elements" );
+    return new BError( "No Integer/Double elements" );
   }
   else
     return new BError( "Invalid parameter type" );
@@ -226,10 +205,9 @@ Bscript::BObjectImp* MathExecutorModule::mf_Max()
   {
     if ( *impX < *impY )
       return impY->copy();
-    else
-      return impX->copy();
+    return impX->copy();
   }
-  else if ( auto* value = impptrIf<ObjArray>( impX ) )
+  if ( auto* value = impptrIf<ObjArray>( impX ) )
   {
     if ( value->ref_arr.empty() )
       return new BError( "Array empty" );
@@ -255,8 +233,7 @@ Bscript::BObjectImp* MathExecutorModule::mf_Max()
     }
     if ( compare != nullptr )
       return ( compare->copy() );
-    else
-      return new BError( "No Integer/Double elements" );
+    return new BError( "No Integer/Double elements" );
   }
   else
     return new BError( "Invalid parameter type" );
@@ -278,17 +255,15 @@ Bscript::BObjectImp* MathExecutorModule::mf_Abs()
   {
     return new Double( fabs( d->value() ) );
   }
-  else if ( auto* l = impptrIf<BLong>( imp ) )
+  if ( auto* l = impptrIf<BLong>( imp ) )
   {
     return new BLong( labs( l->value() ) );
   }
-  else
-  {
-    double x;
-    // just for debug.log
-    (void)getRealParam( 0, x );
-    return new BError( "Invalid parameter type" );
-  }
+
+  double x;
+  // just for debug.log
+  (void)getRealParam( 0, x );
+  return new BError( "Invalid parameter type" );
 }
 
 Bscript::BObjectImp* MathExecutorModule::mf_Log10()
@@ -298,10 +273,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_Log10()
   {
     return new Double( log10( x ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 Bscript::BObjectImp* MathExecutorModule::mf_LogE()
 {
@@ -310,10 +283,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_LogE()
   {
     return new Double( log( x ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 Bscript::BObjectImp* MathExecutorModule::mf_ConstPi()
@@ -339,10 +310,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_FormatRealToString()
     snprintf( buffer, Clib::arsize( buffer ), "%.*g", static_cast<int>( digits ), x );
     return new String( buffer );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 Bscript::BObjectImp* MathExecutorModule::mf_RadToDeg()
@@ -383,10 +352,8 @@ Bscript::BObjectImp* MathExecutorModule::mf_Ceil()
   {
     return new Double( ceil( x ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 Bscript::BObjectImp* MathExecutorModule::mf_Floor()
 {
@@ -395,10 +362,7 @@ Bscript::BObjectImp* MathExecutorModule::mf_Floor()
   {
     return new Double( floor( x ) );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
-}  // namespace Module
-}  // namespace Pol
+}  // namespace Pol::Module

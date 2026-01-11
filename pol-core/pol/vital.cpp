@@ -17,9 +17,8 @@
 #include "checkpnt.h"
 #include "globals/uvars.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 Vital::Vital( const Plib::Package* pkg, Clib::ConfigElem& elem )
     : pkg( pkg ),
@@ -82,8 +81,7 @@ Vital* FindVital( const std::string& str )
   VitalsByName::const_iterator citr = gamestate.vitals_byname.find( str );
   if ( citr != gamestate.vitals_byname.end() )
     return ( *citr ).second;
-  else
-    return nullptr;
+  return nullptr;
 }
 
 void load_vital_entry( const Plib::Package* pkg, Clib::ConfigElem& elem )
@@ -123,5 +121,4 @@ void load_vitals_cfg()
   passert_always( gamestate.pVitalStamina );
   passert_always( gamestate.pVitalMana );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

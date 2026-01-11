@@ -22,9 +22,8 @@
 #include "uoexec.h"
 #include "uoscrobj.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 ListenPoint::ListenPoint( UObject* obj, UOExecutor* uoexec, u16 range, int flags )
     : object( obj ), uoexec( uoexec ), range( range ), flags( flags )
@@ -74,7 +73,7 @@ void ListenPoint::sayto( Mobile::Character* speaker, const std::string& text, u8
   {
     if ( speechtokens != nullptr && ( ( flags & LISTENPT_HEAR_TOKENS ) == 0 ) )
       return;
-    else if ( speechtokens == nullptr && ( flags & LISTENPT_NO_SPEECH ) )
+    if ( speechtokens == nullptr && ( flags & LISTENPT_NO_SPEECH ) )
       return;
   }
   if ( !speaker->in_range( object.get(), range ) )
@@ -126,5 +125,4 @@ Bscript::BObjectImp* ListenPoint::GetListenPoints()
   }
   return arr;
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

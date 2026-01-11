@@ -22,9 +22,8 @@
 #include <iterator>
 #include <memory>
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 struct TRANSLATION
 {
@@ -162,19 +161,16 @@ std::shared_ptr<NpcTemplate> find_npc_template( const Clib::ConfigElem& elem )
   {
     return itr->second;
   }
+
+  const Plib::Package* pkg;
+  std::string path;
+  if ( Plib::pkgdef_split( elem.rest(), nullptr, &pkg, &path ) )
+  {
+    return create_npc_template( elem, pkg );
+  }
   else
   {
-    const Plib::Package* pkg;
-    std::string path;
-    if ( Plib::pkgdef_split( elem.rest(), nullptr, &pkg, &path ) )
-    {
-      return create_npc_template( elem, pkg );
-    }
-    else
-    {
-      throw std::runtime_error( std::string( "Error reading NPC template name " ) + elem.rest() );
-    }
+    throw std::runtime_error( std::string( "Error reading NPC template name " ) + elem.rest() );
   }
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

@@ -43,9 +43,7 @@
 #include "regions/resource.h"
 
 
-namespace Pol
-{
-namespace Items
+namespace Pol::Items
 {
 const u32 Item::SELLPRICE_DEFAULT = UINT_MAX;
 const u32 Item::BUYPRICE_DEFAULT = UINT_MAX;
@@ -132,15 +130,13 @@ std::string Item::name() const
   {
     return name_;
   }
-  else
-  {
-    const ItemDesc& id = this->itemdesc();
 
-    if ( id.desc.get().empty() )
-      return Plib::tile_desc( graphic );
-    else
-      return id.desc;
-  }
+  const ItemDesc& id = this->itemdesc();
+
+  if ( id.desc.get().empty() )
+    return Plib::tile_desc( graphic );
+  else
+    return id.desc;
 }
 
 const ItemDesc& Item::itemdesc() const
@@ -173,18 +169,16 @@ std::string Item::description() const
   {
     return Core::format_description( 0, name(), amount_, suffix );  // dave monkeyed with this 2/4/3
   }
+
+  const ItemDesc& id = this->itemdesc();
+  if ( id.desc.get().empty() )
+  {
+    return Core::format_description( Plib::tile_flags( graphic ), Plib::tile_desc( graphic ),
+                                     amount_, suffix );
+  }
   else
   {
-    const ItemDesc& id = this->itemdesc();
-    if ( id.desc.get().empty() )
-    {
-      return Core::format_description( Plib::tile_flags( graphic ), Plib::tile_desc( graphic ),
-                                       amount_, suffix );
-    }
-    else
-    {
-      return Core::format_description( Plib::tile_flags( graphic ), id.desc, amount_, suffix );
-    }
+    return Core::format_description( Plib::tile_flags( graphic ), id.desc, amount_, suffix );
   }
 }
 
@@ -200,17 +194,15 @@ std::string Item::merchant_description() const
   {
     return Core::format_description( 0, name(), 1, suffix );
   }
+
+  const ItemDesc& id = this->itemdesc();
+  if ( id.desc.get().empty() )
+  {
+    return Core::format_description( 0, Plib::tile_desc( graphic ), 1, suffix );
+  }
   else
   {
-    const ItemDesc& id = this->itemdesc();
-    if ( id.desc.get().empty() )
-    {
-      return Core::format_description( 0, Plib::tile_desc( graphic ), 1, suffix );
-    }
-    else
-    {
-      return Core::format_description( 0, id.desc, 1, suffix );
-    }
+    return Core::format_description( 0, id.desc, 1, suffix );
   }
 }
 
@@ -248,24 +240,21 @@ bool Item::getbuyprice( u32& bp ) const
   bp = buyprice();
   if ( bp > 0 )
     return true;
-  else
-    return false;
+  return false;
 }
 
 Core::UObject* Item::owner()
 {
   if ( container != nullptr )
     return container->self_as_owner();
-  else
-    return nullptr;
+  return nullptr;
 }
 
 const Core::UObject* Item::owner() const
 {
   if ( container != nullptr )
     return container->self_as_owner();
-  else
-    return nullptr;
+  return nullptr;
 }
 
 Core::UObject* Item::toplevel_owner()
@@ -295,8 +284,7 @@ bool Item::default_movable() const
 {
   if ( itemdesc().movable == ItemDesc::DEFAULT )
     return ( ( Plib::tile_flags( graphic ) & Plib::FLAG::MOVABLE ) != 0 );
-  else
-    return itemdesc().movable ? true : false;
+  return itemdesc().movable ? true : false;
 }
 
 bool Item::default_invisible() const
@@ -353,7 +341,7 @@ unsigned short Item::maxhp() const
 
   if ( maxhp < 1 )
     return 1;
-  else if ( maxhp <= USHRT_MAX )
+  if ( maxhp <= USHRT_MAX )
     return static_cast<u16>( maxhp );
   else
     return USHRT_MAX;
@@ -706,10 +694,8 @@ bool Item::setlayer( unsigned char in_layer )
     layer = in_layer;
     return true;
   }
-  else
-  {
-    return false;
-  }
+
+  return false;
 }
 
 bool Item::stackable() const
@@ -1005,10 +991,8 @@ bool Item::setgraphic( u16 newgraphic )
     update_item_to_inrange( this );
     return true;
   }
-  else
-  {
-    return false;
-  }
+
+  return false;
 }
 
 bool Item::setcolor( u16 newcolor )
@@ -1234,10 +1218,8 @@ bool Item::check_equip_script( Mobile::Character* equip_on, Mobile::Character* e
     Bscript::BObject obj( run_equip_script( equip_on, equip_by, startup ) );
     return obj.isTrue();
   }
-  else
-  {
-    return true;
-  }
+
+  return true;
 }
 
 bool Item::check_unequip_script( Mobile::Character* unequip_by )
@@ -1252,10 +1234,8 @@ bool Item::check_unequip_script( Mobile::Character* unequip_by )
     Bscript::BObject obj( run_unequip_script( chr, unequip_by ) );
     return obj.isTrue();
   }
-  else
-  {
-    return true;
-  }
+
+  return true;
 }
 
 void preload_test_scripts( const std::string& script_ecl )
@@ -1344,10 +1324,8 @@ bool Item::check_unequiptest_scripts( Mobile::Character* unequip_by )
 
     return check_unequiptest_scripts( unequip_on, unequip_by );
   }
-  else
-  {
-    return true;
-  }
+
+  return true;
 }
 
 /**
@@ -1366,8 +1344,7 @@ Mobile::Character* Item::GetCharacterOwner() const
     {
       return chr_owner;
     }
-    else
-      return nullptr;
+    return nullptr;
   }
   else
     return nullptr;
@@ -1401,12 +1378,10 @@ bool Item::start_control_script( const ItemDesc& id )
       process( uoemod );
       return true;
     }
-    else
-    {
-      POLLOGLN( "Unable to start control script {} for {}", id.control_script.name(),
-                id.objtype_description() );
-      return false;
-    }
+
+    POLLOGLN( "Unable to start control script {} for {}", id.control_script.name(),
+              id.objtype_description() );
+    return false;
   }
   return false;
 }
@@ -1532,5 +1507,4 @@ void Pol::Items::Item::inform_moved( Mobile::Character* moved )
   }
 }
 
-}  // namespace Items
-}  // namespace Pol
+}  // namespace Pol::Items

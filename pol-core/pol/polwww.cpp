@@ -59,13 +59,12 @@
 #pragma warning( disable : 4127 )  // conditional expression is constant (needed because of FD_SET)
 #endif
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 using namespace threadhelp;
 
-void load_mime_config( void )
+void load_mime_config()
 {
   static time_t last_load = 0;
 
@@ -405,7 +404,7 @@ unsigned char cvt_8to6( char ch )
 {
   if ( ch >= 'A' && ch <= 'Z' )
     return ch - 'A';
-  else if ( ch >= 'a' && ch <= 'z' )
+  if ( ch >= 'a' && ch <= 'z' )
     return ch - 'a' + 26;
   else if ( ch >= '0' && ch <= '9' )
     return ch - '0' + 52;
@@ -462,7 +461,7 @@ bool legal_pagename( const std::string& page )
     {
       continue;
     }
-    else if ( ( ch == '.' ) && ( isalnum( *( t + 1 ) ) ) )
+    if ( ( ch == '.' ) && ( isalnum( *( t + 1 ) ) ) )
     {
       continue;
     }
@@ -487,10 +486,8 @@ std::string get_pagetype( const std::string& page )
   {
     return page.substr( dotpos + 1 );
   }
-  else
-  {
-    return "";
-  }
+
+  return "";
 }
 
 bool get_script_page_filename( const std::string& page, ScriptDef& sd )
@@ -509,10 +506,8 @@ bool get_script_page_filename( const std::string& page, ScriptDef& sd )
         sd.quickconfig( pkg, "www/" + page.substr( pkgname_end + 1 ) );
         return true;
       }
-      else
-      {
-        return false;
-      }
+
+      return false;
     }
     else
     {
@@ -647,8 +642,8 @@ bool decode_page( const std::string& ipage, Plib::Package** ppkg, std::string* p
 
   std::string pagetype = get_pagetype( page );
 
-  if ( pagetype == "" )  // didn't specify, so assume it's a directory.
-  {                      // have to redirect...
+  if ( pagetype.empty() )  // didn't specify, so assume it's a directory.
+  {                        // have to redirect...
     page = ipage;
     if ( page.empty() || page[page.size() - 1] != '/' )
     {
@@ -902,7 +897,7 @@ void http_func( SOCKET client_socket )
   else
   {
     std::string type = gamestate.mime_types[pagetype];
-    if ( type.length() > 0 )
+    if ( !type.empty() )
     {
       send_binary( sck, page, filename, type );
     }
@@ -970,7 +965,7 @@ void test_decode()
 }
 
 
-void http_thread( void )
+void http_thread()
 {
   test_decode();
 
@@ -1050,5 +1045,4 @@ void start_http_server()
 {
   threadhelp::start_thread( http_thread, "HTTP" );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

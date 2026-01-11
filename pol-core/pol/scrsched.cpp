@@ -53,9 +53,8 @@
 #include "scrstore.h"
 #include "uoexec.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 bool find_uoexec( unsigned int pid, UOExecutor** pp_uoexec )
 {
@@ -393,8 +392,7 @@ Bscript::BObjectImp* run_executor_to_completion( UOExecutor& ex, const ScriptDef
 
   if ( ex.ValueStack.empty() )
     return new Bscript::BLong( 1 );
-  else
-    return ex.ValueStack.back().get()->impptr()->copy();
+  return ex.ValueStack.back().get()->impptr()->copy();
 }
 
 Bscript::BObjectImp* run_script_to_completion( const ScriptDef& script )
@@ -747,5 +745,4 @@ void list_crit_scripts()
   // list_crit_scripts( "holding", holdlist );
   list_crit_scripts( "ran", scriptScheduler.getRanlist() );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

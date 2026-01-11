@@ -14,34 +14,31 @@
 #include "mapcell.h"
 #include "mapserver.h"
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 class RealmDescriptor;
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 class InMemoryMapServer : public MapServer
 {
 public:
   explicit InMemoryMapServer( const RealmDescriptor& descriptor );
-  virtual ~InMemoryMapServer() = default;
+  ~InMemoryMapServer() override = default;
 
-  virtual MAPCELL GetMapCell( unsigned short x, unsigned short y ) const override;
-  virtual size_t sizeEstimate() const override;
+  MAPCELL GetMapCell( unsigned short x, unsigned short y ) const override;
+  size_t sizeEstimate() const override;
 
 private:
   std::vector<MAPBLOCK> _mapblocks;
 
   // not implemented:
-  InMemoryMapServer& operator=( const InMemoryMapServer& );
-  InMemoryMapServer( const InMemoryMapServer& );
+  InMemoryMapServer& operator=( const InMemoryMapServer& ) = delete;
+  InMemoryMapServer( const InMemoryMapServer& ) = delete;
 };
-}
-}
+}  // namespace Pol::Plib
+
 #endif

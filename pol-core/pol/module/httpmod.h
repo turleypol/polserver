@@ -12,14 +12,13 @@
 #include "../../clib/network/wnsckt.h"
 #include "../polmodl.h"
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 class BObjectImp;
 class Executor;
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript
+
 
 namespace Pol
 {
@@ -33,7 +32,7 @@ class HttpExecutorModule : public Bscript::TmplExecutorModule<HttpExecutorModule
 {
 public:
   HttpExecutorModule( Bscript::Executor& exec, Clib::Socket&& isck );
-  ~HttpExecutorModule();
+  ~HttpExecutorModule() override;
 
   [[nodiscard]] Bscript::BObjectImp* mf_WriteStatus();
   [[nodiscard]] Bscript::BObjectImp* mf_WriteHeader();
@@ -44,12 +43,12 @@ public:
 
   void read_query_string( const std::string& query_string );
   void read_query_ip();
-  virtual size_t sizeEstimate() const override;
+  size_t sizeEstimate() const override;
 
   // TODO: clean up the socket ownership thing so these can be private again
 public:
   Clib::Socket sck_;
-  typedef std::map<std::string, std::string, Clib::ci_cmp_pred> QueryParamMap;
+  using QueryParamMap = std::map<std::string, std::string, Clib::ci_cmp_pred>;
   QueryParamMap params_;
   int continuing_offset;
   std::string query_ip_;

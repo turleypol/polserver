@@ -39,9 +39,8 @@
 #include <unordered_map>
 #endif
 
-namespace Pol
-{
-namespace Bscript
+
+namespace Pol::Bscript
 {
 Clib::fixed_allocator<sizeof( BObject ), 256> bobject_alloc;
 Clib::fixed_allocator<sizeof( UninitObject ), 256> uninit_alloc;
@@ -52,15 +51,13 @@ size_t BObjectRef::sizeEstimate() const
 {
   if ( get() )
     return sizeof( BObjectRef ) + get()->sizeEstimate();
-  else
-    return sizeof( BObjectRef );
+  return sizeof( BObjectRef );
 }
 size_t BObject::sizeEstimate() const
 {
   if ( objimp.get() )
     return sizeof( BObject ) + objimp.get()->sizeEstimate();
-  else
-    return sizeof( BObject );
+  return sizeof( BObject );
 }
 
 
@@ -338,8 +335,7 @@ BObjectRef BObjectImp::OperMultiSubscript( std::stack<BObjectRef>& indices )
   BObjectRef ref = OperSubscript( *index );
   if ( indices.empty() )
     return ref;
-  else
-    return ( *ref ).impptr()->OperMultiSubscript( indices );
+  return ( *ref ).impptr()->OperMultiSubscript( indices );
 }
 
 BObjectRef BObjectImp::OperMultiSubscriptAssign( std::stack<BObjectRef>& indices,
@@ -352,11 +348,9 @@ BObjectRef BObjectImp::OperMultiSubscriptAssign( std::stack<BObjectRef>& indices
     BObjectImp* imp = array_assign( ( *index ).impptr(), target, false );
     return BObjectRef( imp );
   }
-  else
-  {
-    BObjectRef ref = OperSubscript( *index );
-    return ( *ref ).impptr()->OperMultiSubscript( indices );
-  }
+
+  BObjectRef ref = OperSubscript( *index );
+  return ( *ref ).impptr()->OperMultiSubscript( indices );
 }
 
 BObjectImp* BObjectImp::selfIsObjImp( const BObjectImp& objimp ) const
@@ -900,7 +894,7 @@ void BObjectImp::operModulusEqual( BObject& obj, BObjectImp& objimp )
   // obj.setimp( selfModulusObjImp( objimp ) );
 }
 
-BObject BObjectImp::operator-( void ) const
+BObject BObjectImp::operator-() const
 {
   BObjectImp* newobj = inverse();
   return BObject( newobj );
@@ -923,7 +917,7 @@ BObjectRef BObjectImp::OperSubscript( const BObject& /*obj*/ )
 /*
   "All Objects are inherently good."
   */
-bool BObjectImp::isTrue( void ) const
+bool BObjectImp::isTrue() const
 {
   return true;
 }
@@ -983,7 +977,7 @@ ref_ptr<BObjectImp> UninitObject::SharedInstanceOwner;
 
 UninitObject::UninitObject() : BObjectImp( OTUninit ) {}
 
-BObjectImp* UninitObject::copy( void ) const
+BObjectImp* UninitObject::copy() const
 {
   return create();
 }
@@ -1044,7 +1038,7 @@ void ObjArray::deepcopy()
   }
 }
 
-BObjectImp* ObjArray::copy( void ) const
+BObjectImp* ObjArray::copy() const
 {
   auto nobj = new ObjArray( *this );
   return nobj;
@@ -1097,8 +1091,7 @@ bool ObjArray::operator==( const BObjectImp& imp ) const
 
       if ( thisimp == thatimp )
         continue;
-      else
-        return false;
+      return false;
     }
     else if ( thisobj == nullptr && thatobj == nullptr )
     {
@@ -1150,10 +1143,8 @@ BObjectImp* ObjArray::array_assign( BObjectImp* idx, BObjectImp* target, bool co
     }
     return ref->impptr();
   }
-  else
-  {
-    return UninitObject::create();
-  }
+
+  return UninitObject::create();
 }
 
 void ObjArray::operInsertInto( BObject& /*obj*/, const BObjectImp& objimp )
@@ -1206,7 +1197,7 @@ BObjectImp* ObjArray::selfPlusObj( const ObjArray& objimp ) const
     }
     else
     {
-      result->ref_arr.push_back( BObjectRef() );
+      result->ref_arr.emplace_back();
     }
   }
   return result.release();
@@ -1255,7 +1246,7 @@ void ObjArray::selfPlusObj( ObjArray& objimp, BObject& /*obj*/ )
     }
     else
     {
-      ref_arr.push_back( BObjectRef() );
+      ref_arr.emplace_back();
     }
   }
 }
@@ -1318,7 +1309,7 @@ BObjectRef ObjArray::OperMultiSubscript( std::stack<BObjectRef>& indices )
     }
     else
     {
-      str->ref_arr.push_back( BObjectRef() );
+      str->ref_arr.emplace_back();
     }
   }
   /*
@@ -1345,7 +1336,7 @@ BObjectRef ObjArray::OperSubscript( const BObject& rightobj )
     {
       return BObjectRef( new BError( "Array index out of bounds" ) );
     }
-    else if ( index <= 0 )
+    if ( index <= 0 )
       return BObjectRef( new BError( "Array index out of bounds" ) );
 
     BObjectRef& ref = ref_arr[index - 1];
@@ -1353,7 +1344,7 @@ BObjectRef ObjArray::OperSubscript( const BObject& rightobj )
       ref.set( new BObject( UninitObject::create() ) );
     return ref;
   }
-  else if ( right.isa( OTString ) )
+  if ( right.isa( OTString ) )
   {
     // TODO: search for named variables (structure members)
     return BObjectRef( copy() );
@@ -1405,9 +1396,9 @@ BObjectRef ObjArray::operDotPlus( const char* name )
       return BObjectRef( new BError( "Member already exists" ) );
     }
   }
-  name_arr.push_back( name );
+  name_arr.emplace_back( name );
   auto pnewobj = new BObject( UninitObject::create() );
-  ref_arr.push_back( BObjectRef( pnewobj ) );
+  ref_arr.emplace_back( pnewobj );
   return BObjectRef( pnewobj );
 }
 
@@ -1454,7 +1445,7 @@ long ObjArray::contains( const BObjectImp& imp ) const
                       Clib::scripts_thread_script, imp, ( itr - ref_arr.begin() ) + 1 );
         continue;
       }
-      else if ( *( bo->impptr() ) == imp )
+      if ( *( bo->impptr() ) == imp )
       {
         return ( static_cast<long>( ( itr - ref_arr.begin() ) + 1 ) );
       }
@@ -1500,10 +1491,8 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
           ref_arr.erase( ref_arr.begin() + idx - 1 );
           return new BLong( 1 );
         }
-        else
-        {
-          return nullptr;
-        }
+
+        return nullptr;
       }
       else
         return new BError( "array.erase(index) requires a parameter." );
@@ -1520,10 +1509,8 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
           bool exists = ( idx <= (int)ref_arr.size() );
           return new BLong( exists ? 1 : 0 );
         }
-        else
-        {
-          return new BError( "Invalid parameter type" );
-        }
+
+        return new BError( "Invalid parameter type" );
       }
       else
         return new BError( "array.exists(index) requires a parameter." );
@@ -1565,10 +1552,8 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
           ref_arr.erase( ref_arr.begin() + idx, ref_arr.end() );
           return new BLong( 1 );
         }
-        else
-        {
-          return new BError( "Invalid parameter type" );
-        }
+
+        return new BError( "Invalid parameter type" );
       }
       else
         return new BError( "array.shrink(nelems) requires a parameter." );
@@ -1586,10 +1571,8 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
 
           return new BLong( 1 );
         }
-        else
-        {
-          return new BError( "Invalid parameter type" );
-        }
+
+        return new BError( "Invalid parameter type" );
       }
       else
         return new BError( "array.append(value) requires a parameter." );
@@ -1603,8 +1586,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
         reverse( ref_arr.begin(), ref_arr.end() );
         return new BLong( 1 );
       }
-      else
-        return new BError( "array.reverse() doesn't take parameters." );
+      return new BError( "array.reverse() doesn't take parameters." );
     }
     break;
   case MTH_SORT:
@@ -1615,7 +1597,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
         sort( ref_arr.begin(), ref_arr.end(), objref_cmp() );
         return new BLong( 1 );
       }
-      else if ( ex.numParams() == 1 )
+      if ( ex.numParams() == 1 )
       {
         int sub_index;
         if ( !ex.getParam( 0, sub_index ) )
@@ -1693,7 +1675,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
       BObjectRefVec args;
       args.push_back( ref_arr.front() );
       args.push_back( BObjectRef( new BLong( 1 ) ) );
-      args.push_back( BObjectRef( this ) );
+      args.emplace_back( this );
 
       // The ContinuationCallback receives three arguments:
       //
@@ -1723,7 +1705,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
         // If the result is true, add it to the filtered array.
         if ( result->isTrue() )
         {
-          filtered->ref_arr.push_back( BObjectRef( elementRef->impptr() ) );
+          filtered->ref_arr.emplace_back( elementRef->impptr() );
         }
 
         // If thisArray was modified for some reason to no longer be an array,
@@ -1741,21 +1723,19 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
           return filtered;
         }
         // Otherwise, increment the processed index and call the function again.
-        else
-        {
-          // Increment the processed counter.
-          ++processed;
 
-          BObjectRefVec args;
-          args.push_back( ref_arr[processed - 1] );
-          args.push_back( BObjectRef( new BObject( new BLong( processed ) ) ) );
-          args.push_back( thisArray );
+        // Increment the processed counter.
+        ++processed;
 
-          elementRef = args[0];
+        BObjectRefVec args;
+        args.push_back( ref_arr[processed - 1] );
+        args.push_back( BObjectRef( new BObject( new BLong( processed ) ) ) );
+        args.push_back( thisArray );
 
-          // Return this continuation with the new arguments.
-          return ex.withContinuation( continuation, std::move( args ) );
-        }
+        elementRef = args[0];
+
+        // Return this continuation with the new arguments.
+        return ex.withContinuation( continuation, std::move( args ) );
       };
 
       // Create a new continuation for a user function call.
@@ -1785,7 +1765,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
       BObjectRefVec args;
       args.push_back( ref_arr.front() );
       args.push_back( BObjectRef( new BLong( 1 ) ) );
-      args.push_back( BObjectRef( this ) );
+      args.emplace_back( this );
 
       auto callback = [elementRef = args[0], processed = 1, thisArray = args[2],
                        mappedRef = BObjectRef( new ObjArray ),
@@ -1795,7 +1775,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
       {
         auto mapped = mappedRef->impptr<ObjArray>();
 
-        mapped->ref_arr.push_back( BObjectRef( result->impptr() ) );
+        mapped->ref_arr.emplace_back( result->impptr() );
 
         if ( !thisArray->isa( OTArray ) )
           return mapped;
@@ -1806,20 +1786,18 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
         {
           return mapped;
         }
-        else
-        {
-          // Increment the processed counter.
-          ++processed;
 
-          BObjectRefVec args;
-          args.push_back( ref_arr[processed - 1] );
-          args.push_back( BObjectRef( new BObject( new BLong( processed ) ) ) );
-          args.push_back( thisArray );
+        // Increment the processed counter.
+        ++processed;
 
-          elementRef = args[0];
+        BObjectRefVec args;
+        args.push_back( ref_arr[processed - 1] );
+        args.push_back( BObjectRef( new BObject( new BLong( processed ) ) ) );
+        args.push_back( thisArray );
 
-          return ex.withContinuation( continuation, std::move( args ) );
-        }
+        elementRef = args[0];
+
+        return ex.withContinuation( continuation, std::move( args ) );
       };
 
       return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move( callback ),
@@ -1871,10 +1849,10 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
       // - current index
       // - the array itself
       BObjectRefVec args;
-      args.push_back( BObjectRef( accumulator ) );
-      args.push_back( BObjectRef( ref_arr[processed - 1] ) );
+      args.emplace_back( accumulator );
+      args.emplace_back( ref_arr[processed - 1] );
       args.push_back( BObjectRef( new BLong( processed ) ) );
-      args.push_back( BObjectRef( this ) );
+      args.emplace_back( this );
 
       auto callback = [thisArray = args[3], processed = processed,
                        initialSize = static_cast<int>( ref_arr.size() )](
@@ -1890,18 +1868,16 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
         {
           return result->impptr();
         }
-        else
-        {
-          ++processed;
 
-          BObjectRefVec args;
-          args.push_back( result );
-          args.push_back( ref_arr[processed - 1] );
-          args.push_back( BObjectRef( new BObject( new BLong( processed ) ) ) );
-          args.push_back( thisArray );
+        ++processed;
 
-          return ex.withContinuation( continuation, std::move( args ) );
-        }
+        BObjectRefVec args;
+        args.push_back( result );
+        args.push_back( ref_arr[processed - 1] );
+        args.push_back( BObjectRef( new BObject( new BLong( processed ) ) ) );
+        args.push_back( thisArray );
+
+        return ex.withContinuation( continuation, std::move( args ) );
       };
 
       return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move( callback ),
@@ -1930,7 +1906,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
       BObjectRefVec args;
       args.push_back( ref_arr.front() );
       args.push_back( BObjectRef( new BLong( 1 ) ) );
-      args.push_back( BObjectRef( this ) );
+      args.emplace_back( this );
 
       auto callback = [elementRef = args[0], processed = 1, thisArray = args[2],
                        initialSize = static_cast<int>( ref_arr.size() )](
@@ -1951,19 +1927,17 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
         {
           return UninitObject::create();
         }
-        else
-        {
-          ++processed;
 
-          BObjectRefVec args;
-          args.push_back( ref_arr[processed - 1] );
-          args.push_back( BObjectRef( new BObject( new BLong( processed ) ) ) );
-          args.push_back( thisArray );
+        ++processed;
 
-          elementRef = args[0];
+        BObjectRefVec args;
+        args.push_back( ref_arr[processed - 1] );
+        args.push_back( BObjectRef( new BObject( new BLong( processed ) ) ) );
+        args.push_back( thisArray );
 
-          return ex.withContinuation( continuation, std::move( args ) );
-        }
+        elementRef = args[0];
+
+        return ex.withContinuation( continuation, std::move( args ) );
       };
 
       return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move( callback ),
@@ -1992,7 +1966,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
       BObjectRefVec args;
       args.push_back( ref_arr.front() );
       args.push_back( BObjectRef( new BLong( 1 ) ) );
-      args.push_back( BObjectRef( this ) );
+      args.emplace_back( this );
 
       auto callback =
           [processed = 1, thisArray = args[2], initialSize = static_cast<int>( ref_arr.size() )](
@@ -2012,17 +1986,15 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
         {
           return new BLong( 0 );
         }
-        else
-        {
-          ++processed;
 
-          BObjectRefVec args;
-          args.push_back( ref_arr[processed - 1] );
-          args.push_back( BObjectRef( new BObject( new BLong( processed ) ) ) );
-          args.push_back( thisArray );
+        ++processed;
 
-          return ex.withContinuation( continuation, std::move( args ) );
-        }
+        BObjectRefVec args;
+        args.push_back( ref_arr[processed - 1] );
+        args.push_back( BObjectRef( new BObject( new BLong( processed ) ) ) );
+        args.push_back( thisArray );
+
+        return ex.withContinuation( continuation, std::move( args ) );
       };
 
       return ex.makeContinuation( BObjectRef( new BObject( param0 ) ), std::move( callback ),
@@ -2131,12 +2103,10 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
             return ( &x1 < &x2 );
           return ( *b1 < *b2 );
         }
-        else
-        {
-          if ( b1 == nullptr || b2 == nullptr )
-            return ( &x1 > &x2 );
-          return ( *b1 > *b2 );
-        }
+
+        if ( b1 == nullptr || b2 == nullptr )
+          return ( &x1 > &x2 );
+        return ( *b1 > *b2 );
       };
       if ( reverse )
       {
@@ -2161,8 +2131,7 @@ BObjectImp* ObjArray::call_method( const char* methodname, Executor& ex )
   ObjMethod* objmethod = getKnownObjMethod( methodname );
   if ( objmethod != nullptr )
     return this->call_method_id( objmethod->id, ex );
-  else
-    return nullptr;
+  return nullptr;
 }
 
 void ObjArray::packonto( std::ostream& os ) const
@@ -2269,10 +2238,8 @@ BObjectImp* BBoolean::unpack( std::istream& is )
   {
     return new BBoolean( lv != 0 );
   }
-  else
-  {
-    return new BError( "Error extracting Boolean value" );
-  }
+
+  return new BError( "Error extracting Boolean value" );
 }
 
 void BBoolean::packonto( std::ostream& os ) const
@@ -2563,5 +2530,4 @@ std::string BSpread::getStringRep() const
   return "Spread";
 }
 
-}  // namespace Bscript
-}  // namespace Pol
+}  // namespace Pol::Bscript

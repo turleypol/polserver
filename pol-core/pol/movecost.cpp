@@ -22,9 +22,8 @@
 #include "globals/settings.h"
 #include "mobile/charactr.h"
 
-namespace Pol
-{
-namespace Core
+
+namespace Pol::Core
 {
 // dave messed with this function 1/26/3 - remove_first_prop was reading carrying percentages in
 // lexographic order, not
@@ -118,7 +117,7 @@ void load_movecost( bool reload )
 {
   if ( !settingsManager.ssopt.movement_uses_stamina )
     return;
-  else if ( !Clib::FileExists( "config/movecost.cfg" ) )
+  if ( !Clib::FileExists( "config/movecost.cfg" ) )
   {
     if ( !reload && Plib::systemstate.config.loglevel > 0 )
       INFO_PRINTLN( "File config/movecost.cfg not found, skipping." );
@@ -167,5 +166,4 @@ void load_movecost( bool reload )
     memcpy( &settingsManager.movecost_running_mounted, &settingsManager.movecost_running,
             sizeof settingsManager.movecost_running );
 }
-}  // namespace Core
-}  // namespace Pol
+}  // namespace Pol::Core

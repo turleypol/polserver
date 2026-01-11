@@ -11,9 +11,8 @@
 #include <cstring>
 #include <string>
 
-namespace Pol
-{
-namespace Clib
+
+namespace Pol::Clib
 {
 class ci_cmp_pred
 {
@@ -23,7 +22,7 @@ public:
     return stricmp( x1.c_str(), x2.c_str() ) < 0;
   }
 };
-}
-}
+}  // namespace Pol::Clib
+
 
 #endif

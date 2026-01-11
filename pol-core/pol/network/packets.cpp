@@ -18,9 +18,8 @@
 #include "pktboth.h"
 #include "pktbothid.h"
 
-namespace Pol
-{
-namespace Network
+
+namespace Pol::Network
 {
 using namespace PktHelper;
 using namespace PacketWriterDefs;
@@ -291,7 +290,7 @@ size_t PacketQueueSubs::estimateSize() const
   size_t size = sizeof( PacketQueueSubs ) + Clib::memsize( _packets );
   for ( const auto& pkts : _packets )
   {
-    if ( pkts.second.size() )
+    if ( !pkts.second.empty() )
       size += pkts.second.front()->estimateSize() * pkts.second.size();
   }
   return size;
@@ -524,5 +523,4 @@ PacketInterface* GetPacket( u8 id, u16 sub )
   }
 }
 }  // namespace PktHelper
-}  // namespace Network
-}  // namespace Pol
+}  // namespace Pol::Network

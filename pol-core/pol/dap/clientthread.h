@@ -25,16 +25,15 @@ namespace Bscript
 class EScriptProgram;
 
 }
-namespace Network
-{
-namespace DAP
+
+namespace Network::DAP
 {
 class DebugClientThread : public Bscript::ExecutorDebugListener,
                           public std::enable_shared_from_this<Bscript::ExecutorDebugListener>
 {
 public:
   DebugClientThread( const std::shared_ptr<dap::ReaderWriter>& rw );
-  virtual ~DebugClientThread() {}
+  virtual ~DebugClientThread() = default;
 
   void run();
 
@@ -95,8 +94,8 @@ private:
   std::atomic<bool> _exit_sent;
 };
 
-}  // namespace DAP
-}  // namespace Network
+}  // namespace Network::DAP
+
 }  // namespace Pol
 
 #endif

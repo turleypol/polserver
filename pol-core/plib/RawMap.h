@@ -7,9 +7,8 @@
 
 #include "ustruct.h"
 
-namespace Pol
-{
-namespace Plib
+
+namespace Pol::Plib
 {
 class RawMap
 {
@@ -19,7 +18,7 @@ private:
   std::vector<USTRUCT_MAPINFO_BLOCK> m_mapinfo_vec;
 
   // Patch indices for map files (mapdifl[N].mul)
-  typedef std::map<unsigned int, unsigned int> MapBlockIndex;
+  using MapBlockIndex = std::map<unsigned int, unsigned int>;
   MapBlockIndex mapdifl;
 
   unsigned short m_mapwidth;
@@ -52,5 +51,4 @@ public:
   ~RawMap() = default;
 };
 
-}  // namespace Plib
-}  // namespace Pol
+}  // namespace Pol::Plib

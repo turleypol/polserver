@@ -56,7 +56,7 @@ class StaticServer;
 }  // namespace Plib
 namespace Realms
 {
-typedef std::vector<Multi::UMulti*> MultiList;
+using MultiList = std::vector<Multi::UMulti*>;
 
 class Realm
 {
