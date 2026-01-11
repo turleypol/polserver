@@ -100,7 +100,7 @@ jobs:
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja ${{ matrix.config.cmake-cfg }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} -DENABLE_TIDY=ON -DTIDY_ARGS="-fix;-checks=-*,modernize-use-override"
+          cmake .. -G Ninja ${{ matrix.config.cmake-cfg }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} -DENABLE_TIDY=ON -DTIDY_ARGS="-header-filter=.*;-fix;-checks=-*,modernize-use-override"
       - name: Build
         run: |
           cd bin-build
