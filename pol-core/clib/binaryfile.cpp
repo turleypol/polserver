@@ -17,7 +17,8 @@
 
 namespace Pol::Clib
 {
-BinaryFile::BinaryFile() {};
+BinaryFile::BinaryFile()  //
+{};
 
 BinaryFile::BinaryFile( const std::string& filename, std::ios::openmode mode ) : _filename( "" )
 {
