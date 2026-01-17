@@ -109,6 +109,7 @@ jobs:
           mkdir clang-tidy-result
           ls /usr/share
           ls /usr/share/clang
+          ls /usr/bin
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git diff -U0 HEAD^ | /usr/share/clang/clang-tidy-diff.py -checks='-*,modernize-use-auto,modernize-use-using,modernize-use-nodiscard,modernize-use-nullptr,modernize-use-override,cppcoreguidelines-pro-type-static-cast-downcast' -p1
           #cmake --build . --config ${{ matrix.config.build-type }} -- -j 1
