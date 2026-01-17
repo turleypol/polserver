@@ -20,8 +20,7 @@ jobs:
             c-compiler: clang
             compiler-version: 20
             build-type: RelWithDebInfo
-            tidy-checks: "modernize-use-transparent-functors"
-            #"modernize-use-override,modernize-make-shared,modernize-make-unique,modernize-use-constraints,modernize-use-emplace,modernize-use-equals-default,modernize-use-equals-delete,modernize-use-using,readability-else-after-return,readability-container-size-empty,modernize-concat-nested-namespaces,modernize-redundant-void-arg"
+            tidy-checks: "modernize-use-override,modernize-make-shared,modernize-make-unique,modernize-use-constraints,modernize-use-emplace,modernize-use-equals-default,modernize-use-equals-delete,modernize-use-using,readability-else-after-return,readability-container-size-empty,modernize-concat-nested-namespaces,modernize-redundant-void-arg"
             name: Linux Clang
 
     runs-on: ${{ matrix.config.os }}
@@ -109,5 +108,5 @@ jobs:
           mkdir clang-tidy-result
           git diff -U0 HEAD^
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git diff -U0 HEAD^ | clang-tidy-diff-20.py -checks='-*,modernize-use-auto,modernize-use-using,modernize-use-nodiscard,modernize-use-nullptr,modernize-use-override,cppcoreguidelines-pro-type-static-cast-downcast' -p1
+          git diff -U0 HEAD^ | clang-tidy-diff-20.py -checks='-*,${{matrix.config.tidy-checks}}' -p1
           #cmake --build . --config ${{ matrix.config.build-type }} -- -j 1

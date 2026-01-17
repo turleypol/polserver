@@ -17,14 +17,14 @@
 
 namespace Pol::Clib
 {
-BinaryFile::BinaryFile() = default;
+BinaryFile::BinaryFile() {};
 
 BinaryFile::BinaryFile( const std::string& filename, std::ios::openmode mode ) : _filename( "" )
 {
   Open( filename, mode );
 }
 
-BinaryFile::~BinaryFile() = default;
+BinaryFile::~BinaryFile() {};
 
 void BinaryFile::Open( const std::string& filename, std::ios::openmode mode )
 {
