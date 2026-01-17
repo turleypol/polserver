@@ -100,7 +100,6 @@ size_t BinaryFile::GetElementCount( size_t elemsize )
 size_t BinaryFile::sizeEstimate() const
 {
   size_t size = sizeof( *this ) + _filename.capacity();
-
   return size;
 }
 }  // namespace Pol::Clib
