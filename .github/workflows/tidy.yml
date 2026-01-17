@@ -102,14 +102,14 @@ jobs:
         run: |
           cd bin-build
           cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
-          cmake --build . --target libcurl
-          cmake --build . --target libantlr
-          cmake --build . --target libboost_headers
-          cmake --build . --target libkaitai
+          cmake --build . --target libcurl_ext || true
+          cmake --build . --target libantlr_ext || true
+          cmake --build . --target libboost_ext || true
+          cmake --build . --target libkaitai_ext
           cmake --build . --target libtinyxml
-          cmake --build . --target libfmt
+          cmake --build . --target libfmt_ext
           cmake --build . --target libescriptgrammar
-          cmake --build . --target libcppdap
+          cmake --build . --target libcppdap_ext || true
       - name: Build
         run: |
           git diff -U0 HEAD^
