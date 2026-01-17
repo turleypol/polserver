@@ -66,11 +66,10 @@ jobs:
 
           if ($version -ne 'default') {
             sudo apt-get install "$compiler-$version" -y
+            sudo apt-get install "clang-tidy-$version" -y
           }
           sudo apt-get install libmysqlclient-dev -y
-          sudo apt-get install kwstyle -y
           sudo apt-get install uuid-dev -y
-          pip install aiosmtpd
 
           $ninja_version = "1.12.1"
           $cmake_version = "3.31.3"
@@ -113,21 +112,3 @@ jobs:
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git diff -U0 HEAD^ | /usr/share/clang/clang-tidy-diff.py -checks='-*,modernize-use-auto,modernize-use-using,modernize-use-nodiscard,modernize-use-nullptr,modernize-use-override,cppcoreguidelines-pro-type-static-cast-downcast' -p1
           #cmake --build . --config ${{ matrix.config.build-type }} -- -j 1
-      - name: Format
-        run: |
-          cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target clang_format
-      
-      - name: Commit
-        run: |
-          git config --global user.name 'Clang Tidy'
-          git config --global user.email 'clang-tidy@users.noreply.github.com'
-          git add pol-core
-          git commit -m "Automated clang-tidy change"
-          git push
-      - name: Upload coretest folder
-        uses: actions/upload-artifact@v4
-        with:
-          name: Sourcedir-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
-          path: pol-core
-
