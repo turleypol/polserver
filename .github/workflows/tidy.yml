@@ -62,6 +62,7 @@ jobs:
 
           if ($version -ne 'default') {
             sudo apt-get install "$compiler-$version" -y
+            sudo apt-get install "clang-tidy-$version" -y
           }
           sudo apt-get install libmysqlclient-dev -y
           sudo apt-get install uuid-dev -y
@@ -109,6 +110,6 @@ jobs:
           cmake --build . --target libcppdap_ext || true
       - name: Build
         run: |
-          git diff -U0 origin/${{github.head_ref}}..origin/${{github.event.pull_request.base.ref}}
-          git diff -U0 HEAD^ | clang-tidy-diff-20.py -checks='-*,${{matrix.config.tidy-checks}}'  -p1 -path bin-build
+          git diff -U0 origin/${{github.event.pull_request.base.ref}}..origin/${{github.head_ref}}
+          git diff -U0 origin/${{github.event.pull_request.base.ref}}..origin/${{github.head_ref}} | clang-tidy-diff-20.py -checks='-*,${{matrix.config.tidy-checks}}' -p1 -path bin-build
 #-extra-arg='-header-filter=.*'
