@@ -102,10 +102,18 @@ jobs:
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} -DENABLE_TIDY=ON -DTIDY_ARGS="-header-filter=.*;-fix;-checks=-*,${{matrix.config.tidy-checks}}"
+          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }}
+          cmake --build . --target libcurl_ext
+          cmake --build . --target libantlr_ext
+          cmake --build . --target libboost_ext
+          cmake --build . --target libkaitai_ext
+          cmake --build . --target libtinyxml
+          cmake --build . --target libfmt_ext
+          cmake --build . --target libescriptgrammar
+          cmake --build . --target libcppdap_ext
       - name: Build
         run: |
           git diff -U0 HEAD^
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git diff -U0 HEAD^ | clang-tidy-diff-20.py -checks='-*,${{matrix.config.tidy-checks}}' -p1 -path bin-build
+          git diff -U0 HEAD^ | clang-tidy-diff-20.py -checks='-*,${{matrix.config.tidy-checks}}' -header-filter=.* -p1 -path bin-build
           #cmake --build . --config ${{ matrix.config.build-type }} -- -j 1
