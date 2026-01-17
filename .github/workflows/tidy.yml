@@ -113,4 +113,5 @@ jobs:
       - name: Build
         run: |
           git diff -U0 HEAD^
-          git diff -U0 HEAD^ | clang-tidy-diff-20.py -checks='-*,${{matrix.config.tidy-checks}}' -extra-arg='-header-filter=.*' -p1 -path bin-build
+          git diff -U0 HEAD^ | clang-tidy-diff-20.py -checks='-*,${{matrix.config.tidy-checks}}'  -p1 -path bin-build
+#-extra-arg='-header-filter=.*'
