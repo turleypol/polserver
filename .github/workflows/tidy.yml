@@ -105,8 +105,7 @@ jobs:
           cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} -DENABLE_TIDY=ON -DTIDY_ARGS="-header-filter=.*;-fix;-checks=-*,${{matrix.config.tidy-checks}}"
       - name: Build
         run: |
-          cd bin-build
           git diff -U0 HEAD^
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git diff -U0 HEAD^ | clang-tidy-diff-20.py -checks='-*,${{matrix.config.tidy-checks}}' -p1
+          git diff -U0 HEAD^ | clang-tidy-diff-20.py -checks='-*,${{matrix.config.tidy-checks}}' -p1 -path bin-build
           #cmake --build . --config ${{ matrix.config.build-type }} -- -j 1
