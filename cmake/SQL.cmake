@@ -1,7 +1,7 @@
   set(SQL_REPO "https://github.com/mysql/mysql-server")
   set(SQL_TAG "mysql-8.4.7")
   set (SQL_SOURCE_DIR "${POL_EXT_LIB_DIR}/${SQL_TAG}")
-  set(SQL_ARGS "-DWITHOUT_SERVER=ON -DWITH_BOOST=${POL_EXT_LIB_DIR}/boost_1_89_0 -DWITH_UNIT_TESTS=OFF")
+  set(SQL_ARGS "-DWITHOUT_SERVER=ON -DWITH_BOOST=${POL_EXT_LIB_DIR}/boost_1_89_0 -DWITH_UNIT_TESTS=OFF -DFORCE_INSOURCE_BUILD=1")
   set(SQL_LIB "${SQL_SOURCE_DIR}/sql.so")
   if(NOT EXISTS ${SQL_LIB})
   ExternalProject_Add(mysqlclient_ext
