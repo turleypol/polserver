@@ -4,6 +4,8 @@
   set(SQL_ARGS "-DWITHOUT_SERVER=ON -DWITH_BOOST=${POL_EXT_LIB_DIR}/boost_1_89_0 -DWITH_UNIT_TESTS=OFF -DFORCE_INSOURCE_BUILD=ON")
   set(SQL_LIB "${SQL_SOURCE_DIR}/sql.so")
   if(NOT EXISTS ${SQL_LIB})
+  file(MAKE_DIRECTORY ${SQL_SOURCE_DIR}/build)
+  file(MAKE_DIRECTORY ${SQL_SOURCE_DIR}/install)
   ExternalProject_Add(mysqlclient_ext
     GIT_REPOSITORY   ${SQL_REPO}
     GIT_TAG          ${SQL_TAG}
