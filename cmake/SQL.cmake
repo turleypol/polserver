@@ -22,10 +22,11 @@ else()
   message("  - already built")
 endif()
   add_library(libsql SHARED IMPORTED)
+  file(MAKE_DIRECTORY ${SQL_SOURCE_DIR}/blubb) #directory has to exist during configure
 set_target_properties(libsql PROPERTIES
   IMPORTED_LOCATION ${SQL_LIB}
   IMPORTED_IMPLIB ${SQL_LIB}
-  INTERFACE_INCLUDE_DIRECTORIES ${SQL_SOURCE_DIR}/include
+  INTERFACE_INCLUDE_DIRECTORIES ${SQL_SOURCE_DIR}/blubb
   FOLDER 3rdParty
 )
   add_dependencies(libsql mysqlclient_ext)
