@@ -1,7 +1,7 @@
   set(SQL_REPO "https://github.com/mysql/mysql-server")
   set(SQL_TAG "mysql-8.4.7")
   set (SQL_SOURCE_DIR "${POL_EXT_LIB_DIR}/${SQL_TAG}")
-  set(SQL_ARGS "-DWITHOUT_SERVER=ON -DWITH_BOOST=${POL_EXT_LIB_DIR}/boost_1_89_0 -DWITH_UNIT_TESTS=OFF -DFORCE_INSOURCE_BUILD=1")
+  set(SQL_ARGS "-DWITHOUT_SERVER=ON -DWITH_BOOST=${POL_EXT_LIB_DIR}/boost_1_89_0 -DWITH_UNIT_TESTS=OFF -DFORCE_INSOURCE_BUILD=ON")
   set(SQL_LIB "${SQL_SOURCE_DIR}/sql.so")
   if(NOT EXISTS ${SQL_LIB})
   ExternalProject_Add(mysqlclient_ext
@@ -9,11 +9,11 @@
     GIT_TAG          ${SQL_TAG}
     # only valid option if its a tag or branch not a commit
     GIT_SHALLOW      TRUE
-    PREFIX           "${SQL_SOURCE_DIR}/build"
+    #PREFIX           "${SQL_SOURCE_DIR}-build"
     LIST_SEPARATOR |
     CMAKE_ARGS       ${SQL_ARGS}
     SOURCE_DIR       "${SQL_SOURCE_DIR}"
-    #    BUILD_IN_SOURCE  1
+        BUILD_IN_SOURCE  1
     INSTALL_COMMAND  ${CMAKE_COMMAND} --build . --config Release --target install
     BUILD_BYPRODUCTS ${SQL_LIB}
     EXCLUDE_FROM_ALL 1
