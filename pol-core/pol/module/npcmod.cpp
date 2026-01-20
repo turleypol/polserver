@@ -123,18 +123,15 @@ BObjectImp* NPCExecutorModule::mf_CanMove()
       Core::UFACING facing = static_cast<Core::UFACING>( l->value() & PKTIN_02_FACING_MASK );
       return new BLong( npc.could_move( facing ) ? 1 : 0 );
     }
-    else
-    {
-      DEBUGLOGLN(
-          "Script Error in '{}' PC={}: \n"
-          "\tCall to function npc::canmove():\n"
-          "\tParameter 0: Expected direction, got datatype {}",
-          scriptname(), exec.PC, BObjectImp::typestr( param0->type() ) );
-      return new BError( "Invalid parameter type" );
-    }
+
+    DEBUGLOGLN(
+        "Script Error in '{}' PC={}: \n"
+        "\tCall to function npc::canmove():\n"
+        "\tParameter 0: Expected direction, got datatype {}",
+        scriptname(), exec.PC, BObjectImp::typestr( param0->type() ) );
+    return new BError( "Invalid parameter type" );
   }
-  else
-    return new BError( "Invalid parameter count" );
+  return new BError( "Invalid parameter count" );
 }
 
 BObjectImp* NPCExecutorModule::mf_Self()
@@ -160,10 +157,8 @@ BObjectImp* NPCExecutorModule::mf_SetAnchor()
     npc.anchor.enabled = false;
     return new BLong( 1 );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 
@@ -333,7 +328,7 @@ BObjectImp* NPCExecutorModule::mf_Move()
     Core::UFACING facing = static_cast<Core::UFACING>( l->value() & PKTIN_02_FACING_MASK );
     return move_self( facing, false );
   }
-  else if ( param0->isa( BObjectImp::OTApplicObj ) )
+  if ( param0->isa( BObjectImp::OTApplicObj ) )
   {
     BApplicObjBase* appobj = static_cast<BApplicObjBase*>( param0 );
     if ( appobj->object_type() == &bounding_box_type )
@@ -351,31 +346,16 @@ BObjectImp* NPCExecutorModule::mf_Move()
         os_module->SleepFor( 1 );
         return new String( Mobile::FacingStr( facing ) );
       }
-      else
-      {
-        return new String( "" );
-      }
-    }
-    else
-    {
-      DEBUGLOGLN(
-          "Script Error in '{}' PC={}: \n"
-          "\tCall to function npc::move():\n"
-          "\tParameter 0: Expected direction or bounding box, , got datatype {}",
-          scriptname(), exec.PC, BObjectImp::typestr( param0->type() ) );
-      return nullptr;
-    }
-  }
-  else
-  {
-    DEBUGLOGLN(
-        "Script Error in '{}' PC={}: \n"
-        "\tCall to function npc::move():\n"
-        "\tParameter 0: Expected direction or bounding box, , got datatype {}",
-        scriptname(), exec.PC, BObjectImp::typestr( param0->type() ) );
 
-    return nullptr;
+      return new String( "" );
+    }
   }
+  DEBUGLOGLN(
+      "Script Error in '{}' PC={}: \n"
+      "\tCall to function npc::move():\n"
+      "\tParameter 0: Expected direction or bounding box, , got datatype {}",
+      scriptname(), exec.PC, BObjectImp::typestr( param0->type() ) );
+  return nullptr;
 }
 
 BObjectImp* NPCExecutorModule::mf_WalkToward()
@@ -808,10 +788,8 @@ BObjectImp* NPCExecutorModule::mf_GetProperty()
 
     return new BError( "Property not found" );
   }
-  else
-  {
-    return new BError( "Invalid parameter type" );
-  }
+
+  return new BError( "Invalid parameter type" );
 }
 
 BObjectImp* NPCExecutorModule::mf_SetProperty()
@@ -856,9 +834,8 @@ BObjectImp* NPCExecutorModule::mf_CreateItem()
   if ( backpack == nullptr )
     return new BLong( 0 );
 
-  Items::Item* i = Items::Item::create( static_cast<unsigned int>( objtype->value() ) );
-  i->setposition( npc.pos() );
-  std::unique_ptr<Items::Item> item( i );
+  std::unique_ptr<Items::Item> item(
+      Items::Item::create( static_cast<unsigned int>( objtype->value() ) ) );
   if ( item.get() == nullptr )
     return new BLong( 0 );
 
@@ -874,7 +851,7 @@ BObjectImp* NPCExecutorModule::mf_CreateItem()
 
   u32 serial = item->serial;
 
-  backpack->add( item.release() );
+  backpack->add_at_random_location( item.release() );
 
   return new BLong( serial );
 }

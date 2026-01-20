@@ -56,10 +56,10 @@ protected:
 
   ContIterator* createIterator( BObject* pIterVal ) override;
 
-  virtual char packtype() const;
-  virtual const char* typetag() const;
-  virtual void FormatForStringRep( std::ostream& os, const BObject& bkeyobj,
-                                   const BObjectRef& bvalref ) const;
+  char packtype() const;
+  const char* typetag() const;
+  void FormatForStringRep( std::ostream& os, const BObject& bkeyobj,
+                           const BObjectRef& bvalref ) const;
 
   BObjectRef OperSubscript( const BObject& obj ) override;
   BObjectImp* call_method( const char* methodname, Executor& ex ) override;

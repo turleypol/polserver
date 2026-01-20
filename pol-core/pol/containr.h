@@ -110,7 +110,8 @@ public:
 
   void spill_contents( Multi::UMulti* supporting_multi ) override;
 
-  virtual void add( Items::Item* item );  // NOTE: points item->container to self on insertion
+  virtual void add( Items::Item* item,
+                    const Pos2d& pos );  // NOTE: points item->container to self on insertion
   void add_at_random_location( Items::Item* item );
   unsigned count() const;
 

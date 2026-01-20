@@ -601,10 +601,8 @@ std::string DebugContext::cmd_loadsym( unsigned pid )
       return "Failed to load symbols.";
     return "Loaded debug symbols.";
   }
-  else
-  {
-    return "PID not found.";
-  }
+
+  return "PID not found.";
 }
 
 std::string DebugContext::cmd_kill( unsigned pid )
@@ -641,7 +639,7 @@ std::string DebugContext::cmd_quit()
 
 std::string DebugContext::cmd_start( const std::string& rest )
 {
-  std::string filename = rest;
+  const std::string& filename = rest;
   ScriptDef sd;
   if ( !sd.config_nodie( filename, nullptr, "scripts/" ) )
     return "Error in script name.";

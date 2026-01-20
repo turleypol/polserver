@@ -22,6 +22,6 @@ private:
   int uotool();
 };
 }  // namespace Pol::UoTool
-   // namespaces
+
 
 #endif  // UO_TOOL_MAIN_H

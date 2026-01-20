@@ -208,7 +208,7 @@ Bscript::BObjectImp* DataFileContents::methodKeys() const
 
 
 DataFileRefObjImp::DataFileRefObjImp( DataFileContentsRef dfcontents )
-    : DataFileRefObjImpBase( &datafileref_type, dfcontents )
+    : DataFileRefObjImpBase( &datafileref_type, std::move( dfcontents ) )
 {
 }
 
@@ -232,6 +232,7 @@ Bscript::BObjectImp* DataFileRefObjImp::call_method_id( const int id, Bscript::E
   switch ( id )
   {
   case Bscript::MTH_CREATEELEMENT:
+  {
     if ( !ex.hasParams( 1 ) )
     {
       return new Bscript::BError( "not enough parameters to datafile.createelement(key)" );
@@ -245,17 +246,15 @@ Bscript::BObjectImp* DataFileRefObjImp::call_method_id( const int id, Bscript::E
       }
       return obj_->methodCreateElement( key );
     }
-    else
+    const Bscript::String* key;
+    if ( !ex.getStringParam( 0, key ) )
     {
-      const Bscript::String* key;
-      if ( !ex.getStringParam( 0, key ) )
-      {
-        return new Bscript::BError( "datafile.createelement(key): key must be a String" );
-      }
-      return obj_->methodCreateElement( key->value() );
+      return new Bscript::BError( "datafile.createelement(key): key must be a String" );
     }
-    break;
+    return obj_->methodCreateElement( key->value() );
+  }
   case Bscript::MTH_FINDELEMENT:
+  {
     if ( !ex.hasParams( 1 ) )
     {
       return new Bscript::BError( "not enough parameters to datafile.findelement(key)" );
@@ -269,17 +268,15 @@ Bscript::BObjectImp* DataFileRefObjImp::call_method_id( const int id, Bscript::E
       }
       return obj_->methodFindElement( key );
     }
-    else
+    const Bscript::String* key;
+    if ( !ex.getStringParam( 0, key ) )
     {
-      const Bscript::String* key;
-      if ( !ex.getStringParam( 0, key ) )
-      {
-        return new Bscript::BError( "datafile.findelement(key): key must be a String" );
-      }
-      return obj_->methodFindElement( key->value() );
+      return new Bscript::BError( "datafile.findelement(key): key must be a String" );
     }
-    break;
+    return obj_->methodFindElement( key->value() );
+  }
   case Bscript::MTH_DELETEELEMENT:
+  {
     if ( !ex.hasParams( 1 ) )
     {
       return new Bscript::BError( "not enough parameters to datafile.deleteelement(key)" );
@@ -293,16 +290,13 @@ Bscript::BObjectImp* DataFileRefObjImp::call_method_id( const int id, Bscript::E
       }
       return obj_->methodDeleteElement( key );
     }
-    else
+    const Bscript::String* key;
+    if ( !ex.getStringParam( 0, key ) )
     {
-      const Bscript::String* key;
-      if ( !ex.getStringParam( 0, key ) )
-      {
-        return new Bscript::BError( "datafile.deleteelement(key): key must be a String" );
-      }
-      return obj_->methodDeleteElement( key->value() );
+      return new Bscript::BError( "datafile.deleteelement(key): key must be a String" );
     }
-    break;
+    return obj_->methodDeleteElement( key->value() );
+  }
   case Bscript::MTH_KEYS:
     return obj_->methodKeys();
   default:
@@ -320,7 +314,8 @@ Bscript::BObjectImp* DataFileRefObjImp::call_method( const char* methodname, Bsc
 
 
 DataElemRefObjImp::DataElemRefObjImp( DataFileContentsRef dfcontents, DataFileElementRef dfelem )
-    : DataElemRefObjImpBase( &datafileelem_type, DataFileElemObj( dfcontents, dfelem ) )
+    : DataElemRefObjImpBase( &datafileelem_type,
+                             DataFileElemObj( std::move( dfcontents ), std::move( dfelem ) ) )
 {
 }
 const char* DataElemRefObjImp::typeOf() const

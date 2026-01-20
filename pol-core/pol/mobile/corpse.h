@@ -49,7 +49,7 @@ public:
   size_t estimatedSize() const override;
   u16 get_senditem_amount() const override;
 
-  void add( Item* item ) override;
+  void add( Item* item, const Pos2d& pos ) override;
   void equip_and_add( Item* item, unsigned idx );
   void remove( iterator itr ) override;
 
@@ -72,12 +72,12 @@ protected:
   void printProperties( Clib::StreamWriter& sw ) const override;
   void readProperties( Clib::ConfigElem& elem ) override;
   friend Items::Item* Items::Item::create( const Items::ItemDesc& itemdesc, u32 serial );
-  // virtual Bscript::BObjectImp* script_member( const char *membername );
+  // Bscript::BObjectImp* script_member( const char *membername );
   Bscript::BObjectImp* get_script_member( const char* membername ) const override;
   Bscript::BObjectImp* get_script_member_id( const int id ) const override;  /// id test
-  // virtual Bscript::BObjectImp* set_script_member( const char *membername, const std::string&
+  // Bscript::BObjectImp* set_script_member( const char *membername, const std::string&
   // value );
-  // virtual Bscript::BObjectImp* set_script_member( const char *membername, int value );
+  // Bscript::BObjectImp* set_script_member( const char *membername, int value );
   bool script_isa( unsigned isatype ) const override;
   std::vector<Core::ItemRef> can_equip_list_;
 };

@@ -69,6 +69,7 @@ class BClassInstanceRef;
 class BContinuation;
 class BSpread;
 class BRegExp;
+class BSpecialUserFuncJump;
 
 using ValueStackCont = std::vector<BObjectRef>;
 
@@ -139,6 +140,7 @@ public:
     OTContinuation = 100,
     OTSpread = 101,
     OTClassInstance = 102,
+    OTSpecialUserFuncJump = 103,
   };
 
 #if INLINE_BOBJECTIMP_CTOR
@@ -398,8 +400,10 @@ struct always_false : std::false_type
 {
 };
 }  // namespace
-template <typename T>
-T* impptrIf( BObjectImp* objimp )
+// accepts const/non-const BObjectImp pointers
+template <typename T, typename I>
+  requires std::is_base_of_v<BObjectImp, std::remove_cv_t<std::remove_pointer_t<I>>>
+T* impptrIf( I* objimp )
 {
   if ( !objimp )
     return nullptr;
@@ -426,6 +430,7 @@ T* impptrIf( BObjectImp* objimp )
   impif_e( BObjectImp::OTContinuation, BContinuation );
   impif_e( BObjectImp::OTSpread, BSpread );
   impif_e( BObjectImp::OTRegExp, BRegExp );
+  impif_e( BObjectImp::OTSpecialUserFuncJump, BSpecialUserFuncJump );
   else static_assert( always_false<T>::value, "unsupported type" );
 #undef impif_i
 #undef impif_e
@@ -468,6 +473,8 @@ public:
   const T* impptr() const;
   template <typename T>
   T* impptr_if();  // also als freestanding function available
+  template <typename T>
+  T* impptr_if() const;  // also als freestanding function available
 
   template <typename T = BObjectImp>
   T& impref();
@@ -523,6 +530,12 @@ inline const T* BObject::impptr() const
 
 template <typename T>
 T* BObject::impptr_if()
+{
+  return impptrIf<T>( objimp.get() );
+}
+
+template <typename T>
+T* BObject::impptr_if() const
 {
   return impptrIf<T>( objimp.get() );
 }
@@ -983,6 +996,27 @@ public:  // Class Machinery
   BObjectRef object;
 };
 
+// very very special Imp, should never be actually used
+// we need to tell the executor that in certain cases
+// call_method and call_method_id do not return a BObjectImp
+// and the ValueStack should not be modified
+// should not be handled like a "imp" and never be passed to
+// a BObject since its a singleton
+class BSpecialUserFuncJump final : public BObjectImp
+{
+public:
+  static BSpecialUserFuncJump* get();
+
+public:  // needed minimal imp
+  size_t sizeEstimate() const override;
+  BObjectImp* copy() const override;
+  std::string getStringRep() const override;
+
+private:
+  BSpecialUserFuncJump();
+  ~BSpecialUserFuncJump() override = default;
+  static BSpecialUserFuncJump imp_special_userjmp;
+};
 
 class BApplicObjType
 {
@@ -1050,7 +1084,7 @@ class BApplicObj : public BApplicObjBase
 {
 public:
   explicit BApplicObj( const BApplicObjType* object_type );
-  BApplicObj( const BApplicObjType*, const T& );
+  BApplicObj( const BApplicObjType*, T );
 
   T& value();
   const T& value() const;
@@ -1071,8 +1105,8 @@ BApplicObj<T>::BApplicObj( const BApplicObjType* object_type ) : BApplicObjBase(
 }
 
 template <class T>
-BApplicObj<T>::BApplicObj( const BApplicObjType* object_type, const T& obj )
-    : BApplicObjBase( object_type ), obj_( obj )
+BApplicObj<T>::BApplicObj( const BApplicObjType* object_type, T obj )
+    : BApplicObjBase( object_type ), obj_( std::move( obj ) )
 {
 }
 

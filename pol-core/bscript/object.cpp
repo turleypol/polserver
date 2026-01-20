@@ -1093,14 +1093,12 @@ bool ObjArray::operator==( const BObjectImp& imp ) const
         continue;
       return false;
     }
-    else if ( thisobj == nullptr && thatobj == nullptr )
+    if ( thisobj == nullptr && thatobj == nullptr )
     {
       continue;
     }
-    else
-    {
-      return false;
-    }
+
+    return false;
   }
   return true;
 }
@@ -1349,11 +1347,9 @@ BObjectRef ObjArray::OperSubscript( const BObject& rightobj )
     // TODO: search for named variables (structure members)
     return BObjectRef( copy() );
   }
-  else
-  {
-    // TODO: crap out
-    return BObjectRef( copy() );
-  }
+
+  // TODO: crap out
+  return BObjectRef( copy() );
 }
 
 BObjectRef ObjArray::get_member( const char* membername )
@@ -1494,8 +1490,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
 
         return nullptr;
       }
-      else
-        return new BError( "array.erase(index) requires a parameter." );
+      return new BError( "array.erase(index) requires a parameter." );
     }
     break;
   case MTH_EXISTS:
@@ -1512,8 +1507,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
 
         return new BError( "Invalid parameter type" );
       }
-      else
-        return new BError( "array.exists(index) requires a parameter." );
+      return new BError( "array.exists(index) requires a parameter." );
     }
     break;
   case MTH_INSERT:
@@ -1555,8 +1549,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
 
         return new BError( "Invalid parameter type" );
       }
-      else
-        return new BError( "array.shrink(nelems) requires a parameter." );
+      return new BError( "array.shrink(nelems) requires a parameter." );
     }
     break;
   case MTH_APPEND:
@@ -1574,8 +1567,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
 
         return new BError( "Invalid parameter type" );
       }
-      else
-        return new BError( "array.append(value) requires a parameter." );
+      return new BError( "array.append(value) requires a parameter." );
     }
     break;
   case MTH_REVERSE:
@@ -1627,8 +1619,7 @@ BObjectImp* ObjArray::call_method_id( const int id, Executor& ex, bool /*forcebu
               } );
         return new BLong( 1 );
       }
-      else
-        return new BError( "array.sort(sub_index=0) takes at most one parameter." );
+      return new BError( "array.sort(sub_index=0) takes at most one parameter." );
     }
     break;
   case MTH_RANDOMENTRY:
@@ -2302,7 +2293,7 @@ BObjectImp* BFunctionRef::copy() const
 
 size_t BFunctionRef::sizeEstimate() const
 {
-  return sizeof( BFunctionRef ) + Clib::memsize( captures ) + prog_->sizeEstimate();
+  return sizeof( BFunctionRef ) + Clib::memsize( captures );
 }
 
 bool BFunctionRef::isTrue() const
@@ -2506,7 +2497,7 @@ BObjectImp* BFunctionRef::call_method_id( const int id, Executor& ex, bool /*for
   }
 }
 
-BSpread::BSpread( BObjectRef obj ) : BObjectImp( OTSpread ), object( obj ) {}
+BSpread::BSpread( BObjectRef obj ) : BObjectImp( OTSpread ), object( std::move( obj ) ) {}
 
 BSpread::BSpread( const BSpread& B ) : BObjectImp( OTSpread ), object( B.object ) {}
 
@@ -2528,6 +2519,25 @@ bool BSpread::isTrue() const
 std::string BSpread::getStringRep() const
 {
   return "Spread";
+}
+
+BSpecialUserFuncJump BSpecialUserFuncJump::imp_special_userjmp{};
+BSpecialUserFuncJump::BSpecialUserFuncJump() : BObjectImp( OTSpecialUserFuncJump ) {}
+size_t BSpecialUserFuncJump::sizeEstimate() const
+{
+  return sizeof( BSpecialUserFuncJump );
+};
+std::string BSpecialUserFuncJump::getStringRep() const
+{
+  return "BSpecialUserFuncJump";
+};
+BObjectImp* BSpecialUserFuncJump::copy() const
+{
+  return get();
+};
+BSpecialUserFuncJump* BSpecialUserFuncJump::get()
+{
+  return &imp_special_userjmp;
 }
 
 }  // namespace Pol::Bscript

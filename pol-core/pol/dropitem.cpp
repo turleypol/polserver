@@ -112,9 +112,7 @@ bool place_item_in_container( Network::Client* client, Items::Item* item, UConta
   client->pause();
   send_remove_object_to_inrange( item );
 
-  item->setposition( Pos4d( item->pos() ).xy( pos ) );
-
-  cont->add( item );
+  cont->add( item, pos );
   cont->restart_decay_timer();
   if ( !item->orphan() )
   {
@@ -219,9 +217,8 @@ bool do_place_item_in_secure_trade_container( Network::Client* client, Items::It
   send_trade_statuses( client->chr );
 
   send_remove_object_to_inrange( item );
-  item->setposition( Pos4d( pos, 9, item->realm() ) );
 
-  cont->add( item );
+  cont->add( item, pos );
 
   send_put_in_container( client, item );
   send_put_in_container( dropon->client, item );
@@ -341,13 +338,11 @@ bool place_item( Network::Client* client, Items::Item* item, u32 target_serial, 
     return place_item_in_container( client, item, static_cast<UContainer*>( target_item ), pos,
                                     slotIndex );
   }
-  else
-  {
-    // UNTESTED CLIENT_HOLE?
-    send_item_move_failure( client, MOVE_ITEM_FAILURE_UNKNOWN );
 
-    return false;
-  }
+  // UNTESTED CLIENT_HOLE?
+  send_item_move_failure( client, MOVE_ITEM_FAILURE_UNKNOWN );
+
+  return false;
 }
 
 bool drop_item_on_ground( Network::Client* client, Items::Item* item, const Pos3d& pos )

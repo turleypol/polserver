@@ -13,7 +13,7 @@ using namespace Bscript;
 BApplicObjType guild_type;
 
 EGuildRefObjImp::EGuildRefObjImp( Core::GuildRef gref )
-    : PolApplicObj<Core::GuildRef>( &guild_type, gref ){};
+    : PolApplicObj<Core::GuildRef>( &guild_type, std::move( gref ) ) {};
 
 const char* EGuildRefObjImp::typeOf() const
 {
@@ -50,10 +50,9 @@ bool EGuildRefObjImp::operator==( const BObjectImp& objimp ) const
     }
     return false;
   }
-  else if ( objimp.isa( BObjectImp::OTBoolean ) )
+  if ( objimp.isa( BObjectImp::OTBoolean ) )
     return isTrue() == static_cast<const BBoolean&>( objimp ).isTrue();
-  else
-    return false;
+  return false;
 }
 
 

@@ -19,6 +19,6 @@ private:
   void showHelp() override;
 };
 }  // namespace Pol::Clib
-   // namespaces
+
 
 #endif  // POL_MAIN_H

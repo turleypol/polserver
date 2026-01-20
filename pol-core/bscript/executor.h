@@ -533,6 +533,7 @@ private:
   void printStack( const std::string& message );
 
 protected:
+  friend class BClassInstance;
   void cleanup();
 
   struct ClassMethodKey

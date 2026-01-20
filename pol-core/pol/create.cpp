@@ -125,8 +125,7 @@ bool validhair( u16 HairStyle )
        ( ( 0x4273 <= HairStyle ) && ( HairStyle <= 0x4275 ) ) ||
        ( ( 0x42aa <= HairStyle ) && ( HairStyle <= 0x42ab ) ) || ( HairStyle == 0x42B1 ) )
     return true;
-  else
-    return false;
+  return false;
 }
 
 /* beard can be:
@@ -207,17 +206,17 @@ void ClientCreateChar( Network::Client* client, PKTIN_00* msg )
     client->Disconnect();
     return;
   }
-  else if ( msg->CharNumber >= Plib::systemstate.config.character_slots ||
-            client->acct->get_character( msg->CharNumber ) != nullptr ||
-            msg->StartIndex >= gamestate.startlocations.size() )
+  if ( msg->CharNumber >= Plib::systemstate.config.character_slots ||
+       client->acct->get_character( msg->CharNumber ) != nullptr ||
+       msg->StartIndex >= gamestate.startlocations.size() )
   {
     ERROR_PRINTLN( "Create Character: Invalid parameters." );
     send_login_error( client, LOGIN_ERROR_MISC );
     client->Disconnect();
     return;
   }
-  else if ( !Plib::systemstate.config.allow_multi_clients_per_account &&
-            client->acct->has_active_characters() )
+  if ( !Plib::systemstate.config.allow_multi_clients_per_account &&
+       client->acct->has_active_characters() )
   {
     send_login_error( client, LOGIN_ERROR_OTHER_CHAR_INUSE );
     client->Disconnect();
@@ -435,7 +434,6 @@ void ClientCreateChar( Network::Client* client, PKTIN_00* msg )
   {
     tmpitem = Items::Item::create( 0x0EED );
     tmpitem->setamount( settingsManager.ssopt.starting_gold );
-    tmpitem->setposition( Pos4d( 46, 91, 0, chr->realm() ) );
     u8 newSlot = 1;
     if ( !backpack->can_add_to_slot( newSlot ) || !tmpitem->slot_index( newSlot ) )
     {
@@ -445,7 +443,7 @@ void ClientCreateChar( Network::Client* client, PKTIN_00* msg )
       move_item( tmpitem, tmpitem->pos() );
     }
     else
-      backpack->add( tmpitem );
+      backpack->add( tmpitem, Pos2d( 46, 91 ) );
   }
 
   if ( chr->race == Plib::RACE_HUMAN ||
@@ -577,16 +575,16 @@ void ClientCreateCharKR( Network::Client* client, PKTIN_8D* msg )
     client->Disconnect();
     return;
   }
-  else if ( charslot >= Plib::systemstate.config.character_slots ||
-            client->acct->get_character( charslot ) != nullptr )
+  if ( charslot >= Plib::systemstate.config.character_slots ||
+       client->acct->get_character( charslot ) != nullptr )
   {
     ERROR_PRINTLN( "Create Character: Invalid parameters." );
     send_login_error( client, LOGIN_ERROR_MISC );
     client->Disconnect();
     return;
   }
-  else if ( !Plib::systemstate.config.allow_multi_clients_per_account &&
-            client->acct->has_active_characters() )
+  if ( !Plib::systemstate.config.allow_multi_clients_per_account &&
+       client->acct->has_active_characters() )
   {
     send_login_error( client, LOGIN_ERROR_OTHER_CHAR_INUSE );
     client->Disconnect();
@@ -793,7 +791,6 @@ void ClientCreateCharKR( Network::Client* client, PKTIN_8D* msg )
   {
     tmpitem = Items::Item::create( 0x0EED );
     tmpitem->setamount( settingsManager.ssopt.starting_gold );
-    tmpitem->setposition( Pos4d( 46, 91, 0, chr->realm() ) );
     u8 newSlot = 1;
     if ( !backpack->can_add_to_slot( newSlot ) || !tmpitem->slot_index( newSlot ) )
     {
@@ -803,7 +800,7 @@ void ClientCreateCharKR( Network::Client* client, PKTIN_8D* msg )
       move_item( tmpitem, tmpitem->pos() );
     }
     else
-      backpack->add( tmpitem );
+      backpack->add( tmpitem, Pos2d( 46, 91 ) );
   }
 
   if ( chr->race == Plib::RACE_HUMAN ||
@@ -909,17 +906,17 @@ void ClientCreateChar70160( Network::Client* client, PKTIN_F8* msg )
     client->Disconnect();
     return;
   }
-  else if ( msg->CharNumber >= Plib::systemstate.config.character_slots ||
-            client->acct->get_character( msg->CharNumber ) != nullptr ||
-            msg->StartIndex >= gamestate.startlocations.size() )
+  if ( msg->CharNumber >= Plib::systemstate.config.character_slots ||
+       client->acct->get_character( msg->CharNumber ) != nullptr ||
+       msg->StartIndex >= gamestate.startlocations.size() )
   {
     ERROR_PRINTLN( "Create Character: Invalid parameters." );
     send_login_error( client, LOGIN_ERROR_MISC );
     client->Disconnect();
     return;
   }
-  else if ( !Plib::systemstate.config.allow_multi_clients_per_account &&
-            client->acct->has_active_characters() )
+  if ( !Plib::systemstate.config.allow_multi_clients_per_account &&
+       client->acct->has_active_characters() )
   {
     send_login_error( client, LOGIN_ERROR_OTHER_CHAR_INUSE );
     client->Disconnect();
@@ -1185,7 +1182,6 @@ void ClientCreateChar70160( Network::Client* client, PKTIN_F8* msg )
   {
     tmpitem = Items::Item::create( 0x0EED );
     tmpitem->setamount( settingsManager.ssopt.starting_gold );
-    tmpitem->setposition( Pos4d( 46, 91, 0, chr->realm() ) );
     u8 newSlot = 1;
     if ( !backpack->can_add_to_slot( newSlot ) || !tmpitem->slot_index( newSlot ) )
     {
@@ -1195,7 +1191,7 @@ void ClientCreateChar70160( Network::Client* client, PKTIN_F8* msg )
       move_item( tmpitem, tmpitem->pos() );
     }
     else
-      backpack->add( tmpitem );
+      backpack->add( tmpitem, Pos2d( 46, 91 ) );
   }
 
   if ( chr->race == Plib::RACE_HUMAN ||

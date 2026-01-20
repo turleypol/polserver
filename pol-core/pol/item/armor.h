@@ -53,9 +53,9 @@ class UArmor final : public Equipment
 
 public:
   ~UArmor() override = default;
-  virtual unsigned short ar() const;
-  virtual unsigned short ar_base() const;
-  virtual bool covers( unsigned short zlayer ) const;
+  unsigned short ar() const;
+  unsigned short ar_base() const;
+  bool covers( unsigned short zlayer ) const;
   Item* clone() const override;
   size_t estimatedSize() const override;
 

@@ -120,7 +120,7 @@ String* String::ETrim( const char* CRSet, int type ) const
       tmp = "";
     return new String( tmp );
   }
-  else if ( type == 3 )
+  if ( type == 3 )
   {
     // Find the first character position after excluding leading blank spaces
     size_t startpos = tmp.find_first_not_of( CRSet );
@@ -134,8 +134,7 @@ String* String::ETrim( const char* CRSet, int type ) const
       tmp = tmp.substr( startpos, endpos - startpos + 1 );
     return new String( tmp );
   }
-  else
-    return new String( tmp );
+  return new String( tmp );
 }
 
 void String::EStrReplace( String* str1, String* str2 )
@@ -246,17 +245,14 @@ unsigned int String::SafeCharAmt() const
       return i;
     if ( isalnum( tmp ) )  // a-z A-Z 0-9
       continue;
-    else if ( ispunct( tmp ) )  // !"#$%&'()*+,-./:;<=>?@{|}~
+    if ( ispunct( tmp ) )  // !"#$%&'()*+,-./:;<=>?@{|}~
     {
       if ( tmp == '{' || tmp == '}' )
         return i;
-      else
-        continue;
+      continue;
     }
-    else
-    {
-      return i;
-    }
+
+    return i;
   }
   return strlen;
 }
@@ -745,7 +741,7 @@ BObjectRef String::OperSubscript( const BObject& rightobj )
     }
     return BObjectRef( new BError( "Subscript out of range" ) );
   }
-  else if ( right.isa( OTString ) )
+  if ( right.isa( OTString ) )
   {
     String& rtstr = (String&)right;
     auto pos = value_.find( rtstr.value_ );
@@ -757,13 +753,10 @@ BObjectRef String::OperSubscript( const BObject& rightobj )
       size_t len = std::distance( value_.cbegin(), itr ) - pos;
       return BObjectRef( new BObject( new String( value_, pos, len ) ) );
     }
-    else
-      return BObjectRef( new UninitObject );
-  }
-  else
-  {
     return BObjectRef( new UninitObject );
   }
+
+  return BObjectRef( new UninitObject );
 }
 
 // -- format related stuff --
@@ -921,8 +914,7 @@ BObjectImp* String::call_method_id( const int id, Executor& ex, bool /*forcebuil
     {
       return regex->find( this, d );
     }
-    else
-      return new BError( "string.find(Search, [Start]): Search must be a string or regex" );
+    return new BError( "string.find(Search, [Start]): Search must be a string or regex" );
   }
   case MTH_MATCH:
   {
@@ -953,10 +945,8 @@ BObjectImp* String::call_method_id( const int id, Executor& ex, bool /*forcebuil
     {
       return regex->replace( ex, this, funcref );
     }
-    else
-    {
-      return new BError( "string.replace(Search, Replace): Replace must be a string or function" );
-    }
+
+    return new BError( "string.replace(Search, Replace): Replace must be a string or function" );
   }
   case MTH_SPLIT:
   {
@@ -1015,11 +1005,9 @@ BObjectImp* String::call_method_id( const int id, Executor& ex, bool /*forcebuil
 
       return result.release();
     }
-    else
-    {
-      return new BError(
-          "string.split(Separator[, Max_Split]): Separator must be a RegExp or string" );
-    }
+
+    return new BError(
+        "string.split(Separator[, Max_Split]): Separator must be a RegExp or string" );
   }
 
   case MTH_UPPER:

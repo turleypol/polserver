@@ -21,6 +21,6 @@ private:
   int unpackCompressedGump();
 };
 }  // namespace Pol::Clib
-   // namespaces
+
 
 #endif  // POL_TOOL_MAIN_H

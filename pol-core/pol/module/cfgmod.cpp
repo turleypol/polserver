@@ -41,7 +41,7 @@ Bscript::BApplicObjType cfgelem_type;
 
 
 EConfigFileRefObjImp::EConfigFileRefObjImp( ref_ptr<Core::StoredConfigFile> rcfile )
-    : EConfigFileRefObjImpBase( &cfgfile_type, rcfile )
+    : EConfigFileRefObjImpBase( &cfgfile_type, std::move( rcfile ) )
 {
 }
 
@@ -85,25 +85,20 @@ Bscript::ContIterator* EConfigFileRefObjImp::createIterator( Bscript::BObject* p
 
 Bscript::BObjectRef EConfigFileRefObjImp::OperSubscript( const Bscript::BObject& obj )
 {
-  const Bscript::BObjectImp& imp = obj.impref();
   ref_ptr<Core::StoredConfigElem> celem;
-
-  if ( imp.isa( OTString ) )
+  if ( const auto* str = obj.impptr_if<const Bscript::String>() )
   {
-    const char* strval = static_cast<const Bscript::String*>( &imp )->data();
-    celem = obj_->findelem( strval );
+    celem = obj_->findelem( str->value() );
   }
-  else if ( imp.isa( OTLong ) )
+  else if ( const auto* l = obj.impptr_if<const Bscript::BLong>() )
   {
-    int key = static_cast<const Bscript::BLong*>( &imp )->value();
-    celem = obj_->findelem( key );
+    celem = obj_->findelem( l->value() );
   }
 
   if ( celem.get() != nullptr )
   {
     return Bscript::BObjectRef( new EConfigElemRefObjImp( celem ) );
   }
-
   return Bscript::BObjectRef( new Bscript::BError( "Element not found" ) );
 }
 
@@ -121,7 +116,7 @@ Bscript::BObjectImp* EConfigFileRefObjImp::copy() const
 }
 
 EConfigElemRefObjImp::EConfigElemRefObjImp( ref_ptr<Core::StoredConfigElem> rcelem )
-    : EConfigElemRefObjImpBase( &cfgelem_type, rcelem )
+    : EConfigElemRefObjImpBase( &cfgelem_type, std::move( rcelem ) )
 {
 }
 
@@ -155,18 +150,13 @@ Bscript::BObjectRef EConfigElemRefObjImp::get_member( const char* membername )
 
 Bscript::BObjectRef EConfigElemRefObjImp::OperSubscript( const Bscript::BObject& obj )
 {
-  const Bscript::BObjectImp& imp = obj.impref();
-  ref_ptr<Core::StoredConfigElem> celem;
-
-  if ( imp.isa( OTString ) )
+  if ( const auto* str = obj.impptr_if<const Bscript::String>() )
   {
-    const char* strval = static_cast<const Bscript::String*>( &imp )->data();
-    return get_member( strval );
+    return get_member( str->data() );
   }
-  if ( imp.isa( OTLong ) )
+  if ( const auto* l = obj.impptr_if<const Bscript::BLong>() )
   {
-    int key = static_cast<const Bscript::BLong*>( &imp )->value();
-    return get_member( std::to_string( key ).c_str() );
+    return get_member( std::to_string( l->value() ).c_str() );
   }
   return Bscript::BObjectRef( new Bscript::BError( "Element not found" ) );
 }
@@ -196,7 +186,6 @@ bool ConfigFileExecutorModule::get_cfgfilename( const std::string& cfgdesc, std:
         *cfgfile = cfgdesc.substr( 2, std::string::npos ) + ".cfg";
         return true;
       }
-
       // "::cfgfile" - core config file
       *cfgfile = "config/" + cfgdesc.substr( 2, std::string::npos ) + ".cfg";
       return true;
@@ -216,7 +205,6 @@ bool ConfigFileExecutorModule::get_cfgfilename( const std::string& cfgdesc, std:
           *allpkgbase = cfgbase;
           return true;
         }
-
         return false;
       }
 
@@ -226,27 +214,19 @@ bool ConfigFileExecutorModule::get_cfgfilename( const std::string& cfgdesc, std:
         *cfgfile = GetPackageCfgPath( dstpkg, cfgbase + ".cfg" );
         return true;
       }
-
       *errmsg = "Unable to find package " + pkgname;
       return false;
     }
-    else
-    {
-      *errmsg = "Poorly formed config file descriptor: " + cfgdesc;
-      return false;
-    }
+    *errmsg = "Poorly formed config file descriptor: " + cfgdesc;
+    return false;
   }
-  else
+  if ( pkg != nullptr )
   {
-    if ( pkg != nullptr )
-    {
-      *cfgfile = GetPackageCfgPath( const_cast<Plib::Package*>( pkg ), cfgdesc + ".cfg" );
-      return true;
-    }
-
-    *cfgfile = "config/" + cfgdesc + ".cfg";
+    *cfgfile = GetPackageCfgPath( const_cast<Plib::Package*>( pkg ), cfgdesc + ".cfg" );
     return true;
   }
+  *cfgfile = "config/" + cfgdesc + ".cfg";
+  return true;
 }
 
 
@@ -270,10 +250,8 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_ReadConfigFile()
     {
       return new EConfigFileRefObjImp( cfile );
     }
-
     return new Bscript::BError( "Config file not found" );
   }
-
   return new Bscript::BError( "Invalid parameter type" );
 }
 
@@ -320,7 +298,6 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_GetConfigMaxIntKey()
   {
     return new Bscript::BLong( cfile->maxintkey() );
   }
-
   return new Bscript::BError( "Parameter 0 must be a Config File" );
 }
 
@@ -334,11 +311,10 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_GetConfigStringKeys()
                                                            end = cfile->byname_end();
     for ( ; itr != end; ++itr )
     {
-      arr->addElement( new Bscript::String( ( *itr ).first.c_str() ) );
+      arr->addElement( new Bscript::String( itr->first ) );
     }
     return arr.release();
   }
-
   return new Bscript::BError( "GetConfigStringKeys param 0 must be a Config File" );
 }
 
@@ -352,11 +328,10 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_GetConfigIntKeys()
                                                           end = cfile->bynum_end();
     for ( ; itr != end; ++itr )
     {
-      arr->addElement( new Bscript::BLong( ( *itr ).first ) );
+      arr->addElement( new Bscript::BLong( itr->first ) );
     }
     return arr.release();
   }
-
   return new Bscript::BError( "GetConfigIntKeys param 0 must be a Config File" );
 }
 
@@ -370,15 +345,13 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_FindConfigElem()
 
     ref_ptr<Core::StoredConfigElem> celem;
 
-    if ( keyimp->isa( Bscript::BObjectImp::OTLong ) )
+    if ( auto* l = impptrIf<Bscript::BLong>( keyimp ) )
     {
-      int key = static_cast<Bscript::BLong*>( keyimp )->value();
-      celem = cfile->findelem( key );
+      celem = cfile->findelem( l->value() );
     }
-    else if ( keyimp->isa( Bscript::BObjectImp::OTString ) )
+    else if ( auto* str = impptrIf<Bscript::String>( keyimp ) )
     {
-      const char* strval = static_cast<Bscript::String*>( keyimp )->data();
-      celem = cfile->findelem( strval );
+      celem = cfile->findelem( str->value() );
     }
     else
     {
@@ -389,10 +362,8 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_FindConfigElem()
     {
       return new EConfigElemRefObjImp( celem );
     }
-
     return new Bscript::BError( "Element not found" );
   }
-
   return new Bscript::BError( "Parameter 0 must be a Config File" );
 }
 
@@ -413,10 +384,8 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_GetConfigString()
     {
       return new Bscript::String( imp->getStringRep() );
     }
-
     return new Bscript::BError( "Property not found" );
   }
-
   return new Bscript::BError( "Invalid parameter type" );
 }
 
@@ -444,7 +413,6 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_GetConfigStringArray()
     }
     return ar.release();
   }
-
   return new Bscript::BError( "Invalid parameter type" );
 }
 
@@ -485,7 +453,6 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_GetConfigStringDictionary()
 
     return dict.release();
   }
-
   return new Bscript::BError( "Invalid parameter type" );
 }
 
@@ -504,30 +471,26 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_GetConfigInt()
       {
         return imp;
       }
-      if ( imp->isa( Bscript::BObjectImp::OTDouble ) )
+      if ( auto* dbl = impptrIf<Bscript::Double>( imp ) )
       {
-        Bscript::Double* dbl = static_cast<Bscript::Double*>( imp );
         return new Bscript::BLong( static_cast<int>( dbl->value() ) );
       }
-      if ( imp->isa( Bscript::BObjectImp::OTString ) )
+      if ( auto* str = impptrIf<Bscript::String>( imp ) )
       {
-        Bscript::String* str = static_cast<Bscript::String*>( imp );
-        return new Bscript::BLong( strtoul( str->data(), nullptr, 0 ) );
+        try
+        {
+          return new Bscript::BLong( std::stoi( str->value(), nullptr, 0 ) );
+        }
+        catch ( const std::logic_error& )
+        {
+          return new Bscript::BError( "Integer overflow error" );
+        }
       }
-      else
-      {
-        return new Bscript::BError( "Invalid type in config file! (internal error)" );
-      }
+      return new Bscript::BError( "Invalid type in config file! (internal error)" );
     }
-    else
-    {
-      return new Bscript::BError( "Property not found" );
-    }
+    return new Bscript::BError( "Property not found" );
   }
-  else
-  {
-    return new Bscript::BError( "Invalid parameter type" );
-  }
+  return new Bscript::BError( "Invalid parameter type" );
 }
 
 Bscript::BObjectImp* ConfigFileExecutorModule::mf_GetConfigIntArray()
@@ -544,31 +507,35 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_GetConfigIntArray()
     std::unique_ptr<Bscript::ObjArray> ar( new Bscript::ObjArray );
     for ( ; itr != end; ++itr )
     {
-      Bscript::BObjectImp* imp = ( *itr ).second.get();
+      Bscript::BObjectImp* imp = itr->second.get();
       // Will no longer place the string right into the array.
       // Instead a check is done to make sure something is there.
 
-      if ( !imp->getStringRep().empty() )
+      if ( auto* l = impptrIf<Bscript::BLong>( imp ) )
       {
-        if ( imp->isa( Bscript::BObjectImp::OTLong ) )
+        ar->addElement( l );
+      }
+      else if ( auto* d = impptrIf<Bscript::Double>( imp ) )
+      {
+        ar->addElement( new Bscript::BLong( static_cast<int>( d->value() ) ) );
+      }
+      else if ( auto* str = impptrIf<Bscript::String>( imp ) )
+      {
+        if ( str->length() >= 1 )
         {
-          ar->addElement( imp );
-        }
-        else if ( imp->isa( Bscript::BObjectImp::OTDouble ) )
-        {
-          Bscript::Double* dbl = static_cast<Bscript::Double*>( imp );
-          ar->addElement( new Bscript::BLong( static_cast<int>( dbl->value() ) ) );
-        }
-        else if ( imp->isa( Bscript::BObjectImp::OTString ) )
-        {
-          Bscript::String* str = static_cast<Bscript::String*>( imp );
-          ar->addElement( new Bscript::BLong( strtoul( str->data(), nullptr, 0 ) ) );
+          try
+          {
+            ar->addElement( new Bscript::BLong( std::stoi( str->value(), nullptr, 0 ) ) );
+          }
+          catch ( const std::logic_error& )
+          {
+            // overflow error: skip element
+          }
         }
       }
     }
     return ar.release();
   }
-
   return new Bscript::BError( "Invalid parameter type" );
 }
 
@@ -586,30 +553,19 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_GetConfigReal()
       {
         return imp;
       }
-      if ( imp->isa( Bscript::BObjectImp::OTLong ) )
+      if ( auto* l = impptrIf<Bscript::BLong>( imp ) )
       {
-        Bscript::BLong* blong = static_cast<Bscript::BLong*>( imp );
-        return new Bscript::Double( blong->value() );
+        return new Bscript::Double( l->value() );
       }
-      if ( imp->isa( Bscript::BObjectImp::OTString ) )
+      if ( auto* str = impptrIf<Bscript::String>( imp ) )
       {
-        Bscript::String* str = static_cast<Bscript::String*>( imp );
         return new Bscript::Double( strtod( str->data(), nullptr ) );
       }
-      else
-      {
-        return new Bscript::BError( "Invalid type in config file! (internal error)" );
-      }
+      return new Bscript::BError( "Invalid type in config file! (internal error)" );
     }
-    else
-    {
-      return new Bscript::BError( "Property not found" );
-    }
+    return new Bscript::BError( "Property not found" );
   }
-  else
-  {
-    return new Bscript::BError( "Invalid parameter type" );
-  }
+  return new Bscript::BError( "Invalid parameter type" );
 }
 
 Bscript::BObjectImp* ConfigFileExecutorModule::mf_ListConfigElemProps()
@@ -620,7 +576,6 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_ListConfigElemProps()
     // should return an array or prop-names
     return celem->listprops();
   }
-
   return new Bscript::BError( "Invalid parameter type" );
 }
 
@@ -655,9 +610,8 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_AppendConfigFileElem()
     Bscript::BObject* bo = itr->get();
     if ( bo != nullptr )
     {
-      if ( bo->isa( Bscript::BObjectImp::OTArray ) )
+      if ( auto* inarr = bo->impptr_if<Bscript::ObjArray>() )
       {
-        Bscript::ObjArray* inarr = (Bscript::ObjArray*)( bo->impptr() );
         if ( inarr->ref_arr.size() == 2 )
         {
           Bscript::BObject* nobj = inarr->ref_arr[0].get();
@@ -671,14 +625,13 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_AppendConfigFileElem()
           }
         }
       }
-      else if ( bo->isa( Bscript::BObjectImp::OTStruct ) )
+      else if ( auto* instruct = bo->impptr_if<Bscript::BStruct>() )
       {
-        Bscript::BStruct* instruct = bo->impptr<Bscript::BStruct>();
         const Bscript::BObjectImp* name_imp = instruct->FindMember( "name" );
         const Bscript::BObjectImp* value_imp = instruct->FindMember( "value" );
-        if ( name_imp && name_imp->isa( Bscript::BObjectImp::OTString ) && value_imp )
+        if ( const auto* namestr = impptrIf<const Bscript::String>( name_imp );
+             namestr && value_imp )
         {
-          const Bscript::String* namestr = static_cast<const Bscript::String*>( name_imp );
           std::string value = value_imp->getStringRep();
 
           ofs << "\t" << namestr->value() << "\t" << value << std::endl;
@@ -709,7 +662,6 @@ Bscript::BObjectImp* ConfigFileExecutorModule::mf_UnloadConfigFile()
 
     return new Bscript::BLong( Core::UnloadConfigFile( cfgfile ) );
   }
-
   return new Bscript::BError( "Invalid parameter" );
 }
 
@@ -725,7 +677,6 @@ bool getStoredConfigFileParam( Bscript::ExecutorModule& exmod, unsigned param,
 
     return true;
   }
-
   return false;
 }
 
@@ -741,7 +692,6 @@ bool getStoredConfigElemParam( Bscript::ExecutorModule& exmod, unsigned param,
 
     return true;
   }
-
   return false;
 }
 }  // namespace Module
