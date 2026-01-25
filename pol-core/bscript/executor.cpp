@@ -14,6 +14,7 @@
 
 
 #include "executor.h"
+#include "bobject.h"
 #include "executor.inl.h"
 
 #include "../clib/clib.h"
@@ -2771,6 +2772,12 @@ void Executor::ins_call_method_id( const Instruction& ins )
         continue;
       }
     }
+
+    if ( impptrIf<BSpecialUserFuncJump>( imp ) )
+    {
+      cleanParams();
+      return;
+    }
     BObjectRef& objref = ValueStack[stacksize - 1];
     if ( func_result_ )
     {
@@ -2807,82 +2814,7 @@ void Executor::ins_call_method( const Instruction& ins )
   getParams( nparams );
   BObjectImp* callee = ValueStack.back()->impptr();
 
-  if ( auto* classinstref = ValueStack.back()->impptr_if<BClassInstanceRef>() )
-  {
-    BFunctionRef* funcr = nullptr;
-    auto classinst = classinstref->instance();
-
-    // Prefer members over class methods by checking contents first.
-    auto member_itr = classinst->contents().find( method_name );
-
-    if ( member_itr != classinst->contents().end() )
-    {
-      // If the member exists and is NOT a function reference, we will still try
-      // to "call" it. This is _intentional_, and will result in a runtime
-      // BError. This is similar to `var foo := 3; print(foo.bar());`, resulting
-      // in a "Method 'bar' not found" error.
-      callee = member_itr->second.get()->impptr();
-
-      funcr = member_itr->second.get()->impptr_if<BFunctionRef>();
-    }
-    else
-    {
-      // Have we already looked up this method?
-      ClassMethodKey key{ prog_, classinst->index(), method_name };
-      auto cache_itr = class_methods.find( key );
-      if ( cache_itr != class_methods.end() )
-      {
-        // Switch the callee to the function reference: if the
-        // funcr->validCall fails, we will go into the funcref
-        // ins_call_method, giving the error about invalid parameter counts.
-        funcr = cache_itr->second->impptr_if<BFunctionRef>();
-        callee = funcr;
-        method_name = getObjMethod( MTH_CALL_METHOD )->code;
-      }
-      else
-      {
-        // Does the class define this method?
-        funcr = classinst->makeMethod( method_name );
-
-        if ( funcr != nullptr )
-        {
-          // Cache the method for future lookups
-          class_methods[key] = BObjectRef( funcr );
-
-          // Switch the callee to the function reference.
-          callee = funcr;
-          method_name = getObjMethod( MTH_CALL_METHOD )->code;
-        }
-      }
-    }
-
-    if ( funcr != nullptr )
-    {
-      Instruction jmp;
-      int id;
-
-      // Add `this` to the front of the argument list only for class methods,
-      // skipping eg. an instance member function reference set via
-      // `this.foo := @(){};`.
-      if ( funcr->class_method() )
-      {
-        id = MTH_CALL_METHOD;
-        fparams.insert( fparams.begin(), ValueStack.back() );
-      }
-      else
-      {
-        id = MTH_CALL;
-      }
-
-      if ( funcr->validCall( id, *this, &jmp ) )
-      {
-        BObjectRef funcobj( funcr );  // valuestack gets modified, protect BFunctionRef
-        call_function_reference( funcr, nullptr, jmp );
-        return;
-      }
-    }
-  }
-  else if ( auto* funcr = ValueStack.back()->impptr_if<BFunctionRef>() )
+  if ( auto* funcr = ValueStack.back()->impptr_if<BFunctionRef>() )
   {
     Instruction jmp;
     if ( funcr->validCall( method_name, *this, &jmp ) )
@@ -2906,6 +2838,13 @@ void Executor::ins_call_method( const Instruction& ins )
     imp = callee->call_method( method_name, *this );
 #endif
   }
+
+  if ( impptrIf<BSpecialUserFuncJump>( imp ) )
+  {
+    cleanParams();
+    return;
+  }
+
   BObjectRef& objref = ValueStack[stacksize - 1];
   if ( func_result_ )
   {
@@ -2925,9 +2864,7 @@ void Executor::ins_call_method( const Instruction& ins )
   {
     objref.set( UninitObject::create() );
   }
-
   cleanParams();
-  return;
 }
 
 // CTRL_STATEMENTBEGIN:

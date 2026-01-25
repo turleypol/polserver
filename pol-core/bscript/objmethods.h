@@ -204,7 +204,7 @@ inline auto format_as( MethodID id )
 }
 
 
-using ObjMethod = struct
+struct ObjMethod
 {
   MethodID id;
   char code[30];

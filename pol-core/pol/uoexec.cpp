@@ -102,8 +102,7 @@ std::string UOExecutor::state()
     return "Debugging";
   if ( os_module->blocked() )
     return "Sleeping";
-  else
-    return "Running";
+  return "Running";
 }
 
 
@@ -249,13 +248,11 @@ bool UOExecutor::getCharacterOrClientParam( unsigned param, Mobile::Character*& 
       {
         return true;
       }
-      else
-      {
-        setFunctionResult( new BError( "Mobile is offline" ) );
-        return false;
-      }
+
+      setFunctionResult( new BError( "Mobile is offline" ) );
+      return false;
     }
-    else if ( ( aob != nullptr ) && ( aob->object_type() == &eclientrefobjimp_type ) )
+    if ( ( aob != nullptr ) && ( aob->object_type() == &eclientrefobjimp_type ) )
     {
       EClientRefObjImp* clientref_imp =
           Clib::explicit_cast<EClientRefObjImp*, BApplicObjBase*>( aob );
@@ -266,19 +263,14 @@ bool UOExecutor::getCharacterOrClientParam( unsigned param, Mobile::Character*& 
       {
         return true;
       }
-      else
-      {
-        setFunctionResult( new BError( "Client is disconnected" ) );
-        return false;
-      }
-    }
-    else
-    {
-      // FIXME: log error
+
+      setFunctionResult( new BError( "Client is disconnected" ) );
       return false;
     }
+    // FIXME: log error
+    return false;
   }
-  else if ( imp->isa( BObjectImp::OTLong ) )
+  if ( imp->isa( BObjectImp::OTLong ) )
   {
     BLong* pchar_serial = Clib::explicit_cast<BLong*, BObjectImp*>( imp );
 
@@ -297,23 +289,16 @@ bool UOExecutor::getCharacterOrClientParam( unsigned param, Mobile::Character*& 
       {
         return true;
       }
-      else
-      {
-        setFunctionResult( new BError( "Mobile is offline" ) );
-        return false;
-      }
-    }
-    else
-    {
-      setFunctionResult( new BError( "Mobile does not exist" ) );
+
+      setFunctionResult( new BError( "Mobile is offline" ) );
       return false;
     }
-  }
-  else
-  {
-    // FIXME: log error
+
+    setFunctionResult( new BError( "Mobile does not exist" ) );
     return false;
   }
+  // FIXME: log error
+  return false;
 }
 
 bool UOExecutor::getCharacterParam( unsigned param, Mobile::Character*& chrptr )
@@ -345,19 +330,15 @@ bool UOExecutor::getCharacterParam( unsigned param, Mobile::Character*& chrptr )
       {
         return true;
       }
-      else
-      {
-        setFunctionResult( new BError( "Mobile is offline" ) );
-        return false;
-      }
-    }
-    else
-    {
-      // FIXME: log error
+
+      setFunctionResult( new BError( "Mobile is offline" ) );
       return false;
     }
+
+    // FIXME: log error
+    return false;
   }
-  else if ( imp->isa( BObjectImp::OTLong ) )
+  if ( imp->isa( BObjectImp::OTLong ) )
   {
     BLong* pchar_serial = Clib::explicit_cast<BLong*, BObjectImp*>( imp );
 
@@ -376,23 +357,16 @@ bool UOExecutor::getCharacterParam( unsigned param, Mobile::Character*& chrptr )
       {
         return true;
       }
-      else
-      {
-        setFunctionResult( new BError( "Mobile is offline" ) );
-        return false;
-      }
-    }
-    else
-    {
-      setFunctionResult( new BError( "Mobile does not exist" ) );
+
+      setFunctionResult( new BError( "Mobile is offline" ) );
       return false;
     }
-  }
-  else
-  {
-    // FIXME: log error
+
+    setFunctionResult( new BError( "Mobile does not exist" ) );
     return false;
   }
+  // FIXME: log error
+  return false;
 }
 
 bool UOExecutor::getItemParam( unsigned param, Items::Item*& itemptr )
@@ -413,13 +387,11 @@ bool UOExecutor::getItemParam( unsigned param, Items::Item*& itemptr )
       itemptr = itemref_imp->value().get();
       return ( !itemptr->orphan() );
     }
-    else
-    {
-      // FIXME: log error
-      return false;
-    }
+
+    // FIXME: log error
+    return false;
   }
-  else if ( imp->isa( BObjectImp::OTLong ) )
+  if ( imp->isa( BObjectImp::OTLong ) )
   {
     BLong* pitem_serial = Clib::explicit_cast<BLong*, BObjectImp*>( imp );
     unsigned int serial = pitem_serial->value();
@@ -431,11 +403,8 @@ bool UOExecutor::getItemParam( unsigned param, Items::Item*& itemptr )
 
     return ( itemptr != nullptr );
   }
-  else
-  {
-    // FIXME: log error
-    return false;
-  }
+  // FIXME: log error
+  return false;
 }
 
 bool UOExecutor::getUBoatParam( unsigned param, Multi::UBoat*& boatptr )
@@ -456,7 +425,7 @@ bool UOExecutor::getUBoatParam( unsigned param, Multi::UBoat*& boatptr )
       boatptr = boatref_imp->value().get();
       return ( !boatptr->orphan() );
     }
-    else if ( aob->object_type() == &eitemrefobjimp_type )
+    if ( aob->object_type() == &eitemrefobjimp_type )
     {
       EItemRefObjImp* itemref_imp = Clib::explicit_cast<EItemRefObjImp*, BApplicObjBase*>( aob );
 
@@ -467,21 +436,14 @@ bool UOExecutor::getUBoatParam( unsigned param, Multi::UBoat*& boatptr )
         boatptr = multi->as_boat();
         if ( boatptr == nullptr )
           return false;
-        else
-          return ( !boatptr->orphan() );
+        return ( !boatptr->orphan() );
       }
-      else
-      {
-        return false;
-      }
-    }
-    else
-    {
-      // FIXME: log error
       return false;
     }
+    // FIXME: log error
+    return false;
   }
-  else if ( imp->isa( BObjectImp::OTLong ) )
+  if ( imp->isa( BObjectImp::OTLong ) )
   {
     BLong* pitem_serial = Clib::explicit_cast<BLong*, BObjectImp*>( imp );
 
@@ -491,11 +453,8 @@ bool UOExecutor::getUBoatParam( unsigned param, Multi::UBoat*& boatptr )
 
     return ( boatptr != nullptr );
   }
-  else
-  {
-    // FIXME: log error
-    return false;
-  }
+  // FIXME: log error
+  return false;
 }
 
 
@@ -517,20 +476,18 @@ bool UOExecutor::getMultiParam( unsigned param, Multi::UMulti*& multiptr )
       multiptr = multiref_imp->value().get();
       return ( !multiptr->orphan() );
     }
-    else if ( aob->object_type() == &euboatrefobjimp_type )
+    if ( aob->object_type() == &euboatrefobjimp_type )
     {
       EUBoatRefObjImp* boatref_imp = Clib::explicit_cast<EUBoatRefObjImp*, BApplicObjBase*>( aob );
 
       multiptr = boatref_imp->value().get();
       return ( !multiptr->orphan() );
     }
-    else
-    {
-      // FIXME: log error
-      return false;
-    }
+
+    // FIXME: log error
+    return false;
   }
-  else if ( imp->isa( BObjectImp::OTLong ) )
+  if ( imp->isa( BObjectImp::OTLong ) )
   {
     BLong* pitem_serial = Clib::explicit_cast<BLong*, BObjectImp*>( imp );
 
@@ -538,11 +495,8 @@ bool UOExecutor::getMultiParam( unsigned param, Multi::UMulti*& multiptr )
 
     return ( multiptr != nullptr );
   }
-  else
-  {
-    // FIXME: log error
-    return false;
-  }
+  // FIXME: log error
+  return false;
 }
 
 bool UOExecutor::getUObjectParam( unsigned param, UObject*& objptr )
@@ -565,15 +519,13 @@ bool UOExecutor::getUObjectParam( unsigned param, UObject*& objptr )
     objptr = item;
     return true;
   }
-  else if ( getMultiParam( param, multi ) )
+  if ( getMultiParam( param, multi ) )
   {
     objptr = multi;
     return true;
   }
-  else
-  {
-    return false;
-  }
+
+  return false;
 }
 
 bool UOExecutor::getObjtypeParam( unsigned param, unsigned int& objtype )
@@ -607,11 +559,9 @@ bool UOExecutor::getObjtypeParam( unsigned param, unsigned int& objtype )
 
       return false;
     }
-    else
-    {
-      // a number passed...process below as if passed as a BLong
-      objtype_long = strtol( ot_str, nullptr, 0 );
-    }
+
+    // a number passed...process below as if passed as a BLong
+    objtype_long = strtol( ot_str, nullptr, 0 );
   }
   else
   {
@@ -637,22 +587,20 @@ bool UOExecutor::getObjtypeParam( unsigned param, unsigned int& objtype )
         new BError( "Objtype " + Clib::hexint( objtype_long ) + " is not defined." ) );
     return false;
   }
-  else if ( objtype_long <= Plib::systemstate.config.max_tile_id )
+  if ( objtype_long <= Plib::systemstate.config.max_tile_id )
   {
     objtype = objtype_long;
     return true;
   }
-  else
-  {
-    DEBUGLOGLN(
-        "Script Error in '{}' PC={}: \n"
-        "\tCall to function {}:\n"
-        "\tParameter {}: Value {} is out of range for an objtype",
-        scriptname(), PC, current_module_function->name.get(), param, objtype_long );
-    setFunctionResult( new BError( "Objtype is out of range ( acceptable: 0 - " +
-                                   Clib::hexint( Plib::systemstate.config.max_objtype ) + " )" ) );
-    return false;
-  }
+
+  DEBUGLOGLN(
+      "Script Error in '{}' PC={}: \n"
+      "\tCall to function {}:\n"
+      "\tParameter {}: Value {} is out of range for an objtype",
+      scriptname(), PC, current_module_function->name.get(), param, objtype_long );
+  setFunctionResult( new BError( "Objtype is out of range ( acceptable: 0 - " +
+                                 Clib::hexint( Plib::systemstate.config.max_objtype ) + " )" ) );
+  return false;
 }
 
 bool UOExecutor::getObjtypeParam( unsigned param, const Items::ItemDesc*& itemdesc_out )
@@ -687,11 +635,9 @@ bool UOExecutor::getObjtypeParam( unsigned param, const Items::ItemDesc*& itemde
 
       return false;
     }
-    else
-    {
-      // a number passed...process below as if passed as a BLong
-      objtype_long = strtol( ot_str, nullptr, 0 );
-    }
+
+    // a number passed...process below as if passed as a BLong
+    objtype_long = strtol( ot_str, nullptr, 0 );
   }
   else if ( imp->isa( BObjectImp::OTStruct ) )
   {
@@ -736,7 +682,7 @@ bool UOExecutor::getObjtypeParam( unsigned param, const Items::ItemDesc*& itemde
         new BError( "Objtype " + Clib::hexint( objtype_long ) + " is not defined." ) );
     return false;
   }
-  else if ( objtype_long <= Plib::systemstate.config.max_tile_id )
+  if ( objtype_long <= Plib::systemstate.config.max_tile_id )
   {
     unsigned int objtype = objtype_long;
     itemdesc_out = &Items::find_itemdesc( objtype );
@@ -753,16 +699,14 @@ bool UOExecutor::getObjtypeParam( unsigned param, const Items::ItemDesc*& itemde
 
     return true;
   }
-  else
-  {
-    DEBUGLOGLN(
-        "Script Error in '{}' PC={}: \n"
-        "\tCall to function {}:\n"
-        "\tParameter {}: Value {} is out of range for an objtype",
-        scriptname(), PC, current_module_function->name.get(), param, objtype_long );
-    setFunctionResult( new BError( "Objtype is out of range (acceptable: 0-0x20000)" ) );
-    return false;
-  }
+
+  DEBUGLOGLN(
+      "Script Error in '{}' PC={}: \n"
+      "\tCall to function {}:\n"
+      "\tParameter {}: Value {} is out of range for an objtype",
+      scriptname(), PC, current_module_function->name.get(), param, objtype_long );
+  setFunctionResult( new BError( "Objtype is out of range (acceptable: 0-0x20000)" ) );
+  return false;
 }
 
 bool UOExecutor::getSkillIdParam( unsigned param, USKILLID& skillid )
@@ -782,17 +726,15 @@ bool UOExecutor::getSkillIdParam( unsigned param, USKILLID& skillid )
       skillid = static_cast<USKILLID>( value );
       return true;
     }
-    else
-    {
-      std::string report = "Parameter " + Clib::tostring( param ) + " value " +
-                           Clib::tostring( value ) + " out of expected range of [" +
-                           Clib::tostring( SKILLID__LOWEST ) + ".." +
-                           Clib::tostring( networkManager.uoclient_general.maxskills ) + "]";
-      setFunctionResult( new BError( report ) );
-      return false;
-    }
+
+    std::string report = "Parameter " + Clib::tostring( param ) + " value " +
+                         Clib::tostring( value ) + " out of expected range of [" +
+                         Clib::tostring( SKILLID__LOWEST ) + ".." +
+                         Clib::tostring( networkManager.uoclient_general.maxskills ) + "]";
+    setFunctionResult( new BError( report ) );
+    return false;
   }
-  else if ( imp->isa( BObjectImp::OTString ) )
+  if ( imp->isa( BObjectImp::OTString ) )
   {
     const Mobile::Attribute* attr;
     if ( !getAttributeParam( param, attr ) )

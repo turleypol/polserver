@@ -155,7 +155,7 @@ Bscript::BObjectImp* BXMLfile::call_method_id( const int id, Executor& ex, bool 
         return new BError( "Failed to find node" );
       return new BLong( file.RemoveChild( file.RootElement() ) ? 1 : 0 );
     }
-    else if ( imp->isa( Bscript::BObjectImp::OTXMLNode ) )
+    if ( imp->isa( Bscript::BObjectImp::OTXMLNode ) )
     {
       const BXmlNode* pstr = Clib::explicit_cast<BXmlNode*, Bscript::BObjectImp*>( imp );
       TiXmlNode* node = file.ToElement();
@@ -256,10 +256,8 @@ BObjectRef BXMLfile::OperSubscript( const BObject& obj )
       return BObjectRef( new BXmlNode( node ) );
     return BObjectRef( new BError( "Failed to find node" ) );
   }
-  else
-  {
-    return BObjectRef( new BError( "xml members can only be accessed by name or index" ) );
-  }
+
+  return BObjectRef( new BError( "xml members can only be accessed by name or index" ) );
 }
 
 BXmlNode::~BXmlNode()
@@ -342,14 +340,10 @@ Bscript::BObjectImp* BXmlNode::call_method_id( const int id, Executor& ex, bool 
       }
       return new BError( "Invalid parameter type" );
     }
-    else
-    {
-      TiXmlNode* child = node->FirstChild();
-      if ( child )
-        return new BXmlNode( child );
-      return new BError( "Failed to find node" );
-    }
-    break;
+    TiXmlNode* child = node->FirstChild();
+    if ( child )
+      return new BXmlNode( child );
+    return new BError( "Failed to find node" );
   }
   case MTH_NEXTSIBLING:
   {
@@ -483,7 +477,7 @@ Bscript::BObjectImp* BXmlNode::call_method_id( const int id, Executor& ex, bool 
         return new BLong( node->RemoveChild( child ) ? 1 : 0 );
       return new BError( "Failed to find node" );
     }
-    else if ( imp->isa( Bscript::BObjectImp::OTXMLNode ) )
+    if ( imp->isa( Bscript::BObjectImp::OTXMLNode ) )
     {
       const BXmlNode* pstr = Clib::explicit_cast<BXmlNode*, Bscript::BObjectImp*>( imp );
       if ( node->Parent() != pstr->getNode()->Parent() )
@@ -535,10 +529,8 @@ BObjectRef BXmlNode::OperSubscript( const BObject& obj )
       return BObjectRef( new BXmlNode( child ) );
     return BObjectRef( new BError( "Failed to find node" ) );
   }
-  else
-  {
-    return BObjectRef( new BError( "xml members can only be accessed by name or index" ) );
-  }
+
+  return BObjectRef( new BError( "xml members can only be accessed by name or index" ) );
 }
 
 std::string BXmlNode::getStringRep() const

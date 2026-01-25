@@ -78,14 +78,12 @@ bool BLong::operator==( const BObjectImp& objimp ) const
   {
     return lval_ == ( (Double&)objimp ).value();
   }
-  else if ( objimp.isa( OTBoolean ) )
+  if ( objimp.isa( OTBoolean ) )
   {
     return isTrue() == static_cast<const BBoolean&>( objimp ).isTrue();
   }
-  else
-  {
-    return false;
-  }
+
+  return false;
 }
 
 bool BLong::operator<( const BObjectImp& objimp ) const

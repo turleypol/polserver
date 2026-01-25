@@ -28,6 +28,6 @@ private:
   bool m_profile;
 };
 }  // namespace Pol::Clib
-   // namespaces
+
 
 #endif  // RUN_ECL_MAIN_H

@@ -1,4 +1,17 @@
 -- POL100.2.0 --
+01-18-2026 Turley:
+    Fixed: ClassInstance memory estimate
+01-17-2026 Kukkino:
+  Changed: FunctionReference no longer includes full program in its memory estimate.
+01-10-2026 Turley:
+    Fixed: class method calls which have a known name, name of an existing obj method, now work
+    Fixed: now also if the method has parameters
+01-10-2026 Turley:
+    Fixed: dynamic floor-like objects (height of 0) now block LOS like they do if they where static
+01-07-2026 Turley:
+    Fixed: Since the switch to the new compiler .lst files had no sourcefile/sourceline infos, these are now again produced
+01-04-2026 Turley:
+    Fixed: cfgmod::GetConfigInt overflow issue, now returns Error("Integer overflow error")
 12-31-2025 Kukkino:
     Fixed: Changing warmode no longer sends 0x77 packet (Update Player) packet to clients in range who cannot see the mobile (ex. when the character changing warmode is hidden).
 12-15-2025 Kevin:

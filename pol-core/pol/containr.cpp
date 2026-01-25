@@ -161,15 +161,13 @@ bool UContainer::can_add_bulk( int tli_diff, int item_count_diff, int weight_dif
     }
     return true;
   }
-  else
-  {
-    if ( settingsManager.ssopt.use_slot_index )
-    {
-      return ( ( contents_.size() < MAX_CONTAINER_ITEMS ) && ( contents_.size() < MAX_SLOTS ) );
-    }
 
-    return ( contents_.size() < MAX_CONTAINER_ITEMS );
+  if ( settingsManager.ssopt.use_slot_index )
+  {
+    return ( ( contents_.size() < MAX_CONTAINER_ITEMS ) && ( contents_.size() < MAX_SLOTS ) );
   }
+
+  return ( contents_.size() < MAX_CONTAINER_ITEMS );
 }
 
 bool UContainer::can_add( const Items::Item& item ) const
@@ -198,7 +196,7 @@ bool UContainer::can_add_to_slot( u8& slotIndex )
   return true;
 }
 
-void UContainer::add( Items::Item* item )
+void UContainer::add( Items::Item* item, const Pos2d& pos )
 {
   // passert( can_add( *item ) );
   if ( orphan() )
@@ -206,7 +204,7 @@ void UContainer::add( Items::Item* item )
     POLLOG_ERRORLN( "Trying to add item to orphan container!" );
     passert_always( 0 );  // TODO remove once found
   }
-  item->setposition( Pos4d( item->pos().xyz(), realm() ) );  // TODO POS realm should be a nullptr
+  item->setposition( Pos4d( pos, 0, realm() ) );  // TODO POS realm should be a nullptr
   item->container = this;
   item->set_dirty();
   contents_.push_back( Contents::value_type( item ) );
@@ -303,9 +301,7 @@ bool UContainer::find_empty_slot( u8& slotIndex )
 
 void UContainer::add_at_random_location( Items::Item* item )
 {
-  item->setposition( Pos4d( get_random_location(), 0, item->realm() ) );  // TODO POS realm nullptr
-
-  add( item );
+  add( item, get_random_location() );
 }
 
 void UContainer::enumerate_contents( Bscript::ObjArray* arr, int flags )
@@ -959,8 +955,7 @@ unsigned short UContainer::max_weight() const
     return USHRT_MAX;
   if ( max_weight <= USHRT_MAX )
     return static_cast<u16>( max_weight );
-  else
-    return USHRT_MAX;
+  return USHRT_MAX;
 }
 
 u8 UContainer::max_slots() const

@@ -36,6 +36,7 @@ class BStruct : public BObjectImp
 public:
   BStruct();
   BStruct( std::istream& is, unsigned size, BObjectType type );
+  BStruct& operator=( const BStruct& ) = delete;
   static BObjectImp* unpack( std::istream& is );
 
   void addMember( const char* name, BObjectRef val );
@@ -82,7 +83,6 @@ protected:
 
 private:
   Contents contents_;
-  BStruct& operator=( const BStruct& ) = delete;  // not implemented
 };
 }  // namespace Pol::Bscript
 

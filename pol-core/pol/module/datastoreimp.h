@@ -28,6 +28,7 @@ class Package;
 }
 namespace Module
 {
+class DataStoreFile;
 class DataFileElement final : public ref_counted
 {
 public:
@@ -97,7 +98,7 @@ class DataFileElemObj
 {
 public:
   DataFileElemObj( DataFileContentsRef dfcontents, DataFileElementRef dfelem )
-      : dfcontents( dfcontents ), dfelem( dfelem )
+      : dfcontents( std::move( dfcontents ) ), dfelem( std::move( dfelem ) )
   {
   }
 

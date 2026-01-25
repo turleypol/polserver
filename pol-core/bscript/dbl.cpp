@@ -120,14 +120,12 @@ bool Double::operator==( const BObjectImp& objimp ) const
     double diff = dval_ - ( (BLong&)objimp ).value();
     return fabs( diff ) < 0.00000001;
   }
-  else if ( objimp.isa( OTBoolean ) )
+  if ( objimp.isa( OTBoolean ) )
   {
     return isTrue() == static_cast<const BBoolean&>( objimp ).isTrue();
   }
-  else
-  {
-    return false;
-  }
+
+  return false;
 }
 
 bool Double::operator<( const BObjectImp& objimp ) const

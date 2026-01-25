@@ -211,12 +211,10 @@ Bscript::BObjectImp* BasicExecutorModule::mf_Compare()
       return new BLong( 0 );
     return new BLong( 1 );
   }
-  else
-  {
-    if ( !str1.compare( pos1_index - 1, pos1_len, str2, pos2_index - 1, pos2_len ) )
-      return new BLong( 0 );
-    return new BLong( 1 );
-  }
+
+  if ( !str1.compare( pos1_index - 1, pos1_len, str2, pos2_index - 1, pos2_len ) )
+    return new BLong( 0 );
+  return new BLong( 1 );
 }
 
 Bscript::BObjectImp* BasicExecutorModule::mf_Lower()
@@ -534,11 +532,11 @@ picojson::value recurseE2J( BObjectImp* value )
   {
     return picojson::value( d->value() );
   }
-  else if ( auto* b = impptrIf<BBoolean>( value ) )
+  if ( auto* b = impptrIf<BBoolean>( value ) )
   {
     return picojson::value( b->value() );
   }
-  else if ( auto* a = impptrIf<ObjArray>( value ) )
+  if ( auto* a = impptrIf<ObjArray>( value ) )
   {
     picojson::array jsonArr;
 
@@ -552,7 +550,7 @@ picojson::value recurseE2J( BObjectImp* value )
     }
     return picojson::value( jsonArr );
   }
-  else if ( auto* bstruct = impptrIf<BStruct>( value ) )
+  if ( auto* bstruct = impptrIf<BStruct>( value ) )
   {
     picojson::object jsonObj;
     for ( const auto& content : bstruct->contents() )
@@ -562,7 +560,7 @@ picojson::value recurseE2J( BObjectImp* value )
     }
     return picojson::value( jsonObj );
   }
-  else if ( auto* dict = impptrIf<BDictionary>( value ) )
+  if ( auto* dict = impptrIf<BDictionary>( value ) )
   {
     picojson::object jsonObj;
     for ( const auto& content : dict->contents() )
@@ -598,7 +596,7 @@ Bscript::BObjectImp* recurseJ2E( const picojson::value& v )
   {
     return new BBoolean( v.get<bool>() );
   }
-  else if ( v.is<picojson::array>() )
+  if ( v.is<picojson::array>() )
   {
     std::unique_ptr<ObjArray> objarr( new ObjArray );
     const picojson::array& arr = v.get<picojson::array>();
@@ -608,7 +606,7 @@ Bscript::BObjectImp* recurseJ2E( const picojson::value& v )
     }
     return objarr.release();
   }
-  else if ( v.is<picojson::object>() )
+  if ( v.is<picojson::object>() )
   {
     std::unique_ptr<BStruct> objstruct( new BStruct );
     for ( const auto& content : v.get<picojson::object>() )
@@ -617,8 +615,7 @@ Bscript::BObjectImp* recurseJ2E( const picojson::value& v )
     }
     return objstruct.release();
   }
-  else
-    return UninitObject::create();
+  return UninitObject::create();
 }
 
 Bscript::BObjectImp* BasicExecutorModule::mf_UnpackJSON()

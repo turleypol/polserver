@@ -22,6 +22,7 @@
 #include "bscript/filefmt.h"
 #include "clib/Program/ProgramConfig.h"
 #include "clib/Program/ProgramMain.h"
+#include "clib/clib.h"
 #include "clib/esignal.h"
 #include "clib/fileutil.h"
 #include "clib/logfacility.h"
@@ -511,10 +512,9 @@ bool setting_value( const char* arg )
     return true;
   if ( arg[2] == '-' )
     return false;
-  else if ( arg[2] == '+' )
+  if ( arg[2] == '+' )
     return true;
-  else
-    return true;
+  return true;
 }
 
 

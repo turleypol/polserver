@@ -126,7 +126,7 @@ jobs:
       - name: Test (EScript)
         run: |
           cd bin-build
-          ctest -j2 --verbose -E escript_
+          cmake --build . --config ${{ matrix.config.build-type }} --target test_escript
       - name: Test (Shard Fixtures)
         run: |
           cd bin-build

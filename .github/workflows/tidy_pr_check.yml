@@ -1,6 +1,6 @@
-name: RunClangTidy
+name: TidyPRCheck
 
-on: [push]
+on: [pull_request]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -18,31 +18,15 @@ jobs:
             c-compiler: clang
             compiler-version: 20
             build-type: RelWithDebInfo
-            name: ClangTidy
-            tidy-checks: "modernize-for-loop"
-            #"modernize-use-override"
-            #"modernize-use-equals-default"
-            #"modernize-use-equals-delete"
-            #"modernize-make-shared"
-            #"modernize-make-unique"
-            #"modernize-use-constraints"
-            #"modernize-redundant-void-arg"
-            #"modernize-use-emplace"
-            #"modernize-use-using"
-            #"modernize-concat-nested-namespaces"
-            #"readability-container-size-empty"
-            #"readability-else-after-return"
-            #"performance-unnecessary-copy-initialization"
-
+            tidy-checks: "modernize-use-override,modernize-make-shared,modernize-make-unique,modernize-use-constraints,modernize-use-emplace,modernize-use-equals-default,modernize-use-equals-delete,modernize-use-using,readability-else-after-return,readability-container-size-empty,modernize-concat-nested-namespaces,modernize-redundant-void-arg,performance-unnecessary-copy-initialization"
+            name: Clang-Tidy
 
     runs-on: ${{ matrix.config.os }}
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
-      - uses: compnerd/gha-setup-vsdevenv@v6
+          fetch-depth: 0
       - name: Cache curl
         uses: actions/cache@v4
         with:
@@ -63,8 +47,12 @@ jobs:
         with:
           path: lib/cppdap-82beeea
           key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-cppdap-82beeea-2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
       - name: Install Compiler and Dependencies (Linux)
+        if: matrix.config.os == 'ubuntu-latest'
         shell: pwsh
         run: |
           sudo apt-get update
@@ -74,11 +62,10 @@ jobs:
 
           if ($version -ne 'default') {
             sudo apt-get install "$compiler-$version" -y
+            sudo apt-get install "clang-tidy-$version" -y
           }
           sudo apt-get install libmysqlclient-dev -y
-          sudo apt-get install kwstyle -y
           sudo apt-get install uuid-dev -y
-          pip install aiosmtpd
 
           $ninja_version = "1.12.1"
           $cmake_version = "3.31.3"
@@ -112,21 +99,21 @@ jobs:
       - name: Config
         run: |
           cd bin-build
-          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} -DENABLE_TIDY=ON -DTIDY_ARGS="-header-filter=.*;-fix;-checks=-*,${{ matrix.config.tidy-checks}}"
-      - name: Build
+          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config.build-type }} -DNO_PCH=1
+      - name: Prepare externals
         run: |
           cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} -- -j 1
-      - name: Format
-        if: always()
+          cmake --build . --target libcurl_ext || true
+          cmake --build . --target libantlr_ext || true
+          cmake --build . --target libboost_ext || true
+          cmake --build . --target libkaitai_ext
+          cmake --build . --target libtinyxml
+          cmake --build . --target libfmt_ext
+          cmake --build . --target libescriptgrammar
+          cmake --build . --target libcppdap_ext || true
+          cmake --build . --target parse_modules
+
+      - name: Tidy Diff Check
         run: |
-          cd bin-build
-          cmake --build . --config ${{ matrix.config.build-type }} --target clang_format
-      - name: Commit
-        if: always()
-        run: |
-          git config --global user.name 'Clang Tidy'
-          git config --global user.email 'clang-tidy@users.noreply.github.com'
-          git add pol-core
-          git commit -m "Automated clang-tidy change: ${{ matrix.config.tidy-checks }}"
-          git push
+          # TODO: if we have to many headers which fail to compile add "-only-check-in-db"
+          git diff -U0 origin/${{github.event.pull_request.base.ref}}..origin/${{github.head_ref}} | clang-tidy-diff-20.py -checks='-*,${{matrix.config.tidy-checks}}' -p1 -path bin-build || true

@@ -234,26 +234,23 @@ std::unique_ptr<Value> ValueBuilder::value( EscriptParser::LiteralContext* ctx )
   {
     return integer_value( integer_literal );
   }
-  else if ( auto float_literal = ctx->floatLiteral() )
+  if ( auto float_literal = ctx->floatLiteral() )
   {
     return float_value( float_literal );
   }
-  else if ( auto bool_literal = ctx->boolLiteral() )
+  if ( auto bool_literal = ctx->boolLiteral() )
   {
     return bool_value( bool_literal );
   }
-  else if ( ctx->UNINIT() )
+  if ( ctx->UNINIT() )
   {
     return std::make_unique<UninitializedValue>( location_for( *ctx ) );
   }
-  else if ( auto regex = ctx->REGEXP_LITERAL() )
+  if ( auto regex = ctx->REGEXP_LITERAL() )
   {
     return regular_expression_value( regex );
   }
-  else
-  {
-    location_for( *ctx ).internal_error( "unhandled literal" );
-  }
+  location_for( *ctx ).internal_error( "unhandled literal" );
 }
 
 int ValueBuilder::to_int( EscriptParser::IntegerLiteralContext* ctx )
@@ -268,11 +265,11 @@ int ValueBuilder::to_int( EscriptParser::IntegerLiteralContext* ctx )
     {
       return static_cast<int>( std::stoul( hex_literal->getSymbol()->getText(), nullptr, 16 ) );
     }
-    else if ( auto oct_literal = ctx->OCT_LITERAL() )
+    if ( auto oct_literal = ctx->OCT_LITERAL() )
     {
       return std::stoi( oct_literal->getSymbol()->getText(), nullptr, 8 );
     }
-    else if ( auto binary_literal = ctx->BINARY_LITERAL() )
+    if ( auto binary_literal = ctx->BINARY_LITERAL() )
     {
       return std::stoi( binary_literal->getSymbol()->getText(), nullptr, 2 );
     }

@@ -21,6 +21,6 @@ private:
   void showHelp() override;
 };
 }  // namespace Pol::ECompile
-   // namespaces
+
 
 #endif  // E_COMPILE_MAIN_H

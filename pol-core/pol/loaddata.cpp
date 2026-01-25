@@ -150,11 +150,9 @@ void equip_loaded_item( Mobile::Character* chr, Items::Item* item )
       ERROR_PRINTLN( "I'm so cool, I put it in the character's backpack!" );
       return;
     }
-    else
-    {
-      stateManager.gflag_enforce_container_limits = true;
-      ERROR_PRINTLN( "Tried to put it in the character's backpack, but it wouldn't fit." );
-    }
+
+    stateManager.gflag_enforce_container_limits = true;
+    ERROR_PRINTLN( "Tried to put it in the character's backpack, but it wouldn't fit." );
   }
   else
   {
@@ -210,7 +208,7 @@ void add_loaded_item( Items::Item* cont_item, Items::Item* item )
       throw std::runtime_error( "Data file error" );
     }
 
-    cont->add( item );
+    cont->add( item, item->pos2d() );
     item->clear_dirty();  // adding sets dirty
 
     stateManager.gflag_enforce_container_limits = true;

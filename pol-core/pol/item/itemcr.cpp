@@ -60,18 +60,14 @@ Item* Item::create( u32 objtype, u32 serial )
     Core::gamestate.temp_itemdesc->graphic = static_cast<u16>( objtype );
     return create( *( Core::gamestate.temp_itemdesc.get() ), serial );
   }
-  else
-  {
-    std::string message = fmt::format( "Objtype not defined : {:#x}", objtype );
 
-    if ( !Plib::systemstate.config.ignore_load_errors )
-      throw std::runtime_error( message );
-    else
-    {
-      ERROR_PRINTLN( message );
-      return nullptr;
-    }
-  }
+  std::string message = fmt::format( "Objtype not defined : {:#x}", objtype );
+
+  if ( !Plib::systemstate.config.ignore_load_errors )
+    throw std::runtime_error( message );
+
+  ERROR_PRINTLN( message );
+  return nullptr;
 }
 
 Item* Item::create( const ItemDesc& id, u32 serial )

@@ -98,17 +98,17 @@ bool CanUseSkill( Network::Client* client )
     private_say_above( chr, chr, "I am already performing another action." );
     return false;
   }
-  else if ( poltime() < chr->disable_skills_until() )
+  if ( poltime() < chr->disable_skills_until() )
   {
     send_sysmessage( client, "You must wait to perform another action." );
     return false;
   }
-  else if ( chr->frozen() )
+  if ( chr->frozen() )
   {
     private_say_above( chr, chr, "I am frozen and cannot do that." );
     return false;
   }
-  else if ( chr->paralyzed() )
+  if ( chr->paralyzed() )
   {
     private_say_above( chr, chr, "I am paralyzed and cannot do that." );
     return false;
