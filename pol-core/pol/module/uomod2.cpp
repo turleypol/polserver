@@ -1784,7 +1784,7 @@ BObjectImp* GetIoStatsObj( const IOStats& stats )
   ObjArray* received = new ObjArray;
   arr->addMember( "received", received );
 
-  for ( auto i : stats.sent )
+  for ( const auto& i : stats.sent )
   {
     std::unique_ptr<BStruct> elem = std::make_unique<BStruct>();
     elem->addMember( "count", new BLong( i.count ) );
@@ -1792,7 +1792,7 @@ BObjectImp* GetIoStatsObj( const IOStats& stats )
     sent->addElement( elem.release() );
   }
 
-  for ( auto i : stats.received )
+  for ( const auto& i : stats.received )
   {
     std::unique_ptr<BStruct> elem( new BStruct );
     elem->addMember( "count", new BLong( i.count ) );
