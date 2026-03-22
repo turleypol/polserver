@@ -229,8 +229,6 @@ const char* BObjectImp::typestr( BObjectType typ )
     return "Double";
   case OTArray:
     return "Array";
-  case OTApplicPtr:
-    return "ApplicPtr";
   case OTApplicObj:
     return "ApplicObj";
   case OTError:
@@ -2170,42 +2168,6 @@ BObjectImp* ObjArray::unpack( std::istream& is )
   return arr.release();
 }
 
-BApplicPtr::BApplicPtr( const BApplicObjType* pointer_type, void* ptr )
-    : BObjectImp( OTApplicPtr ), ptr_( ptr ), pointer_type_( pointer_type )
-{
-}
-
-BObjectImp* BApplicPtr::copy() const
-{
-  return new BApplicPtr( pointer_type_, ptr_ );
-}
-
-size_t BApplicPtr::sizeEstimate() const
-{
-  return sizeof( BApplicPtr );
-}
-
-const BApplicObjType* BApplicPtr::pointer_type() const
-{
-  return pointer_type_;
-}
-
-void* BApplicPtr::ptr() const
-{
-  return ptr_;
-}
-
-std::string BApplicPtr::getStringRep() const
-{
-  return "<appptr>";
-}
-
-
-void BApplicPtr::printOn( std::ostream& os ) const
-{
-  os << "<appptr>";
-}
-
 std::string BApplicObjBase::getStringRep() const
 {
   return std::string( "<appobj:" ) + typeOf() + ">";
@@ -2520,23 +2482,34 @@ std::string BSpread::getStringRep() const
   return "Spread";
 }
 
-BSpecialUserFuncJump BSpecialUserFuncJump::imp_special_userjmp{};
+std::unique_ptr<BSpecialUserFuncJump> BSpecialUserFuncJump::imp_special_userjmp =
+    std::make_unique<BSpecialUserFuncJump>();
+
 BSpecialUserFuncJump::BSpecialUserFuncJump() : BObjectImp( OTSpecialUserFuncJump ) {}
+
 size_t BSpecialUserFuncJump::sizeEstimate() const
 {
   return sizeof( BSpecialUserFuncJump );
 };
+
 std::string BSpecialUserFuncJump::getStringRep() const
 {
   return "BSpecialUserFuncJump";
 };
+
 BObjectImp* BSpecialUserFuncJump::copy() const
 {
   return get();
 };
+
 BSpecialUserFuncJump* BSpecialUserFuncJump::get()
 {
-  return &imp_special_userjmp;
+  return imp_special_userjmp.get();
+}
+
+void BSpecialUserFuncJump::ReleaseSharedInstance()
+{
+  imp_special_userjmp.reset();
 }
 
 }  // namespace Pol::Bscript

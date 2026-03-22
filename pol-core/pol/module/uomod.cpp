@@ -202,7 +202,7 @@ UOExecutorModule::UOExecutorModule( UOExecutor& exec )
       popup_menu_selection_chr( nullptr ),
       popup_menu_selection_above( nullptr ),
       prompt_chr( nullptr ),
-      gump_chr( nullptr ),
+      gump_chrs(),
       textentry_chr( nullptr ),
       resurrect_chr( nullptr ),
       selcolor_chr( nullptr ),
@@ -226,58 +226,56 @@ UOExecutorModule::~UOExecutorModule()
     reserved_items_.pop_back();
   }
 
-  if ( target_cursor_chr != nullptr )
+  if ( target_cursor_chr )
   {
     // CHECKME can we cancel the cursor request?
-    if ( target_cursor_chr->client != nullptr && target_cursor_chr->client->gd != nullptr )
-      target_cursor_chr->client->gd->target_cursor_uoemod = nullptr;
+    if ( auto* client = target_cursor_chr->client; client && client->gd )
+      client->gd->target_cursor_uoemod = nullptr;
     target_cursor_chr = nullptr;
   }
-  if ( menu_selection_chr != nullptr )
+  if ( menu_selection_chr )
   {
-    if ( menu_selection_chr->client != nullptr && menu_selection_chr->client->gd != nullptr )
-      menu_selection_chr->client->gd->menu_selection_uoemod = nullptr;
+    if ( auto* client = menu_selection_chr->client; client && client->gd )
+      client->gd->menu_selection_uoemod = nullptr;
     menu_selection_chr = nullptr;
   }
-  if ( popup_menu_selection_chr != nullptr )
+  if ( popup_menu_selection_chr )
   {
-    if ( popup_menu_selection_chr->client != nullptr &&
-         popup_menu_selection_chr->client->gd != nullptr )
-      popup_menu_selection_chr->client->gd->popup_menu_selection_uoemod = nullptr;
+    if ( auto* client = popup_menu_selection_chr->client; client && client->gd )
+      client->gd->popup_menu_selection_uoemod = nullptr;
     popup_menu_selection_chr = nullptr;
     popup_menu_selection_above = nullptr;
   }
-  if ( prompt_chr != nullptr )
+  if ( prompt_chr )
   {
-    if ( prompt_chr->client != nullptr && prompt_chr->client->gd != nullptr )
-      prompt_chr->client->gd->prompt_uoemod = nullptr;
+    if ( auto* client = prompt_chr->client; client && client->gd )
+      client->gd->prompt_uoemod = nullptr;
     prompt_chr = nullptr;
   }
-  if ( gump_chr != nullptr )
+  for ( auto& [chr, _] : gump_chrs )
   {
-    if ( gump_chr->client != nullptr && gump_chr->client->gd != nullptr )
-      gump_chr->client->gd->remove_gumpmods( this );
-    gump_chr = nullptr;
+    if ( auto* client = chr->client; client && client->gd )
+      client->gd->remove_gumpmods( this );
   }
-  if ( textentry_chr != nullptr )
+  if ( textentry_chr )
   {
-    if ( textentry_chr->client != nullptr && textentry_chr->client->gd != nullptr )
-      textentry_chr->client->gd->textentry_uoemod = nullptr;
+    if ( auto* client = textentry_chr->client; client && client->gd )
+      client->gd->textentry_uoemod = nullptr;
     textentry_chr = nullptr;
   }
-  if ( resurrect_chr != nullptr )
+  if ( resurrect_chr )
   {
-    if ( resurrect_chr->client != nullptr && resurrect_chr->client->gd != nullptr )
-      resurrect_chr->client->gd->resurrect_uoemod = nullptr;
+    if ( auto* client = resurrect_chr->client; client && client->gd )
+      client->gd->resurrect_uoemod = nullptr;
     resurrect_chr = nullptr;
   }
-  if ( selcolor_chr != nullptr )
+  if ( selcolor_chr )
   {
-    if ( selcolor_chr->client != nullptr && selcolor_chr->client->gd != nullptr )
-      selcolor_chr->client->gd->selcolor_uoemod = nullptr;
+    if ( auto* client = selcolor_chr->client; client && client->gd )
+      client->gd->selcolor_uoemod = nullptr;
     selcolor_chr = nullptr;
   }
-  if ( attached_chr_ != nullptr )
+  if ( attached_chr_ )
   {
     passert( attached_chr_->script_ex == &uoex );
     attached_chr_->script_ex = nullptr;
@@ -1181,21 +1179,18 @@ BObjectImp* UOExecutorModule::mf_CreateMultiAtLocation( /* x,y,z,objtype,flags,r
 
 void replace_properties( Clib::ConfigElem& elem, BStruct* custom )
 {
-  for ( const auto& citr : custom->contents() )
+  for ( const auto& [name, refobj] : custom->contents() )
   {
-    const std::string& name = citr.first;
-    BObjectImp* ref = citr.second->impptr();
+    BObjectImp* ref = refobj->impptr();
 
     if ( name == "CProps" )
     {
       if ( auto* cpropdict = impptrIf<BDictionary>( ref ) )
       {
         const BDictionary::Contents& cprop_cont = cpropdict->contents();
-        BDictionary::Contents::const_iterator itr;
-        for ( itr = cprop_cont.begin(); itr != cprop_cont.end(); ++itr )
+        for ( const auto& [key, valueobj] : cprop_cont )
         {
-          elem.add_prop( "cprop", ( ( *itr ).first->getStringRep() + "\t" +
-                                    ( *itr ).second->impptr()->pack() ) );
+          elem.add_prop( "cprop", ( key->getStringRep() + "\t" + valueobj->impptr()->pack() ) );
         }
       }
       else
@@ -1570,22 +1565,20 @@ BObjectImp* UOExecutorModule::mf_SelectMenuItem2()
 
 void append_objtypes( ObjArray* objarr, Menu* menu )
 {
-  for ( auto& menuitem : menu->menuitems_ )
+  for ( const auto& menuitem : menu->menuitems_ )
   {
-    MenuItem* mi = &menuitem;
-
-    if ( mi->submenu_id )
+    if ( menuitem.submenu_id )
     {
       // Code Analyze: Commented out and replaced with tmp_menu due to hiding
       // menu passed to function.
       //      Menu* menu = find_menu( mi->submenu_id );
-      Menu* tmp_menu = Menu::find_menu( mi->submenu_id );
+      Menu* tmp_menu = Menu::find_menu( menuitem.submenu_id );
       if ( tmp_menu != nullptr )
         append_objtypes( objarr, tmp_menu );
     }
     else
     {
-      objarr->addElement( new BLong( mi->objtype_ ) );
+      objarr->addElement( new BLong( menuitem.objtype_ ) );
     }
   }
 }
@@ -2271,16 +2264,16 @@ BObjectImp* UOExecutorModule::mf_ListStaticsInBox( /* x1, y1, z1, x2, y2, z2, fl
       Plib::StaticEntryList slist;
       realm->getstatics( slist, pos );
 
-      for ( auto& i : slist )
+      for ( const auto& entry : slist )
       {
-        if ( ( z1 <= i.z ) && ( i.z <= z2 ) )
+        if ( ( z1 <= entry.z ) && ( entry.z <= z2 ) )
         {
           std::unique_ptr<BStruct> arr( new BStruct );
           arr->addMember( "x", new BLong( pos.x() ) );
           arr->addMember( "y", new BLong( pos.y() ) );
-          arr->addMember( "z", new BLong( i.z ) );
-          arr->addMember( "objtype", new BLong( i.objtype ) );
-          arr->addMember( "hue", new BLong( i.hue ) );
+          arr->addMember( "z", new BLong( entry.z ) );
+          arr->addMember( "objtype", new BLong( entry.objtype ) );
+          arr->addMember( "hue", new BLong( entry.hue ) );
           newarr->addElement( arr.release() );
         }
       }
@@ -2291,15 +2284,15 @@ BObjectImp* UOExecutorModule::mf_ListStaticsInBox( /* x1, y1, z1, x2, y2, z2, fl
       Plib::StaticList mlist;
       realm->readmultis( mlist, pos );
 
-      for ( auto& i : mlist )
+      for ( const auto& entry : mlist )
       {
-        if ( ( z1 <= i.z ) && ( i.z <= z2 ) )
+        if ( ( z1 <= entry.z ) && ( entry.z <= z2 ) )
         {
           std::unique_ptr<BStruct> arr( new BStruct );
           arr->addMember( "x", new BLong( pos.x() ) );
           arr->addMember( "y", new BLong( pos.y() ) );
-          arr->addMember( "z", new BLong( i.z ) );
-          arr->addMember( "objtype", new BLong( i.graphic ) );
+          arr->addMember( "z", new BLong( entry.z ) );
+          arr->addMember( "objtype", new BLong( entry.graphic ) );
           newarr->addElement( arr.release() );
         }
       }
@@ -4064,17 +4057,17 @@ BObjectImp* UOExecutorModule::mf_GetStandingLayers( /* x, y, flags, realm, inclu
       realm->readdynamics( mlist, pos, ivec, false, flags );
     }
 
-    for ( auto& i : mlist )
+    for ( const auto& entry : mlist )
     {
       std::unique_ptr<BStruct> arr( new BStruct );
 
-      if ( i.flags & ( Plib::FLAG::MOVELAND | Plib::FLAG::MOVESEA ) )
-        arr->addMember( "z", new BLong( i.z + i.height ) );
+      if ( entry.flags & ( Plib::FLAG::MOVELAND | Plib::FLAG::MOVESEA ) )
+        arr->addMember( "z", new BLong( entry.z + entry.height ) );
       else
-        arr->addMember( "z", new BLong( i.z ) );
+        arr->addMember( "z", new BLong( entry.z ) );
 
-      arr->addMember( "height", new BLong( i.height ) );
-      arr->addMember( "flags", new BLong( i.flags ) );
+      arr->addMember( "height", new BLong( entry.height ) );
+      arr->addMember( "flags", new BLong( entry.flags ) );
       newarr->addElement( arr.release() );
     }
 
@@ -4361,16 +4354,16 @@ BObjectImp* UOExecutorModule::mf_ListStaticsAtLocation( /* x, y, z, flags, realm
       Plib::StaticEntryList slist;
       realm->getstatics( slist, pos );
 
-      for ( auto& i : slist )
+      for ( const auto& entry : slist )
       {
-        if ( ( z == LIST_IGNORE_Z ) || ( i.z == z ) )
+        if ( ( z == LIST_IGNORE_Z ) || ( entry.z == z ) )
         {
           std::unique_ptr<BStruct> arr( new BStruct );
           arr->addMember( "x", new BLong( pos.x() ) );
           arr->addMember( "y", new BLong( pos.y() ) );
-          arr->addMember( "z", new BLong( i.z ) );
-          arr->addMember( "objtype", new BLong( i.objtype ) );
-          arr->addMember( "hue", new BLong( i.hue ) );
+          arr->addMember( "z", new BLong( entry.z ) );
+          arr->addMember( "objtype", new BLong( entry.objtype ) );
+          arr->addMember( "hue", new BLong( entry.hue ) );
           newarr->addElement( arr.release() );
         }
       }
@@ -4381,15 +4374,15 @@ BObjectImp* UOExecutorModule::mf_ListStaticsAtLocation( /* x, y, z, flags, realm
       Plib::StaticList mlist;
       realm->readmultis( mlist, pos );
 
-      for ( auto& i : mlist )
+      for ( const auto& entry : mlist )
       {
-        if ( ( z == LIST_IGNORE_Z ) || ( i.z == z ) )
+        if ( ( z == LIST_IGNORE_Z ) || ( entry.z == z ) )
         {
           std::unique_ptr<BStruct> arr( new BStruct );
           arr->addMember( "x", new BLong( pos.x() ) );
           arr->addMember( "y", new BLong( pos.y() ) );
-          arr->addMember( "z", new BLong( i.z ) );
-          arr->addMember( "objtype", new BLong( i.graphic ) );
+          arr->addMember( "z", new BLong( entry.z ) );
+          arr->addMember( "objtype", new BLong( entry.graphic ) );
           newarr->addElement( arr.release() );
         }
       }
@@ -4420,16 +4413,16 @@ BObjectImp* UOExecutorModule::mf_ListStaticsNearLocation( /* x, y, z, range, fla
         Plib::StaticEntryList slist;
         realm->getstatics( slist, tile );
 
-        for ( auto& i : slist )
+        for ( const auto& entry : slist )
         {
-          if ( ( z == LIST_IGNORE_Z ) || ( abs( i.z - z ) < CONST_DEFAULT_ZRANGE ) )
+          if ( ( z == LIST_IGNORE_Z ) || ( abs( entry.z - z ) < CONST_DEFAULT_ZRANGE ) )
           {
             std::unique_ptr<BStruct> arr( new BStruct );
             arr->addMember( "x", new BLong( tile.x() ) );
             arr->addMember( "y", new BLong( tile.y() ) );
-            arr->addMember( "z", new BLong( i.z ) );
-            arr->addMember( "objtype", new BLong( i.objtype ) );
-            arr->addMember( "hue", new BLong( i.hue ) );
+            arr->addMember( "z", new BLong( entry.z ) );
+            arr->addMember( "objtype", new BLong( entry.objtype ) );
+            arr->addMember( "hue", new BLong( entry.hue ) );
             newarr->addElement( arr.release() );
           }
         }
@@ -4440,15 +4433,15 @@ BObjectImp* UOExecutorModule::mf_ListStaticsNearLocation( /* x, y, z, range, fla
         Plib::StaticList mlist;
         realm->readmultis( mlist, tile );
 
-        for ( auto& i : mlist )
+        for ( const auto& entry : mlist )
         {
-          if ( ( z == LIST_IGNORE_Z ) || ( abs( i.z - z ) < CONST_DEFAULT_ZRANGE ) )
+          if ( ( z == LIST_IGNORE_Z ) || ( abs( entry.z - z ) < CONST_DEFAULT_ZRANGE ) )
           {
             std::unique_ptr<BStruct> arr( new BStruct );
             arr->addMember( "x", new BLong( tile.x() ) );
             arr->addMember( "y", new BLong( tile.y() ) );
-            arr->addMember( "z", new BLong( i.z ) );
-            arr->addMember( "objtype", new BLong( i.graphic ) );
+            arr->addMember( "z", new BLong( entry.z ) );
+            arr->addMember( "objtype", new BLong( entry.graphic ) );
             newarr->addElement( arr.release() );
           }
         }
@@ -4748,11 +4741,8 @@ BObjectImp* UOExecutorModule::mf_FindSubstance()
       return new BError( "Not enough of that substance in container" );
 
     std::unique_ptr<ObjArray> theArray( new ObjArray() );
-    Item* item;
-
-    for ( auto itr : substanceVector )
+    for ( auto item : substanceVector )
     {
-      item = itr;
       if ( item != nullptr )
       {
         if ( ( makeInUse ) && ( !item->inuse() ) )

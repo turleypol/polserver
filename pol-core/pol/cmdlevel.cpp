@@ -50,9 +50,9 @@ bool CmdLevel::matches( const std::string& i_name ) const
 {
   if ( Clib::stringicmp( i_name, name ) == 0 )
     return true;
-  for ( const auto& aliase : aliases )
+  for ( const auto& alias : aliases )
   {
-    if ( Clib::stringicmp( i_name, aliase ) == 0 )
+    if ( Clib::stringicmp( i_name, alias ) == 0 )
       return true;
   }
   return false;
@@ -127,11 +127,10 @@ std::unique_ptr<Bscript::ObjArray> ListCommandsInPackageAtCmdlevel( Plib::Packag
 
   CmdLevel& cmdlevel = gamestate.cmdlevels[cmdlvl_num];
 
-  for ( auto& diridx : cmdlevel.searchlist )
+  for ( const auto& search_dir : cmdlevel.searchlist )
   {
-    CmdLevel::SearchDir* search_dir = &diridx;
-    Plib::Package* pkg = search_dir->pkg;
-    std::string dir_name = search_dir->dir;
+    Plib::Package* pkg = search_dir.pkg;
+    std::string dir_name = search_dir.dir;
     if ( ( !pkg && m_pkg ) || ( pkg && !m_pkg ) )
       continue;
     if ( pkg && m_pkg )
@@ -152,7 +151,7 @@ std::unique_ptr<Bscript::ObjArray> ListCommandsInPackageAtCmdlevel( Plib::Packag
       if ( !ext.compare( ".ecl" ) )
       {
         std::unique_ptr<Bscript::BStruct> cmdinfo( new Bscript::BStruct );
-        cmdinfo->addMember( "dir", new Bscript::String( search_dir->dir ) );
+        cmdinfo->addMember( "dir", new Bscript::String( search_dir.dir ) );
         cmdinfo->addMember( "script", new Bscript::String( dir_entry.path().filename().string() ) );
         script_names->addElement( cmdinfo.release() );
       }

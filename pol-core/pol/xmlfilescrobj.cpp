@@ -102,9 +102,10 @@ Bscript::BObjectImp* BXMLfile::call_method_id( const int id, Executor& ex, bool 
         BStruct* attr = static_cast<BStruct*>( ex.getParamImp( 1, Bscript::BObjectImp::OTStruct ) );
         if ( attr )
         {
-          for ( const auto& [name, refobj] : attr->contents() )
+          for ( const auto& citr : attr->contents() )
           {
-            Bscript::BObjectImp* ref = refobj->impptr();
+            const std::string& name = citr.first;
+            Bscript::BObjectImp* ref = citr.second->impptr();
             if ( ref->isa( Bscript::BObjectImp::OTLong ) )
               elem->SetAttribute( name, static_cast<BLong*>( ref )->value() );
             else if ( ref->isa( Bscript::BObjectImp::OTDouble ) )
