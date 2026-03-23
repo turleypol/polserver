@@ -198,6 +198,7 @@ jobs:
           dir lib\\mariadb-v3.4.8
           dir lib\\mariadb-v3.4.8\\install
           dir lib\\mariadb-v3.4.8\\install\\lib
+          dir lib\\mariadb-v3.4.8\\install\\lib\\mariadb
 
       - name: Testsummary
         if: matrix.config.tests && always()
