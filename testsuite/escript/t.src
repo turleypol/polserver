@@ -1,0 +1,6 @@
+var me := { 1, 2 };
+var text := "";
+[ me, text ] := me;
+print( me );
+print( text );
+
