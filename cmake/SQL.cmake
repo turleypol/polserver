@@ -37,7 +37,7 @@ if (${linux})
   include(GNUInstallDirs)
   set(MARIADB_LIB "${MARIADB_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/mariadb/libmariadbclient.a")
 else()
-  set(MARIADB_LIB "${MARIADB_INSTALL_DIR}/lib/mariadbclient.lib")
+  set(MARIADB_LIB "${MARIADB_INSTALL_DIR}/lib/mariadb/mariadbclient.lib")
 endif()
 
 if (NOT EXISTS ${MARIADB_LIB})

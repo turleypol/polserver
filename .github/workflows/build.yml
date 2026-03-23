@@ -192,13 +192,6 @@ jobs:
           cmake --build . --config ${{ matrix.config.build-type }} --target test_pol_only
           #env:
           #POLCORE_TEST_FILTER: testitems
-      - name: maria
-        if: always()
-        run: |
-          dir lib\\mariadb-v3.4.8
-          dir lib\\mariadb-v3.4.8\\install
-          dir lib\\mariadb-v3.4.8\\install\\lib
-          dir lib\\mariadb-v3.4.8\\install\\lib\\mariadb
 
       - name: Testsummary
         if: matrix.config.tests && always()
