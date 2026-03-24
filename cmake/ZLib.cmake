@@ -3,7 +3,7 @@
 if (${windows})
   message("* libz")
   set(ZLIB_REPO "https://github.com/madler/zlib")
-  set(ZLIB_TAG "v1.3.1")
+  set(ZLIB_TAG "v1.3.2")
   set(ZLIB_SOURCE_DIR "${EXT_DOWNLOAD_DIR}/zlib-${ZLIB_TAG}")
 
   set(ZLIB_INSTALL_DIR "${ZLIB_SOURCE_DIR}/builds")
