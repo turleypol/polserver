@@ -216,10 +216,24 @@ jobs:
           path: bin-build/coretest/
       - name: Upload coretest folder
         if: matrix.config.tests && always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: Alldir-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
-          path: .
+        run: |
+          dumpbin /directives D:\a\polserver\polserver\lib\cppdap-82beeea\build\lib\cppdap.lib
+          dumpbin /directives D:\a\polserver\polserver\bin\plib.lib
+          dumpbin /directives D:\a\polserver\polserver\bin\libtinyxml.lib
+          dumpbin /directives D:\a\polserver\polserver\lib\zlib-v1.3.1\builds\lib\zlibstatic.lib
+          dumpbin /directives D:\a\polserver\polserver\lib\curl-8_14_1\builds\libcurl-x64-release-static\lib\libcurl.lib
+          dumpbin /directives D:\a\polserver\polserver\lib\mariadb-v3.4.8\install\lib\mariadb\mariadbclient.lib
+          dumpbin /directives D:\a\polserver\polserver\bin\libescriptgrammar.lib
+          dumpbin /directives D:\a\polserver\polserver\lib\antlr-cb85012\install\lib\antlr4-runtime-static.lib
+          dumpbin /directives D:\a\polserver\polserver\bin\clib.lib
+          dumpbin /directives D:\a\polserver\polserver\lib\fmt-11.2.0\install\lib\fmt.lib
+          dumpbin /directives D:\a\polserver\polserver\lib\boost_1_89_0\stage\lib\libboost_stacktrace_from_exception.lib
+          dumpbin /directives D:\a\polserver\polserver\lib\boost_1_89_0\stage\lib\libboost_stacktrace_windbg.lib 
+          dumpbin /directives D:\a\polserver\polserver\bin\libstackwalk.lib
+        #uses: actions/upload-artifact@v4
+        #with:
+        #  name: Alldir-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
+        #  path: .
 
       - name: Create Artefact
         if: matrix.config.tests
