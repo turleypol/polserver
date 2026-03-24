@@ -8,7 +8,7 @@ if (${windows})
 
   set(ZLIB_INSTALL_DIR "${ZLIB_SOURCE_DIR}/builds")
   set(ZLIB_LIB "${ZLIB_INSTALL_DIR}/lib/zlibstatic.lib")
-  set(ZLIB_FLAGS -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake)
+  set(ZLIB_FLAGS -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake -DCMAKE_VERBOSE_MAKEFILE=ON)
 
   if(NOT EXISTS "${ZLIB_LIB}")
     ExternalProject_Add(libz_ext
@@ -24,11 +24,11 @@ if (${windows})
       BUILD_IN_SOURCE 1
       DOWNLOAD_EXTRACT_TIMESTAMP 1
       BUILD_BYPRODUCTS ${ZLIB_LIB}
-      LOG_DOWNLOAD 1
-      LOG_CONFIGURE 1
-      LOG_BUILD 1
-      LOG_INSTALL 1
-      LOG_OUTPUT_ON_FAILURE 1
+      #LOG_DOWNLOAD 1
+      #LOG_CONFIGURE 1
+      #LOG_BUILD 1
+      #LOG_INSTALL 1
+      #LOG_OUTPUT_ON_FAILURE 1
       EXCLUDE_FROM_ALL 1
     )
     set_target_properties (libz_ext PROPERTIES FOLDER 3rdParty)
