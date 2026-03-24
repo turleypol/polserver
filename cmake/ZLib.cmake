@@ -8,7 +8,10 @@ if (${windows})
 
   set(ZLIB_INSTALL_DIR "${ZLIB_SOURCE_DIR}/builds")
   set(ZLIB_LIB "${ZLIB_INSTALL_DIR}/lib/zlibstatic.lib")
-  set(ZLIB_FLAGS -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake -DCMAKE_VERBOSE_MAKEFILE=ON)
+  set(ZLIB_FLAGS -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake
+    -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+    -DCMAKE_VERBOSE_MAKEFILE=ON
+  )
 
   if(NOT EXISTS "${ZLIB_LIB}")
     ExternalProject_Add(libz_ext
