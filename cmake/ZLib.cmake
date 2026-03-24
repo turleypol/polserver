@@ -3,11 +3,11 @@
 if (${windows})
   message("* libz")
   set(ZLIB_REPO "https://github.com/madler/zlib")
-  set(ZLIB_TAG "v1.3.1.1")
+  set(ZLIB_TAG "v1.3.2")
   set(ZLIB_SOURCE_DIR "${EXT_DOWNLOAD_DIR}/zlib-${ZLIB_TAG}")
 
   set(ZLIB_INSTALL_DIR "${ZLIB_SOURCE_DIR}/builds")
-  set(ZLIB_LIB "${ZLIB_INSTALL_DIR}/lib/zlibstatic.lib")
+  set(ZLIB_LIB "${ZLIB_INSTALL_DIR}/lib/zs.lib")
   set(ZLIB_FLAGS -DCMAKE_USER_MAKE_RULES_OVERRIDE=${CMAKE_CURRENT_LIST_DIR}/c_flag_overrides.cmake
     -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
     -DCMAKE_VERBOSE_MAKEFILE=ON
