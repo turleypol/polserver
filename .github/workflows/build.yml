@@ -215,7 +215,7 @@ jobs:
           name: Testdir-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin-build/coretest/
       - name: Upload coretest folder
-        if: matrix.config.tests && always()
+        if: startsWith( matrix.config.os, 'windows-' ) && always()
         run: |
           dumpbin /directives D:\a\polserver\polserver\lib\cppdap-82beeea\build\lib\cppdap.lib
           dumpbin /directives D:\a\polserver\polserver\bin\plib.lib

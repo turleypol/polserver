@@ -80,4 +80,8 @@ set_target_properties(libsql PROPERTIES
 )
 file(MAKE_DIRECTORY ${MARIADB_INSTALL_DIR}/include) #directory has to exist during configure
 
+if(${windows})
+  set_property(TARGET libsql 
+    PROPERTY INTERFACE_LINK_LIBRARIES secur32 crypt32 bcrypt)
+endif()
 add_dependencies(libsql libmaria_ext)
