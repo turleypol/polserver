@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "../clib/boostutils.h"
+#include "../clib/logfacility.h"
 #include "../clib/maputil.h"
 #include "executor.h"
 
@@ -142,8 +143,10 @@ TmplExecutorModule<T, T2>::TmplExecutorModule( Executor& ex )
 {
   if ( !_func_map_init )
   {
+    INFO_PRINTLN( "init {} {}", modname, function_table.size() );
     for ( unsigned idx = 0; idx < function_table.size(); idx++ )
     {
+      INFO_PRINTLN( "reg {}", function_table[idx].funcname );
       _func_idx_map[function_table[idx].funcname] = idx;
     }
     _func_map_init = true;
