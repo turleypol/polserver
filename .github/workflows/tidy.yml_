@@ -33,7 +33,7 @@ jobs:
             #"readability-container-size-empty"
             #"readability-else-after-return"
             #"performance-unnecessary-copy-initialization"
-
+            #"modernize-loop-convert"
 
     runs-on: ${{ matrix.config.os }}
 
@@ -75,7 +75,6 @@ jobs:
           if ($version -ne 'default') {
             sudo apt-get install "$compiler-$version" -y
           }
-          sudo apt-get install libmysqlclient-dev -y
           sudo apt-get install kwstyle -y
           sudo apt-get install uuid-dev -y
           pip install aiosmtpd

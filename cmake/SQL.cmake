@@ -24,7 +24,6 @@ set(MARIADB_ARGS
    -DCMAKE_POSITION_INDEPENDENT_CODE=ON
    -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
 
-   -DCMAKE_VERBOSE_MAKEFILE=ON
    -DWITH_UNIT_TESTS=OFF
    -DWITH_EXTERNAL_ZLIB=ON
    -DZLIB_FOUND=TRUE
@@ -32,8 +31,6 @@ set(MARIADB_ARGS
    -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIRS}
    -DWITH_CURL=OFF
    -DCURL_DIR=${CURL_INSTALL_DIR}/lib/cmake/CURL
-   #-DREMOTEIO_PLUGIN_TYPE=STATIC
-   #-DAUTH_GSSAPI_PLUGIN_TYPE=OFF
  )
 if (${linux})
   include(GNUInstallDirs)
@@ -56,11 +53,11 @@ if (NOT EXISTS ${MARIADB_LIB})
     INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
 
     BUILD_BYPRODUCTS ${MARIADB_LIB}
-    #    LOG_DOWNLOAD 1
-    #    LOG_CONFIGURE 1
-    #    LOG_BUILD 1
-    #    LOG_INSTALL 1
-    #    LOG_OUTPUT_ON_FAILURE 1
+    LOG_DOWNLOAD 1
+    LOG_CONFIGURE 1
+    LOG_BUILD 1
+    LOG_INSTALL 1
+    LOG_OUTPUT_ON_FAILURE 1
     EXCLUDE_FROM_ALL 1
   )
 
@@ -81,7 +78,7 @@ set_target_properties(libsql PROPERTIES
 file(MAKE_DIRECTORY ${MARIADB_INSTALL_DIR}/include) #directory has to exist during configure
 
 if(${windows})
-  set_property(TARGET libsql 
+  set_property(TARGET libsql
     PROPERTY INTERFACE_LINK_LIBRARIES secur32 crypt32 bcrypt)
 endif()
 add_dependencies(libsql libmaria_ext)
