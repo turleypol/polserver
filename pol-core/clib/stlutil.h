@@ -165,8 +165,7 @@ size_t _unordered_mapimp( const M& container )
 #endif
   // bucket array overhead
   // sizeof(container) = libstdc++ 56 MSVC 64
-  size_t size =
-      sizeof( container ) + sentinal + ( container.bucket_count() * unordered_node_overhead );
+  size_t size = sizeof( container ) + sentinal + ( container.bucket_count() * sizeof( void* ) );
   size += container.size() * unordered_node_overhead;
 
   if constexpr ( std::is_same_v<K, std::string> && std::is_same_v<V, std::string> )
@@ -256,24 +255,20 @@ size_t memsize( const std::vector<T>& container, Func f )
 template <typename T>
 size_t memsize( const std::set<T>& container )
 {
-  constexpr size_t node_overhead = 4 * sizeof( void* );  // 3x void* + color
+  constexpr size_t node_overhead = 4 * sizeof( void* ) + sizeof( T );  // 3x void* + color
 #ifdef _WIN32
   constexpr size_t overhead = sizeof( container ) + node_overhead;  // 16 + sentinal
 #else
   constexpr size_t overhead = sizeof( container );  // 48
 #endif
 
+  size_t size = overhead + container.size() * node_overhead;
   if constexpr ( std::is_same_v<T, std::string> )
   {
-    size_t size = overhead;
     for ( const auto& t : container )
-      size += node_overhead + sizeof( std::string ) + t.capacity();
-    return size;
+      size += t.capacity();
   }
-  else
-  {
-    return overhead + container.size() * ( node_overhead + sizeof( T ) );
-  }
+  return size;
 }
 
 template <typename K, typename V, typename C>
