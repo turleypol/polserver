@@ -93,13 +93,13 @@ size_t _mapimp( const M& container )
   using K = typename M::key_type;
   using V = typename M::mapped_type;
   using Pair = std::pair<const K, V>;
-  constexpr size_t map_node_overhead = 4 * sizeof( void* ) + sizeof( Pair );  // 3x void* + color
+  constexpr size_t node_size = 4 * sizeof( void* ) + sizeof( Pair );  // 3x void* + color
 #ifdef _WIN32
-  constexpr size_t overhead = sizeof( container ) + map_node_overhead;  // 16+sentinal
+  constexpr size_t overhead = sizeof( container ) + node_size;  // 16+sentinal
 #else
   constexpr size_t overhead = sizeof( container );  // 48
 #endif
-  size_t size = overhead + ( map_node_overhead * container.size() );
+  size_t size = overhead + ( node_size * container.size() );
 
   if constexpr ( std::is_same_v<K, std::string> && std::is_same_v<V, std::string> )
   {
@@ -124,14 +124,14 @@ size_t _mapimp( const M& container, Func f )
 {
   using K = typename M::key_type;
   using Pair = std::pair<const K, typename M::mapped_type>;
-  constexpr size_t map_node_overhead = 4 * sizeof( void* ) + sizeof( Pair );  // 3 void* + color
+  constexpr size_t node_size = 4 * sizeof( void* ) + sizeof( Pair );  // 3 void* + color
 #ifdef _WIN32
-  constexpr size_t overhead = sizeof( container ) + map_node_overhead;  // 16+sentinal
+  constexpr size_t overhead = sizeof( container ) + node_size;  // 16+sentinal
 #else
   constexpr size_t overhead = sizeof( container );  // 48
 #endif
 
-  size_t size = overhead + ( map_node_overhead * container.size() );
+  size_t size = overhead + ( node_size * container.size() );
 
   if constexpr ( std::is_same_v<K, std::string> )
   {
@@ -156,17 +156,17 @@ size_t _unordered_mapimp( const M& container )
 
 #ifdef _WIN32
   // MSVC: doubly-linked list internally
-  constexpr size_t unordered_node_overhead = 2 * sizeof( void* ) + sizeof( Pair );
-  constexpr size_t sentinal = unordered_node_overhead;
+  constexpr size_t node_size = 2 * sizeof( void* ) + sizeof( Pair );
+  constexpr size_t sentinal = node_size;
 #else
   // libstdc++: singly-linked list
-  constexpr size_t unordered_node_overhead = sizeof( void* ) + sizeof( Pair );  // void*
+  constexpr size_t node_size = sizeof( void* ) + sizeof( Pair );  // void*
   constexpr size_t sentinal = 0;
 #endif
   // bucket array overhead
   // sizeof(container) = libstdc++ 56 MSVC 64
   size_t size = sizeof( container ) + sentinal + ( container.bucket_count() * sizeof( void* ) );
-  size += container.size() * unordered_node_overhead;
+  size += container.size() * node_size;
 
   if constexpr ( std::is_same_v<K, std::string> && std::is_same_v<V, std::string> )
   {
@@ -192,16 +192,16 @@ size_t _unordered_setimp( const S& container )
   using T = typename S::value_type;
 #ifdef _WIN32
   // MSVC: doubly-linked list internally
-  constexpr size_t unordered_node_overhead = 2 * sizeof( void* ) + sizeof( T );
-  constexpr size_t sentinal = unordered_node_overhead;
+  constexpr size_t node_size = 2 * sizeof( void* ) + sizeof( T );
+  constexpr size_t sentinal = node_size;
 #else
   // libstdc++: singly-linked list
-  constexpr size_t unordered_node_overhead = sizeof( void* ) + sizeof( T );  // void*
+  constexpr size_t node_size = sizeof( void* ) + sizeof( T );  // void*
   constexpr size_t sentinal = 0;
 #endif
   // sizeof(container) = libstdc++ 56 MSVC 64
-  size_t size = sizeof( container ) + container.bucket_count() * sizeof( void* );
-  size += container.size() * unordered_node_overhead;
+  size_t size = sizeof( container ) + sentinal + container.bucket_count() * sizeof( void* );
+  size += container.size() * node_size;
 
   if constexpr ( std::is_same_v<T, std::string> )
   {
@@ -255,14 +255,14 @@ size_t memsize( const std::vector<T>& container, Func f )
 template <typename T>
 size_t memsize( const std::set<T>& container )
 {
-  constexpr size_t node_overhead = 4 * sizeof( void* ) + sizeof( T );  // 3x void* + color
+  constexpr size_t node_size = 4 * sizeof( void* ) + sizeof( T );  // 3x void* + color
 #ifdef _WIN32
-  constexpr size_t overhead = sizeof( container ) + node_overhead;  // 16 + sentinal
+  constexpr size_t overhead = sizeof( container ) + node_size;  // 16 + sentinal
 #else
   constexpr size_t overhead = sizeof( container );  // 48
 #endif
 
-  size_t size = overhead + container.size() * node_overhead;
+  size_t size = overhead + container.size() * node_size;
   if constexpr ( std::is_same_v<T, std::string> )
   {
     for ( const auto& t : container )
