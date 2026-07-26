@@ -8,33 +8,26 @@
 #ifndef __EXECUTOR_H
 #define __EXECUTOR_H
 
-#include "pol_global_config.h"
+#include <pol_global_config.h>
 
-#ifndef __EXECTYPE_H
-#include "exectype.h"
-#endif
-
-#ifndef BSCRIPT_BOBJECT_H
-#include "bobject.h"
-#endif
+#include "bscript/bobject.h"
+#include "bscript/exectype.h"
 
 #include <exception>
 #include <map>
 #include <memory>
 #include <optional>
 #include <set>
-#include <stack>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "../clib/refptr.h"
-#include "../clib/spinlock.h"
-#include "berror.h"
-#include "bobject.h"
-#include "continueimp.h"
-#include "eprog.h"
-#include "executortype.h"
+#include "bscript/bapplicobj.h"
+#include "bscript/bobject.h"
+#include "bscript/eprog.h"
+#include "bscript/executortype.h"
+#include "clib/refptr.h"
+#include "clib/spinlock.h"
 
 #ifdef ESCRIPT_PROFILE
 #include "clib/timer.h"
@@ -54,7 +47,6 @@ namespace Bscript
 class BContinuation;
 class BFunctionRef;
 class Executor;
-class EScriptProgram;
 class ExecutorModule;
 class ModuleFunction;
 class String;
@@ -517,6 +509,8 @@ public:
   const std::string& scriptname() const;
   bool empty_scriptname();
   const EScriptProgram* prog() const;
+
+  virtual unsigned int pid() const { return 0; };
 
 private:
   ref_ptr<EScriptProgram> prog_;

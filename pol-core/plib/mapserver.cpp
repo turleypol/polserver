@@ -4,21 +4,21 @@
  */
 
 
-#include "mapserver.h"
+#include "plib/mapserver.h"
 
 #include <stddef.h>
 #include <stdexcept>
 #include <string>
 
-#include "../clib/binaryfile.h"
-#include "../clib/passert.h"
-#include "../clib/stlutil.h"
-#include "../clib/strutil.h"
-#include "filemapserver.h"
-#include "inmemorymapserver.h"
-#include "mapcell.h"
-#include "mapshape.h"
-#include "mapsolid.h"
+#include "clib/binaryfile.h"
+#include "clib/passert.h"
+#include "clib/stlutil.h"
+#include "clib/strutil.h"
+#include "plib/filemapserver.h"
+#include "plib/inmemorymapserver.h"
+#include "plib/mapcell.h"
+#include "plib/mapshape.h"
+#include "plib/mapsolid.h"
 
 
 namespace Pol::Plib
@@ -120,13 +120,11 @@ void MapServer::GetMapShapes( MapShapeList& shapes, unsigned short x, unsigned s
 
   if ( cell.flags & FLAG::MORE_SOLIDS )
   {
-    unsigned short xblock = x >> SOLIDX_X_SHIFT;
     unsigned short xcell = x & SOLIDX_X_CELLMASK;
-    unsigned short yblock = y >> SOLIDX_Y_SHIFT;
     unsigned short ycell = y & SOLIDX_Y_CELLMASK;
 
-    size_t block = static_cast<size_t>( yblock ) * ( _descriptor.width >> SOLIDX_X_SHIFT ) + xblock;
-    SOLIDX2_ELEM* pIndex2 = _index1[block];
+    // Solid blocks share the 8x8 row-major realm block layout.
+    SOLIDX2_ELEM* pIndex2 = _index1[realm_block_index( x, y, _descriptor.width )];
     unsigned int index = pIndex2->baseindex + pIndex2->addindex[xcell][ycell];
     const SOLIDS_ELEM* pElem = &_shapedata[index];
     for ( ;; )

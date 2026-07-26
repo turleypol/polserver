@@ -1,4 +1,4 @@
-#include "BinaryOperatorShortCircuit.h"
+#include "bscript/compiler/ast/BinaryOperatorShortCircuit.h"
 #include "bscript/compiler/ast/NodeVisitor.h"
 #include "bscript/compiler/model/FlowControlLabel.h"
 
@@ -13,7 +13,6 @@ BinaryOperatorShortCircuit::BinaryOperatorShortCircuit( const SourceLocation& so
     : Expression( source_location ),
       oper( op ),
       end_label( std::make_shared<FlowControlLabel>() ),
-      linked_jmp_label(),
       generate_logical_convert( true )
 {
   children.reserve( 2 );

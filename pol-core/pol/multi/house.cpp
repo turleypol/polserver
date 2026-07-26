@@ -12,47 +12,51 @@
  * - 2012/02/02 Tomi:      Added boat member MBR_MULTIID
  */
 
-#include "house.h"
+#include "pol/multi/house.h"
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <iterator>
 #include <stdlib.h>
 
-#include "../../bscript/berror.h"
-#include "../../bscript/executor.h"
-#include "../../bscript/objmembers.h"
-#include "../../bscript/objmethods.h"
-#include "../../clib/cfgelem.h"
-#include "../../clib/clib_endian.h"
-#include "../../clib/logfacility.h"
-#include "../../clib/passert.h"
-#include "../../clib/refptr.h"
-#include "../../clib/stlutil.h"
-#include "../../clib/streamsaver.h"
-#include "../../plib/mapcell.h"
-#include "../../plib/mapshape.h"
-#include "../../plib/systemstate.h"
-#include "../../plib/uconst.h"
-#include "../core.h"
-#include "../fnsearch.h"
-#include "../globals/object_storage.h"
-#include "../globals/uvars.h"
-#include "../item/itemdesc.h"
-#include "../mobile/charactr.h"
-#include "../module/uomod.h"
-#include "../network/cgdata.h"
-#include "../network/client.h"
-#include "../realms/realm.h"
-#include "../syshookscript.h"
-#include "../ufunc.h"
-#include "../uobject.h"
-#include "../uoexec.h"
-#include "../uoscrobj.h"
-#include "../uworld.h"
-#include "base/range.h"
-#include "customhouses.h"
-#include "multi.h"
-#include "multidef.h"
+#include "bscript/barray.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/executor.h"
+#include "bscript/objmembers.h"
+#include "bscript/objmethods.h"
+#include "clib/cfgelem.h"
+#include "clib/clib.h"
+#include "clib/clib_endian.h"
+#include "clib/logfacility.h"
+#include "clib/passert.h"
+#include "clib/refptr.h"
+#include "clib/stlutil.h"
+#include "clib/streamsaver.h"
+#include "plib/mapcell.h"
+#include "plib/mapshape.h"
+#include "plib/systemstate.h"
+#include "plib/uconst.h"
+
+#include "pol/core.h"
+#include "pol/fnsearch.h"
+#include "pol/globals/object_storage.h"
+#include "pol/globals/uvars.h"
+#include "pol/item/itemdesc.h"
+#include "pol/mobile/charactr.h"
+#include "pol/module/uomod.h"
+#include "pol/network/cgdata.h"
+#include "pol/network/client.h"
+#include "pol/realms/realm.h"
+#include "pol/syshookscript.h"
+#include "pol/ufunc.h"
+#include "pol/uobject.h"
+#include "pol/uoexec.h"
+#include "pol/uoscrobj.h"
+#include "pol/uworld.h"
+#include "pol/base/range.h"
+#include "pol/multi/customhouses.h"
+#include "pol/multi/multi.h"
+#include "pol/multi/multidef.h"
 
 
 namespace Pol::Multi
@@ -378,31 +382,62 @@ Bscript::BObjectImp* UHouse::script_method_id( const int id, Core::UOExecutor& e
       return new BError( "House is not custom" );
     if ( IsEditing() )
       return new BError( "House is currently been edited" );
-    if ( !ex.hasParams( 4 ) )
-      return new BError( "Not enough parameters" );
-    u16 item_graphic;
-    int xoff, yoff, item_z;
-    if ( ex.getParam( 0, item_graphic ) && ex.getParam( 1, xoff ) && ex.getParam( 2, yoff ) &&
-         ex.getParam( 3, item_z ) )
+    if ( ex.hasParams( 4 ) )
     {
-      CUSTOM_HOUSE_ELEMENT elem;
-      elem.graphic = item_graphic;
-      elem.xoffset = xoff;
-      elem.yoffset = yoff;
-      elem.z = static_cast<u8>( item_z );
-      CurrentDesign.Add( elem );
-      // invalidate
-      // invalidate
-      WorkingDesign = CurrentDesign;
-      std::vector<u8> newvec;
-      WorkingCompressed.swap( newvec );
-      std::vector<u8> newvec2;
-      CurrentCompressed.swap( newvec2 );
-      revision++;
-      CustomHousesSendFullToInRange( this, HOUSE_DESIGN_CURRENT );
-      return new BLong( 1 );
+      u16 item_graphic;
+      int xoff, yoff, item_z;
+      if ( ex.getParam( 0, item_graphic ) && ex.getParam( 1, xoff ) && ex.getParam( 2, yoff ) &&
+           ex.getParam( 3, item_z ) )
+      {
+        CurrentDesign.Add( CUSTOM_HOUSE_ELEMENT{ .z = Clib::clamp_convert<u8>( item_z ),
+                                                 .graphic = item_graphic,
+                                                 .xoffset = xoff,
+                                                 .yoffset = yoff } );
+      }
+      else
+        break;
     }
-    break;
+    else if ( ex.numParams() == 1 )
+    {
+      if ( auto* array = impptrIf<ObjArray>( ex.getParamImp( 0 ) ) )
+      {
+        for ( const auto& elem : array->ref_arr )
+        {
+          if ( auto* elem_struct = elem->impptr_if<BStruct>() )
+          {
+            auto graphic_i = impptrIf<const BLong>( elem_struct->FindMember( "graphic" ) );
+            auto xoffset_i = impptrIf<const BLong>( elem_struct->FindMember( "xoffset" ) );
+            auto yoffset_i = impptrIf<const BLong>( elem_struct->FindMember( "yoffset" ) );
+            auto z_i = impptrIf<const BLong>( elem_struct->FindMember( "z" ) );
+            if ( !graphic_i || !xoffset_i || !yoffset_i || !z_i )
+              return new BError(
+                  "array has to contain structs {.graphic, .xoffset, .yoffset, .z}" );
+            CurrentDesign.Add(
+                CUSTOM_HOUSE_ELEMENT{ .z = Clib::clamp_convert<u8>( z_i->value() ),
+                                      .graphic = Clib::clamp_convert<u16>( graphic_i->value() ),
+                                      .xoffset = xoffset_i->value(),
+                                      .yoffset = yoffset_i->value() } );
+          }
+          else
+          {
+            return new BError( "array has to contain structs {.graphic, .xoffset, .yoffset, .z}" );
+          }
+        }
+      }
+      else
+        return new BError( "single argument version has to be an array of structs" );
+    }
+    else
+      return new BError( "Not enough parameters" );
+    // invalidate
+    WorkingDesign = CurrentDesign;
+    std::vector<u8> newvec;
+    WorkingCompressed.swap( newvec );
+    std::vector<u8> newvec2;
+    CurrentCompressed.swap( newvec2 );
+    revision++;
+    CustomHousesSendFullToInRange( this, HOUSE_DESIGN_CURRENT );
+    return new BLong( 1 );
   }
   case MTH_ERASE_HOUSE_PART:
   {
@@ -410,28 +445,59 @@ Bscript::BObjectImp* UHouse::script_method_id( const int id, Core::UOExecutor& e
       return new BError( "House is not custom" );
     if ( IsEditing() )
       return new BError( "House is currently been edited" );
-    if ( !ex.hasParams( 4 ) )
-      return new BError( "Not enough parameters" );
-    int item_graphic, xoff, yoff, item_z;
-    if ( ex.getParam( 0, item_graphic ) && ex.getParam( 1, xoff ) && ex.getParam( 2, yoff ) &&
-         ex.getParam( 3, item_z ) )
+    bool success{ false };
+    if ( ex.hasParams( 4 ) )
     {
-      bool ret =
-          CurrentDesign.EraseGraphicAt( static_cast<u16>( item_graphic ), static_cast<u32>( xoff ),
-                                        static_cast<u32>( yoff ), static_cast<u8>( item_z ) );
-      if ( ret )
+      int item_graphic, xoff, yoff, item_z;
+      if ( ex.getParam( 0, item_graphic ) && ex.getParam( 1, xoff ) && ex.getParam( 2, yoff ) &&
+           ex.getParam( 3, item_z ) )
       {
-        // invalidate
-        WorkingDesign = CurrentDesign;
-        std::vector<u8> newvec;
-        WorkingCompressed.swap( newvec );
-        std::vector<u8> newvec2;
-        CurrentCompressed.swap( newvec2 );
-        CustomHousesSendFullToInRange( this, HOUSE_DESIGN_CURRENT );
+        success = CurrentDesign.EraseGraphicAt( Clib::clamp_convert<u16>( item_graphic ), xoff,
+                                                yoff, Clib::clamp_convert<u8>( item_z ) );
       }
-      return new BLong( ret ? 1 : 0 );
     }
-    break;
+    else if ( ex.numParams() == 1 )
+    {
+      if ( auto* array = impptrIf<ObjArray>( ex.getParamImp( 0 ) ) )
+      {
+        for ( const auto& elem : array->ref_arr )
+        {
+          if ( auto* elem_struct = elem->impptr_if<BStruct>() )
+          {
+            auto graphic_i = impptrIf<const BLong>( elem_struct->FindMember( "graphic" ) );
+            auto xoffset_i = impptrIf<const BLong>( elem_struct->FindMember( "xoffset" ) );
+            auto yoffset_i = impptrIf<const BLong>( elem_struct->FindMember( "yoffset" ) );
+            auto z_i = impptrIf<const BLong>( elem_struct->FindMember( "z" ) );
+            if ( !graphic_i || !xoffset_i || !yoffset_i || !z_i )
+              return new BError(
+                  "array has to contain structs {.graphic, .xoffset, .yoffset, .z}" );
+            if ( CurrentDesign.EraseGraphicAt( Clib::clamp_convert<u16>( graphic_i->value() ),
+                                               xoffset_i->value(), yoffset_i->value(),
+                                               Clib::clamp_convert<u8>( z_i->value() ) ) )
+              success = true;
+          }
+          else
+          {
+            return new BError( "array has to contain structs {.graphic, .xoffset, .yoffset, .z}" );
+          }
+        }
+      }
+      else
+        return new BError( "single argument version has to be an array of structs" );
+    }
+    else
+      return new BError( "Not enough parameters" );
+    if ( success )
+    {
+      // invalidate
+      WorkingDesign = CurrentDesign;
+      std::vector<u8> newvec;
+      WorkingCompressed.swap( newvec );
+      std::vector<u8> newvec2;
+      CurrentCompressed.swap( newvec2 );
+      CustomHousesSendFullToInRange( this, HOUSE_DESIGN_CURRENT );
+    }
+    return new BLong( success ? 1 : 0 );
   }
   case MTH_ACCEPT_COMMIT:
   {

@@ -28,48 +28,49 @@
 #include <iterator>
 #include <string>
 
-#include "../bscript/eprog.h"
-#include "../bscript/impstr.h"
-#include "../clib/clib_endian.h"
-#include "../clib/fdump.h"
-#include "../clib/logfacility.h"
-#include "../clib/rawtypes.h"
-#include "../clib/refptr.h"
-#include "../clib/stlutil.h"
-#include "../plib/systemstate.h"
-#include "../plib/uconst.h"
-#include "accounts/account.h"
-#include "cmbtcfg.h"
-#include "fnsearch.h"
-#include "gameclck.h"
-#include "globals/settings.h"
-#include "globals/uvars.h"
-#include "guilds.h"
-#include "mobile/attribute.h"
-#include "mobile/charactr.h"
-#include "module/uomod.h"
-#include "multi/customhouses.h"
-#include "multi/multi.h"
-#include "network/cgdata.h"
-#include "network/client.h"
-#include "network/clientio.h"
-#include "network/packethelper.h"
-#include "network/packets.h"
-#include "network/pktboth.h"
-#include "network/pktdef.h"
-#include "network/pktin.h"
-#include "network/sockio.h"
-#include "party.h"
-#include "polclass.h"
-#include "realms/realm.h"
-#include "scrstore.h"
-#include "spells.h"
-#include "systems/suspiciousacts.h"
-#include "tooltips.h"
-#include "ufunc.h"
-#include "uobject.h"
-#include "uoexec.h"
-#include "uoscrobj.h"
+#include "bscript/blong.h"
+#include "bscript/bstring.h"
+#include "bscript/eprog.h"
+#include "clib/clib_endian.h"
+#include "clib/fdump.h"
+#include "clib/logfacility.h"
+#include "clib/rawtypes.h"
+#include "clib/refptr.h"
+#include "plib/systemstate.h"
+#include "plib/uconst.h"
+
+#include "pol/accounts/account.h"
+#include "pol/cmbtcfg.h"
+#include "pol/fnsearch.h"
+#include "pol/gameclck.h"
+#include "pol/globals/settings.h"
+#include "pol/globals/uvars.h"
+#include "pol/guilds.h"
+#include "pol/mobile/attribute.h"
+#include "pol/mobile/charactr.h"
+#include "pol/module/uomod.h"
+#include "pol/multi/customhouses.h"
+#include "pol/multi/multi.h"
+#include "pol/network/cgdata.h"
+#include "pol/network/client.h"
+#include "pol/network/clientio.h"
+#include "pol/network/packethelper.h"
+#include "pol/network/packets.h"
+#include "pol/network/pktboth.h"
+#include "pol/network/pktdef.h"
+#include "pol/network/pktin.h"
+#include "pol/network/sockio.h"
+#include "pol/party.h"
+#include "pol/polclass.h"
+#include "pol/realms/realm.h"
+#include "pol/scrstore.h"
+#include "pol/spells.h"
+#include "pol/systems/suspiciousacts.h"
+#include "pol/tooltips.h"
+#include "pol/ufunc.h"
+#include "pol/uobject.h"
+#include "pol/uoexec.h"
+#include "pol/uoscrobj.h"
 
 
 namespace Pol
@@ -363,7 +364,7 @@ void handle_msg_BF( Client* client, PKTBI_BF* msg )
     if ( client->chr->race == Plib::RACE_GARGOYLE )
     {
       // FIXME: add checks if its possible to stand with new movemode
-      client->chr->movemode = ( Plib::MOVEMODE )( client->chr->movemode ^ Plib::MOVEMODE_FLY );
+      client->chr->movemode = (Plib::MOVEMODE)( client->chr->movemode ^ Plib::MOVEMODE_FLY );
       send_move_mobile_to_nearby_cansee( client->chr );
       send_goxyz( client, client->chr );
     }
@@ -639,9 +640,8 @@ void handle_ef_seed( Client* client, PKTIN_EF* msg )
     client->setClientType( CLIENTTYPE_4000 );
 
   // detail->patch is since 5.0.7 always numeric, so no need to make it complicated
-  OSTRINGSTREAM os;
-  os << detail.major << "." << detail.minor << "." << detail.rev << "." << detail.patch;
-  client->setversion( OSTRINGSTREAM_STR( os ) );
+  client->setversion(
+      fmt::format( "{}.{}.{}.{}", detail.major, detail.minor, detail.rev, detail.patch ) );
 }
 
 void handle_e1_clienttype( Client* client, PKTIN_E1* msg )

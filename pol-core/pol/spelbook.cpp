@@ -8,28 +8,28 @@
  * - 2009/10/10 Turley:    Added spellbook.addspell() & .removespell() methods
  */
 
-#include "spelbook.h"
+#include "pol/spelbook.h"
 
 #include <sstream>
 #include <stddef.h>
 
-#include "../bscript/executor.h"
-#include "../clib/cfgelem.h"
-#include "../clib/logfacility.h"
-#include "../clib/streamsaver.h"
-#include "../plib/systemstate.h"
-#include "../plib/uoexpansion.h"
-#include "baseobject.h"
-#include "globals/uvars.h"
-#include "item/itemdesc.h"
-#include "mobile/charactr.h"
-#include "network/client.h"
-#include "network/packethelper.h"
-#include "network/packets.h"
-#include "polclass.h"
-#include "syshookscript.h"
-#include "ufunc.h"
-#include "uobject.h"
+#include "bscript/executor.h"
+#include "clib/cfgelem.h"
+#include "clib/logfacility.h"
+#include "clib/streamsaver.h"
+#include "plib/systemstate.h"
+#include "plib/uoexpansion.h"
+#include "pol/baseobject.h"
+#include "pol/globals/uvars.h"
+#include "pol/item/itemdesc.h"
+#include "pol/mobile/charactr.h"
+#include "pol/network/client.h"
+#include "pol/network/packethelper.h"
+#include "pol/network/packets.h"
+#include "pol/polclass.h"
+#include "pol/syshookscript.h"
+#include "pol/ufunc.h"
+#include "pol/uobject.h"
 
 
 namespace Pol::Core
@@ -58,8 +58,6 @@ Spellbook::Spellbook( const Items::SpellbookDesc& descriptor )
   for ( unsigned char& bitwise_content : bitwise_contents )
     bitwise_content = 0;
 }
-
-Spellbook::~Spellbook() = default;
 
 size_t Spellbook::estimatedSize() const
 {
@@ -288,12 +286,10 @@ void Spellbook::printProperties( Clib::StreamWriter& sw ) const
 void Spellbook::readProperties( Clib::ConfigElem& elem )
 {
   base::readProperties( elem );
-  std::ostringstream os;
   for ( int i = 0; i < 8; ++i )
   {
-    os << "Spellbits" << i;
-    bitwise_contents[i] = (u8)elem.remove_ushort( os.str().c_str(), 0 );
-    os.str( "" );
+    std::string os = fmt::format( "Spellbits{}", i );
+    bitwise_contents[i] = (u8)elem.remove_ushort( os.c_str(), 0 );
   }
 }
 

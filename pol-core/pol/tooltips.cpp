@@ -10,26 +10,27 @@
  */
 
 
-#include "tooltips.h"
+#include "pol/tooltips.h"
 
 #include <stddef.h>
 #include <string>
 
-#include "../bscript/impstr.h"
-#include "../clib/clib_endian.h"
-#include "../clib/rawtypes.h"
-#include "../plib/uoexpansion.h"
-#include "item/item.h"
-#include "item/itemdesc.h"
-#include "mobile/charactr.h"
-#include "network/client.h"
-#include "network/packetdefs.h"
-#include "network/packethelper.h"
-#include "network/packets.h"
-#include "network/pktin.h"
-#include "ufunc.h"
-#include "uobject.h"
-#include "uworld.h"
+#include "bscript/bstring.h"
+#include "clib/clib_endian.h"
+#include "clib/rawtypes.h"
+#include "plib/uoexpansion.h"
+
+#include "pol/item/item.h"
+#include "pol/item/itemdesc.h"
+#include "pol/mobile/charactr.h"
+#include "pol/network/client.h"
+#include "pol/network/packetdefs.h"
+#include "pol/network/packethelper.h"
+#include "pol/network/packets.h"
+#include "pol/network/pktin.h"
+#include "pol/ufunc.h"
+#include "pol/uobject.h"
+#include "pol/uworld.h"
 
 
 namespace Pol::Core
@@ -95,13 +96,18 @@ void SendAOSTooltip( Network::Client* client, UObject* obj, bool vendor_content 
   {
     Mobile::Character* chr = (Mobile::Character*)obj;
 
-    desc = fmt::format( "{} \t{}\t {}", chr->title_prefix(), chr->name(), chr->title_suffix() );
+    const auto& ssopt = settingsManager.ssopt;
+    desc = fmt::format( "{}{}\t{}\t{}{}", chr->title_prefix(), ssopt.title_prefix_separator,
+                        chr->name(), ssopt.title_suffix_separator, chr->title_suffix() );
     if ( chr->has_title_race() )
-      desc += fmt::format( "{}({})", chr->has_title_suffix() ? " " : "", chr->title_race() );
+      desc += fmt::format( "{}({})", chr->has_title_suffix() ? ssopt.title_race_separator : "",
+                           chr->title_race() );
     if ( chr->has_title_guild() )
-      desc +=
-          fmt::format( "{}[{}]", ( chr->has_title_suffix() || chr->has_title_race() ) ? " " : "",
-                       chr->title_guild() );
+      desc += fmt::format( "{}[{}]",
+                           ( chr->has_title_suffix() || chr->has_title_race() )
+                               ? ssopt.title_guild_separator
+                               : "",
+                           chr->title_guild() );
   }
   else if ( vendor_content )
   {

@@ -3,14 +3,17 @@
  * @par History
  */
 
-#include "eprog.h"
+#include "bscript/eprog.h"
 
 #include <cstdio>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <iomanip>
 
-#include "../clib/refptr.h"
-#include "../clib/stlutil.h"
-#include "escriptv.h"
-#include "fmodule.h"
+#include "clib/refptr.h"
+#include "clib/stlutil.h"
+#include "bscript/escriptv.h"
+#include "bscript/fmodule.h"
 
 
 namespace Pol::Bscript
@@ -57,9 +60,7 @@ EScriptProgram::~EScriptProgram()
 
 std::string EScriptProgram::dbg_get_instruction( size_t atPC ) const
 {
-  OSTRINGSTREAM os;
-  os << instr[atPC].token;
-  return OSTRINGSTREAM_STR( os );
+  return fmt::to_string( instr[atPC].token );
 }
 
 size_t EScriptProgram::sizeEstimate() const
@@ -101,7 +102,7 @@ void EScriptProgram::dump( std::ostream& os )
       return;
     }
 
-    os << PC << ": " << token << std::endl;
+    fmt::println( os, "{}: {}", PC, token );
     if ( token.id == INS_CASEJMP )
     {
       dump_casejmp( os, token );

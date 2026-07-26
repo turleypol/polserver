@@ -79,9 +79,9 @@
  */
 
 
-#include "pol_global_config.h"
+#include <pol_global_config.h>
 
-#include "charactr.h"
+#include "pol/mobile/charactr.h"
 
 #include <iterator>
 #include <list>
@@ -89,86 +89,89 @@
 #include <stdlib.h>
 #include <string>
 
-#include "../../bscript/executor.h"
-#include "../../clib/cfgelem.h"
-#include "../../clib/cfgfile.h"
-#include "../../clib/clib.h"
-#include "../../clib/clib_endian.h"
-#include "../../clib/esignal.h"
-#include "../../clib/fileutil.h"
-#include "../../clib/logfacility.h"
-#include "../../clib/passert.h"
-#include "../../clib/random.h"
-#include "../../clib/stlutil.h"
-#include "../../clib/streamsaver.h"
-#include "../../plib/clidata.h"
-#include "../../plib/mapcell.h"
-#include "../../plib/objtype.h"
-#include "../../plib/systemstate.h"
-#include "../accounts/account.h"
-#include "../accounts/accounts.h"
-#include "../checkpnt.h"
-#include "../cmbtcfg.h"
-#include "../cmdlevel.h"
-#include "../containr.h"
-#include "../dice.h"
-#include "../extobj.h"
-#include "../fnsearch.h"
-#include "../globals/settings.h"
-#include "../globals/state.h"
-#include "../globals/uvars.h"
-#include "../guilds.h"
-#include "../item/armor.h"
-#include "../item/item.h"
-#include "../item/itemdesc.h"
-#include "../item/weapon.h"
-#include "../item/wepntmpl.h"
-#include "../layers.h"
-#include "../mkscrobj.h"
-#include "../module/uomod.h"
-#include "../movecost.h"
-#include "../multi/customhouses.h"
-#include "../multi/house.h"
-#include "../multi/multi.h"
-#include "../multi/multidef.h"
-#include "../network/cgdata.h"
-#include "../network/client.h"
-#include "../network/cliface.h"
-#include "../network/packetdefs.h"
-#include "../network/packethelper.h"
-#include "../network/packets.h"
-#include "../network/pktdef.h"
-#include "../party.h"
-#include "../polclass.h"
-#include "../polsig.h"
-#include "../polvar.h"
-#include "../profile.h"
-#include "../realms/WorldChangeReasons.h"
-#include "../realms/realm.h"
-#include "../schedule.h"
-#include "../scrdef.h"
-#include "../scrsched.h"
-#include "../scrstore.h"
-#include "../sfx.h"
-#include "../skilladv.h"
-#include "../spelbook.h"
-#include "../statmsg.h"
-#include "../syshook.h"
-#include "../syshookscript.h"
-#include "../ufunc.h"
-#include "../ufuncstd.h"
-#include "../uobjcnt.h"
-#include "../uoexec.h"
-#include "../uoscrobj.h"
-#include "../uworld.h"
-#include "../vital.h"
-#include "attribute.h"
-#include "corpse.h"
-#include "privupdater.h"
-#include "regions/guardrgn.h"
-#include "regions/miscrgn.h"
-#include "regions/musicrgn.h"
-#include "wornitems.h"
+#include "bscript/barray.h"
+#include "bscript/blong.h"
+#include "bscript/executor.h"
+#include "clib/cfgelem.h"
+#include "clib/cfgfile.h"
+#include "clib/clib.h"
+#include "clib/clib_endian.h"
+#include "clib/esignal.h"
+#include "clib/fileutil.h"
+#include "clib/logfacility.h"
+#include "clib/passert.h"
+#include "clib/random.h"
+#include "clib/stlutil.h"
+#include "clib/streamsaver.h"
+#include "plib/clidata.h"
+#include "plib/mapcell.h"
+#include "plib/objtype.h"
+#include "plib/systemstate.h"
+
+#include "pol/accounts/account.h"
+#include "pol/accounts/accounts.h"
+#include "pol/checkpnt.h"
+#include "pol/cmbtcfg.h"
+#include "pol/cmdlevel.h"
+#include "pol/containr.h"
+#include "pol/dice.h"
+#include "pol/extobj.h"
+#include "pol/fnsearch.h"
+#include "pol/globals/settings.h"
+#include "pol/globals/state.h"
+#include "pol/globals/uvars.h"
+#include "pol/guilds.h"
+#include "pol/item/armor.h"
+#include "pol/item/item.h"
+#include "pol/item/itemdesc.h"
+#include "pol/item/weapon.h"
+#include "pol/item/wepntmpl.h"
+#include "pol/layers.h"
+#include "pol/mkscrobj.h"
+#include "pol/mobile/attribute.h"
+#include "pol/mobile/corpse.h"
+#include "pol/mobile/privupdater.h"
+#include "pol/mobile/wornitems.h"
+#include "pol/module/uomod.h"
+#include "pol/movecost.h"
+#include "pol/multi/customhouses.h"
+#include "pol/multi/house.h"
+#include "pol/multi/multi.h"
+#include "pol/multi/multidef.h"
+#include "pol/network/cgdata.h"
+#include "pol/network/client.h"
+#include "pol/network/cliface.h"
+#include "pol/network/packetdefs.h"
+#include "pol/network/packethelper.h"
+#include "pol/network/packets.h"
+#include "pol/network/pktdef.h"
+#include "pol/party.h"
+#include "pol/polclass.h"
+#include "pol/polsig.h"
+#include "pol/polvar.h"
+#include "pol/profile.h"
+#include "pol/realms/WorldChangeReasons.h"
+#include "pol/realms/realm.h"
+#include "pol/regions/guardrgn.h"
+#include "pol/regions/miscrgn.h"
+#include "pol/regions/musicrgn.h"
+#include "pol/schedule.h"
+#include "pol/scrdef.h"
+#include "pol/scrsched.h"
+#include "pol/scrstore.h"
+#include "pol/sfx.h"
+#include "pol/skilladv.h"
+#include "pol/spelbook.h"
+#include "pol/statmsg.h"
+#include "pol/syshook.h"
+#include "pol/syshookscript.h"
+#include "pol/ufunc.h"
+#include "pol/ufuncstd.h"
+#include "pol/uobjcnt.h"
+#include "pol/uoexec.h"
+#include "pol/uoscrobj.h"
+#include "pol/uworld.h"
+#include "pol/vital.h"
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4505 )  // unreferenced local function has been removed
@@ -2444,27 +2447,25 @@ void Character::refresh_ar()
   //   FIXME? NZONES * NLAYERS (5 * 24 = 124) iterations.
   // okay, reverse, for each wornitem, for each coverage area, upgrade.
   // Turley: should be fixed now only iterators over armor's coverage zones instead of all zones
-  for ( unsigned zone = 0; zone < Core::gamestate.armorzones.size(); ++zone )
-    armor_[zone] = nullptr;
+  for ( auto& entry : armor_ )
+    entry = nullptr;
   // we need to reset each resist to 0, then add the base back using calc.
   resetEquipableProperties();
 
   for ( unsigned layer = Core::LAYER_EQUIP__LOWEST; layer <= Core::LAYER_EQUIP__HIGHEST; ++layer )
   {
     Items::Item* item = wornitems->GetItemOnLayer( layer );
-    if ( item == nullptr )
+    if ( !item )
       continue;
     // Let's check all items as base, and handle their element_resists.
     updateEquipableProperties( item );
     if ( item->isa( Core::UOBJ_CLASS::CLASS_ARMOR ) )
     {
-      Items::UArmor* armor = static_cast<Items::UArmor*>( item );
-      std::set<unsigned short> tmplzones = armor->tmplzones();
-      std::set<unsigned short>::iterator itr;
-      for ( itr = tmplzones.begin(); itr != tmplzones.end(); ++itr )
+      auto* armor = static_cast<Items::UArmor*>( item );
+      for ( auto zone : armor->tmplzones() )
       {
-        if ( ( armor_[*itr] == nullptr ) || ( armor->ar() > armor_[*itr]->ar() ) )
-          armor_[*itr] = armor;
+        if ( !armor_[zone] || armor->ar() > armor_[zone]->ar() )
+          armor_[zone] = armor;
       }
     }
   }
@@ -2475,7 +2476,7 @@ void Character::refresh_ar()
   for ( unsigned zone = 0; zone < Core::gamestate.armorzones.size(); ++zone )
   {
     Items::UArmor* armor = armor_[zone];
-    if ( armor != nullptr )
+    if ( armor )
     {
       new_ar += armor->ar() * Core::gamestate.armorzones[zone].chance;
     }
@@ -2483,25 +2484,18 @@ void Character::refresh_ar()
 
   /* add AR due to shield : parry skill / 2 is percent of AR */
   // FIXME: Should we allow this to be adjustable via a prop? Hrmmmmm
-  if ( shield != nullptr )
+  if ( shield )
   {
-    double add =
-        0.5 * 0.01 * shield->ar() * attribute( Core::gamestate.pAttrParry->attrid ).effective();
-    if ( add > 1.0 )
-      new_ar += add;
-    else
-      new_ar += 1.0;
+    new_ar += std::max(
+        1.0,  //
+        0.5 * 0.01 * shield->ar() * attribute( Core::gamestate.pAttrParry->attrid ).effective() );
   }
 
   new_ar += ar_mod();
 
-  short s_new_ar = static_cast<short>( new_ar );
-  if ( s_new_ar >= 0 )
-    ar_ = s_new_ar;
-  else
-    ar_ = 0;
+  ar_ = std::max( 0_s16, Clib::clamp_convert<short>( new_ar ) );
 
-  if ( client != nullptr )
+  if ( client )
   {  // CHECKME consider sending less frequently
     send_full_statmsg( client, this );
   }
@@ -2574,11 +2568,6 @@ void Character::updateEquipableProperties( Items::Item* item )
   // calc defence increase if lower than cap
   if ( item->has_defence_increase() )
     defence_increase( defence_increase().addToValue( item->defence_increase() ) );
-
-  if ( client != nullptr )
-  {  // CHECKME consider sending less frequently
-    send_full_statmsg( client, this );
-  }
 }
 
 void Character::resetEquipableProperties()

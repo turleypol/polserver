@@ -128,7 +128,7 @@ struct TiXmlCursor
 class TiXmlVisitor
 {
 public:
-	virtual ~TiXmlVisitor() = default;
+	virtual ~TiXmlVisitor() {}
 
 	/// Visit a document.
 	virtual bool VisitEnter( const TiXmlDocument& /*doc*/ )			{ return true; }
@@ -199,7 +199,7 @@ class TiXmlBase
 
 public:
 	TiXmlBase()	:	userData(0)		{}
-	virtual ~TiXmlBase()			= default;
+	virtual ~TiXmlBase()			{}
 
 	/**	All TinyXml classes can print themselves to a filestream
 		or the string class (TiXmlString in non-STL mode, std::string
@@ -344,7 +344,7 @@ protected:
 			*_value = *p;
 			return p+1;
 		}
-		if ( *length )
+		else if ( *length )
 		{
 			//strncpy( _value, p, *length );	// lots of compilers don't like this function (unsafe),
 												// and the null terminator isn't needed
@@ -353,10 +353,11 @@ protected:
 			}
 			return p + (*length);
 		}
-		
-					// Not valid text.
+		else
+		{
+			// Not valid text.
 			return 0;
-	
+		}
 	}
 
 	// Return true if the next characters in the stream are any of the endTag sequences.
@@ -385,9 +386,10 @@ protected:
 			if ( v < 128 ) return tolower( v );
 			return v;
 		}
-		
-					return tolower( v );
-	
+		else
+		{
+			return tolower( v );
+		}
 	}
 	static void ConvertUTF32ToUTF8( unsigned long input, char* output, int* length );
 
@@ -468,7 +470,7 @@ public:
 		TINYXML_TYPECOUNT
 	};
 
-	~TiXmlNode() override;
+	virtual ~TiXmlNode();
 
 	/** The meaning of 'value' changes for the specific type of
 		TiXmlNode.
@@ -862,10 +864,10 @@ public:
 	/*	Attribute parsing starts: first letter of the name
 						 returns: the next char after the value end quote
 	*/
-	const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding ) override;
+	virtual const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding );
 
 	// Prints this Attribute to a FILE stream.
-	void Print( FILE* cfile, int depth ) const override {
+	virtual void Print( FILE* cfile, int depth ) const {
 		Print( cfile, depth, 0 );
 	}
 	void Print( FILE* cfile, int depth, TIXML_STRING* str ) const;
@@ -950,7 +952,7 @@ public:
 
 	TiXmlElement& operator=( const TiXmlElement& base );
 
-	~TiXmlElement() override;
+	virtual ~TiXmlElement();
 
 	/** Given an attribute name, Attribute() returns the value
 		for the attribute of that name, or null if none exists.
@@ -1119,21 +1121,21 @@ public:
 	const char* GetText() const;
 
 	/// Creates a new Element and returns it - the returned element is a copy.
-	TiXmlNode* Clone() const override;
+	virtual TiXmlNode* Clone() const;
 	// Print the Element to a FILE stream.
-	void Print( FILE* cfile, int depth ) const override;
+	virtual void Print( FILE* cfile, int depth ) const;
 
 	/*	Attribtue parsing starts: next char past '<'
 						 returns: next char past '>'
 	*/
-	const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding ) override;
+	virtual const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding );
 
-	const TiXmlElement*     ToElement()     const override { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
-	TiXmlElement*           ToElement() override	          { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual const TiXmlElement*     ToElement()     const { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual TiXmlElement*           ToElement()	          { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
 
 	/** Walk the XML tree visiting this node and all of its children. 
 	*/
-	bool Accept( TiXmlVisitor* visitor ) const override;
+	virtual bool Accept( TiXmlVisitor* visitor ) const;
 
 protected:
 
@@ -1142,7 +1144,7 @@ protected:
 
 	// Used to be public [internal use]
 	#ifdef TIXML_USE_STL
-	void StreamIn( std::istream * in, TIXML_STRING * tag ) override;
+	virtual void StreamIn( std::istream * in, TIXML_STRING * tag );
 	#endif
 	/*	[internal use]
 		Reads the "value" of the element -- another element, or text.
@@ -1169,31 +1171,31 @@ public:
 	TiXmlComment( const TiXmlComment& );
 	TiXmlComment& operator=( const TiXmlComment& base );
 
-	~TiXmlComment() override	= default;
+	virtual ~TiXmlComment()	{}
 
 	/// Returns a copy of this Comment.
-	TiXmlNode* Clone() const override;
+	virtual TiXmlNode* Clone() const;
 	// Write this Comment to a FILE stream.
-	void Print( FILE* cfile, int depth ) const override;
+	virtual void Print( FILE* cfile, int depth ) const;
 
 	/*	Attribtue parsing starts: at the ! of the !--
 						 returns: next char past '>'
 	*/
-	const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding ) override;
+	virtual const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding );
 
-	const TiXmlComment*  ToComment() const override	{ return this; } ///< Cast to a more defined type. Will return null not of the requested type.
-			  TiXmlComment*  ToComment() override		{ return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual const TiXmlComment*  ToComment() const	{ return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual		  TiXmlComment*  ToComment()		{ return this; } ///< Cast to a more defined type. Will return null not of the requested type.
 
 	/** Walk the XML tree visiting this node and all of its children. 
 	*/
-	bool Accept( TiXmlVisitor* visitor ) const override;
+	virtual bool Accept( TiXmlVisitor* visitor ) const;
 
 protected:
 	void CopyTo( TiXmlComment* target ) const;
 
 	// used to be public
 	#ifdef TIXML_USE_STL
-	void StreamIn( std::istream * in, TIXML_STRING * tag ) override;
+	virtual void StreamIn( std::istream * in, TIXML_STRING * tag );
 	#endif
 //	virtual void StreamOut( TIXML_OSTREAM * out ) const;
 
@@ -1220,7 +1222,7 @@ public:
 		SetValue( initValue );
 		cdata = false;
 	}
-	~TiXmlText() override {}
+	virtual ~TiXmlText() {}
 
 	#ifdef TIXML_USE_STL
 	/// Constructor.
@@ -1235,31 +1237,31 @@ public:
 	TiXmlText& operator=( const TiXmlText& base )							 	{ base.CopyTo( this ); return *this; }
 
 	// Write this text object to a FILE stream.
-	void Print( FILE* cfile, int depth ) const override;
+	virtual void Print( FILE* cfile, int depth ) const;
 
 	/// Queries whether this represents text using a CDATA section.
 	bool CDATA() const				{ return cdata; }
 	/// Turns on or off a CDATA representation of text.
 	void SetCDATA( bool _cdata )	{ cdata = _cdata; }
 
-	const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding ) override;
+	virtual const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding );
 
-	const TiXmlText* ToText() const override { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
-	TiXmlText*       ToText() override       { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual const TiXmlText* ToText() const { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual TiXmlText*       ToText()       { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
 
 	/** Walk the XML tree visiting this node and all of its children. 
 	*/
-	bool Accept( TiXmlVisitor* content ) const override;
+	virtual bool Accept( TiXmlVisitor* content ) const;
 
 protected :
 	///  [internal use] Creates a new Element and returns it.
-	TiXmlNode* Clone() const override;
+	virtual TiXmlNode* Clone() const;
 	void CopyTo( TiXmlText* target ) const;
 
 	bool Blank() const;	// returns true if all white space and new lines
 	// [internal use]
 	#ifdef TIXML_USE_STL
-	void StreamIn( std::istream * in, TIXML_STRING * tag ) override;
+	virtual void StreamIn( std::istream * in, TIXML_STRING * tag );
 	#endif
 
 private:
@@ -1301,7 +1303,7 @@ public:
 	TiXmlDeclaration( const TiXmlDeclaration& copy );
 	TiXmlDeclaration& operator=( const TiXmlDeclaration& copy );
 
-	~TiXmlDeclaration() override	= default;
+	virtual ~TiXmlDeclaration()	{}
 
 	/// Version. Will return an empty string if none was found.
 	const char *Version() const			{ return version.c_str (); }
@@ -1311,27 +1313,27 @@ public:
 	const char *Standalone() const		{ return standalone.c_str (); }
 
 	/// Creates a copy of this Declaration and returns it.
-	TiXmlNode* Clone() const override;
+	virtual TiXmlNode* Clone() const;
 	// Print this declaration to a FILE stream.
 	virtual void Print( FILE* cfile, int depth, TIXML_STRING* str ) const;
-	void Print( FILE* cfile, int depth ) const override {
+	virtual void Print( FILE* cfile, int depth ) const {
 		Print( cfile, depth, 0 );
 	}
 
-	const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding ) override;
+	virtual const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding );
 
-	const TiXmlDeclaration* ToDeclaration() const override { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
-	TiXmlDeclaration*       ToDeclaration() override       { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual const TiXmlDeclaration* ToDeclaration() const { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual TiXmlDeclaration*       ToDeclaration()       { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
 
 	/** Walk the XML tree visiting this node and all of its children. 
 	*/
-	bool Accept( TiXmlVisitor* visitor ) const override;
+	virtual bool Accept( TiXmlVisitor* visitor ) const;
 
 protected:
 	void CopyTo( TiXmlDeclaration* target ) const;
 	// used to be public
 	#ifdef TIXML_USE_STL
-	void StreamIn( std::istream * in, TIXML_STRING * tag ) override;
+	virtual void StreamIn( std::istream * in, TIXML_STRING * tag );
 	#endif
 
 private:
@@ -1353,30 +1355,30 @@ class TiXmlUnknown : public TiXmlNode
 {
 public:
 	TiXmlUnknown() : TiXmlNode( TiXmlNode::TINYXML_UNKNOWN )	{}
-	~TiXmlUnknown() override = default;
+	virtual ~TiXmlUnknown() {}
 
 	TiXmlUnknown( const TiXmlUnknown& copy ) : TiXmlNode( TiXmlNode::TINYXML_UNKNOWN )		{ copy.CopyTo( this ); }
 	TiXmlUnknown& operator=( const TiXmlUnknown& copy )										{ copy.CopyTo( this ); return *this; }
 
 	/// Creates a copy of this Unknown and returns it.
-	TiXmlNode* Clone() const override;
+	virtual TiXmlNode* Clone() const;
 	// Print this Unknown to a FILE stream.
-	void Print( FILE* cfile, int depth ) const override;
+	virtual void Print( FILE* cfile, int depth ) const;
 
-	const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding ) override;
+	virtual const char* Parse( const char* p, TiXmlParsingData* data, TiXmlEncoding encoding );
 
-	const TiXmlUnknown*     ToUnknown()     const override	{ return this; } ///< Cast to a more defined type. Will return null not of the requested type.
-	TiXmlUnknown*           ToUnknown() override				{ return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual const TiXmlUnknown*     ToUnknown()     const	{ return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual TiXmlUnknown*           ToUnknown()				{ return this; } ///< Cast to a more defined type. Will return null not of the requested type.
 
 	/** Walk the XML tree visiting this node and all of its children. 
 	*/
-	bool Accept( TiXmlVisitor* content ) const override;
+	virtual bool Accept( TiXmlVisitor* content ) const;
 
 protected:
 	void CopyTo( TiXmlUnknown* target ) const;
 
 	#ifdef TIXML_USE_STL
-	void StreamIn( std::istream * in, TIXML_STRING * tag ) override;
+	virtual void StreamIn( std::istream * in, TIXML_STRING * tag );
 	#endif
 
 private:
@@ -1404,7 +1406,7 @@ public:
 	TiXmlDocument( const TiXmlDocument& copy );
 	TiXmlDocument& operator=( const TiXmlDocument& copy );
 
-	~TiXmlDocument() override = default;
+	virtual ~TiXmlDocument() {}
 
 	/** Load a file using the current document value.
 		Returns true if successful. Will delete any existing
@@ -1441,7 +1443,7 @@ public:
 		method (either TIXML_ENCODING_LEGACY or TIXML_ENCODING_UTF8 will force TinyXml
 		to use that encoding, regardless of what TinyXml might otherwise try to detect.
 	*/
-	const char* Parse( const char* p, TiXmlParsingData* data = 0, TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING ) override;
+	virtual const char* Parse( const char* p, TiXmlParsingData* data = 0, TiXmlEncoding encoding = TIXML_DEFAULT_ENCODING );
 
 	/** Get the root element -- the only top level element -- of the document.
 		In well formed XML, there should only be one. TinyXml is tolerant of
@@ -1523,22 +1525,22 @@ public:
 	//char* PrintToMemory() const; 
 
 	/// Print this Document to a FILE stream.
-	void Print( FILE* cfile, int depth = 0 ) const override;
+	virtual void Print( FILE* cfile, int depth = 0 ) const;
 	// [internal use]
 	void SetError( int err, const char* errorLocation, TiXmlParsingData* prevData, TiXmlEncoding encoding );
 
-	const TiXmlDocument*    ToDocument()    const override { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
-	TiXmlDocument*          ToDocument() override          { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual const TiXmlDocument*    ToDocument()    const { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
+	virtual TiXmlDocument*          ToDocument()          { return this; } ///< Cast to a more defined type. Will return null not of the requested type.
 
 	/** Walk the XML tree visiting this node and all of its children. 
 	*/
-	bool Accept( TiXmlVisitor* content ) const override;
+	virtual bool Accept( TiXmlVisitor* content ) const;
 
 protected :
 	// [internal use]
-	TiXmlNode* Clone() const override;
+	virtual TiXmlNode* Clone() const;
 	#ifdef TIXML_USE_STL
-	void StreamIn( std::istream * in, TIXML_STRING * tag ) override;
+	virtual void StreamIn( std::istream * in, TIXML_STRING * tag );
 	#endif
 
 private:
@@ -1738,16 +1740,16 @@ public:
 	TiXmlPrinter() : depth( 0 ), simpleTextPrint( false ),
 					 buffer(), indent( "    " ), lineBreak( "\n" ) {}
 
-	bool VisitEnter( const TiXmlDocument& doc ) override;
-	bool VisitExit( const TiXmlDocument& doc ) override;
+	virtual bool VisitEnter( const TiXmlDocument& doc );
+	virtual bool VisitExit( const TiXmlDocument& doc );
 
-	bool VisitEnter( const TiXmlElement& element, const TiXmlAttribute* firstAttribute ) override;
-	bool VisitExit( const TiXmlElement& element ) override;
+	virtual bool VisitEnter( const TiXmlElement& element, const TiXmlAttribute* firstAttribute );
+	virtual bool VisitExit( const TiXmlElement& element );
 
-	bool Visit( const TiXmlDeclaration& declaration ) override;
-	bool Visit( const TiXmlText& text ) override;
-	bool Visit( const TiXmlComment& comment ) override;
-	bool Visit( const TiXmlUnknown& unknown ) override;
+	virtual bool Visit( const TiXmlDeclaration& declaration );
+	virtual bool Visit( const TiXmlText& text );
+	virtual bool Visit( const TiXmlComment& comment );
+	virtual bool Visit( const TiXmlUnknown& unknown );
 
 	/** Set the indent characters for printing. By default 4 spaces
 		but tab (\t) is also useful, or null/empty string for no indentation.

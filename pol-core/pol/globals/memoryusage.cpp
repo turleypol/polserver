@@ -1,32 +1,32 @@
-#include "memoryusage.h"
+#include "pol/globals/memoryusage.h"
 
-#include "../../clib/boostutils.h"
-#include "../../clib/fileutil.h"
-#include "../../clib/logfacility.h"
-#include "../../plib/systemstate.h"
-#include "multidefs.h"
-#include "network.h"
-#include "object_storage.h"
-#include "script_internals.h"
-#include "settings.h"
-#include "state.h"
-#include "ucfg.h"
-#include "uvars.h"
+#include "bscript/bdouble.h"
+#include "bscript/blong.h"
+#include "bscript/buninit.h"
+#include "clib/boostutils.h"
+#include "clib/fileutil.h"
+#include "clib/logfacility.h"
+#include "plib/systemstate.h"
+
+#include "pol/globals/multidefs.h"
+#include "pol/globals/network.h"
+#include "pol/globals/object_storage.h"
+#include "pol/globals/script_internals.h"
+#include "pol/globals/settings.h"
+#include "pol/globals/state.h"
+#include "pol/globals/ucfg.h"
+#include "pol/globals/uvars.h"
+
 #include <fmt/format.h>
 #include <iterator>
 
-#include "pol_global_config.h"
+#include <pol_global_config.h>
 
 
 namespace Pol::Core
 {
 void MemoryUsage::log()
 {
-  // std::string footprint is ~ string.capacity()
-  // std::vector footprint is ~ 3 * sizeof(T*) + vector.capacity() * sizeof( T );
-  // std::set footprint is ~ 3 * sizeof( void* ) + set.size() * ( sizeof(T)+3 * sizeof( void* ) );
-  // std::map footprint is ~ ( sizeof(K)+sizeof( V ) + ( sizeof(void*) * 3 + 1 ) / 2 ) * map.size();
-
   size_t systemstate_size = Plib::systemstate.estimatedSize();
   size_t multibuffer_size = Multi::multidef_buffer.estimateSize();
   auto network_size = networkManager.estimateSize();

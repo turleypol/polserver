@@ -1,8 +1,5 @@
 function(set_compile_flags target is_executable)
   message("* ${target}")
-  target_include_directories(${target}  PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR} #own folder
-  )
 
   target_compile_definitions(${target} PRIVATE
     INC_PASSERT=1
@@ -12,18 +9,6 @@ function(set_compile_flags target is_executable)
     _REENTRANT
     ARCH_BITS=${ARCH_BITS}
   )
-  if (${release})
-    target_compile_definitions(${target} PRIVATE
-      RELEASE_VERSION
-    )
-  endif()
-
-  if (${debug})
-    target_compile_definitions(${target} PRIVATE
-      DEBUG_VERSION
-    )
-  endif()
-
   if (${linux})
     target_compile_definitions(${target} PRIVATE
       _GNU_SOURCE
@@ -37,8 +22,8 @@ function(set_compile_flags target is_executable)
   endif()
 
   if (${windows})
+    # _WIN32/_WIN64 are compiler-predefined and deliberately not repeated here
     target_compile_definitions(${target} PRIVATE
-      _WIN32
       WIN32
       NOMINMAX
       WINDOWS
@@ -46,11 +31,6 @@ function(set_compile_flags target is_executable)
       _WIN32_WINNT=0x0601
       _CONSOLE
     )
-    if (${ARCH_BITS} EQUAL "64")
-      target_compile_definitions(${target} PRIVATE
-        _WIN64
-      )
-    endif()
   endif()
   
   target_compile_options(${target} PRIVATE
@@ -153,14 +133,6 @@ function(set_compile_flags target is_executable)
     endif()
   endif()
 
-  if(${linux})
-    link_directories(
-      /usr/local/lib
-      /usr/lib
-      /usr/lib${ARCH_BITS}
-    )
-  endif()
-
   set_target_properties(${target} PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${output_bin_dir}
     LIBRARY_OUTPUT_DIRECTORY ${output_bin_dir}
@@ -179,7 +151,7 @@ function(source_group_by_folder target)
   foreach(file ${${target}_sources})
     if(IS_ABSOLUTE ${file})
       file(RELATIVE_PATH relative_file "${CMAKE_CURRENT_SOURCE_DIR}" "${file}")
-      get_filename_component(dir "${relative_path}" DIRECTORY)
+      get_filename_component(dir "${relative_file}" DIRECTORY)
     else()
       get_filename_component(dir "${file}" PATH)
     endif()

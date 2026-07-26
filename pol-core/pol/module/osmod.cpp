@@ -3,49 +3,52 @@
  * @par History
  */
 
-#include "osmod.h"
+#include "pol/module/osmod.h"
 
+#include "bscript/barray.h"
+#include "bscript/bdict.h"
+#include "bscript/bdouble.h"
 #include "bscript/berror.h"
-#include "bscript/bobject.h"
+#include "bscript/blong.h"
+#include "bscript/bstring.h"
 #include "bscript/bstruct.h"
-#include "bscript/dict.h"
-#include "bscript/impstr.h"
+#include "bscript/buninit.h"
 #include "clib/clib.h"
 #include "clib/logfacility.h"
-#include "clib/network/sckutil.h"
 #include "clib/rawtypes.h"
 #include "clib/refptr.h"
 #include "clib/stlutil.h"
 #include "clib/threadhelp.h"
 #include "clib/weakptr.h"
-#include "globals/settings.h"
+#include "pol/globals/settings.h"
 #include "plib/systemstate.h"
 
-#include "../exscrobj.h"
-#include "../globals/script_internals.h"
-#include "../globals/state.h"
-#include "../item/item.h"
-#include "../mobile/attribute.h"
-#include "../mobile/charactr.h"
-#include "../mobile/npc.h"
-#include "../network/auxclient.h"
-#include "../network/packethelper.h"
-#include "../network/packets.h"
-#include "../network/pktdef.h"
-#include "../poldbg.h"
-#include "../polsem.h"
-#include "../profile.h"
-#include "../schedule.h"
-#include "../scrdef.h"
-#include "../scrsched.h"
-#include "../scrstore.h"
-#include "../skills.h"
-#include "../ufunc.h"
-#include "../uoexec.h"
-#include "npcmod.h"
-#include "uomod.h"
+#include "pol/exscrobj.h"
+#include "pol/globals/script_internals.h"
+#include "pol/globals/state.h"
+#include "pol/item/item.h"
+#include "pol/mobile/attribute.h"
+#include "pol/mobile/charactr.h"
+#include "pol/mobile/npc.h"
+#include "pol/network/auxclient.h"
+#include "pol/network/packethelper.h"
+#include "pol/network/packets.h"
+#include "pol/network/pktdef.h"
+#include "pol/poldbg.h"
+#include "pol/polsem.h"
+#include "pol/profile.h"
+#include "pol/schedule.h"
+#include "pol/scrdef.h"
+#include "pol/scrsched.h"
+#include "pol/scrstore.h"
+#include "pol/skills.h"
+#include "pol/ufunc.h"
+#include "pol/uoexec.h"
+#include "pol/module/npcmod.h"
+#include "pol/module/uomod.h"
 
 #include <chrono>
+#include <limits>
 #include <module_defs/os.h>
 
 #ifdef _WIN32
@@ -74,7 +77,7 @@ namespace
 class CurlStringList
 {
 public:
-  CurlStringList() : resource_( nullptr ) {}
+  CurlStringList() = default;
 
   ~CurlStringList()
   {
@@ -99,7 +102,7 @@ public:
   curl_slist* get() const { return resource_; }
 
 private:
-  curl_slist* resource_;
+  curl_slist* resource_ = nullptr;
 };
 
 };  // namespace
@@ -611,9 +614,11 @@ BObjectImp* OSExecutorModule::mf_OpenConnection()
   int assume_string_int;
   int keep_connection_int;
   int ignore_line_breaks_int;
+  int connect_timeout_ms_int;
   if ( !getStringParam( 0, host ) || !getParam( 1, port ) || !getStringParam( 2, scriptname_str ) ||
        !getParamImp( 3, scriptparam ) || !getParam( 4, assume_string_int ) ||
-       !getParam( 5, keep_connection_int ) || !getParam( 6, ignore_line_breaks_int ) )
+       !getParam( 5, keep_connection_int ) || !getParam( 6, ignore_line_breaks_int ) ||
+       !getParam( 7, connect_timeout_ms_int, 0, std::numeric_limits<int>::max() ) )
     return new BError( "Invalid parameter type" );
 
   // FIXME needs to inherit available modules?
@@ -641,14 +646,18 @@ BObjectImp* OSExecutorModule::mf_OpenConnection()
   bool assume_string = assume_string_int != 0;
   bool keep_connection = keep_connection_int != 0;
   bool ignore_line_breaks = ignore_line_breaks_int != 0;
+  // 0 means a blocking connect with the OS default timeout; the escript default
+  // is 10s so an unreachable host doesn't pin an auxthreadpool worker for the
+  // OS default of a minute or more
+  auto connect_timeout_ms = static_cast<unsigned int>( connect_timeout_ms_int );
   auto* paramobjimp_raw = scriptparam->copy();  // prevent delete
   Core::networkManager.auxthreadpool->push(
       [uoexec_w, sd, hostname, port, paramobjimp_raw, assume_string, keep_connection,
-       ignore_line_breaks]()
+       ignore_line_breaks, connect_timeout_ms]()
       {
         Clib::Socket s;
         std::unique_ptr<Network::AuxClientThread> client;
-        bool success_open = s.open( hostname.c_str(), port );
+        bool success_open = s.open( hostname.c_str(), port, connect_timeout_ms );
         {
           Core::PolLock lck;
           std::unique_ptr<BObjectImp> paramobjimp( paramobjimp_raw );
@@ -753,8 +762,9 @@ BObjectImp* OSExecutorModule::mf_HTTPRequest()
   Core::UOExecutor& this_uoexec = uoexec();
   weak_ptr<Core::UOExecutor> uoexec_w = this_uoexec.weakptr;
 
-  std::shared_ptr<CURL> curl_sp( curl_easy_init(), curl_easy_cleanup );
-  CURL* curl = curl_sp.get();
+  std::unique_ptr<CURL, decltype( &curl_easy_cleanup )> curl_up( curl_easy_init(),
+                                                                 curl_easy_cleanup );
+  CURL* curl = curl_up.get();
   if ( !curl )
     return new BError( "curl_easy_init() failed" );
   curl_easy_setopt( curl, CURLOPT_URL, url->data() );
@@ -799,9 +809,9 @@ BObjectImp* OSExecutorModule::mf_HTTPRequest()
   }
 
   Core::networkManager.auxthreadpool->push(
-      [uoexec_w, curl_sp, chunk, flags]()
+      [uoexec_w, curl_up = std::move( curl_up ), chunk, flags]()
       {
-        CURL* curl = curl_sp.get();
+        CURL* curl = curl_up.get();
         CURLcode res;
         std::string readBuffer;
         CurlHeaderData headerData;
@@ -1392,15 +1402,16 @@ BObjectImp* OSExecutorModule::mf_SendEmail()
     return new BError( "Invalid parameter type" );
   }
 
-  std::shared_ptr<CURL> curl_sp( curl_easy_init(), curl_easy_cleanup );
-  CURL* curl = curl_sp.get();
+  std::unique_ptr<CURL, decltype( &curl_easy_cleanup )> curl_up( curl_easy_init(),
+                                                                 curl_easy_cleanup );
+  CURL* curl = curl_up.get();
   if ( !curl )
   {
     return new BError( "curl_easy_init() failed" );
   }
 
-  auto headers_slist = std::make_shared<CurlStringList>();
-  auto recipients_slist = std::make_shared<CurlStringList>();
+  auto headers_slist = std::make_unique<CurlStringList>();
+  auto recipients_slist = std::make_unique<CurlStringList>();
   std::string to_header_value;
 
   auto extract_email_address = []( const String* email_string )
@@ -1560,7 +1571,8 @@ BObjectImp* OSExecutorModule::mf_SendEmail()
                        std::string( curl_easy_strerror( res ) ) );
   }
 
-  std::shared_ptr<curl_mime> mime( curl_mime_init( curl ), curl_mime_free );
+  std::unique_ptr<curl_mime, decltype( &curl_mime_free )> mime( curl_mime_init( curl ),
+                                                                curl_mime_free );
 
   curl_mimepart* part = curl_mime_addpart( mime.get() );
 
@@ -1597,9 +1609,10 @@ BObjectImp* OSExecutorModule::mf_SendEmail()
   weak_ptr<Core::UOExecutor> uoexec_w = this_uoexec.weakptr;
 
   Core::networkManager.auxthreadpool->push(
-      [uoexec_w, curl_sp, recipients_slist, headers_slist, mime]()
+      [uoexec_w, curl_up = std::move( curl_up ), recipients_slist = std::move( recipients_slist ),
+       headers_slist = std::move( headers_slist ), mime = std::move( mime )]()
       {
-        CURL* curl = curl_sp.get();
+        CURL* curl = curl_up.get();
 
         auto res = curl_easy_perform( curl );
 

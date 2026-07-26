@@ -14,29 +14,30 @@
  */
 
 
-#include "packetscrobj.h"
+#include "pol/packetscrobj.h"
 
 #include <iomanip>
 #include <stddef.h>
 
-#include "../bscript/berror.h"
-#include "../bscript/bobject.h"
-#include "../bscript/executor.h"
-#include "../bscript/impstr.h"
-#include "../bscript/objmembers.h"
-#include "../bscript/objmethods.h"
-#include "../clib/clib_endian.h"
-#include "../clib/stlutil.h"
-#include "../clib/strutil.h"
-#include "base/position.h"
-#include "globals/network.h"
-#include "mobile/charactr.h"
-#include "network/client.h"
-#include "network/clienttransmit.h"
-#include "realms/realm.h"
-#include "realms/realms.h"
-#include "uoexec.h"
-#include "uworld.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/bstring.h"
+#include "bscript/buninit.h"
+#include "bscript/executor.h"
+#include "bscript/objmembers.h"
+#include "bscript/objmethods.h"
+#include "clib/clib_endian.h"
+#include "clib/strutil.h"
+
+#include "pol/base/position.h"
+#include "pol/globals/network.h"
+#include "pol/mobile/charactr.h"
+#include "pol/network/client.h"
+#include "pol/network/clienttransmit.h"
+#include "pol/realms/realm.h"
+#include "pol/realms/realms.h"
+#include "pol/uoexec.h"
+#include "pol/uworld.h"
 
 
 namespace Pol::Core
@@ -574,11 +575,10 @@ BObjectImp* BPacket::copy() const
 }
 std::string BPacket::getStringRep() const
 {
-  OSTRINGSTREAM os;
+  std::string os;
   for ( unsigned char itr : buffer )
-    os << std::setfill( '0' ) << std::setw( 2 ) << std::hex << static_cast<u16>( itr );
-
-  return OSTRINGSTREAM_STR( os );
+    fmt::format_to( std::back_inserter( os ), "{:02x}", itr );
+  return os;
 }
 
 bool BPacket::SetSize( u16 newsize )

@@ -13,35 +13,42 @@
  */
 
 
-#include "executor.h"
-#include "bobject.h"
-#include "executor.inl.h"
+#include "bscript/executor.h"
+#include "bscript/bobject.h"
+#include "bscript/exectype.h"
+#include "bscript/executor.inl.h"
 
-#include "../clib/clib.h"
-#include "../clib/logfacility.h"
-#include "../clib/passert.h"
-#include "../clib/stlutil.h"
-#include "../clib/strutil.h"
-#include "bclassinstance.h"
-#include "berror.h"
-#include "config.h"
-#include "continueimp.h"
-#include "contiter.h"
-#include "dict.h"
-#include "eprog.h"
-#include "escriptv.h"
-#include "execmodl.h"
-#include "fmodule.h"
-#include "impstr.h"
-#include "objmethods.h"
-#include "regexp.h"
-#include "str.h"
-#include "token.h"
-#include "tokens.h"
+#include "bscript/barray.h"
+#include "bscript/bboolean.h"
+#include "bscript/bclassinstance.h"
+#include "bscript/bcontinuation.h"
+#include "bscript/bcontiter.h"
+#include "bscript/bdict.h"
+#include "bscript/bdouble.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/bregexp.h"
+#include "bscript/bspecialjump.h"
+#include "bscript/bspread.h"
+#include "bscript/bstring.h"
+#include "bscript/config.h"
+#include "bscript/eprog.h"
+#include "bscript/escriptv.h"
+#include "bscript/execmodl.h"
+#include "bscript/fmodule.h"
+#include "bscript/objmethods.h"
+#include "bscript/str.h"
+#include "bscript/token.h"
+#include "bscript/tokens.h"
+#include "clib/clib.h"
+#include "clib/logfacility.h"
+#include "clib/passert.h"
+#include "clib/stlutil.h"
+#include "clib/strutil.h"
 #include <iterator>
 #include <limits>
 #ifdef MEMORYLEAK
-#include "../clib/mlog.h"
+#include "clib/mlog.h"
 #endif
 
 #include <boost/multi_index/ordered_index.hpp>
@@ -814,7 +821,13 @@ BObjectRef& Executor::LocalVar( unsigned int varnum )
 
 BObjectRef& Executor::GlobalVar( unsigned int varnum )
 {
-  passert( varnum < Globals2->size() );
+  if ( varnum >= Globals2->size() )
+  {
+    POLLOG_ERRORLN( "Fatal error: Globals access out of range! ({},PC={})", prog_->name, PC );
+    seterror( true );
+    UninitObject::SharedInstanceRef.set( UninitObject::SharedInstance );
+    return UninitObject::SharedInstanceRef;
+  }
   return ( *Globals2 )[varnum];
 }
 
@@ -1002,73 +1015,6 @@ BObjectRef Executor::checkmember( BObject& left, const BObject& right )
   return left.impref().operDotQMark( varname.data() );
 }
 
-
-ContIterator::ContIterator() : BObjectImp( BObjectImp::OTUnknown ) {}
-BObject* ContIterator::step()
-{
-  return nullptr;
-}
-BObjectImp* ContIterator::copy() const
-{
-  return nullptr;
-}
-size_t ContIterator::sizeEstimate() const
-{
-  return sizeof( ContIterator );
-}
-std::string ContIterator::getStringRep() const
-{
-  return "<iterator>";
-}
-
-class ArrayIterator final : public ContIterator
-{
-public:
-  ArrayIterator( ObjArray* pArr, BObject* pIterVal );
-  BObject* step() override;
-
-private:
-  size_t m_Index;
-  BObject m_Array;
-  ObjArray* m_pArray;
-  BObjectRef m_IterVal;
-  BLong* m_pIterVal;
-};
-ArrayIterator::ArrayIterator( ObjArray* pArr, BObject* pIterVal )
-    : ContIterator(),
-      m_Index( 0 ),
-      m_Array( pArr ),
-      m_pArray( pArr ),
-      m_IterVal( pIterVal ),
-      m_pIterVal( new BLong( 0 ) )
-{
-  m_IterVal.get()->setimp( m_pIterVal );
-}
-BObject* ArrayIterator::step()
-{
-  m_pIterVal->increment();
-  if ( ++m_Index > m_pArray->ref_arr.size() )
-    return nullptr;
-
-  BObjectRef& objref = m_pArray->ref_arr[m_Index - 1];
-  BObject* elem = objref.get();
-  if ( elem == nullptr )
-  {
-    elem = new BObject( UninitObject::create() );
-    objref.set( elem );
-  }
-  return elem;
-}
-
-ContIterator* BObjectImp::createIterator( BObject* /*pIterVal*/ )
-{
-  return new ContIterator();
-}
-ContIterator* ObjArray::createIterator( BObject* pIterVal )
-{
-  auto pItr = new ArrayIterator( this, pIterVal );
-  return pItr;
-}
 
 /* Coming into initforeach, the expr to be iterated through is on the value stack.
    Initforeach must create three local variables:
@@ -1455,6 +1401,13 @@ void Executor::ins_localvar( const Instruction& ins )
 // case TOK_GLOBALVAR:
 void Executor::ins_globalvar( const Instruction& ins )
 {
+  if ( (unsigned)ins.token.lval >= Globals2->size() )
+  {
+    POLLOG_ERRORLN( "Fatal error: Globals access out of range! ({},PC={})", prog_->name, PC );
+    seterror( true );
+    ValueStack.emplace_back( UninitObject::create() );
+    return;
+  }
   ValueStack.push_back( ( *Globals2 )[ins.token.lval] );
 }
 
@@ -1687,6 +1640,13 @@ void Executor::ins_assign_localvar( const Instruction& ins )
 }
 void Executor::ins_assign_globalvar( const Instruction& ins )
 {
+  if ( (unsigned)ins.token.lval >= Globals2->size() )
+  {
+    POLLOG_ERRORLN( "Fatal error: Globals access out of range! ({},PC={})", prog_->name, PC );
+    seterror( true );
+    ValueStack.pop_back();
+    return;
+  }
   BObjectRef& gvar = ( *Globals2 )[ins.token.lval];
 
   BObjectRef& rightref = ValueStack.back();
@@ -2373,7 +2333,13 @@ void Executor::ins_take_global( const Instruction& ins )
 {
   passert( !ValueStack.empty() );
 
-  // Globals already have an entry in the globals vector, so just index into it.
+  if ( (unsigned)ins.token.lval >= Globals2->size() )
+  {
+    POLLOG_ERRORLN( "Fatal error: Globals access out of range! ({},PC={})", prog_->name, PC );
+    seterror( true );
+    ValueStack.pop_back();
+    return;
+  }
   BObjectRef& gvar = ( *Globals2 )[ins.token.lval];
 
   BObjectRef& rightref = ValueStack.back();
@@ -2699,8 +2665,8 @@ void Executor::ins_call_method_id( const Instruction& ins )
         if ( funcr->constructor() )
         {
           fparams.insert( fparams.begin(),
-                          BObjectRef( new BConstObject( new BClassInstanceRef(
-                              new BClassInstance( prog_, funcr->class_index(), Globals2 ) ) ) ) );
+                          BObjectRef( new BConstObject( new BClassInstanceRef( new BClassInstance(
+                              prog_, funcr->class_index(), Globals2, pid() ) ) ) ) );
         }
       }
 
@@ -2940,16 +2906,21 @@ void Executor::jump( int target_PC, BContinuation* continuation, BFunctionRef* f
   }
 
   // Only store our global context if the function is external to the current program.
-  if ( funcref != nullptr && funcref->prog() != prog_ )
+  if ( funcref != nullptr && funcref->pid() != pid() )
   {
     // Store external context for the return path.
     rc.ExternalContext = ReturnContext::External( prog_, std::move( execmodules ), Globals2 );
+
+    if ( auto shared = funcref->globals.lock() )
+      Globals2 = shared;
+    else
+      Globals2 =
+          std::make_shared<BObjectRefVec>();  // empty but valid, access would stop the executor
 
     // Set the prog and globals to the external function's, updating nLines and
     // execmodules.
     prog_ = funcref->prog();
 
-    Globals2 = funcref->globals;
 
     nLines = static_cast<unsigned int>( prog_->instr.size() );
 
@@ -3223,7 +3194,7 @@ void Executor::ins_double( const Instruction& ins )
 void Executor::ins_classinst( const Instruction& ins )
 {
   ValueStack.emplace_back( new BConstObject(
-      new BClassInstanceRef( new BClassInstance( prog_, ins.token.lval, Globals2 ) ) ) );
+      new BClassInstanceRef( new BClassInstance( prog_, ins.token.lval, Globals2, pid() ) ) ) );
 }
 
 void Executor::ins_string( const Instruction& ins )
@@ -3427,7 +3398,8 @@ void Executor::ins_funcref( const Instruction& ins )
 
   auto funcref_index = static_cast<unsigned>( ins.token.lval );
 
-  ValueStack.emplace_back( new BFunctionRef( prog_, funcref_index, Globals2, {} /* captures */ ) );
+  ValueStack.emplace_back(
+      new BFunctionRef( prog_, pid(), funcref_index, Globals2, {} /* captures */ ) );
 }
 
 void Executor::ins_functor( const Instruction& ins )
@@ -3446,7 +3418,7 @@ void Executor::ins_functor( const Instruction& ins )
     capture_count--;
   }
 
-  auto func = new BFunctionRef( prog_, funcref_index, Globals2, std::move( captures ) );
+  auto func = new BFunctionRef( prog_, pid(), funcref_index, Globals2, std::move( captures ) );
 
   ValueStack.emplace_back( func );
 
@@ -3860,7 +3832,6 @@ void Executor::call_function_reference( BFunctionRef* funcr, BContinuation* cont
 {
   // params need to be on the stack, without current objectref
   ValueStack.pop_back();
-
   // Push captured parameters onto the stack prior to function parameters.
   for ( auto& p : funcr->captures )
     ValueStack.push_back( p );

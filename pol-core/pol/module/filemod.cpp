@@ -16,22 +16,25 @@
 #include <string>
 #include <system_error>
 
-#include "../../bscript/berror.h"
-#include "../../bscript/bobject.h"
-#include "../../bscript/impstr.h"
-#include "../../clib/cfgelem.h"
-#include "../../clib/cfgfile.h"
-#include "../../clib/clib.h"
-#include "../../clib/fileutil.h"
-#include "../../clib/logfacility.h"
-#include "../../clib/stlutil.h"
-#include "../../plib/pkg.h"
-#include "../binaryfilescrobj.h"
-#include "../core.h"
-#include "../globals/ucfg.h"
-#include "../xmlfilescrobj.h"
-#include "fileaccess.h"
-#include "filemod.h"
+#include "bscript/barray.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/bstring.h"
+#include "clib/cfgelem.h"
+#include "clib/cfgfile.h"
+#include "clib/clib.h"
+#include "clib/fileutil.h"
+#include "clib/logfacility.h"
+#include "clib/stlutil.h"
+#include "clib/strutil.h"
+#include "plib/pkg.h"
+
+#include "pol/binaryfilescrobj.h"
+#include "pol/core.h"
+#include "pol/globals/ucfg.h"
+#include "pol/xmlfilescrobj.h"
+#include "pol/module/fileaccess.h"
+#include "pol/module/filemod.h"
 
 #include <module_defs/file.h>
 

@@ -3,25 +3,24 @@
  * @par History
  */
 
-#include "httpmod.h"
-#include "../../bscript/berror.h"
-#include "../../bscript/impstr.h"
-#include "../../clib/logfacility.h"
-#include "../../clib/network/wnsckt.h"
-#include "../../clib/stlutil.h"
-#include "../../plib/systemstate.h"
-#include "../uoexec.h"
+#include "pol/module/httpmod.h"
+
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/bstring.h"
+#include "clib/logfacility.h"
+#include "clib/network/wnsckt.h"
+#include "clib/stlutil.h"
+#include "clib/strutil.h"
+#include "plib/systemstate.h"
+
+#include "pol/polwww.h"
+#include "pol/uoexec.h"
 
 #include <module_defs/http.h>
 
 namespace Pol
 {
-namespace Core
-{
-std::string http_decodestr( const std::string& s );
-std::string reasonPhrase( int code );
-}  // namespace Core
-
 namespace Module
 {
 using namespace Bscript;
@@ -279,24 +278,6 @@ BObjectImp* HttpExecutorModule::mf_WriteHtmlRaw()
 
   return new BError( "Invalid parameter type" );
 }
-
-#if 0
-  BObjectImp* HttpExecutorModule::mf_WriteHtml()
-  {
-    const String* str;
-    if (getStringParam( 0, str ))
-    {
-    // TODO: some tricky stuff so if the socket blocks, the script goes to
-    // sleep for a bit and sends the rest later
-    http_writeline( sck_, str->value() );
-    return new BLong(1);
-    }
-    else
-    {
-    return new BError( "Invalid parameter type" );
-    }
-  }
-#endif
 
 BObjectImp* HttpExecutorModule::mf_QueryParam()
 {

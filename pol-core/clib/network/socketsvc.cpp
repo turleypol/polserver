@@ -6,29 +6,30 @@
 
 #include <stdlib.h>
 
-#include "logfacility.h"
-#include "passert.h"
-#include "socketsvc.h"
-#include "strutil.h"
-#include "threadhelp.h"
+#include "clib/logfacility.h"
+#include "clib/passert.h"
+#include "clib/network/socketsvc.h"
+#include "clib/strutil.h"
+#include "clib/threadhelp.h"
 
 
 namespace Pol::Clib
 {
-SocketListener::SocketListener( unsigned short port ) : _listen_sck()
+SocketListener::SocketListener( unsigned short port, bool loopback_only ) : _listen_sck()
 {
-  if ( !_listen_sck.listen( port ) )
+  if ( !_listen_sck.listen( port, loopback_only ) )
   {
     POLLOG_ERRORLN( "Unable to open listen port {}", port );
     passert_always( 0 );
   }
 }
 
-SocketListener::SocketListener( unsigned short port, Socket::option opt ) : _listen_sck()
+SocketListener::SocketListener( unsigned short port, Socket::option opt, bool loopback_only )
+    : _listen_sck()
 {
   _listen_sck.set_options( opt );
 
-  if ( !_listen_sck.listen( port ) )
+  if ( !_listen_sck.listen( port, loopback_only ) )
   {
     POLLOG_ERRORLN( "Unable to open listen port {}", port );
     passert_always( 0 );

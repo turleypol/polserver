@@ -1,16 +1,18 @@
-#include "ECompileMain.h"
+#include "ecompile/ECompileMain.h"
 
 #include <cstdio>
 #include <exception>
 #include <filesystem>
-#include <iosfwd>
+#include <fstream>
 #include <memory>
 #include <stdlib.h>
 #include <string>
 #include <system_error>
 #include <time.h>
 
-#include "EfswFileWatchListener.h"
+#include <fmt/std.h>
+
+#include "ecompile/EfswFileWatchListener.h"
 
 #include "bscript/compiler/Compiler.h"
 #include "bscript/compiler/Profile.h"

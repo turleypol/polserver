@@ -9,34 +9,35 @@
  * - 2009/08/25 Shinigami: STLport-5.2.1 fix: string array definition and memname definition changed
  */
 
-#include "poldbg.h"
+#include "pol/poldbg.h"
 
 #include <fstream>
 #include <stddef.h>
 #include <string>
 
-#include "../bscript/berror.h"
-#include "../bscript/bobject.h"
-#include "../bscript/bstruct.h"
-#include "../bscript/eprog.h"
-#include "../bscript/executor.h"
-#include "../bscript/impstr.h"
-#include "../clib/clib.h"
-#include "../clib/esignal.h"
-#include "../clib/network/sckutil.h"
-#include "../clib/network/socketsvc.h"
-#include "../clib/network/wnsckt.h"
-#include "../clib/rawtypes.h"
-#include "../clib/refptr.h"
-#include "../clib/stlutil.h"
-#include "../clib/strutil.h"
-#include "../clib/weakptr.h"
-#include "../plib/systemstate.h"
-#include "module/uomod.h"
-#include "polobject.h"
-#include "scrdef.h"
-#include "scrsched.h"
-#include "uoexec.h"
+#include "bscript/barray.h"
+#include "bscript/berror.h"
+#include "bscript/bstring.h"
+#include "bscript/bstruct.h"
+#include "bscript/buninit.h"
+#include "bscript/eprog.h"
+#include "bscript/executor.h"
+#include "clib/clib.h"
+#include "clib/esignal.h"
+#include "clib/network/socketsvc.h"
+#include "clib/network/wnsckt.h"
+#include "clib/rawtypes.h"
+#include "clib/refptr.h"
+#include "clib/stlutil.h"
+#include "clib/strutil.h"
+#include "clib/weakptr.h"
+#include "plib/systemstate.h"
+
+#include "pol/module/uomod.h"
+#include "pol/polobject.h"
+#include "pol/scrdef.h"
+#include "pol/scrsched.h"
+#include "pol/uoexec.h"
 
 
 namespace Pol::Core
@@ -48,159 +49,161 @@ const char* poldbg_base_members[] = { "x",       "y",      "z",     "name",   "o
                                       "graphic", "serial", "color", "facing", "height",
                                       "weight",  "multi",  "realm", "dirty" };
 // 58 members
-const char* poldbg_itemref_members[] = { "amount",
-                                         "layer",
-                                         "container",
-                                         "usescript",
-                                         "equipscript",
-                                         "desc",
-                                         "movable",
-                                         "invisible",
-                                         "decayat",
-                                         "sellprice",
-                                         "buyprice",
-                                         "newbie",
-                                         "insured",
-                                         "cursed",
-                                         "tile_layer",
-                                         "unequipscript",
-                                         "item_count",
-                                         "stackable",
-                                         "saveonexit",
-                                         "resist_fire",
-                                         "resist_cold",
-                                         "resist_energy",
-                                         "resist_poison",
-                                         "resist_physical",
-                                         "resist_fire_mod",
-                                         "resist_cold_mod",
-                                         "resist_energy_mod",
-                                         "resist_poison_mod",
-                                         "resist_physical_mod",
-                                         "lower_reagent_cost",
-                                         "spell_damage_increase",
-                                         "faster_casting",
-                                         "faster_cast_recovery",
-                                         "lower_reagent_cost_mod",
-                                         "spell_damage_increase_mod",
-                                         "faster_casting_mod",
-                                         "faster_cast_recovery_mod",
-                                         "defence_increase_mod",
-                                         "defence_increase_cap_mod",
-                                         "lower_mana_cost_mod",
-                                         "hit_chance_mod",
-                                         "fire_resist_cap_mod",
-                                         "cold_resist_cap_mod",
-                                         "energy_resist_cap_mod",
-                                         "poison_resist_cap_mod",
-                                         "physical_resist_cap_mod",
+const char* poldbg_itemref_members[] = {  //
+    "amount",
+    "layer",
+    "container",
+    "usescript",
+    "equipscript",
+    "desc",
+    "movable",
+    "invisible",
+    "decayat",
+    "sellprice",
+    "buyprice",
+    "newbie",
+    "insured",
+    "cursed",
+    "tile_layer",
+    "unequipscript",
+    "item_count",
+    "stackable",
+    "saveonexit",
+    "resist_fire",
+    "resist_cold",
+    "resist_energy",
+    "resist_poison",
+    "resist_physical",
+    "resist_fire_mod",
+    "resist_cold_mod",
+    "resist_energy_mod",
+    "resist_poison_mod",
+    "resist_physical_mod",
+    "lower_reagent_cost",
+    "spell_damage_increase",
+    "faster_casting",
+    "faster_cast_recovery",
+    "lower_reagent_cost_mod",
+    "spell_damage_increase_mod",
+    "faster_casting_mod",
+    "faster_cast_recovery_mod",
+    "defence_increase_mod",
+    "defence_increase_cap_mod",
+    "lower_mana_cost_mod",
+    "hit_chance_mod",
+    "fire_resist_cap_mod",
+    "cold_resist_cap_mod",
+    "energy_resist_cap_mod",
+    "poison_resist_cap_mod",
+    "physical_resist_cap_mod",
 
-                                         "defence_increase",
-                                         "defence_increase_cap",
-                                         "lower_mana_cost",
-                                         "hit_chance",
-                                         "fire_resist_cap",
-                                         "cold_resist_cap",
-                                         "energy_resist_cap",
-                                         "poison_resist_cap",
-                                         "physical_resist_cap",
-                                         "luck_mod",
-                                         "swing_speed_increase",
-                                         "swing_speed_increase_mod"
+    "defence_increase",
+    "defence_increase_cap",
+    "lower_mana_cost",
+    "hit_chance",
+    "fire_resist_cap",
+    "cold_resist_cap",
+    "energy_resist_cap",
+    "poison_resist_cap",
+    "physical_resist_cap",
+    "luck_mod",
+    "swing_speed_increase",
+    "swing_speed_increase_mod"
 
 };
 
 // 55 members
-const char* poldbg_mobileref_members[] = { "warmode",
-                                           "gender",
-                                           "race",
-                                           "trueobjtype",
-                                           "truecolor",
-                                           "ar_mod",
-                                           "hidden",
-                                           "concealed",
-                                           "frozen",
-                                           "paralyzed",
-                                           "poisoned",
-                                           "stealthsteps",
-                                           "squelched",
-                                           "dead",
-                                           "ar",
-                                           "backpack",
-                                           "weapon",
-                                           "acctname",
-                                           "acct",
-                                           "cmdlevel",
-                                           "cmdlevelstr",
-                                           "criminal",
-                                           "ip",
-                                           "gold",
-                                           "title_prefix",
-                                           "title_suffix",
-                                           "title_guild",
-                                           "title_race",
-                                           "guildid",
-                                           "guild",
-                                           "murderer",
-                                           "attached",
-                                           "reportables",
-                                           "clientversion",
-                                           "delay_mod",
-                                           "shield",
-                                           "uclang",
-                                           "clientver_detail",
-                                           "clientinfo",
-                                           "createdat",
-                                           "opponent",
-                                           "connected",
-                                           "trading_with",
-                                           "cursor",
-                                           "gump",
-                                           "prompt",
-                                           "movemode",
-                                           "hit_chance_mod",
-                                           "evasionchance_mod",
-                                           "resist_fire",
-                                           "resist_cold",
-                                           "resist_energy",
-                                           "resist_poison",
-                                           "resist_physical",
-                                           "resist_fire_mod",
-                                           "resist_cold_mod",
-                                           "resist_energy_mod",
-                                           "resist_poison_mod",
-                                           "resist_physical_mod",
-                                           "lower_reagent_cost",
-                                           "spell_damage_increase",
-                                           "faster_casting",
-                                           "faster_cast_recovery",
-                                           "lower_reagent_cost_mod",
-                                           "spell_damage_increase_mod",
-                                           "faster_casting_mod",
-                                           "faster_cast_recovery_mod",
-                                           "defence_increase_mod",
-                                           "defence_increase_cap_mod",
-                                           "lower_mana_cost_mod",
-                                           "hit_chance_mod",
-                                           "fire_resist_cap_mod",
-                                           "cold_resist_cap_mod",
-                                           "energy_resist_cap_mod",
-                                           "poison_resist_cap_mod",
-                                           "physical_resist_cap_mod",
+const char* poldbg_mobileref_members[] = {  //
+    "warmode",
+    "gender",
+    "race",
+    "trueobjtype",
+    "truecolor",
+    "ar_mod",
+    "hidden",
+    "concealed",
+    "frozen",
+    "paralyzed",
+    "poisoned",
+    "stealthsteps",
+    "squelched",
+    "dead",
+    "ar",
+    "backpack",
+    "weapon",
+    "acctname",
+    "acct",
+    "cmdlevel",
+    "cmdlevelstr",
+    "criminal",
+    "ip",
+    "gold",
+    "title_prefix",
+    "title_suffix",
+    "title_guild",
+    "title_race",
+    "guildid",
+    "guild",
+    "murderer",
+    "attached",
+    "reportables",
+    "clientversion",
+    "delay_mod",
+    "shield",
+    "uclang",
+    "clientver_detail",
+    "clientinfo",
+    "createdat",
+    "opponent",
+    "connected",
+    "trading_with",
+    "cursor",
+    "gump",
+    "prompt",
+    "movemode",
+    "hit_chance_mod",
+    "evasionchance_mod",
+    "resist_fire",
+    "resist_cold",
+    "resist_energy",
+    "resist_poison",
+    "resist_physical",
+    "resist_fire_mod",
+    "resist_cold_mod",
+    "resist_energy_mod",
+    "resist_poison_mod",
+    "resist_physical_mod",
+    "lower_reagent_cost",
+    "spell_damage_increase",
+    "faster_casting",
+    "faster_cast_recovery",
+    "lower_reagent_cost_mod",
+    "spell_damage_increase_mod",
+    "faster_casting_mod",
+    "faster_cast_recovery_mod",
+    "defence_increase_mod",
+    "defence_increase_cap_mod",
+    "lower_mana_cost_mod",
+    "hit_chance_mod",
+    "fire_resist_cap_mod",
+    "cold_resist_cap_mod",
+    "energy_resist_cap_mod",
+    "poison_resist_cap_mod",
+    "physical_resist_cap_mod",
 
-                                           "defence_increase",
-                                           "defence_increase_cap",
-                                           "lower_mana_cost",
-                                           "hit_chance",
-                                           "fire_resist_cap",
-                                           "cold_resist_cap",
-                                           "energy_resist_cap",
-                                           "poison_resist_cap",
-                                           "physical_resist_cap",
-                                           "luck_mod",
-                                           "swing_speed_increase",
-                                           "swing_speed_increase_mod",
-                                           "parrychance_mod"
+    "defence_increase",
+    "defence_increase_cap",
+    "lower_mana_cost",
+    "hit_chance",
+    "fire_resist_cap",
+    "cold_resist_cap",
+    "energy_resist_cap",
+    "poison_resist_cap",
+    "physical_resist_cap",
+    "luck_mod",
+    "swing_speed_increase",
+    "swing_speed_increase_mod",
+    "parrychance_mod"
 
 
 };
@@ -1174,25 +1177,20 @@ std::string DebugContext::cmd_localvarmembers( const std::string& rest, Results&
   std::string strrep = var.getStringRep();
   const char* memname;
   int i;
-  OSTRINGSTREAM os;
   if ( strrep.find( "ItemRef" ) != std::string::npos )
   {
     for ( i = 0; i < 14; i++ )  // i = member count for poldbg_base_members
     {
       memname = poldbg_base_members[i];
-      os << memname << " " << var.get_member( memname ).get()->impptr()->getStringRep();
-
-      results.push_back( OSTRINGSTREAM_STR( os ) );
-      os.str( "" );
+      results.push_back( fmt::format( "{} {}", memname,
+                                      var.get_member( memname ).get()->impptr()->getStringRep() ) );
     }
 
     for ( i = 0; i < 58; i++ )  // i = 27 members
     {
       memname = poldbg_itemref_members[i];
-      os << memname << " " << var.get_member( memname ).get()->impptr()->getStringRep();
-
-      results.push_back( OSTRINGSTREAM_STR( os ) );
-      os.str( "" );
+      results.push_back( fmt::format( "{} {}", memname,
+                                      var.get_member( memname ).get()->impptr()->getStringRep() ) );
     }
   }
 
@@ -1201,19 +1199,15 @@ std::string DebugContext::cmd_localvarmembers( const std::string& rest, Results&
     for ( i = 0; i < 14; i++ )  // i = member count for poldbg_base_members
     {
       memname = poldbg_base_members[i];
-      os << memname << " " << var.get_member( memname ).get()->impptr()->getStringRep();
-
-      results.push_back( OSTRINGSTREAM_STR( os ) );
-      os.str( "" );
+      results.push_back( fmt::format( "{} {}", memname,
+                                      var.get_member( memname ).get()->impptr()->getStringRep() ) );
     }
 
     for ( i = 0; i < 59; i++ )  // i = 59 members
     {
       memname = poldbg_mobileref_members[i];
-      os << memname << " " << var.get_member( memname ).get()->impptr()->getStringRep();
-
-      results.push_back( OSTRINGSTREAM_STR( os ) );
-      os.str( "" );
+      results.push_back( fmt::format( "{} {}", memname,
+                                      var.get_member( memname ).get()->impptr()->getStringRep() ) );
     }
   }
   return "Value: " + strrep;
@@ -1349,7 +1343,7 @@ void DebugClientThread::run()
   {
     if ( !_sck.is_local() )
     {
-      Clib::writeline( _sck, "Only accepting connections from localhost." );
+      _sck.writeline("Only accepting connections from localhost." );
       return;
     }
   }
@@ -1361,18 +1355,18 @@ void DebugClientThread::run()
 
   while ( !dctx.done() )
   {
-    Clib::writeline( _sck, dctx.prompt() );
+    _sck.writeline( dctx.prompt() );
     if ( !linereader.read( cmdline ) )
       break;
 
     bool ret = dctx.process( cmdline, results );
     if ( ret )
-      Clib::writeline( _sck, "Results: " + Clib::tostring( results.size() ) );
+      _sck.writeline( "Results: " + Clib::tostring( results.size() ) );
     else
-      Clib::writeline( _sck, "Failure: " + Clib::tostring( results.size() ) );
+      _sck.writeline( "Failure: " + Clib::tostring( results.size() ) );
     for ( const auto& result : results )
     {
-      Clib::writeline( _sck, result );
+      _sck.writeline( result );
     }
   }
 }
@@ -1381,7 +1375,8 @@ void debug_listen_thread()
 {
   if ( Plib::systemstate.config.debug_port )
   {
-    Clib::SocketListener SL( Plib::systemstate.config.debug_port );
+    Clib::SocketListener SL( Plib::systemstate.config.debug_port,
+                             Plib::systemstate.config.debug_local_only );
     while ( !Clib::exit_signalled )
     {
       Clib::Socket sock;

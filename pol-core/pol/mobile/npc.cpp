@@ -24,44 +24,46 @@
  * - 2010/01/15 Turley:    (Tomi) SaveOnExit as npcdesc entry
  */
 
-#include "npc.h"
+#include "pol/mobile/npc.h"
 
 #include <stdlib.h>
 
-#include "../../bscript/berror.h"
-#include "../../bscript/executor.h"
-#include "../../clib/cfgelem.h"
-#include "../../clib/fileutil.h"
-#include "../../clib/logfacility.h"
-#include "../../clib/passert.h"
-#include "../../clib/random.h"
-#include "../../clib/refptr.h"
-#include "../../clib/streamsaver.h"
-#include "../baseobject.h"
-#include "../dice.h"
-#include "../fnsearch.h"
-#include "../globals/state.h"
-#include "../globals/uvars.h"
-#include "../item/armor.h"
-#include "../item/weapon.h"
-#include "../listenpt.h"
-#include "../module/npcmod.h"
-#include "../module/uomod.h"
-#include "../multi/multi.h"
-#include "../npctmpl.h"
-#include "../scrdef.h"
-#include "../scrsched.h"
-#include "../scrstore.h"
-#include "../syshookscript.h"
-#include "../ufunc.h"
-#include "../uobjcnt.h"
-#include "../uobject.h"
-#include "../uoexec.h"
-#include "../uoscrobj.h"
-#include "../uworld.h"
-#include "attribute.h"
-#include "charactr.h"
-#include "wornitems.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/executor.h"
+#include "clib/cfgelem.h"
+#include "clib/fileutil.h"
+#include "clib/logfacility.h"
+#include "clib/passert.h"
+#include "clib/random.h"
+#include "clib/refptr.h"
+#include "clib/streamsaver.h"
+
+#include "pol/baseobject.h"
+#include "pol/dice.h"
+#include "pol/fnsearch.h"
+#include "pol/globals/state.h"
+#include "pol/globals/uvars.h"
+#include "pol/item/armor.h"
+#include "pol/item/weapon.h"
+#include "pol/listenpt.h"
+#include "pol/module/npcmod.h"
+#include "pol/module/uomod.h"
+#include "pol/multi/multi.h"
+#include "pol/npctmpl.h"
+#include "pol/scrdef.h"
+#include "pol/scrsched.h"
+#include "pol/scrstore.h"
+#include "pol/syshookscript.h"
+#include "pol/ufunc.h"
+#include "pol/uobjcnt.h"
+#include "pol/uobject.h"
+#include "pol/uoexec.h"
+#include "pol/uoscrobj.h"
+#include "pol/uworld.h"
+#include "pol/mobile/attribute.h"
+#include "pol/mobile/charactr.h"
+#include "pol/mobile/wornitems.h"
 
 
 /* An area definition is as follows:
@@ -1075,7 +1077,7 @@ void NPC::resetEquipablePropertiesNPC()
   if ( has_fire_resist_cap() || has_orig_fire_resist_cap() )
     fire_resist_cap( fire_resist_cap().setAsValue( orig_fire_resist_cap() ) );
   if ( has_cold_resist_cap() || has_orig_cold_resist_cap() )
-    cold_resist_cap( cold_resist_cap().setAsValue( orig_energy_resist_cap() ) );
+    cold_resist_cap( cold_resist_cap().setAsValue( orig_cold_resist_cap() ) );
   if ( has_energy_resist_cap() || has_orig_energy_resist_cap() )
     energy_resist_cap( energy_resist_cap().setAsValue( orig_energy_resist_cap() ) );
   if ( has_physical_resist_cap() || has_orig_physical_resist_cap() )

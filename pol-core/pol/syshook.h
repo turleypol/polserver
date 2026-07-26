@@ -9,7 +9,7 @@
 #ifndef SYSHOOK_H
 #define SYSHOOK_H
 
-#include "../bscript/bobject.h"
+#include "bscript/bobject.h"
 
 #include <memory>
 
@@ -20,7 +20,7 @@ namespace Bscript
 class BObjectImp;
 class Executor;
 class BApplicObjBase;
-}
+}  // namespace Bscript
 namespace Clib
 {
 class ConfigElem;
@@ -120,6 +120,6 @@ public:
 ExportedFunction* FindExportedFunction( Clib::ConfigElem& elem, const Plib::Package* pkg,
                                         const std::string& descriptor, unsigned nargs,
                                         bool complain_if_missing = true );
-}
-}
+}  // namespace Core
+}  // namespace Pol
 #endif

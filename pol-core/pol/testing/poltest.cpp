@@ -3,11 +3,11 @@
  * @par History
  */
 
-#include "poltest.h"
+#include "pol/testing/poltest.h"
 
-#include "testenv.h"
+#include "pol/testing/testenv.h"
 
-#include "pol_global_config.h"
+#include <pol_global_config.h>
 
 #ifdef ENABLE_BENCHMARK
 #include <benchmark/benchmark.h>
@@ -53,9 +53,13 @@ bool run_pol_tests()
 
   RUNTEST( decay_test )
   RUNTEST( clamp_test )
+  RUNTEST( maptile_geometry_test )
+  RUNTEST( mapsize_validation_test )
   RUNTEST( uoextension_test )
 
   RUNTEST( caseinsensitive_compare_test )
+  RUNTEST( www_test )
+  RUNTEST( dynthreadpool_test )
   //  RUNTEST( dummy )
 
   UnitTest::display_test_results();

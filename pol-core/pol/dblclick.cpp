@@ -17,31 +17,31 @@
 #include <cstring>
 #include <string>
 
-#include "../bscript/eprog.h"
-#include "../clib/clib_endian.h"
-#include "../clib/rawtypes.h"
-#include "../clib/refptr.h"
-#include "../plib/systemstate.h"
-#include "containr.h"
-#include "eventid.h"
-#include "gameclck.h"
-#include "item/item.h"
-#include "item/itemdesc.h"
-#include "mobile/charactr.h"
-#include "mobile/npc.h"
-#include "network/client.h"
-#include "network/packethelper.h"
-#include "network/packets.h"
-#include "network/pktdef.h"
-#include "network/pktin.h"
+#include "bscript/eprog.h"
+#include "clib/clib_endian.h"
+#include "clib/rawtypes.h"
+#include "clib/refptr.h"
+#include "plib/systemstate.h"
+#include "pol/containr.h"
+#include "pol/eventid.h"
+#include "pol/gameclck.h"
+#include "pol/item/item.h"
+#include "pol/item/itemdesc.h"
+#include "pol/mobile/charactr.h"
+#include "pol/mobile/npc.h"
+#include "pol/network/client.h"
+#include "pol/network/packethelper.h"
+#include "pol/network/packets.h"
+#include "pol/network/pktdef.h"
+#include "pol/network/pktin.h"
 #include "plib/objtype.h"
-#include "realms/realm.h"
-#include "scrdef.h"
-#include "scrsched.h"
-#include "scrstore.h"
-#include "ufunc.h"
-#include "uobject.h"
-#include "uoscrobj.h"
+#include "pol/realms/realm.h"
+#include "pol/scrdef.h"
+#include "pol/scrsched.h"
+#include "pol/scrstore.h"
+#include "pol/ufunc.h"
+#include "pol/uobject.h"
+#include "pol/uoscrobj.h"
 
 
 namespace Pol::Core
@@ -53,10 +53,13 @@ void send_paperdoll( Network::Client* client, Mobile::Character* chr )
 
   if ( ( !settingsManager.ssopt.privacy_paperdoll ) || ( client->chr == chr ) )
   {
-    std::string name = ( !chr->has_title_prefix() ? "" : chr->title_prefix() + " " ) + chr->name() +
-                       ( !chr->has_title_suffix() ? "" : " " + chr->title_suffix() );
+    const auto& ssopt = settingsManager.ssopt;
+    std::string name =
+        ( !chr->has_title_prefix() ? "" : chr->title_prefix() + ssopt.title_prefix_separator ) +
+        chr->name() +
+        ( !chr->has_title_suffix() ? "" : ssopt.title_suffix_separator + chr->title_suffix() );
     if ( chr->has_title_race() )
-      name += " (" + chr->title_race() + ")";
+      name += ssopt.title_race_separator + "(" + chr->title_race() + ")";
     msg->Write( Clib::strUtf8ToCp1252( name ).c_str(), 60 );
   }
   else

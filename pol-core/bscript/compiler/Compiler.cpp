@@ -1,4 +1,6 @@
-#include "Compiler.h"
+#include "bscript/compiler/Compiler.h"
+
+#include <fstream>
 
 #include "bscript/compiler/Profile.h"
 #include "bscript/compiler/Report.h"
@@ -20,7 +22,7 @@
 #include "clib/fileutil.h"
 #include "clib/logfacility.h"
 #include "clib/timer.h"
-#include "compilercfg.h"
+#include "bscript/compilercfg.h"
 
 namespace Pol::Bscript::Compiler
 {

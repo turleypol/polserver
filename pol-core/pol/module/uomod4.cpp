@@ -14,24 +14,24 @@
 #include <stddef.h>
 #include <string>
 
-#include "../../bscript/berror.h"
-#include "../../bscript/bobject.h"
-#include "../../bscript/impstr.h"
-#include "../../clib/clib.h"
-#include "../../plib/uconst.h"
-#include "../containr.h"
-#include "../core.h"
-#include "../item/item.h"
-#include "../mobile/charactr.h"
-#include "../multi/boat.h"
-#include "../multi/multidef.h"
-#include "../polclass.h"
-#include "../ufunc.h"
-#include "../uobject.h"
-#include "../uworld.h"
-#include "realms/realm.h"
-#include "realms/realms.h"
-#include "uomod.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "clib/clib.h"
+#include "plib/uconst.h"
+
+#include "pol/containr.h"
+#include "pol/core.h"
+#include "pol/item/item.h"
+#include "pol/mobile/charactr.h"
+#include "pol/multi/boat.h"
+#include "pol/multi/multidef.h"
+#include "pol/polclass.h"
+#include "pol/ufunc.h"
+#include "pol/uobject.h"
+#include "pol/uworld.h"
+#include "pol/realms/realm.h"
+#include "pol/realms/realms.h"
+#include "pol/module/uomod.h"
 
 
 namespace Pol::Module

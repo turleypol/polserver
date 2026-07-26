@@ -4,15 +4,15 @@
  */
 
 
-#include "gameclck.h"
+#include "pol/gameclck.h"
 
 #include <ctime>
 #include <string>
 
-#include "../clib/spinlock.h"
-#include "../clib/stlutil.h"
-#include "globals/uvars.h"
-#include "polclock.h"
+#include "clib/spinlock.h"
+#include "clib/stlutil.h"
+#include "pol/globals/uvars.h"
+#include "pol/polclock.h"
 
 
 namespace Pol::Core
@@ -43,9 +43,7 @@ void start_gameclock()
 
 void update_gameclock()
 {
-  OSTRINGSTREAM os;
-  os << "s" << read_gameclock();
-  gamestate.global_properties->setprop( "gameclock", OSTRINGSTREAM_STR( os ) );
+  gamestate.global_properties->setprop( "gameclock", fmt::format( "s{}", read_gameclock() ) );
 }
 
 void stop_gameclock()

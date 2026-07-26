@@ -7,32 +7,34 @@
  * member for maps
  */
 
-#include "umap.h"
+#include "pol/umap.h"
 
 #include <stdio.h>
 #include <string>
 
-#include "../bscript/berror.h"
-#include "../bscript/bobject.h"
-#include "../bscript/bstruct.h"
-#include "../bscript/executor.h"
-#include "../bscript/objmethods.h"
-#include "../clib/cfgelem.h"
-#include "../clib/clib_endian.h"
-#include "../clib/stlutil.h"
-#include "../clib/streamsaver.h"
-#include "../clib/strutil.h"
-#include "globals/uvars.h"
-#include "item/itemdesc.h"
-#include "network/client.h"
-#include "network/packethelper.h"
-#include "network/packets.h"
-#include "network/pktboth.h"
-#include "realms/realm.h"
-#include "syshookscript.h"
-#include "ufunc.h"
-#include "uobject.h"
-#include "uoexec.h"
+#include "bscript/barray.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/bstruct.h"
+#include "bscript/executor.h"
+#include "bscript/objmethods.h"
+#include "clib/cfgelem.h"
+#include "clib/clib_endian.h"
+#include "clib/stlutil.h"
+#include "clib/streamsaver.h"
+#include "clib/strutil.h"
+
+#include "pol/globals/uvars.h"
+#include "pol/item/itemdesc.h"
+#include "pol/network/client.h"
+#include "pol/network/packethelper.h"
+#include "pol/network/packets.h"
+#include "pol/network/pktboth.h"
+#include "pol/realms/realm.h"
+#include "pol/syshookscript.h"
+#include "pol/ufunc.h"
+#include "pol/uobject.h"
+#include "pol/uoexec.h"
 
 
 namespace Pol::Core

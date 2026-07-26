@@ -12,41 +12,42 @@
  */
 
 
-#include "polwww.h"
+#include "pol/polwww.h"
 
-#include <assert.h>
 #include <ctype.h>
 #include <errno.h>
+#include <fmt/format.h>
 #include <iosfwd>
+#include <iterator>
+#include <map>
+#include <mutex>
 #include <string>
 #include <time.h>
 
-#include "../clib/cfgelem.h"
-#include "../clib/cfgfile.h"
-#include "../clib/esignal.h"
-#include "../clib/fileutil.h"
-#include "../clib/logfacility.h"
-#include "../clib/network/sockets.h"
-#include "../clib/network/wnsckt.h"
-#include "../clib/passert.h"
-#include "../clib/refptr.h"
-#include "../clib/stlutil.h"
-#include "../clib/strutil.h"
-#include "../clib/threadhelp.h"
-#include "../clib/timer.h"
+#include "clib/cfgelem.h"
+#include "clib/cfgfile.h"
+#include "clib/esignal.h"
+#include "clib/fileutil.h"
+#include "clib/logfacility.h"
+#include "clib/network/sockets.h"
+#include "clib/network/wnsckt.h"
+#include "clib/refptr.h"
+#include "clib/stlutil.h"
+#include "clib/threadhelp.h"
+#include "clib/timer.h"
 
-#include "../plib/pkg.h"
-#include "../plib/systemstate.h"
+#include "plib/pkg.h"
+#include "plib/systemstate.h"
 
-#include "globals/uvars.h"
-#include "module/httpmod.h"
-#include "module/uomod.h"
-#include "network/sockio.h"
-#include "polsem.h"
-#include "scrdef.h"
-#include "scrsched.h"
-#include "scrstore.h"
-#include "uoexec.h"
+#include "pol/globals/uvars.h"
+#include "pol/module/httpmod.h"
+#include "pol/module/uomod.h"
+#include "pol/network/sockio.h"
+#include "pol/polsem.h"
+#include "pol/scrdef.h"
+#include "pol/scrsched.h"
+#include "pol/scrstore.h"
+#include "pol/uoexec.h"
 
 #ifdef _WIN32
 #include <process.h>
@@ -55,57 +56,75 @@
 #endif
 
 
-#ifdef _MSC_VER
-#pragma warning( disable : 4127 )  // conditional expression is constant (needed because of FD_SET)
-#endif
-
-
 namespace Pol::Core
 {
 using namespace threadhelp;
+
+namespace
+{
+// guards gamestate.mime_types: the listener thread reloads it while worker
+// threads look up page types
+std::mutex mime_types_mutex;
+
+std::string lookup_mime_type( const std::string& pagetype )
+{
+  std::lock_guard<std::mutex> guard( mime_types_mutex );
+  auto itr = gamestate.mime_types.find( pagetype );
+  return itr != gamestate.mime_types.end() ? itr->second : std::string();
+}
+}  // namespace
 
 void load_mime_config()
 {
   static time_t last_load = 0;
 
+  std::map<std::string, std::string> mime_types;
+
   if ( !Clib::FileExists( "config/www.cfg" ) )
   {
-    if ( last_load )
-    {
-      gamestate.mime_types.clear();
-      last_load = 0;
-    }
-    gamestate.mime_types["jpg"] = "image/jpeg";
-    gamestate.mime_types["jpeg"] = "image/jpeg";
-    gamestate.mime_types["gif"] = "image/gif";
-    gamestate.mime_types["png"] = "image/png";
-    gamestate.mime_types["js"] = "text/javascript";
-    gamestate.mime_types["ico"] = "image/x-icon";
-    return;
+    last_load = 0;
+    mime_types["jpg"] = "image/jpeg";
+    mime_types["jpeg"] = "image/jpeg";
+    mime_types["gif"] = "image/gif";
+    mime_types["png"] = "image/png";
+    mime_types["js"] = "text/javascript";
+    mime_types["ico"] = "image/x-icon";
+    mime_types["css"] = "text/css";
+    mime_types["json"] = "application/json";
+    mime_types["svg"] = "image/svg+xml";
+    mime_types["txt"] = "text/plain";
+    mime_types["webp"] = "image/webp";
+    mime_types["woff2"] = "font/woff2";
+    mime_types["wasm"] = "application/wasm";
   }
-
-  try
+  else
   {
-    Clib::ConfigFile cf( "config/www.cfg" );
-    if ( cf.modified() <= last_load )
-    {  // not modified
+    try
+    {
+      Clib::ConfigFile cf( "config/www.cfg" );
+      if ( cf.modified() <= last_load )
+      {  // not modified
+        return;
+      }
+      last_load = cf.modified();
+      Clib::ConfigElem elem;
+      while ( cf.read( elem ) )
+      {
+        std::string ext, mime;
+        elem.remove_prop( "Extension", &ext );
+        elem.remove_prop( "MIME", &mime );
+        mime_types[ext] = mime;
+      }
+    }
+    catch ( ... )
+    {
+      POLLOG_ERRORLN( "Error while parsing www.cfg" );
       return;
     }
-    last_load = cf.modified();
-    gamestate.mime_types.clear();
-    Clib::ConfigElem elem;
-    while ( cf.read( elem ) )
-    {
-      std::string ext, mime;
-      elem.remove_prop( "Extension", &ext );
-      elem.remove_prop( "MIME", &mime );
-      gamestate.mime_types[ext] = mime;
-    }
   }
-  catch ( ... )
-  {
-    POLLOG_ERRORLN( "Error while parsing www.cfg" );
-  }
+
+  std::lock_guard<std::mutex> guard( mime_types_mutex );
+  gamestate.mime_types.swap( mime_types );
 }
 
 void config_web_server()
@@ -128,80 +147,121 @@ void config_web_server()
   load_mime_config();
 }
 
-void http_writeline( Clib::Socket& sck, const std::string& s )
+std::string html_escape( const std::string& s )
 {
-  sck.send( (void*)s.c_str(), static_cast<unsigned int>( s.length() ) );
-  sck.send( "\r\n", 2 );
+  std::string escaped;
+  escaped.reserve( s.size() );
+  for ( char ch : s )
+  {
+    switch ( ch )
+    {
+    case '&':
+      escaped += "&amp;";
+      break;
+    case '<':
+      escaped += "&lt;";
+      break;
+    case '>':
+      escaped += "&gt;";
+      break;
+    case '"':
+      escaped += "&quot;";
+      break;
+    default:
+      escaped += ch;
+    }
+  }
+  return escaped;
 }
+
+// Compares without early exit, so timing does not reveal how much of the
+// password matched
+bool constant_time_equal( const std::string& expected, const std::string& provided )
+{
+  unsigned int diff = expected.size() != provided.size() ? 1 : 0;
+  for ( size_t i = 0; i < provided.size(); ++i )
+  {
+    unsigned char e = i < expected.size() ? static_cast<unsigned char>( expected[i] ) : 0;
+    diff |= static_cast<unsigned int>( e ^ static_cast<unsigned char>( provided[i] ) );
+  }
+  return diff == 0;
+}
+
+namespace
+{
+// Builds the complete response and sends it with a single send() call
+void http_send_response( Clib::Socket& sck, const std::string& status, const std::string& title,
+                         const std::string& message, const std::string& extra_headers = "" )
+{
+  std::string body = fmt::format(
+      "<HTML><HEAD><TITLE>{0}</TITLE></HEAD>\r\n<BODY><H1>{0}</H1>\r\n{1}\r\n</BODY></HTML>\r\n",
+      title, message );
+
+  std::string response;
+  response.reserve( 160 + extra_headers.size() + body.size() );
+  fmt::format_to( std::back_inserter( response ), "HTTP/1.1 {}\r\n", status );
+  response += extra_headers;
+  response += "Content-Type: text/html\r\n";
+  fmt::format_to( std::back_inserter( response ), "Content-Length: {}\r\n", body.size() );
+  response += "Connection: close\r\n";
+  response += "\r\n";
+  response += body;
+  sck.send( response.data(), static_cast<unsigned int>( response.size() ) );
+}
+}  // namespace
 
 void http_forbidden( Clib::Socket& sck )
 {
-  http_writeline( sck, "HTTP/1.1 403 Forbidden" );
-  http_writeline( sck, "Content-Type: text/html" );
-  http_writeline( sck, "" );
-  http_writeline( sck, "<HTML><HEAD><TITLE>403 Forbidden</TITLE></HEAD>" );
-  http_writeline( sck, "<BODY><H1>Forbidden</H1>" );
-  http_writeline( sck, "You are forbidden to access this server." );
-  http_writeline( sck, "</BODY></HTML>" );
+  http_send_response( sck, "403 Forbidden", "Forbidden",
+                      "You are forbidden to access this server." );
 }
 
 void http_forbidden( Clib::Socket& sck, const std::string& filename )
 {
-  http_writeline( sck, "HTTP/1.1 403 Forbidden" );
-  http_writeline( sck, "Content-Type: text/html" );
-  http_writeline( sck, "" );
-  http_writeline( sck, "<HTML><HEAD><TITLE>403 Forbidden</TITLE></HEAD>" );
-  http_writeline( sck, "<BODY><H1>Forbidden</H1>" );
-  http_writeline( sck, "You are forbidden to access to " + filename + " on this server." );
-  http_writeline( sck, "</BODY></HTML>" );
+  http_send_response(
+      sck, "403 Forbidden", "Forbidden",
+      fmt::format( "You are forbidden to access to {} on this server.", html_escape( filename ) ) );
 }
 
 void http_not_authorized( Clib::Socket& sck, const std::string& /*filename*/ )
 {
-  http_writeline( sck, "HTTP/1.1 401 Unauthorized" );
-  http_writeline( sck, "WWW-Authenticate: Basic realm=\"pol\"" );
-  http_writeline( sck, "Content-Type: text/html" );
-  http_writeline( sck, "" );
-  http_writeline( sck, "<HTML><HEAD><TITLE>401 Unauthorized</TITLE></HEAD>" );
-  http_writeline( sck, "<BODY><H1>Unauthorized</H1>" );
-  http_writeline( sck, "You are not authorized to access that page." );
-  http_writeline( sck, "</BODY></HTML>" );
+  http_send_response( sck, "401 Unauthorized", "Unauthorized",
+                      "You are not authorized to access that page.",
+                      "WWW-Authenticate: Basic realm=\"pol\"\r\n" );
 }
 
 void http_internal_error( Clib::Socket& sck, const std::string& filename )
 {
-  http_writeline( sck, "HTTP/1.1 500 Internal Sever Error" );
-  http_writeline( sck, "Content-Type: text/html" );
-  http_writeline( sck, "" );
-  http_writeline( sck, "<HTML><HEAD><TITLE>500 Internal Server Error</TITLE></HEAD>" );
-  http_writeline( sck, "<BODY><H1>Internal Server Error</H1>" );
-  http_writeline( sck, "The requested URL " + filename + " caused an internal server error." );
-  http_writeline( sck, "</BODY></HTML>" );
+  http_send_response( sck, "500 Internal Server Error", "Internal Server Error",
+                      fmt::format( "The requested URL {} caused an internal server error.",
+                                   html_escape( filename ) ) );
 }
 
 void http_not_found( Clib::Socket& sck, const std::string& filename )
 {
-  http_writeline( sck, "HTTP/1.1 404 Not Found" );
-  http_writeline( sck, "Content-Type: text/html" );
-  http_writeline( sck, "" );
-  http_writeline( sck, "<HTML><HEAD><TITLE>404 Not Found</TITLE></HEAD>" );
-  http_writeline( sck, "<BODY><H1>Not Found</H1>" );
-  http_writeline( sck, "The requested URL " + filename + " was not found on this server." );
-  http_writeline( sck, "</BODY></HTML>" );
+  http_send_response( sck, "404 Not Found", "Not Found",
+                      fmt::format( "The requested URL {} was not found on this server.",
+                                   html_escape( filename ) ) );
+}
+
+void http_bad_request( Clib::Socket& sck )
+{
+  http_send_response( sck, "400 Bad Request", "Bad Request",
+                      "The server could not understand the request." );
+}
+
+void http_method_not_allowed( Clib::Socket& sck )
+{
+  http_send_response( sck, "405 Method Not Allowed", "Method Not Allowed",
+                      "Only GET requests are supported by this server.", "Allow: GET\r\n" );
 }
 
 void http_redirect( Clib::Socket& sck, const std::string& new_url )
 {
-  // cerr << "http: redirecting to " << new_url << endl;
-
-
-  http_writeline( sck, "HTTP/1.1 301 Moved Permanently" );
-  http_writeline( sck, "Location: " + new_url );
-  http_writeline( sck, "" );
-  http_writeline( sck, "<HTML><HEAD><TITLE>301 Moved Permanently</TITLE></HEAD>" );
-  http_writeline( sck, "<BODY><H1>Moved Permanently</H1>" );
-  http_writeline( sck, "The requested URL has been moved to " + new_url );
-  http_writeline( sck, "</BODY></HTML>" );
+  http_send_response(
+      sck, "301 Moved Permanently", "Moved Permanently",
+      fmt::format( "The requested URL has been moved to {}", html_escape( new_url ) ),
+      fmt::format( "Location: {}\r\n", new_url ) );
 }
 
 std::string reasonPhrase( int code )
@@ -371,10 +431,11 @@ std::string http_decodestr( const std::string& s )
     else
     {
       // if first is null terminator, won't look at second
-      if ( isxdigit( *( t + 1 ) ) && isxdigit( *( t + 2 ) ) )
+      if ( isxdigit( static_cast<unsigned char>( *( t + 1 ) ) ) &&
+           isxdigit( static_cast<unsigned char>( *( t + 2 ) ) ) )
       {
-        char chH = *( t + 1 );
-        char chL = *( t + 2 );
+        unsigned char chH = *( t + 1 );
+        unsigned char chL = *( t + 2 );
         t += 3;
         char ch = 0;
         if ( isdigit( chH ) )
@@ -453,12 +514,12 @@ bool legal_pagename( const std::string& page )
   // make sure the page isn't going to go visit our hard disk
   for ( const char* t = page.c_str(); *t; ++t )
   {
-    char ch = *t;
+    unsigned char ch = *t;
     if ( isalnum( ch ) || ( ch == '/' ) || ( ch == '_' ) || ( ch == '-' ) )
     {
       continue;
     }
-    if ( ( ch == '.' ) && ( isalnum( *( t + 1 ) ) ) )
+    if ( ( ch == '.' ) && ( isalnum( static_cast<unsigned char>( *( t + 1 ) ) ) ) )
     {
       continue;
     }
@@ -483,33 +544,6 @@ std::string get_pagetype( const std::string& page )
   }
 
   return "";
-}
-
-bool get_script_page_filename( const std::string& page, ScriptDef& sd )
-{
-  if ( page.substr( 0, 5 ) == "/pkg/" )
-  {
-    // cerr << "package page script: " << page << endl;
-    auto pkgname_end = page.find_first_of( '/', 5 );
-    if ( pkgname_end != std::string::npos )
-    {
-      std::string pkg_name = page.substr( 5, pkgname_end - 5 );
-      // cerr << "pkg name: " << pkg_name << endl;
-      Plib::Package* pkg = Plib::find_package( pkg_name );
-      if ( pkg != nullptr )
-      {
-        sd.quickconfig( pkg, "www/" + page.substr( pkgname_end + 1 ) );
-        return true;
-      }
-
-      return false;
-    }
-
-    return false;
-  }
-
-  sd.quickconfig( "scripts/www" + page + ".ecl" );
-  return true;
 }
 
 // FIXME this is just ugly!  The HttpExecutorModule takes ownership of the
@@ -675,57 +709,40 @@ bool decode_page( const std::string& ipage, Plib::Package** ppkg, std::string* p
   return true;
 }
 
-void send_html( Clib::Socket& sck, const std::string& page, const std::string& filename )
-{
-  std::ifstream ifs( filename.c_str() );
-  if ( ifs.is_open() )
-  {
-    http_writeline( sck, "HTTP/1.1 200 OK" );
-    http_writeline( sck, "Content-Type: text/html" );
-    http_writeline( sck, "" );
-    std::string t;
-    while ( getline( ifs, t ) )
-    {
-      http_writeline( sck, t );
-    }
-  }
-  else
-  {
-    http_not_found( sck, page );
-  }
-}
-
 void send_binary( Clib::Socket& sck, const std::string& page, const std::string& filename,
                   const std::string& content_type )
 {
-  // string filename = get_page_filename( page );
   unsigned int fsize = Clib::filesize( filename.c_str() );
   std::ifstream ifs( filename.c_str(), std::ios::binary );
-  if ( ifs.is_open() )
-  {
-    http_writeline( sck, "HTTP/1.1 200 OK" );
-    http_writeline( sck, "Accept-Ranges: bytes" );
-    http_writeline( sck, "Content-Length: " + Clib::tostring( fsize ) );
-    http_writeline( sck, "Content-Type: " + content_type );
-    http_writeline( sck, "" );
-
-    // Actual reading and outputting.
-    char bfr[256];
-    unsigned int cur_read = 0;
-    while ( sck.connected() && ifs.good() && cur_read < fsize )
-    {
-      ifs.read( bfr, sizeof( bfr ) );
-      cur_read += static_cast<unsigned int>( ifs.gcount() );
-      sck.send( bfr, static_cast<unsigned int>( ifs.gcount() ) );  // This was sizeof bfr, which
-                                                                   // would send garbage... fixed --
-                                                                   // Nando, 2009-02-22
-    }
-    // -------------
-  }
-  else
-  {
+  if ( !ifs.is_open() ) {
     http_not_found( sck, page );
+    return;
   }
+
+  std::string headers = fmt::format(
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-Ranges: bytes\r\n"
+      "Content-Length: {}\r\n"
+      "Content-Type: {}\r\n"
+      "Connection: close\r\n"
+      "\r\n",
+      fsize, content_type );
+  sck.send( headers.data(), static_cast<unsigned int>( headers.size() ) );
+
+  // Actual reading and outputting.
+  char bfr[32768];
+  unsigned int cur_read = 0;
+  while ( sck.connected() && ifs.good() && cur_read < fsize )
+  {
+    ifs.read( bfr, sizeof( bfr ) );
+    cur_read += static_cast<unsigned int>( ifs.gcount() );
+    sck.send( bfr, static_cast<unsigned int>( ifs.gcount() ) ); 
+  }
+}
+
+void send_html( Clib::Socket& sck, const std::string& page, const std::string& filename )
+{
+  send_binary( sck, page, filename, "text/html" );
 }
 
 void http_func( SOCKET client_socket )
@@ -734,7 +751,7 @@ void http_func( SOCKET client_socket )
   Clib::SocketLineReader lineReader( sck, 5, 3000,
                                      false );  // we take care of disconnecting at timeout
 
-  std::string get;
+  std::string request_line;
   std::string auth;
   std::string tmpstr;
   std::string host;
@@ -746,6 +763,10 @@ void http_func( SOCKET client_socket )
   }
 
   bool timed_out = false;
+  bool first_line = true;
+  unsigned int header_count = 0;
+  const unsigned int max_header_count = 64;
+  const auto max_request_time = std::chrono::seconds( 10 );
   Tools::HighPerfTimer requestTimer;
   while ( sck.connected() && lineReader.read( tmpstr, &timed_out ) )
   {
@@ -753,11 +774,21 @@ void http_func( SOCKET client_socket )
       INFO_PRINTLN( "http({}): '{}'", sck.handle(), tmpstr );
     if ( tmpstr.empty() )
       break;
-    if ( strncmp( tmpstr.c_str(), "GET", 3 ) == 0 )
-      get = tmpstr;
+    if ( ++header_count > max_header_count || requestTimer.ellapsed() > max_request_time )
+    {
+      INFO_PRINTLN( "HTTP connection {} exceeded request limits", sck.getpeername() );
+      http_bad_request( sck );
+      return;
+    }
+    if ( first_line )
+    {
+      request_line = tmpstr;
+      first_line = false;
+      continue;
+    }
     if ( strncmp( tmpstr.c_str(), "Authorization:", 14 ) == 0 )
       auth = tmpstr;
-    if ( strncmp( tmpstr.c_str(), "Host: ", 5 ) == 0 )
+    else if ( strncmp( tmpstr.c_str(), "Host: ", 6 ) == 0 )
       host = tmpstr.substr( 6 );
   }
 
@@ -776,7 +807,7 @@ void http_func( SOCKET client_socket )
                   double( requestTimer.ellapsed().count() / 1000.0 ) );
   }
 
-  ISTRINGSTREAM is( get );
+  ISTRINGSTREAM is( request_line );
 
   std::string cmd;           // GET, POST  (we only handle GET)
   std::string url;           // The whole URL (xx.ecl?a=b&c=d)
@@ -794,6 +825,17 @@ void http_func( SOCKET client_socket )
         "http-url:   '{}'\n"
         "http-proto: '{}'",
         cmd, host, url, proto );
+  }
+
+  if ( cmd.empty() || url.empty() )
+  {
+    http_bad_request( sck );
+    return;
+  }
+  if ( cmd != "GET" )
+  {
+    http_method_not_allowed( sck );
+    return;
   }
 
   //  if (url == "/")
@@ -837,7 +879,7 @@ void http_func( SOCKET client_socket )
             "http-pw-decoded: '{}'",
             coded_unpw, unpw );
       }
-      if ( Plib::systemstate.config.web_server_password != unpw )
+      if ( !constant_time_equal( Plib::systemstate.config.web_server_password, unpw ) )
       {
         http_not_authorized( sck, url );
         return;
@@ -887,7 +929,7 @@ void http_func( SOCKET client_socket )
   }
   else
   {
-    std::string type = gamestate.mime_types[pagetype];
+    std::string type = lookup_mime_type( pagetype );
     if ( !type.empty() )
     {
       send_binary( sck, page, filename, type );
@@ -912,124 +954,64 @@ void init_http_thread_support()
 }
 #endif
 
-void test_decode( const char* page, bool result_expected, Plib::Package* pkg_expected,
-                  const char* filename_expected, const char* pagetype_expected,
-                  const char* redirect_to_expected )
-{
-  Plib::Package* pkg = nullptr;
-  std::string filename;
-  std::string pagetype;
-  std::string redirect_to;
-  bool result;
-
-  result = decode_page( page, &pkg, &filename, &pagetype, &redirect_to );
-  passert_always( result == result_expected );
-  if ( result )
-  {
-    assert( redirect_to == redirect_to_expected );
-    (void)redirect_to_expected;
-    if ( redirect_to.empty() )
-    {
-      passert_always( pkg == pkg_expected );
-      passert_always( filename == filename_expected );
-      passert_always( pagetype == pagetype_expected );
-    }
-  }
-}
-
-void test_decode()
-{
-  /*
-      lock();
-      if (find_package( "testwww" ))
-      {
-      test_decode( "/", true, nullptr, "scripts/www/index.htm", "htm" );
-      test_decode( "/pkg/testwww1",
-      true, find_package( "testwww1" ), "pkg/test/testwww1/www/index.htm", "htm", "" );
-      test_decode( "/pkg/testwww1/noexist.ecl",
-      true, find_package( "testwww1" ), "www/noexist.ecl", "ecl", "" );
-      test_decode( "/pkg/testwww3",
-      true, find_package( "testwww3" ), "www/index.ecl", "ecl" );
-      }
-      unlock();
-      */
-}
-
-
 void http_thread()
 {
-  test_decode();
-
-
   config_web_server();
   init_http_thread_support();
 
-  // if (1)
-  INFO_PRINTLN( "Listening for HTTP requests on port {}",
-                Plib::systemstate.config.web_server_port );
+  if ( Plib::systemstate.config.web_server_local_only )
+    INFO_PRINTLN( "Listening for HTTP requests on 127.0.0.1:{} (local only)",
+                  Plib::systemstate.config.web_server_port );
+  else
+    INFO_PRINTLN( "Listening for HTTP requests on port {}",
+                  Plib::systemstate.config.web_server_port );
 
-  SOCKET http_socket = Network::open_listen_socket( Plib::systemstate.config.web_server_port );
-  if ( http_socket == INVALID_SOCKET )
+  Clib::Socket listen_sck;
+  if ( !listen_sck.listen( Plib::systemstate.config.web_server_port,
+                           Plib::systemstate.config.web_server_local_only ) )
   {
-    ERROR_PRINTLN( "Unable to listen on socket: {}", http_socket );
-    return;
+    ERROR_PRINTLN( "Unable to listen on HTTP port {}",
+                   Plib::systemstate.config.web_server_port );
+    return;  // webserver off, but the rest of the server keeps running
   }
-  fd_set listen_fd;
-  struct timeval listen_timeout = { 0, 0 };
 
-  Pol::threadhelp::TaskThreadPool worker_threads( 2, "http" );  // two threads should be enough
-  while ( !Clib::exit_signalled )
   {
-    int nfds = 0;
-    FD_ZERO( &listen_fd );
-
-    FD_SET( http_socket, &listen_fd );
-#ifndef _WIN32
-    nfds = http_socket + 1;
-#endif
-
-    int res;
-    do
+    Pol::threadhelp::TaskThreadPool worker_threads( 4, "http" );
+    while ( !Clib::exit_signalled )
     {
-      listen_timeout.tv_sec = 5;
-      listen_timeout.tv_usec = 0;
-      res = select( nfds, &listen_fd, nullptr, nullptr, &listen_timeout );
-    } while ( res < 0 && !Clib::exit_signalled && socket_errno == SOCKET_ERRNO( EINTR ) );
+      if ( !listen_sck.has_incoming_data( 5000 ) )
+      {
+        load_mime_config();  // hot-reload the MIME config while idle
+        continue;
+      }
 
-    if ( res <= 0 )
-    {
-      load_mime_config();
-      continue;
-    }
-
-    if ( FD_ISSET( http_socket, &listen_fd ) )
-    {
       if ( Plib::systemstate.config.web_server_debug )
         INFO_PRINTLN( "Accepting connection.." );
 
-      struct sockaddr client_addr;  // inet_addr
-      socklen_t addrlen = sizeof client_addr;
-      SOCKET client_socket = accept( http_socket, &client_addr, &addrlen );
-      if ( client_socket == INVALID_SOCKET )
-        return;
+      Clib::Socket client;
+      try
+      {
+        if ( !listen_sck.accept( &client ) || !client.connected() )
+          continue;
+        // Always disable Nagle on webserver clients; config.disable_nagle gates UO clients only.
+        client.disable_nagle();
+      }
+      catch ( std::exception& ex )
+      {
+        POLLOG_ERRORLN( "HTTP server: failed to set socket options: {}", ex.what() );
+        continue;  // client closes via RAII
+      }
 
-      Network::apply_socket_options( client_socket );
+      struct sockaddr client_addr = client.peer_address();
+      INFO_PRINTLN( "HTTP client connected from {}", Network::AddressToString( &client_addr ) );
 
-      std::string addrstr = Network::AddressToString( &client_addr );
-      INFO_PRINTLN( "HTTP client connected from {}", addrstr );
-
-      worker_threads.push(
-          [=]() { http_func( client_socket ); } );  // copy socket into queue to keep it valid
+      // Transfer the handle out of the stack Socket; http_func re-wraps it into a Clib::Socket.
+      SOCKET client_socket = client.release_handle();
+      worker_threads.push( [client_socket]() { http_func( client_socket ); } );
     }
-  }
+  }  // wait for the worker threads to finish before cleanup
 
   gamestate.mime_types.clear();  // cleanup on exit
-
-#ifdef _WIN32
-  closesocket( http_socket );
-#else
-  close( http_socket );
-#endif
 }
 
 void start_http_server()

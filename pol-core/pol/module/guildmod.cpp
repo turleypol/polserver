@@ -8,23 +8,27 @@
  */
 
 
-#include "guildmod.h"
+#include "pol/module/guildmod.h"
 #include <stddef.h>
 
-#include "../../bscript/berror.h"
-#include "../../bscript/executor.h"
-#include "../../bscript/objmembers.h"
-#include "../../bscript/objmethods.h"
-#include "../../clib/rawtypes.h"
-#include "../../clib/stlutil.h"
-#include "../fnsearch.h"
-#include "../globals/uvars.h"
-#include "../guilds.h"
-#include "../guildscrobj.h"
-#include "../mobile/charactr.h"
-#include "../polobject.h"
-#include "../uoexec.h"
-#include "../uoscrobj.h"
+#include "bscript/barray.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/buninit.h"
+#include "bscript/executor.h"
+#include "bscript/objmembers.h"
+#include "bscript/objmethods.h"
+#include "clib/rawtypes.h"
+#include "clib/stlutil.h"
+
+#include "pol/fnsearch.h"
+#include "pol/globals/uvars.h"
+#include "pol/guilds.h"
+#include "pol/guildscrobj.h"
+#include "pol/mobile/charactr.h"
+#include "pol/polobject.h"
+#include "pol/uoexec.h"
+#include "pol/uoscrobj.h"
 #include <module_defs/guilds.h>
 
 #include <memory>

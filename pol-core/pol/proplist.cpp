@@ -5,26 +5,26 @@
  */
 
 
-#include "proplist.h"
+#include "pol/proplist.h"
 
 #include <stddef.h>
 
 #include <ranges>
 
-#include "../bscript/berror.h"
-#include "../bscript/bobject.h"
-#include "../bscript/executor.h"
-#include "../bscript/impstr.h"
-#include "../bscript/objmethods.h"
-#include "../clib/cfgelem.h"
-#include "../clib/logfacility.h"
-#include "../clib/stlutil.h"
-#include "../clib/streamsaver.h"
-#include "../clib/strutil.h"
-#include "../plib/systemstate.h"
-#include "baseobject.h"
+#include "bscript/barray.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/bstring.h"
+#include "bscript/executor.h"
+#include "bscript/objmethods.h"
+#include "clib/cfgelem.h"
+#include "clib/logfacility.h"
+#include "clib/stlutil.h"
+#include "clib/streamsaver.h"
+#include "clib/strutil.h"
+#include "plib/systemstate.h"
 
-#define pf_endl '\n'
+#include "pol/baseobject.h"
 
 namespace Pol::Core
 {
@@ -255,18 +255,16 @@ void CPropProfiler::dumpProfile( std::ostream& os ) const
 
       for ( auto& pIter : tIter.second )
       {
-        std::ostringstream line;
-        line << pIter.first << " ";
-        line << pIter.second[HitsCounter::READ] << "/";
-        line << pIter.second[HitsCounter::WRITE] << "/";
-        line << pIter.second[HitsCounter::ERASE] << std::endl;
+        std::string line =
+            fmt::format( "{} {}/{}/{}\n", pIter.first, pIter.second[HitsCounter::READ],
+                         pIter.second[HitsCounter::WRITE], pIter.second[HitsCounter::ERASE] );
 
         if ( !pIter.second[HitsCounter::READ] )
-          outData["WRITTEN BUT NEVER READ"][typeName].push_back( line.str() );
+          outData["WRITTEN BUT NEVER READ"][typeName].push_back( line );
         else if ( !pIter.second[HitsCounter::WRITE] )
-          outData["READ BUT NEVER WRITTEN"][typeName].push_back( line.str() );
+          outData["READ BUT NEVER WRITTEN"][typeName].push_back( line );
         else
-          outData["ALL THE REST"][typeName].push_back( line.str() );
+          outData["ALL THE REST"][typeName].push_back( line );
       }
     }
   }

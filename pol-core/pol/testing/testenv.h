@@ -7,7 +7,7 @@
 #ifndef POL_TESTENV_H
 #define POL_TESTENV_H
 
-#include "../../clib/logfacility.h"
+#include "clib/logfacility.h"
 
 #include <string>
 
@@ -29,18 +29,17 @@ public:
   template <typename F, typename T>
   UnitTest( F f, T res, const std::string& msg )
   {
-    INFO_PRINT( "    {}", msg );
     auto r = f();
     if ( r == res )
     {
+      INFO_PRINTLN( "    {}", msg );
       UnitTest::inc_successes();
     }
     else
     {
       UnitTest::inc_failures();
-      INFO_PRINT( ": {} != {}", r, res );
+      INFO_PRINT( "    {}: {} != {}", msg, r, res );
     }
-    INFO_PRINTLN( "" );
   }
   static void inc_failures() { ++UnitTest::failures; }
   static void inc_successes() { ++UnitTest::successes; }
@@ -106,8 +105,12 @@ void test_curlfeatures();
 
 void decay_test();
 void clamp_test();
+void maptile_geometry_test();
+void mapsize_validation_test();
 void uoextension_test();
 void caseinsensitive_compare_test();
+void www_test();
+void dynthreadpool_test();
 }  // namespace Testing
 }  // namespace Pol
 #endif

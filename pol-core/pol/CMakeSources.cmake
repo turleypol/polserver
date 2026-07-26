@@ -377,6 +377,8 @@ set (pol_sources  # sorted !
   statmsg.h
   storage.cpp
   storage.h
+  storagescrobj.cpp
+  storagescrobj.h
   syshook.cpp
   syshook.h
   syshookscript.cpp
@@ -396,12 +398,16 @@ set (pol_sources  # sorted !
   testing/testenv.h
   testing/testexpansion.cpp
   testing/testlos.cpp
+  testing/testmapsize.cpp
+  testing/testmaptile.cpp
   testing/testmisc.cpp
   testing/testpos.cpp
   testing/testrange.cpp
   testing/testskill.cpp
+  testing/testthreadpool.cpp
   testing/testvector.cpp
   testing/testwalk.cpp
+  testing/testwww.cpp
   textcmd.cpp
   textcmd.h
   tildecmd.cpp

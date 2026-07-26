@@ -1,4 +1,108 @@
 -- POL100.3.0 --
+07-25-2026 Turley:
+    Fixed: it was not possible to add/remove houseparts with negative offset due to changes from 07-24.
+07-25-2026 Ins:
+    Added: ServSpecOpt TitlePrefixSeparator, TitleSuffixSeparator, TitleRaceSeparator and TitleGuildSeparator configure the separators the core inserts around the parts of a mobile's displayed title (paperdoll and AOS tooltip): title_prefix|name|title_suffix, plus before (race) and [guild]. Each defaults to a single space, preserving the previous behavior; set empty to let the title strings supply their own separators.
+07-24-2026 Turley:
+    Added: customhouse methods addhousepart and erasehousepart accept now also a single argument array of struct{graphic,xoffset,yoffset,z} to add/erase multiple parts at once
+07-22-2026 Nando:
+    Fixed: uoconvert's 'map' command failed to convert several UOP maps. Its UOP size
+           estimator dropped a block from the final chunk, aborting on maps whose block
+           count isn't a multiple of 4096 (Ilshenar/map2, Tokuno/map4); and it didn't
+           tolerate the extra trailing padding block some clients add, which broke map0/
+           map1 dimension auto-detection. Both are fixed; all standard maps (0-5) now
+           convert from both .mul and UOP.
+07-22-2026 Ins:
+    Fixed: ShortCircuit jump optimization left an uninitialized value on the stack when a
+           nested chain such as ( a && b ) || ( c && d ) was assigned via a variable
+           declaration-with-initializer ( var x := ... ). The optimizer skipped past an
+           opposite-type logical jump that pops on fall-through, corrupting the following
+           stack-addressed assignment. Recompilation is needed.
+07-21-2026 Turley:
+    Fixed: ShortCircuit optimizations created wrong instructions in certain situations.
+           Since the bug is in codegen recompilation is needed.
+07-18-2026 Nando:
+  Changed: uoconvert's map conversion is substantially faster. The 'map' and 'maptile'
+           commands now build their output files in memory (writing each once instead of
+           re-reading and rewriting blocks per change), compute the smoothed terrain for
+           the whole realm a single time instead of re-deriving it per tile, filter each
+           block's statics once instead of rescanning them for every tile, and process
+           the map's solid blocks in parallel across CPU cores. A new optional threads=
+           argument sets the worker count (threads=0, the default, uses all available
+           cores; threads=1 forces the old single-threaded behavior). The generated realm
+           files are byte-for-byte identical to previous versions; on a typical multi-core
+           machine a full 7168x4096 realm conversion drops from tens of seconds to a few.
+07-13-2026 Nando:
+    Fixed: uoconvert's maptile.dat block index used a truncating (floor) shift instead
+           of a rounded-up (ceil) block count, so realms whose width or height isn't a
+           multiple of 64 (Tokuno, 1448x1448, among the standard maps) had their
+           easternmost/southernmost partial tile-block aliased onto the start of the
+           next block row, silently overwriting it. This corrupted landtile/z lookups
+           (Realm::groundheight, GetMapInfo, findmarker/counttiles) along a ~40-tile
+           strip; movement/walkability were unaffected. maptile.dat's layout changes
+           for affected realms, so RealmDescriptor::VERSION is bumped 1->2, requiring
+           all realms to be reconverted.
+    Fixed: Data race on the socket handle between an aux connection's reader thread
+           and deferred transmit() tasks (os::OpenConnection / aux services): a
+           transmit racing the connection close could act on an already-closed
+           socket handle.
+  Changed: With WebServerLocalOnly=1 (the default), the webserver now binds to
+           127.0.0.1 instead of all interfaces, so the port is no longer reachable
+           (or even visible) from other machines. Set WebServerLocalOnly=0 to allow
+           remote connections, as before.
+07-05-2026 Nando:
+    Fixed: On macOS, sockets could lose data that arrived just before the peer closed
+           the connection (poll() reports POLLHUP eagerly there; the buffered data is
+           now drained before the connection is treated as closed). Affected e.g.
+           os::OpenConnection() clients talking to servers that close after responding.
+  Changed: os::OpenConnection() now resolves hostnames (e.g. "shard.example.com"), not
+           only numeric IP addresses. Unresolvable names fail immediately (previously
+           they silently connected to 255.255.255.255) and unreachable hosts give up
+           after the new connect_timeout_ms parameter (default 10000 ms; 0 restores the
+           old behavior of blocking a worker thread for the OS default of a minute or
+           more).
+    Fixed: Connections read line-by-line (aux services, webserver, remote debugger)
+           could be kept open forever by a peer streaming data without line breaks:
+           receive timeouts now only reset when usable data arrives, and line buffers
+           without a configured maximum are capped at 16 MB.
+  Changed: With DebugLocalOnly=1 (the default), the DebugPort listener now binds to
+           127.0.0.1 instead of all interfaces, so the port is no longer reachable
+           (or even visible) from other machines. Set DebugLocalOnly=0 to allow
+           remote debugger connections, as before.
+  Changed: The "local only" peer checks (DebugLocalOnly, WebServerLocalOnly) now
+           accept connections from any 127.0.0.0/8 loopback address instead of
+           only exactly 127.0.0.1.
+07-04-2026 Nando:
+    Fixed: Webserver performance: Nagle's algorithm is now disabled for HTTP connections,
+           responses are sent in single network operations with Content-Length and
+           Connection headers, and file transfers use a larger buffer.
+    Fixed: Webserver: data race when config/www.cfg was reloaded while requests were
+           being served, transient accept() errors no longer terminate the webserver
+           thread, error pages no longer reflect unescaped request data (XSS), and
+           sending to a stalled peer no longer busy-loops the CPU.
+  Changed: Webserver only accepts GET requests (405 otherwise) and limits requests to
+           64 header lines read within 10 seconds.
+  Changed: Webserver: the built-in MIME type list (used when config/www.cfg does not
+           exist) now also covers css, json, svg, txt, webp, woff2 and wasm.
+05-31-2026 Turley:
+    Fixed: When sending classes/functionobjects to the same script but different instance the wrong globals where used
+05-25-2026 Turley:
+    Fixed: Memoryleak when storing classes or functionobjects as global variable
+  Changed: When sending classes/functionobjects to another script its no longer valid to access global variables when the sending script is destroyed before the call.
+           The calling script will stop with an error.
+           Original feature description check 08-08-2024
+05-23-2026 Kevin:
+    Added: New module function party::ListParties()
+05-10-2026 Turley:
+    Fixed: Healthbar updates of other mobs if the hp is greater then 0xffff
+05-10-2026 AsYlum:
+    Fixed: NPCs with intrinsic AR had their ColdResistCap silently overwritten
+           with EnergyResistCap whenever any resist/damage/cap mod was changed.
+04-22-2026 Turley:
+    Fixed: Statmsg pkt (0x11) was send way to often
+    Fixed: In case of a load error print the starting line number of the element
+03-29-2026 Turley:
+  Changed: for sql connection mariadb connector is now used, since its compatible nothing changes except that the core nolonger needs mysql as external dependency.
 03-15-2026 Turley:
     Added: uo::DisplayDialogGump(chr_or_array, layout, textlines, x:=0, y:=0, flags:=0, gumpid:=0 )
            non-blocking version of uo::SendDialogGump(), instead of blocking the script until the client interacts with the gump it returns immediately.

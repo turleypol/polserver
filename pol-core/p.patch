@@ -1,0 +1,153 @@
+diff --git a/pol-core/plib/mapwriter.cpp b/pol-core/plib/mapwriter.cpp
+index b3c74fc67..05fff2bd6 100644
+--- a/pol-core/plib/mapwriter.cpp
++++ b/pol-core/plib/mapwriter.cpp
+@@ -7,6 +7,7 @@
+ #include "mapwriter.h"
+ 
+ #include <fstream>
++#include <iterator>
+ #include <stdexcept>
+ 
+ #include "../clib/cfgelem.h"
+@@ -245,14 +246,14 @@ unsigned int MapWriter::NextSolidx2Offset() const
+   return _solidx2.byte_size();
+ }
+ 
+-void MapWriter::AppendSolid( const SOLIDS_ELEM& solid )
++void MapWriter::AppendSolids( std::vector<SOLIDS_ELEM>&& solid )
+ {
+-  _solids.elems().push_back( solid );
++  std::move( solid.begin(), solid.end(), std::back_inserter( _solids.elems() ) );
+ }
+ 
+-void MapWriter::AppendSolidx2Elem( const SOLIDX2_ELEM& elem )
++void MapWriter::AppendSolidx2Elem( SOLIDX2_ELEM&& elem )
+ {
+-  _solidx2.elems().push_back( elem );
++  _solidx2.elems().emplace_back( std::move( elem ) );
+ }
+ 
+ void MapWriter::SetSolidx2Offset( unsigned short x_base, unsigned short y_base,
+diff --git a/pol-core/plib/mapwriter.h b/pol-core/plib/mapwriter.h
+index 2005040ff..df74cf32d 100644
+--- a/pol-core/plib/mapwriter.h
++++ b/pol-core/plib/mapwriter.h
+@@ -91,8 +91,8 @@ public:
+ 
+   unsigned int NextSolidx2Offset() const;
+ 
+-  void AppendSolid( const SOLIDS_ELEM& solid );
+-  void AppendSolidx2Elem( const SOLIDX2_ELEM& elem );
++  void AppendSolids( std::vector<SOLIDS_ELEM>&& solid );
++  void AppendSolidx2Elem( SOLIDX2_ELEM&& elem );
+   void SetSolidx2Offset( unsigned short x_base, unsigned short y_base, unsigned int offset );
+ 
+   unsigned width() const { return _width; }
+diff --git a/pol-core/plib/uofile02.cpp b/pol-core/plib/uofile02.cpp
+index 86c84f30f..766457e1d 100644
+--- a/pol-core/plib/uofile02.cpp
++++ b/pol-core/plib/uofile02.cpp
+@@ -181,7 +181,7 @@ void rawstaticfullread()
+         buf.count = 0;
+       }
+     }
+-    rawstatic_buffer_vec.push_back( std::move( buf ) );
++    rawstatic_buffer_vec.emplace_back( std::move( buf ) );
+   }
+   rawstatic_init = true;
+ }
+diff --git a/pol-core/uoconvert/UoConvertMain.cpp b/pol-core/uoconvert/UoConvertMain.cpp
+index 687772c18..d1e59a16e 100644
+--- a/pol-core/uoconvert/UoConvertMain.cpp
++++ b/pol-core/uoconvert/UoConvertMain.cpp
+@@ -762,7 +762,7 @@ void UoConvertMain::ComputeSolidBlock( unsigned short x_base, unsigned short y_b
+ // append offset -- and thus every byte of solidx1/solidx2 -- is identical to the old
+ // serial path.
+ void UoConvertMain::StitchBlock( MapWriter& mapwriter, unsigned short x_base, unsigned short y_base,
+-                                 const BlockResult& result )
++                                 BlockResult& result )
+ {
+   // Reduce the per-block stat sums into the run-wide counters.
+   with_more_solids += result.nonempty_locations;
+@@ -814,9 +814,8 @@ void UoConvertMain::StitchBlock( MapWriter& mapwriter, unsigned short x_base, un
+ 
+     // Byte offset this block's solidx2 elem lands at (before appending it).
+     unsigned int idx2_offset = mapwriter.NextSolidx2Offset();
+-    mapwriter.AppendSolidx2Elem( idx2_elem );
+-    for ( const auto& solid : result.solids )
+-      mapwriter.AppendSolid( solid );
++    mapwriter.AppendSolidx2Elem( std::move( idx2_elem ) );
++    mapwriter.AppendSolids( std::move( result.solids ) );
+     mapwriter.SetSolidx2Offset( x_base, y_base, idx2_offset );
+   }
+ 
+@@ -1140,7 +1139,6 @@ int UoConvertMain::main()
+     cfg_threads = static_cast<unsigned>( programArgsFindEquals( "threads=", 0, false ) );
+ 
+     std::string realm = programArgsFindEquals( "realm=", "britannia" );
+-
+     UoConvert::open_uo_data_files();
+     UoConvert::read_uo_data();
+ 
+diff --git a/pol-core/uoconvert/UoConvertMain.h b/pol-core/uoconvert/UoConvertMain.h
+index c31550bd4..12a951c1a 100644
+--- a/pol-core/uoconvert/UoConvertMain.h
++++ b/pol-core/uoconvert/UoConvertMain.h
+@@ -128,7 +128,7 @@ public:
+   // called in the same y-outer/x-inner order the blocks are laid out so the
+   // solids/solidx2 append offsets (baked into solidx1/solidx2) stay identical.
+   void StitchBlock( Plib::MapWriter& mapwriter, unsigned short x_base, unsigned short y_base,
+-                    const BlockResult& result );
++                    BlockResult& result );
+ 
+   std::string resolve_type_from_id( unsigned id ) const;
+   void write_multi_element( FILE* multis_cfg, const Plib::USTRUCT_MULTI_ELEMENT& elem,
+diff --git a/pol-core/uoconvert/parallel.h b/pol-core/uoconvert/parallel.h
+index edabb38b7..513191365 100644
+--- a/pol-core/uoconvert/parallel.h
++++ b/pol-core/uoconvert/parallel.h
+@@ -8,6 +8,8 @@
+ #include <thread>
+ #include <vector>
+ 
++#include "clib/threadhelp.h"
++
+ namespace Pol::UoConvert
+ {
+ // Fork-join parallel for-each over [0, n). Splits the range into contiguous
+@@ -43,7 +45,7 @@ void parallel_for( std::size_t n, Body&& body, unsigned max_threads = 0 )
+       body( i );
+     return;
+   }
+-
++  static Pol::threadhelp::TaskThreadPool pool{ (unsigned int)workers, "pool" };
+   std::exception_ptr eptr;
+   std::mutex eptr_mtx;
+   auto run_range = [&]( std::size_t begin, std::size_t end )
+@@ -62,7 +64,7 @@ void parallel_for( std::size_t n, Body&& body, unsigned max_threads = 0 )
+   };
+ 
+   const std::size_t chunk = ( n + workers - 1 ) / workers;  // ceil division
+-  std::vector<std::thread> threads;
++  std::vector<std::future<bool>> threads;
+   threads.reserve( workers - 1 );
+   for ( std::size_t w = 1; w < workers; ++w )
+   {
+@@ -70,13 +72,14 @@ void parallel_for( std::size_t n, Body&& body, unsigned max_threads = 0 )
+     if ( begin >= n )
+       break;
+     const std::size_t end = std::min( begin + chunk, n );
+-    threads.emplace_back( [&run_range, begin, end]() { run_range( begin, end ); } );
++    threads.emplace_back(
++        pool.checked_push( [&run_range, begin, end]() { run_range( begin, end ); } ) );
+   }
+   // The calling thread takes the first chunk while the workers run.
+   run_range( 0, std::min( chunk, n ) );
+ 
+   for ( auto& t : threads )
+-    t.join();
++    t.get();
+ 
+   if ( eptr )
+     std::rethrow_exception( eptr );

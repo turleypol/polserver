@@ -1,9 +1,12 @@
 #pragma once
 
-#include <map>
+#include <memory>
 #include <set>
 
-#include "bstruct.h"
+#include "clib/refptr.h"
+#include "bscript/bobject.h"
+#include "bscript/bstruct.h"
+#include "bscript/eprog.h"
 
 namespace Pol::Bscript
 {
@@ -14,8 +17,8 @@ class BClassInstance final : public BStruct
   using base = BStruct;
 
 public:
-  BClassInstance( ref_ptr<EScriptProgram> program, int index,
-                  std::shared_ptr<ValueStackCont> globals );
+  BClassInstance( ref_ptr<EScriptProgram> program, int index, std::weak_ptr<ValueStackCont> globals,
+                  unsigned int pid );
   BClassInstance( const BClassInstance& B );
   ~BClassInstance() override = default;
 
@@ -39,16 +42,17 @@ public:  // Class Machinery
   BObjectImp* call_method( const char* methodname, Executor& ex ) override;
   BObjectImp* call_method_id( const int id, Executor& ex, bool forcebuiltin = false ) override;
   BObjectRef get_member_id( const int id ) override;
-  void packonto( std::ostream& os ) const override;
+  // void packonto( std::string& os ) const override; // no serialization
 
   std::string getStringRep() const override;
 
 private:
   ref_ptr<EScriptProgram> prog_;
   unsigned int index_;
+  unsigned int pid_;
 
 public:
-  std::shared_ptr<ValueStackCont> globals;
+  std::weak_ptr<ValueStackCont> globals;
 };
 
 class BClassInstanceRef final : public BObjectImp

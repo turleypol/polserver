@@ -8,19 +8,21 @@
 // root problem is that no cleanup hook/flag exists on objects to perform additional cleanup tasks.
 // check also guild/party code
 
-#include "listenpt.h"
+#include "pol/listenpt.h"
 
 #include <algorithm>
 #include <limits>
 #include <stddef.h>
 
-#include "../bscript/bobject.h"
-#include "../plib/uconst.h"
-#include "globals/settings.h"
-#include "globals/uvars.h"
-#include "mobile/charactr.h"
-#include "uoexec.h"
-#include "uoscrobj.h"
+#include "bscript/barray.h"
+#include "bscript/bobject.h"
+#include "plib/uconst.h"
+
+#include "pol/globals/settings.h"
+#include "pol/globals/uvars.h"
+#include "pol/mobile/charactr.h"
+#include "pol/uoexec.h"
+#include "pol/uoscrobj.h"
 
 
 namespace Pol::Core

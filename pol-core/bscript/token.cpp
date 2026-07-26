@@ -4,9 +4,10 @@
  * - 2006/10/06 Shinigami: malloc.h -> stdlib.h
  */
 
-#include "token.h"
+#include "bscript/token.h"
 
-#include <cstdio>
+#include "bscript/modules.h"
+
 #include <cstring>
 
 

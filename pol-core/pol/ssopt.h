@@ -29,8 +29,8 @@
 #include <string>
 #include <vector>
 
-#include "../clib/rawtypes.h"
-#include "../plib/uoexpansion.h"
+#include "clib/rawtypes.h"
+#include "plib/uoexpansion.h"
 
 namespace Pol
 {
@@ -73,6 +73,10 @@ struct ServSpecOpt
   unsigned char default_max_slots;
   bool use_win_lfh;
   bool privacy_paperdoll;
+  std::string title_prefix_separator;
+  std::string title_suffix_separator;
+  std::string title_race_separator;
+  std::string title_guild_separator;
   bool force_new_objcache_packets;
   bool allow_moving_trade;
   bool core_handled_locks;

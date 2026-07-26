@@ -13,40 +13,43 @@
 #include <stdlib.h>
 #include <string>
 
-#include "../clib/clib_endian.h"
-#include "../clib/logfacility.h"
-#include "../clib/rawtypes.h"
-#include "../clib/refptr.h"
-#include "../plib/clidata.h"
-#include "../plib/systemstate.h"
-#include "../plib/uconst.h"
-#include "accounts/account.h"
-#include "containr.h"
-#include "gameclck.h"
-#include "globals/network.h"
-#include "globals/object_storage.h"
-#include "globals/uvars.h"
-#include "item/item.h"
-#include "layers.h"
-#include "mkscrobj.h"
-#include "mobile/attribute.h"
-#include "mobile/charactr.h"
-#include "mobile/wornitems.h"
-#include "module/uomod.h"
-#include "network/client.h"
-#include "network/pktdef.h"
-#include "network/pktin.h"
+#include "bscript/barray.h"
+#include "bscript/blong.h"
+#include "clib/clib_endian.h"
+#include "clib/logfacility.h"
+#include "clib/rawtypes.h"
+#include "clib/refptr.h"
+#include "plib/clidata.h"
 #include "plib/objtype.h"
-#include "realms/WorldChangeReasons.h"
-#include "scrsched.h"
-#include "scrstore.h"
-#include "skillid.h"
-#include "startloc.h"
-#include "ufunc.h"
-#include "uoclient.h"
-#include "uoexec.h"
-#include "uoskills.h"
-#include "uworld.h"
+#include "plib/systemstate.h"
+#include "plib/uconst.h"
+
+#include "pol/accounts/account.h"
+#include "pol/containr.h"
+#include "pol/gameclck.h"
+#include "pol/globals/network.h"
+#include "pol/globals/object_storage.h"
+#include "pol/globals/uvars.h"
+#include "pol/item/item.h"
+#include "pol/layers.h"
+#include "pol/mkscrobj.h"
+#include "pol/mobile/attribute.h"
+#include "pol/mobile/charactr.h"
+#include "pol/mobile/wornitems.h"
+#include "pol/module/uomod.h"
+#include "pol/network/client.h"
+#include "pol/network/pktdef.h"
+#include "pol/network/pktin.h"
+#include "pol/realms/WorldChangeReasons.h"
+#include "pol/scrsched.h"
+#include "pol/scrstore.h"
+#include "pol/skillid.h"
+#include "pol/startloc.h"
+#include "pol/ufunc.h"
+#include "pol/uoclient.h"
+#include "pol/uoexec.h"
+#include "pol/uoskills.h"
+#include "pol/uworld.h"
 
 
 namespace Pol::Core
@@ -592,7 +595,7 @@ void ClientCreateCharKR( Network::Client* client, PKTIN_8D* msg )
   }
 
   unsigned short graphic;
-  Plib::URACE race = ( Plib::URACE )( msg->race - 1 );
+  Plib::URACE race = (Plib::URACE)( msg->race - 1 );
   Plib::UGENDER gender =
       ( msg->gender & Plib::GENDER_FEMALE ) ? Plib::GENDER_FEMALE : Plib::GENDER_MALE;
   if ( race == Plib::RACE_HUMAN )

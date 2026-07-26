@@ -1,0 +1,8 @@
+pol/network/auxclient.cpp:#include "pol_global_config.h"
+pol/party.cpp:#include "pol_global_config.h"
+pol/pol.cpp:#include "../clib/mdump.h"
+pol/pol.cpp:#include "containr.h"
+pol/pol.cpp:#include "mobile/npc.h"
+pol/pol.cpp:#include "pol_global_config.h"
+pol/testing/poltest.cpp:#include "pol_global_config.h"
+pol/testing/testlos.cpp:#include "pol_global_config.h"

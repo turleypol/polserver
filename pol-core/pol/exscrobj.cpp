@@ -12,25 +12,30 @@
  */
 
 
-#include "exscrobj.h"
+#include "pol/exscrobj.h"
 
 #include <stddef.h>
 #include <string>
 
+#include "bscript/barray.h"
+#include "bscript/bdict.h"
+#include "bscript/bdouble.h"
 #include "bscript/berror.h"
+#include "bscript/blong.h"
 #include "bscript/bobject.h"
-#include "bscript/dict.h"
+#include "bscript/bstring.h"
+#include "bscript/buninit.h"
 #include "bscript/executor.h"
-#include "bscript/impstr.h"
 #include "bscript/objmembers.h"
 #include "bscript/objmethods.h"
 #include "clib/strutil.h"
-#include "module/polsystemmod.h"
-#include "module/uomod.h"
 #include "plib/systemstate.h"
-#include "scrsched.h"
-#include "uoexec.h"
-#include "uoscrobj.h"
+
+#include "pol/module/polsystemmod.h"
+#include "pol/module/uomod.h"
+#include "pol/scrsched.h"
+#include "pol/uoexec.h"
+#include "pol/uoscrobj.h"
 
 
 namespace Pol::Core

@@ -7,9 +7,11 @@
 #ifndef DATASTOREIMP_H
 #define DATASTOREIMP_H
 
-#include "../../bscript/bobject.h"
+#include "bscript/bapplicobj.h"
+#include "clib/maputil.h"
+#include "clib/refptr.h"
 
-#include "../proplist.h"
+#include "pol/proplist.h"
 
 #include <map>
 #include <string>

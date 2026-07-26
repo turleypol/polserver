@@ -19,7 +19,7 @@
  */
 
 
-#include "customhouses.h"
+#include "pol/multi/customhouses.h"
 
 #include <cstddef>
 #include <ranges>
@@ -27,37 +27,41 @@
 #include <string.h>
 #include <string>
 
-#include "../../bscript/bstruct.h"
-#include "../../clib/cfgelem.h"
-#include "../../clib/clib_endian.h"
-#include "../../clib/logfacility.h"
-#include "../../clib/passert.h"
-#include "../../clib/stlutil.h"
-#include "../../clib/streamsaver.h"
-#include "../../plib/clidata.h"
-#include "../../plib/systemstate.h"
-#include "../core.h"
-#include "../globals/uvars.h"
-#include "../item/item.h"
-#include "../item/itemdesc.h"
-#include "../mkscrobj.h"
-#include "../mobile/charactr.h"
-#include "../network/cgdata.h"
-#include "../network/client.h"
-#include "../network/packethelper.h"
-#include "../network/packets.h"
-#include "../network/pktboth.h"
-#include "../network/pktout.h"
-#include "../network/pktoutid.h"
-#include "../realms/realm.h"
-#include "../scrdef.h"
-#include "../scrsched.h"
-#include "../syshook.h"
-#include "../ufunc.h"
-#include "../uoscrobj.h"
-#include "../uworld.h"
-#include "house.h"
-#include "multidef.h"
+#include "bscript/barray.h"
+#include "bscript/blong.h"
+#include "bscript/bstruct.h"
+#include "clib/cfgelem.h"
+#include "clib/clib.h"
+#include "clib/clib_endian.h"
+#include "clib/logfacility.h"
+#include "clib/passert.h"
+#include "clib/stlutil.h"
+#include "clib/streamsaver.h"
+#include "plib/clidata.h"
+#include "plib/systemstate.h"
+
+#include "pol/core.h"
+#include "pol/globals/uvars.h"
+#include "pol/item/item.h"
+#include "pol/item/itemdesc.h"
+#include "pol/mkscrobj.h"
+#include "pol/mobile/charactr.h"
+#include "pol/network/cgdata.h"
+#include "pol/network/client.h"
+#include "pol/network/packethelper.h"
+#include "pol/network/packets.h"
+#include "pol/network/pktboth.h"
+#include "pol/network/pktout.h"
+#include "pol/network/pktoutid.h"
+#include "pol/realms/realm.h"
+#include "pol/scrdef.h"
+#include "pol/scrsched.h"
+#include "pol/syshook.h"
+#include "pol/ufunc.h"
+#include "pol/uoscrobj.h"
+#include "pol/uworld.h"
+#include "pol/multi/house.h"
+#include "pol/multi/multidef.h"
 
 #include <zlib.h>
 
@@ -137,7 +141,7 @@ CustomHouseDesign& CustomHouseDesign::operator=( const CustomHouseDesign& design
 }
 
 // Adds the element to the design
-void CustomHouseDesign::Add( CUSTOM_HOUSE_ELEMENT& elem )
+void CustomHouseDesign::Add( const CUSTOM_HOUSE_ELEMENT& elem )
 {
   int floor_num = z_to_custom_house_table( elem.z );
   if ( floor_num == -1 )
@@ -148,7 +152,7 @@ void CustomHouseDesign::Add( CUSTOM_HOUSE_ELEMENT& elem )
 
 // fixme: low walls not being replaced
 // Replaces an existing object depending on the 2 tile heights
-void CustomHouseDesign::AddOrReplace( CUSTOM_HOUSE_ELEMENT& elem )
+void CustomHouseDesign::AddOrReplace( const CUSTOM_HOUSE_ELEMENT& elem )
 {
   int floor_num = z_to_custom_house_table( elem.z );
   if ( floor_num == -1 )
@@ -206,7 +210,7 @@ bool CustomHouseDesign::Erase( u32 xoffset, u32 yoffset, u8 z, int minheight )
 }
 
 
-bool CustomHouseDesign::EraseGraphicAt( u16 graphic, u32 xoffset, u32 yoffset, u8 z )
+bool CustomHouseDesign::EraseGraphicAt( u16 graphic, s32 xoffset, s32 yoffset, u8 z )
 {
   int floor_num = z_to_custom_house_table( z );
   if ( floor_num == -1 )
@@ -230,19 +234,19 @@ bool CustomHouseDesign::EraseGraphicAt( u16 graphic, u32 xoffset, u32 yoffset, u
   return false;
 }
 
-void CustomHouseDesign::ReplaceDirtFloor( u32 x, u32 y )
+void CustomHouseDesign::ReplaceDirtFloor( s32 xoffset, s32 yoffset )
 {
   int floor_num = 1;  // dirt always goes on floor 1 (z=7)
 
-  if ( x + xoff == 0 || y + yoff == 0 ||
-       y + yoff ==
+  if ( xoffset + xoff == 0 || yoffset + yoff == 0 ||
+       Clib::clamp_convert<u32>( yoffset + yoff ) ==
            height )  // don't replace dirt at far-west and far-north sides, check height for y + 1
     return;
 
   bool floor_exists = false;
 
-  u32 xidx = x + xoff;
-  u32 yidx = y + yoff;
+  u32 xidx = xoffset + xoff;
+  u32 yidx = yoffset + yoff;
   if ( !ValidLocation( xidx, yidx ) )
     return;
   HouseFloorZColumn* column = &Elements[floor_num].data.at( xidx ).at( yidx );
@@ -259,8 +263,8 @@ void CustomHouseDesign::ReplaceDirtFloor( u32 x, u32 y )
   {
     CUSTOM_HOUSE_ELEMENT elem;
     elem.graphic = DIRTY_TILE;
-    elem.xoffset = x;
-    elem.yoffset = y;
+    elem.xoffset = xoffset;
+    elem.yoffset = yoffset;
     elem.z = 7;
 
     Add( elem );
@@ -762,7 +766,8 @@ void CustomHousesErase( Core::PKTBI_D7* msg )
   if ( house == nullptr )
     return;
 
-  u32 x = cfBEu32( msg->ch_erase.xoffset ), y = cfBEu32( msg->ch_erase.yoffset );
+  s32 x = static_cast<s32>( cfBEu32( msg->ch_erase.xoffset ) );
+  s32 y = static_cast<s32>( cfBEu32( msg->ch_erase.yoffset ) );
   u8 z = static_cast<u8>( cfBEu32( msg->ch_erase.z ) );
   u16 graphic = cfBEu16( msg->ch_erase.tileID );
 
@@ -972,7 +977,7 @@ void CustomHousesRoofRemove( Core::PKTBI_D7* msg )
     return;
 
   Core::CH_DELETE_ROOF remove = msg->ch_delete_roof;
-  u32 x = cfBEu32( remove.xoffset ), y = cfBEu32( remove.yoffset );
+  s32 x = cfBEu32( remove.xoffset ), y = cfBEu32( remove.yoffset );
   u8 z = static_cast<u8>( cfBEu32( remove.zoffset ) );
   u16 graphic = cfBEu16( remove.tileID );
   if ( !house->WorkingDesign.EraseGraphicAt( graphic, x, y, z ) )

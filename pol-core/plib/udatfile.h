@@ -7,9 +7,11 @@
 #ifndef UDATFILE_H
 #define UDATFILE_H
 
+#include <array>
 #include <vector>
 
-#include "clidata.h"
+#include "plib/clidata.h"
+#include "plib/staticblock.h"
 
 
 namespace Pol::Plib
@@ -37,12 +39,13 @@ struct StaticRec
 
 using StaticList = std::vector<StaticRec>;
 
-// TODO: the functions below are only used for uotool or uoconvert. Consider moving to a separate
-// include.
-void readstatics( StaticList& vec, unsigned short x, unsigned short y );
-void readstatics( StaticList& vec, unsigned short x, unsigned short y, unsigned int flags );
-void readallstatics( StaticList& vec, unsigned short x, unsigned short y );
-bool findstatic( unsigned short x, unsigned short y, unsigned short graphic );
+// One StaticList per cell of an 8x8 static block, indexed [x_offset * 8 + y_offset].
+using StaticBuckets = std::array<StaticList, STATICBLOCK_CHUNK * STATICBLOCK_CHUNK>;
+
+// The readstatics/readstatics_block/readallstatics functions that used to be declared
+// here (uotool/uoconvert only, client-mul backed) are now UoClientFiles methods --
+// see uoclientfiles.h. `findstatic` was declared but never defined; the live
+// implementation is StaticServer::findstatic / Realm::findstatic (pol-file backed).
 }  // namespace Pol::Plib
 
 #endif

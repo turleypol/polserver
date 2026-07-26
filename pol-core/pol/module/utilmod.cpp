@@ -7,8 +7,10 @@
  */
 
 
-#include "utilmod.h"
+#include "pol/module/utilmod.h"
 #include <algorithm>
+
+#define BOOST_UUID_NO_SIMD
 #include <boost/uuid/time_generator_v7.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -17,11 +19,14 @@
 #include <string>
 #include <vector>
 
-#include "../../bscript/berror.h"
-#include "../../bscript/impstr.h"
-#include "../../clib/clib.h"
-#include "../../clib/random.h"
-#include "../dice.h"
+#include "bscript/bdouble.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/bstring.h"
+#include "clib/clib.h"
+#include "clib/random.h"
+
+#include "pol/dice.h"
 
 #include <module_defs/util.h>
 

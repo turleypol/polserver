@@ -4,20 +4,25 @@
  */
 
 
-#include "xmlfilescrobj.h"
+#include "pol/xmlfilescrobj.h"
 
 #include <stddef.h>
 
-#include "../bscript/berror.h"
-#include "../bscript/bobject.h"
-#include "../bscript/bstruct.h"
-#include "../bscript/executor.h"
-#include "../bscript/impstr.h"
-#include "../bscript/objmembers.h"
-#include "../bscript/objmethods.h"
-#include "../clib/stlutil.h"
-#include "../plib/pkg.h"
-#include "module/fileaccess.h"
+#include "bscript/barray.h"
+#include "bscript/bdouble.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/bstring.h"
+#include "bscript/bstruct.h"
+#include "bscript/buninit.h"
+#include "bscript/executor.h"
+#include "bscript/objmembers.h"
+#include "bscript/objmethods.h"
+#include "clib/stlutil.h"
+#include "clib/strutil.h"
+#include "plib/pkg.h"
+
+#include "pol/module/fileaccess.h"
 
 
 namespace Pol::Core
@@ -222,9 +227,7 @@ std::string BXMLfile::getStringRep() const
 {
   if ( file.Error() )
   {
-    OSTRINGSTREAM os;
-    os << file.ErrorRow() << "," << file.ErrorCol() << ":" << file.ErrorDesc();
-    return OSTRINGSTREAM_STR( os );
+    return fmt::format( "{},{}:{}", file.ErrorRow(), file.ErrorCol(), file.ErrorDesc() );
   }
   return _filename;
 }
@@ -538,9 +541,7 @@ std::string BXmlNode::getStringRep() const
   if ( node->Type() == TiXmlNode::TINYXML_DECLARATION )
   {
     TiXmlDeclaration* dec = node->ToDeclaration();
-    OSTRINGSTREAM os;
-    os << "v:" << dec->Version() << " e:" << dec->Encoding() << " s:" << dec->Standalone();
-    return OSTRINGSTREAM_STR( os );
+    return fmt::format( "v:{} e:{} s:{}", dec->Version(), dec->Encoding(), dec->Standalone() );
   }
   std::string text = node->Value();
   Clib::sanitizeUnicodeWithIso( &text );

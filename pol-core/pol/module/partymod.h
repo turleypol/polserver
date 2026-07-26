@@ -7,8 +7,8 @@
 #ifndef PARTYMOD_H
 #define PARTYMOD_H
 
-#include "../../bscript/bobject.h"
-#include "../polmodl.h"
+#include "bscript/bobject.h"
+#include "pol/polmodl.h"
 
 
 namespace Pol::Bscript
@@ -32,6 +32,7 @@ public:
 
   [[nodiscard]] Bscript::BObjectImp* mf_CreateParty();
   [[nodiscard]] Bscript::BObjectImp* mf_DisbandParty();
+  [[nodiscard]] Bscript::BObjectImp* mf_ListParties();
   [[nodiscard]] Bscript::BObjectImp* mf_SendPartyMsg();
   [[nodiscard]] Bscript::BObjectImp* mf_SendPrivatePartyMsg();
 };

@@ -6,18 +6,14 @@ Remove the include in all StdAfx.h files or live with the consequences :)
 
 #pragma once
 
-#include <chrono>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
-#include <fstream>
-#include <future>
 #include <map>
 #include <memory>
-#include <thread>
 #include <type_traits>
 #include <vector>
 
-#include "Debugging/LogSink.h"
+#include "clib/Debugging/LogSink.h"
 
 
 namespace Pol::Clib
@@ -46,13 +42,9 @@ public:
 protected:
   friend class LogFacility;
 
-  bool test_for_rollover( std::chrono::time_point<std::chrono::system_clock>& now );
-  const LogFileBehaviour* _behaviour;
-  std::ofstream _filestream;
-  std::string _log_filename;
-  struct tm _opened;
-  std::chrono::time_point<std::chrono::system_clock> _lasttimestamp;
-  bool _active_line;
+  struct imp;
+  std::unique_ptr<imp> _imp;
+
   static bool _disabled;
 };
 

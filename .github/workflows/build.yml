@@ -40,12 +40,13 @@ jobs:
             tests: true
             name: Linux Clang
           
-          - os: "macos-14"
+          - os: "macos-26"
             cxx-compiler: clang++
             c-compiler: clang
             compiler-version: default
             build-type: Release
-            cmake-cfg: "-DREUSE_PCH=1 -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64'"
+            cmake-cfg: "-DREUSE_PCH=1 -DCMAKE_OSX_ARCHITECTURES='arm64'"
+            #cmake-cfg: "-DREUSE_PCH=1 -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64'" # no longer works
             tests: true
             name: MacOS Clang
 
@@ -61,31 +62,31 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.x'
-      - uses: compnerd/gha-setup-vsdevenv@v6
+      - uses: egor-tensin/vs-shell@v2
       - name: Cache curl
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: lib/curl-8_14_1
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-curl-8.14.1-2
+          key: ${{ matrix.config.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-curl-8.14.1-2
       - name: Cache antlr
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: lib/antlr-cb85012
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-antlr-cb85012-2
+          key: ${{ matrix.config.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-antlr-cb85012-2
       - name: Cache boost
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
-          path: lib/boost_1_89_0
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-boost-1.89.0-1
+          path: lib/boost_1_91_0-1
+          key: ${{ matrix.config.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-boost-1.91.0-1
       - name: Cache cppdap
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: lib/cppdap-82beeea
-          key: ${{ runner.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-cppdap-82beeea-2
+          key: ${{ matrix.config.os }}-${{ matrix.config.cxx-compiler }}-${{ matrix.config.compiler-version }}-cppdap-82beeea-2
 
       - name: Install Compiler and Dependencies (Linux)
         if: matrix.config.os == 'ubuntu-latest'
@@ -127,10 +128,11 @@ jobs:
         shell: bash
         run: |
           set -e
-          /opt/homebrew/bin/pip3.13 install --break-system-packages aiosmtpd
+          /opt/homebrew/bin/pip3 install --break-system-packages aiosmtpd
           brew bundle --file=bin-build/Brewfile
           # Update the Homebrew-installed shared library binaries with the other architecture (amd64) via `brew-universalize`.
-          ./bin-build/brew-universalize openssl@3 libssh2 zstd
+          # disabled since it no longer works
+          #./bin-build/brew-universalize openssl@3 libssh2 zstd
           OPENSSL_VERSION_INSTALLED=$(brew info --json openssl@3 | jq -r '.[0].installed[0].version')
           echo "PKG_CONFIG_PATH=/opt/homebrew/Cellar/openssl@3/$OPENSSL_VERSION_INSTALLED/lib/pkgconfig:$Env:PKG_CONFIG_PATH" >> $GITHUB_ENV
           #env:
@@ -162,7 +164,7 @@ jobs:
           cd bin-build
           cmake --build . --config ${{ matrix.config.build-type }} -- -j 4
 
-      - name: Start MySQL
+      - name: Start MySQL (linux)
         if: matrix.config.os == 'ubuntu-latest' && matrix.config.tests
         shell: pwsh
         run: |
@@ -186,6 +188,7 @@ jobs:
           mysqladmin -u root --skip-password password root
           mysql -e "CREATE DATABASE IF NOT EXISTS poltest;" -uroot -proot
           echo "POLCORE_TESTSQL=1" >> $GITHUB_ENV
+
       - name: Test (EScript)
         if: matrix.config.tests
         run: |
@@ -225,7 +228,7 @@ jobs:
           #POLCORE_TEST_FILTER: testitems
       - name: Upload coretest folder
         if: matrix.config.tests && always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Testdir-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin-build/coretest/
@@ -248,7 +251,7 @@ jobs:
 
       - name: Upload Artefact
         if: matrix.config.tests
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Nightly-${{ runner.os }}-${{ matrix.config.cxx-compiler }}
           path: bin/release
@@ -259,22 +262,22 @@ jobs:
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Download artefacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Nightly-Linux-g++
           path: Nightly-Linux-g++
       - name: Download artefacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Nightly-Linux-clang++
           path: Nightly-Linux-clang++
       - name: Download artefacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Nightly-Windows-cl
           path: Nightly-Windows-cl
       - name: Download artefacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Nightly-macOS-clang++
           path: Nightly-macOS-clang++

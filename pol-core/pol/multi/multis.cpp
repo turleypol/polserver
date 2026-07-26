@@ -8,24 +8,25 @@
 
 #include <stddef.h>
 
-#include "../../bscript/bobject.h"
-#include "../../bscript/bstruct.h"
-#include "../../bscript/executor.h"
-#include "../../bscript/objmembers.h"
-#include "../../clib/cfgelem.h"
-#include "../../clib/logfacility.h"
-#include "../../clib/passert.h"
-#include "../../clib/streamsaver.h"
-#include "../../plib/uconst.h"
-#include "../baseobject.h"
-#include "../globals/state.h"
-#include "../globals/uvars.h"
-#include "../item/item.h"
-#include "../item/itemdesc.h"
-#include "../syshookscript.h"
-#include "../uobjcnt.h"
-#include "multi.h"
-#include "multidef.h"
+#include "bscript/blong.h"
+#include "bscript/bstruct.h"
+#include "bscript/executor.h"
+#include "bscript/objmembers.h"
+#include "clib/cfgelem.h"
+#include "clib/logfacility.h"
+#include "clib/passert.h"
+#include "clib/streamsaver.h"
+#include "plib/uconst.h"
+
+#include "pol/baseobject.h"
+#include "pol/globals/state.h"
+#include "pol/globals/uvars.h"
+#include "pol/item/item.h"
+#include "pol/item/itemdesc.h"
+#include "pol/syshookscript.h"
+#include "pol/uobjcnt.h"
+#include "pol/multi/multi.h"
+#include "pol/multi/multidef.h"
 
 
 namespace Pol::Multi

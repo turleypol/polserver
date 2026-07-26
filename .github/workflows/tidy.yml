@@ -19,7 +19,8 @@ jobs:
             compiler-version: 20
             build-type: RelWithDebInfo
             name: ClangTidy
-            tidy-checks: "modernize-loop-convert"
+            tidy-checks: "misc-include-cleaner"
+            #"modernize-loop-convert"
             #"modernize-use-override"
             #"modernize-use-equals-default"
             #"modernize-use-equals-delete"
@@ -42,7 +43,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - uses: compnerd/gha-setup-vsdevenv@v6
       - name: Cache curl
         uses: actions/cache@v4
         with:

@@ -1,0 +1,79 @@
+/** @file
+ *
+ * @par History
+ * - 2009/12/21 Turley:    ._method() call fix
+ */
+
+#pragma once
+
+#include "bscript/bobjectimp.h"
+
+#include <iosfwd>
+#include <map>
+#include <string>
+
+#include "clib/rawtypes.h"
+
+
+namespace Pol::Bscript
+{
+class ContIterator;
+class Executor;
+}  // namespace Pol::Bscript
+
+
+namespace Pol::Bscript
+{
+class BDictionary final : public BObjectImp
+{
+public:
+  BDictionary();
+
+  static BObjectImp* unpack( std::istream& is );
+
+  void addMember( const char* name, BObjectRef val );
+  void addMember( const char* name, BObjectImp* imp );
+  void addMember( BObjectImp* key, BObjectImp* val );
+  size_t mapcount() const;
+
+  using Contents = std::map<BObject, BObjectRef>;
+  const Contents& contents() const;
+
+protected:
+  BDictionary( std::istream& is, unsigned size, BObjectType type = OTDictionary );
+  BDictionary( const BDictionary&, BObjectType type = OTDictionary );
+
+  BObjectImp* copy() const override;
+  std::string getStringRep() const override;
+  size_t sizeEstimate() const override;
+  void packonto( std::string& str ) const override;
+  const char* typeOf() const override;
+  u8 typeOfInt() const override;
+
+  ContIterator* createIterator( BObject* pIterVal ) override;
+
+  char packtype() const;
+  const char* typetag() const;
+  void FormatForStringRep( std::string& rep, const BObject& bkeyobj,
+                           const BObjectRef& bvalref ) const;
+
+  BObjectRef OperSubscript( const BObject& obj ) override;
+  BObjectImp* call_method( const char* methodname, Executor& ex ) override;
+  BObjectImp* call_method_id( const int id, Executor& ex, bool forcebuiltin = false ) override;
+  BObjectRef set_member( const char* membername, BObjectImp* value, bool copy ) override;
+  BObjectRef get_member( const char* membername ) override;
+  BObjectRef operDotPlus( const char* name ) override;
+  BObjectImp* array_assign( BObjectImp* idx, BObjectImp* target, bool copy ) override;
+
+  friend class BDictionaryIterator;
+
+protected:
+  explicit BDictionary( BObjectType type );
+
+private:
+  Contents contents_;
+
+  // not implemented:
+  BDictionary& operator=( const BDictionary& ) = delete;
+};
+}  // namespace Pol::Bscript

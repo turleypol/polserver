@@ -1,26 +1,26 @@
-#include "partyscrobj.h"
+#include "pol/partyscrobj.h"
 
 #include <stddef.h>
-#include <string>
 
-#include "../bscript/berror.h"
-#include "../bscript/bobject.h"
-#include "../bscript/dict.h"
-#include "../bscript/executor.h"
-#include "../bscript/impstr.h"
-#include "../bscript/objmembers.h"
-#include "../bscript/objmethods.h"
-#include "../clib/stlutil.h"
-#include "../clib/strutil.h"
-#include "../plib/systemstate.h"
-#include "clfunc.h"
-#include "fnsearch.h"
-#include "globals/uvars.h"
-#include "module/polsystemmod.h"
-#include "module/uomod.h"
-#include "party.h"
-#include "uoexec.h"
-#include "uoscrobj.h"
+#include "bscript/barray.h"
+#include "bscript/bboolean.h"
+#include "bscript/bdict.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/buninit.h"
+#include "bscript/executor.h"
+#include "bscript/objmembers.h"
+#include "bscript/objmethods.h"
+#include "clib/stlutil.h"
+
+#include "pol/clfunc.h"
+#include "pol/fnsearch.h"
+#include "pol/globals/uvars.h"
+#include "pol/module/polsystemmod.h"
+#include "pol/module/uomod.h"
+#include "pol/party.h"
+#include "pol/uoexec.h"
+#include "pol/uoscrobj.h"
 
 
 namespace Pol::Module

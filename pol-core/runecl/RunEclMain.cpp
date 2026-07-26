@@ -1,38 +1,44 @@
 
-#include "pol_global_config.h"
+#include <pol_global_config.h>
 
-#include "RunEclMain.h"
+#include "runecl/RunEclMain.h"
 
 #include <ctime>
 
 #include <iostream>
 #include <iterator>
 
-#include "../bscript/bobject.h"
-#include "../bscript/config.h"
-#include "../bscript/escriptv.h"
-#include "../bscript/execmodl.h"
-#include "../bscript/executor.h"
-#include "../bscript/filefmt.h"
-#include "../bscript/object.h"
-#include "../clib/Header_Windows.h"
-#include "../clib/Program/ProgramMain.h"
-#include "../clib/boostutils.h"
-#include "../clib/fileutil.h"
-#include "../clib/logfacility.h"
-#include "../clib/refptr.h"
-#include "../clib/stlutil.h"
-#include "../plib/pkg.h"
-#include "../plib/systemstate.h"
+#include <fmt/std.h>
 
-#include "../pol/globals/ucfg.h"
-#include "../pol/module/basiciomod.h"
-#include "../pol/module/basicmod.h"
-#include "../pol/module/cfgmod.h"
-#include "../pol/module/datastore.h"
-#include "../pol/module/filemod.h"
-#include "../pol/module/mathmod.h"
-#include "../pol/module/utilmod.h"
+#include "bscript/bspecialjump.h"
+#include "bscript/buninit.h"
+#include "bscript/config.h"
+#include "bscript/escriptv.h"
+#include "bscript/execmodl.h"
+#include "bscript/executor.h"
+#include "bscript/filefmt.h"
+#include "clib/Header_Windows.h"
+#include "clib/Program/ProgramMain.h"
+#include "clib/boostutils.h"
+#include "clib/fileutil.h"
+#include "clib/logfacility.h"
+#include "clib/refptr.h"
+#include "clib/stlutil.h"
+#include "plib/pkg.h"
+#include "plib/systemstate.h"
+
+#include "pol/globals/ucfg.h"
+#include "pol/module/basiciomod.h"
+#include "pol/module/basicmod.h"
+#include "pol/module/cfgmod.h"
+#include "pol/module/datastore.h"
+#include "pol/module/filemod.h"
+#include "pol/module/mathmod.h"
+#include "pol/module/utilmod.h"
+
+#if BOBJECTIMP_DEBUG
+#include "bscript/object.h"
+#endif
 
 namespace Pol
 {
@@ -47,7 +53,6 @@ void load_fileaccess_cfg();
 }
 namespace Clib
 {
-using namespace std;
 using namespace Pol::Bscript;
 using namespace Pol::Module;
 
@@ -106,52 +111,55 @@ int RunEclMain::runeclScript( std::string fileName )
   FILETIME kernelStart, userStart;
   FILETIME kernelEnd, userEnd;
 #endif
-  Executor exe;
-  exe.addModule( new BasicExecutorModule( exe ) );
-  exe.addModule( new BasicIoExecutorModule( exe ) );
-  exe.addModule( new MathExecutorModule( exe ) );
-  exe.addModule( new UtilExecutorModule( exe ) );
-  exe.addModule( new FileAccessExecutorModule( exe ) );
-  exe.addModule( new ConfigFileExecutorModule( exe ) );
-  exe.addModule( new DataFileExecutorModule( exe ) );
-
-  ref_ptr<EScriptProgram> program( new EScriptProgram );
-  if ( program->read( fileName.c_str() ) )
   {
-    ERROR_PRINTLN( "Error reading {}", fileName );
-    return 1;
-  }
-  exe.setProgram( program.get() );
-  // find and set pkg
-  std::string dir = fileName;
-  Clib::strip_one( dir );
-  dir = Clib::normalized_dir_form( dir );
-  Plib::load_packages( true /*quiet*/ );
+    Executor exe;
+    exe.addModule( new BasicExecutorModule( exe ) );
+    exe.addModule( new BasicIoExecutorModule( exe ) );
+    exe.addModule( new MathExecutorModule( exe ) );
+    exe.addModule( new UtilExecutorModule( exe ) );
+    exe.addModule( new FileAccessExecutorModule( exe ) );
+    exe.addModule( new ConfigFileExecutorModule( exe ) );
+    exe.addModule( new DataFileExecutorModule( exe ) );
+    ref_ptr<EScriptProgram> program( new EScriptProgram );
+    if ( program->read( fileName.c_str() ) )
+    {
+      ERROR_PRINTLN( "Error reading {}", fileName );
+      return 1;
+    }
+    exe.setProgram( program.get() );
+    // find and set pkg
+    std::string dir = fileName;
+    Clib::strip_one( dir );
+    dir = Clib::normalized_dir_form( dir );
+    Plib::load_packages( true /*quiet*/ );
 
-  const auto& pkgs = Plib::systemstate.packages;
-  auto pkg = std::find_if( pkgs.begin(), pkgs.end(), [&dir]( Plib::Package* p )
-                           { return Clib::stringicmp( p->dir(), dir ) == 0; } );
-  if ( pkg != pkgs.end() )
-  {
-    program->pkg = *pkg;
-  }
-  Module::load_fileaccess_cfg();  // after pkg load
+    const auto& pkgs = Plib::systemstate.packages;
+    auto pkg = std::find_if( pkgs.begin(), pkgs.end(), [&dir]( Plib::Package* p )
+                             { return Clib::stringicmp( p->dir(), dir ) == 0; } );
+    if ( pkg != pkgs.end() )
+    {
+      program->pkg = *pkg;
+    }
+    Module::load_fileaccess_cfg();  // after pkg load
 
-  exe.setDebugLevel( m_debug ? Executor::INSTRUCTIONS : Executor::NONE );
-  clock_t start = clock();
+    exe.setDebugLevel( m_debug ? Executor::INSTRUCTIONS : Executor::NONE );
+    clock_t start = clock();
 #ifdef _WIN32
-  GetThreadTimes( GetCurrentThread(), &dummy, &dummy, &kernelStart, &userStart );
+    GetThreadTimes( GetCurrentThread(), &dummy, &dummy, &kernelStart, &userStart );
 #endif
 
-  exres = exe.exec();
+    exres = exe.exec();
 
 #ifdef _WIN32
-  GetThreadTimes( GetCurrentThread(), &dummy, &dummy, &kernelEnd, &userEnd );
+    GetThreadTimes( GetCurrentThread(), &dummy, &dummy, &kernelEnd, &userEnd );
 #endif
-  clocks = clock() - start;
-  seconds = static_cast<double>( clocks ) / CLOCKS_PER_SEC;
+    clocks = clock() - start;
+    seconds = static_cast<double>( clocks ) / CLOCKS_PER_SEC;
 
-  memory_used = exe.sizeEstimate();
+    memory_used = exe.sizeEstimate();
+  }
+  UninitObject::ReleaseSharedInstance();
+  BSpecialUserFuncJump::ReleaseSharedInstance();
 
   if ( m_profile )
   {

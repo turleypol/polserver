@@ -56,11 +56,11 @@ if (NOT EXISTS ${MARIADB_LIB})
     INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config Release --target install
 
     BUILD_BYPRODUCTS ${MARIADB_LIB}
-    #LOG_DOWNLOAD 1
-    #LOG_CONFIGURE 1
-    #LOG_BUILD 1
-    #LOG_INSTALL 1
-    #LOG_OUTPUT_ON_FAILURE 1
+    LOG_DOWNLOAD 1
+    LOG_CONFIGURE 1
+    LOG_BUILD 1
+    LOG_INSTALL 1
+    LOG_OUTPUT_ON_FAILURE 1
     EXCLUDE_FROM_ALL 1
   )
 
@@ -84,4 +84,6 @@ if(${windows})
   set_property(TARGET libsql
     PROPERTY INTERFACE_LINK_LIBRARIES secur32 crypt32 bcrypt)
 endif()
-add_dependencies(libsql libmaria_ext)
+if(TARGET libmaria_ext)
+  add_dependencies(libsql libmaria_ext)
+endif()

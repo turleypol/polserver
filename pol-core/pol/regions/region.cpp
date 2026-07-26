@@ -5,25 +5,25 @@
  * of 32x32 (ZONE_SIZE)
  */
 
-#include "region.h"
+#include "pol/regions/region.h"
 
 #include <stddef.h>
 #include <string>
 
 #include "bscript/berror.h"
-#include "bscript/impstr.h"
+#include "bscript/bstring.h"
 #include "clib/cfgelem.h"
 #include "clib/cfgfile.h"
 #include "clib/fileutil.h"
 #include "clib/stlutil.h"
 #include "plib/poltype.h"
 
-#include "base/range.h"
-#include "globals/uvars.h"
-#include "proplist.h"
-#include "realms/realm.h"
-#include "realms/realms.h"
-#include "zone.h"
+#include "pol/base/range.h"
+#include "pol/globals/uvars.h"
+#include "pol/proplist.h"
+#include "pol/realms/realm.h"
+#include "pol/realms/realms.h"
+#include "pol/zone.h"
 
 
 namespace Pol::Core

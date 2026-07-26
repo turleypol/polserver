@@ -7,22 +7,24 @@
 #include <ctype.h>
 #include <stddef.h>
 
-#include "../bscript/berror.h"
-#include "../bscript/impstr.h"
-#include "../clib/clib_endian.h"
-#include "../clib/logfacility.h"
-#include "../clib/rawtypes.h"
-#include "item/item.h"
-#include "mobile/charactr.h"
-#include "module/unimod.h"
-#include "module/uomod.h"
-#include "network/cgdata.h"
-#include "network/client.h"
-#include "network/packethelper.h"
-#include "network/packets.h"
-#include "network/pktboth.h"
-#include "ufunc.h"
-#include "uoexec.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/bstring.h"
+#include "clib/clib_endian.h"
+#include "clib/logfacility.h"
+#include "clib/rawtypes.h"
+
+#include "pol/item/item.h"
+#include "pol/mobile/charactr.h"
+#include "pol/module/unimod.h"
+#include "pol/module/uomod.h"
+#include "pol/network/cgdata.h"
+#include "pol/network/client.h"
+#include "pol/network/packethelper.h"
+#include "pol/network/packets.h"
+#include "pol/network/pktboth.h"
+#include "pol/ufunc.h"
+#include "pol/uoexec.h"
 
 namespace Pol
 {

@@ -4,28 +4,28 @@
  */
 
 
-#include "console.h"
+#include "pol/console.h"
 
 #include <ctype.h>
 #include <stddef.h>
 
-#include "../bscript/eprog.h"
-#include "../bscript/impstr.h"
-#include "../clib/cfgelem.h"
-#include "../clib/cfgfile.h"
-#include "../clib/fileutil.h"
-#include "../clib/kbhit.h"
-#include "../clib/logfacility.h"
-#include "../clib/refptr.h"
-#include "../clib/stlutil.h"
-#include "../plib/systemstate.h"
-#include "globals/state.h"
-#include "globals/uvars.h"
-#include "polsem.h"
-#include "polsig.h"
-#include "scrdef.h"
-#include "scrsched.h"
-#include "scrstore.h"
+#include "bscript/bstring.h"
+#include "bscript/eprog.h"
+#include "clib/cfgelem.h"
+#include "clib/cfgfile.h"
+#include "clib/fileutil.h"
+#include "clib/kbhit.h"
+#include "clib/logfacility.h"
+#include "clib/refptr.h"
+#include "clib/stlutil.h"
+#include "pol/globals/state.h"
+#include "pol/globals/uvars.h"
+#include "plib/systemstate.h"
+#include "pol/polsem.h"
+#include "pol/polsig.h"
+#include "pol/scrdef.h"
+#include "pol/scrsched.h"
+#include "pol/scrstore.h"
 #include <fmt/format.h>
 
 #ifdef _WIN32

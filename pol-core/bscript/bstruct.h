@@ -9,16 +9,14 @@
 #ifndef BSCRIPT_BSTRUCT_H
 #define BSCRIPT_BSTRUCT_H
 
-#ifndef BSCRIPT_BOBJECT_H
-#include "bobject.h"
-#endif
+#include "bscript/bobject.h"
 
 #include <iosfwd>
 #include <map>
 #include <string>
 
-#include "../clib/maputil.h"
-#include "../clib/rawtypes.h"
+#include "clib/maputil.h"
+#include "clib/rawtypes.h"
 
 
 namespace Pol::Bscript
@@ -57,12 +55,12 @@ protected:
 
   virtual char packtype() const;
   virtual const char* typetag() const;
-  virtual void FormatForStringRep( std::ostream& os, const std::string& key,
-                                   const BObjectRef& bvalref ) const;
+  void FormatForStringRep( std::string& rep, const std::string& key,
+                           const BObjectRef& bvalref ) const;
 
   std::string getStringRep() const override;
   size_t sizeEstimate() const override;
-  void packonto( std::ostream& os ) const override;
+  void packonto( std::string& os ) const override;
   const char* typeOf() const override;
   u8 typeOfInt() const override;
 

@@ -10,10 +10,10 @@
 #ifndef __SPELBOOK_H
 #define __SPELBOOK_H
 
-#include "../clib/rawtypes.h"
-#include "item/item.h"
+#include "clib/rawtypes.h"
+#include "pol/item/item.h"
 #ifndef CONTAINR_H
-#include "containr.h"
+#include "pol/containr.h"
 #endif
 
 namespace Pol
@@ -52,7 +52,7 @@ class Spellbook final : public UContainer
 
 public:
   explicit Spellbook( const Items::SpellbookDesc& descriptor );
-  ~Spellbook() override;
+  ~Spellbook() override = default;
   size_t estimatedSize() const override;
 
   bool has_spellid( unsigned int spellid ) const;

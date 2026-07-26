@@ -10,7 +10,7 @@
  */
 
 
-#include "textcmd.h"
+#include "pol/textcmd.h"
 
 #include <cstddef>
 #include <ctype.h>
@@ -21,48 +21,50 @@
 #include <string>
 #include <time.h>
 
-#include "../bscript/berror.h"
-#include "../bscript/impstr.h"
-#include "../clib/cfgelem.h"
-#include "../clib/cfgfile.h"
-#include "../clib/clib.h"
-#include "../clib/clib_endian.h"
-#include "../clib/esignal.h"
-#include "../clib/fileutil.h"
-#include "../clib/logfacility.h"
-#include "../clib/opnew.h"
-#include "../clib/rawtypes.h"
-#include "../clib/refptr.h"
-#include "../clib/spinlock.h"
-#include "../clib/stlutil.h"
-#include "../clib/strutil.h"
-#include "../clib/threadhelp.h"
-#include "../plib/clidata.h"
-#include "../plib/pkg.h"
-#include "../plib/systemstate.h"
-#include "../plib/uconst.h"
-#include "accounts/account.h"
-#include "allocd.h"
-#include "globals/network.h"
-#include "globals/state.h"
-#include "globals/uvars.h"
-#include "item/item.h"
-#include "item/itemdesc.h"
-#include "mobile/charactr.h"
-#include "module/uomod.h"
-#include "network/client.h"
-#include "network/pktboth.h"
-#include "polclock.h"
-#include "repsys.h"
-#include "scrdef.h"
-#include "scrsched.h"
-#include "scrstore.h"
-#include "ufunc.h"
-#include "ufuncstd.h"
-#include "uoexec.h"
-#include "uoscrobj.h"
-#include "utype.h"
-#include "uworld.h"
+#include "bscript/berror.h"
+#include "bscript/blong.h"
+#include "bscript/bstring.h"
+#include "clib/cfgelem.h"
+#include "clib/cfgfile.h"
+#include "clib/clib.h"
+#include "clib/clib_endian.h"
+#include "clib/esignal.h"
+#include "clib/fileutil.h"
+#include "clib/logfacility.h"
+#include "clib/opnew.h"
+#include "clib/rawtypes.h"
+#include "clib/refptr.h"
+#include "clib/spinlock.h"
+#include "clib/stlutil.h"
+#include "clib/strutil.h"
+#include "clib/threadhelp.h"
+#include "plib/clidata.h"
+#include "plib/pkg.h"
+#include "plib/systemstate.h"
+#include "plib/uconst.h"
+
+#include "pol/accounts/account.h"
+#include "pol/allocd.h"
+#include "pol/globals/network.h"
+#include "pol/globals/state.h"
+#include "pol/globals/uvars.h"
+#include "pol/item/item.h"
+#include "pol/item/itemdesc.h"
+#include "pol/mobile/charactr.h"
+#include "pol/module/uomod.h"
+#include "pol/network/client.h"
+#include "pol/network/pktboth.h"
+#include "pol/polclock.h"
+#include "pol/repsys.h"
+#include "pol/scrdef.h"
+#include "pol/scrsched.h"
+#include "pol/scrstore.h"
+#include "pol/ufunc.h"
+#include "pol/ufuncstd.h"
+#include "pol/uoexec.h"
+#include "pol/uoscrobj.h"
+#include "pol/utype.h"
+#include "pol/uworld.h"
 
 
 namespace Pol::Core
@@ -374,14 +376,10 @@ void textcmd_stoplog( Network::Client* client )
 
 void textcmd_orphans( Network::Client* client )
 {
-  OSTRINGSTREAM os;
-  os << "Unreaped orphans: " << stateManager.uobjcount.unreaped_orphans;
-
-  send_sysmessage( client, OSTRINGSTREAM_STR( os ) );
-
-  OSTRINGSTREAM os2;
-  os2 << "EChrRef count: " << stateManager.uobjcount.uobj_count_echrref;
-  send_sysmessage( client, OSTRINGSTREAM_STR( os2 ) );
+  send_sysmessage( client,
+                   fmt::format( "Unreaped orphans: {}", stateManager.uobjcount.unreaped_orphans ) );
+  send_sysmessage( client,
+                   fmt::format( "EChrRef count: {}", stateManager.uobjcount.uobj_count_echrref ) );
 }
 
 void list_scripts();
@@ -426,8 +424,7 @@ void textcmd_heapcheck( Network::Client* /*client*/ )
 
 void textcmd_threads( Network::Client* client )
 {
-  std::string s = "Child threads: " + Clib::tostring( threadhelp::child_threads );
-  send_sysmessage( client, s );
+  send_sysmessage( client, fmt::format( "Child threads: {}", threadhelp::child_threads ) );
 }
 
 void textcmd_constat( Network::Client* client )
@@ -436,9 +433,7 @@ void textcmd_constat( Network::Client* client )
   send_sysmessage( client, "Connection statuses:" );
   for ( auto itr : networkManager.clients )
   {
-    OSTRINGSTREAM os;
-    os << i << ": " << itr->status() << " ";
-    send_sysmessage( client, OSTRINGSTREAM_STR( os ) );
+    send_sysmessage( client, fmt::format( "{}: {}", i, itr->status() ) );
     ++i;
   }
 }

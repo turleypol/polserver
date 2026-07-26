@@ -9,14 +9,11 @@
 #define EXSCROBJ_H
 
 
-#ifndef BSCRIPT_BOBJECT_H
 #include "bscript/bobject.h"
-#endif
-
 #include "clib/rawtypes.h"
 #include "clib/weakptr.h"
 
-#include "polobject.h"
+#include "pol/polobject.h"
 
 #include <memory>
 

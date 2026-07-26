@@ -1,4 +1,4 @@
-#include "UserFunctionBuilder.h"
+#include "bscript/compiler/astbuilder/UserFunctionBuilder.h"
 
 #include "bscript/compiler/Report.h"
 #include "bscript/compiler/ast/Argument.h"
@@ -23,6 +23,8 @@
 #include "bscript/compiler/model/CompilerWorkspace.h"
 #include "bscript/compiler/model/FunctionLink.h"
 #include "bscript/compiler/model/ScopeName.h"
+
+#include "clib/strutil.h"
 
 #include <algorithm>
 
